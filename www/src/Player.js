@@ -219,10 +219,7 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
       } else {
         const hiz = Math.abs(b.velocity.x);
         let ad = 'idle', fps = HAREKET.idle.fps;
-        if (hiz > 25) {
-          if (hiz > AYAR.KOSMA_ANIM_HIZI) { ad = 'run'; fps = HAREKET.run.fps * (0.8 + 0.4 * hiz / AYAR.KOSU_HIZI); }
-          else { ad = 'walk'; fps = HAREKET.walk.fps * (0.6 + 0.8 * hiz / AYAR.KOSU_HIZI); }
-        }
+        if (hiz > 25) { ad = 'walk'; fps = HAREKET.walk.fps * (0.6 + 0.5 * hiz / AYAR.KOSU_HIZI); }
         this.animZaman += delta * fps / 1000;
         this.kareAyarla(ad, Math.floor(this.animZaman) % POPEYE_KARE[ad]);
       }

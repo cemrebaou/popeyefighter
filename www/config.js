@@ -1,7 +1,7 @@
 // Popeye Fighter - genel ayarlar
 // Her değişiklikte SURUM artırılır.
 const AYAR = {
-  SURUM: 'v0.02',
+  SURUM: 'v0.03',
 
   // Ekran (yatay)
   GENISLIK: 960,
@@ -13,8 +13,7 @@ const AYAR = {
   MAKS_DUSME: 1100,
 
   // Oyuncu hareketi
-  KOSU_HIZI: 330,
-  KOSMA_ANIM_HIZI: 250,    // bu hızın üstünde "koşma" animasyonu oynar
+  KOSU_HIZI: 260,          // yürüme hızı (yavaş yürüme)
   YER_IVME: 2600,
   HAVA_IVME: 1700,
   YER_SURTUNME: 3000,

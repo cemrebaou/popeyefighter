@@ -13,8 +13,7 @@
 const HAREKET = {
   // Döngülü (loop) animasyonlar
   idle: { fps: 9,  dongu: true },
-  walk: { fps: 13, dongu: true },
-  run:  { fps: 14, dongu: true },
+  walk: { fps: 7,  dongu: true },   // yavaş yürüme; hıza göre 0.6x - 1.1x oynar
 
   // Saldırılar. Zincir sırası aşağıdaki ZINCIR'de.
   punch_a: { ad: 'Jab',        fps: 22, vurus: [2, 3], menzil: 60, yuks: 34, yOfs: 24, hasar: 1, itme: 160, havaya: 0,    atilma: 90,  sarsinti: 0.004 },
