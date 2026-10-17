@@ -1,17 +1,26 @@
-# Popeye sprite sayfalarından (Adsız tasarım 1 ve 3) oyun atlasını üretir.
-# Çıktı: www/assets/popeye.png / popeye.json / popeye_data.js
-import json, os
+# Popeye satır görsellerinden (idle, walk, jump, p, pa) oyun atlasını üretir. tools/bake.py olarak saklanır.
+# Tek ölçek kuralı: her satır, idle karelerindeki kafa genişliğine göre TEK çarpanla ölçeklenir
+# (satır içinde kare kare ayarlama yok), böylece vuruşlar arasında boyut oynamaz.
+import json, os, itertools
 import numpy as np
 from PIL import Image
 from scipy import ndimage
-from seg2 import yukle, segment, rows, D
+Image.MAX_IMAGE_PIXELS=None
 
+UP='/root/.claude/uploads/44bdca3f-3d20-5eb2-a194-4572c570329f/'
+SATIRLAR={            # ad: (dosya, kare adedi)
+  'idle': ('5b3238e8-image.png',8),
+  'walk': ('0178d673-image.png',7),
+  'jump': ('58c942ef-image.png',7),
+  'p':    ('ec8007e7-image.png',6),
+  'pa':   ('a236f691-image.png',6),
+}
+SPIN=UP+'d2ab9c58-image.png'
 HEDEF='/home/claude/popeyefighter/www/assets'
-SPIN='/root/.claude/uploads/44bdca3f-3d20-5eb2-a194-4572c570329f/d2ab9c58-image.png'
-ATLAS_OLCEK=0.84          # ortak ölçek -> atlas pikseli (oyunda sprite 0.5 ile gösterilir)
-HEDEF_KAFA=77.0*D         # idle kafa/şapka genişliği (tam çözünürlük px); tüm hareketler buna eşitlenir
-BAND=40*D
-KAT_EL={'k':1.135}   # önden görünen tekme satırı: boy, 'p' satırı duruşuyla eşitlendi
+D=4
+IDLE_BOY=480.0        # idle karesinin atlas pikseli cinsinden boyu
+BAND=40*D             # kafa genişliği ölçümü: siluetin en üst satırları
+SPIN_GEN=273          # çift zıplama topu genişliği (atlas px) -> oyunda ~50 birim
 
 def kafa(mask):
     ws=[]
@@ -20,94 +29,94 @@ def kafa(mask):
         if len(xs): ws.append(xs.max()-xs.min()+1)
     return max(ws) if ws else 0
 
-def bol(R_row, hedef_adet):
-    """Birleşik (dokunan) kareleri en dar boşluktan ikiye böler."""
-    fs=list(R_row)
-    while len(fs)<hedef_adet:
-        f=max(fs,key=lambda f:f['box'][2]-f['box'][0])
-        fs.remove(f)
-        x0,y0,x1,y1=f['box']
-        m=np.isin(LAB[y0:y1,x0:x1],[i+1 for i in f['ids']]) if 'xr' not in f else None
-        col=m.sum(0).astype(float)
-        col=np.convolve(col,np.ones(5)/5,mode='same')
-        w=len(col); a,b=int(w*0.3),int(w*0.7)
-        cut=x0+a+int(np.argmin(col[a:b]))
-        for (xa,xb) in ((x0,cut),(cut,x1)):
-            sub=m[:,xa-x0:xb-x0]; ys=np.where(sub.any(1))[0]
-            fs.append(dict(box=(xa,y0+ys.min(),xb,y0+ys.max()+1),ids=f['ids'],xr=(xa,xb)))
-    fs.sort(key=lambda f:f['box'][0])
-    return fs
+def parcalar(w, hedef):
+    """Bileşen genişliklerine (w) toplam 'hedef' kare dağıtır; kare başına genişlik farkını en aza indirir."""
+    n=len(w); en=None
+    for ks in itertools.product(range(1,hedef-n+2),repeat=n):
+        if sum(ks)!=hedef: continue
+        v=np.var([wi/k for wi,k in zip(w,ks)])
+        if en is None or v<en[0]: en=(v,ks)
+    return en[1]
 
-def kes(a,lab,f):
-    x0,y0,x1,y1=f['box']
-    sub=np.isin(lab[y0:y1,x0:x1],[i+1 for i in f['ids']])
-    if 'xr' in f:
-        sub[:, :f['xr'][0]-x0]=False; sub[:, f['xr'][1]-x0:]=False
-    m=np.repeat(np.repeat(sub,D,0),D,1)
-    crop=a[y0*D:y1*D,x0*D:x1*D].copy()
-    crop[~m,3]=0
-    ys,xs=np.where(crop[...,3]>20)
-    crop=crop[ys.min():ys.max()+1,xs.min():xs.max()+1]
-    return crop
+def kes_satir(yol, adet):
+    a=np.array(Image.open(yol).convert('RGBA'))
+    H,W=a.shape[:2]
+    al=a[...,3]>20
+    kucuk=al[:H//D*D,:W//D*D].reshape(H//D,D,W//D,D).max(axis=(1,3))
+    lab,n=ndimage.label(kucuk,structure=np.ones((3,3)))
+    areas=ndimage.sum(kucuk,lab,range(1,n+1)); objs=ndimage.find_objects(lab)
+    main=[k for k in range(n) if areas[k]>=375]
+    small=[k for k in range(n) if 3<=areas[k]<375]
+    grp={k:[k] for k in main}
+    def dist(b1,b2):
+        dy=max(b1[0].start-b2[0].stop,b2[0].start-b1[0].stop,0); dx=max(b1[1].start-b2[1].stop,b2[1].start-b1[1].stop,0)
+        return dx*dx+dy*dy
+    for k in small:
+        best=min(main,key=lambda j:dist(objs[k],objs[j]))
+        if dist(objs[k],objs[best])<900: grp[best].append(k)
+    comps=[]
+    for k,ks in grp.items():
+        x0=min(objs[j][1].start for j in ks); x1=max(objs[j][1].stop for j in ks)
+        y0=min(objs[j][0].start for j in ks); y1=max(objs[j][0].stop for j in ks)
+        comps.append((x0,y0,x1,y1,ks))
+    comps.sort(key=lambda c:c[0])
+    ks=parcalar([c[2]-c[0] for c in comps],adet)
+    kareler=[]
+    for (x0,y0,x1,y1,ids),k in zip(comps,ks):
+        m=np.isin(lab[y0:y1,x0:x1],[i+1 for i in ids])
+        kesim=[x0]
+        if k>1:
+            col=np.convolve(m.sum(0).astype(float),np.ones(5)/5,mode='same'); w=x1-x0
+            adaylar=sorted(range(int(w*0.08),int(w*0.92)),key=lambda i:col[i])
+            sec=[]
+            for i in adaylar:   # en derin vadiler, birbirinden yeterince uzak
+                if all(abs(i-s)>0.55*w/k for s in sec): sec.append(i)
+                if len(sec)==k-1: break
+            kesim+= [x0+s for s in sorted(sec)]
+        kesim.append(x1)
+        print('  bileşen',x1-x0,'->',k,'parça, kesimler',[c-x0 for c in kesim])
+        for xa,xb in zip(kesim[:-1],kesim[1:]):
+            sub=m[:,xa-x0:xb-x0]
+            ys=np.where(sub.any(1))[0]
+            ya,yb=y0+ys.min(),y0+ys.max()+1
+            mm=np.repeat(np.repeat(m[ys.min():ys.max()+1,xa-x0:xb-x0],D,0),D,1)
+            crop=a[ya*D:yb*D,xa*D:xb*D].copy(); crop[~mm,3]=0
+            yy,xx=np.where(crop[...,3]>20)
+            kareler.append(crop[yy.min():yy.max()+1,xx.min():xx.max()+1])
+    kareler.sort(key=lambda c:0)  # sıra zaten soldan sağa
+    return kareler
 
-def isle(satirlar):
-    """satirlar: {ad: [crop,...]} -> {ad: [(PIL, ax, ay)]} kafa genişliğine göre ölçekli."""
-    out={}
-    for ad,crops in satirlar.items():
-        ws=[kafa(c[...,3]>20) for c in crops]
-        med=float(np.median(ws)); temiz=[w for w in ws if 0.8*med<=w<=1.2*med]
-        med2=float(np.median(temiz)) if temiz else med
-        kat=HEDEF_KAFA/med2
-        if ad in KAT_EL: kat=KAT_EL[ad]   # kafa ölçümünün güvenilmediği satırlar (önden görünüm)
-        print(f'{ad:5s} kafa {med2/D:5.1f} -> ölçek {kat:.3f}  {[round(w/D) for w in ws]}')
-        fr=[]
-        for c,w in zip(crops,ws):
-            r=float(np.clip(med2/w,0.88,1.12)) if (w and 0.8*med2<=w<=1.2*med2) else 1.0
-            k=ATLAS_OLCEK/D*kat*r
-            im=Image.fromarray(c,'RGBA'); W,H=im.size
-            im=im.resize((max(1,round(W*k)),max(1,round(H*k))),Image.LANCZOS)
-            al=np.array(im)[...,3]; Hh=al.shape[0]
-            ys=np.where(al.max(1)>40)[0]; bot=ys.max()
-            band=al[max(0,bot-int(Hh*0.07)):bot+1]; xs=np.where(band.max(0)>40)[0]
-            ax=float(xs.mean()) if len(xs) else im.size[0]/2
-            fr.append((im,ax,float(bot+1)))
-        out[ad]=fr
-    return out
+satir={}
+for ad,(dosya,adet) in SATIRLAR.items():
+    print(ad); satir[ad]=kes_satir(UP+dosya,adet)
+    assert len(satir[ad])==adet,(ad,len(satir[ad]))
 
-satirlar={}
-# --- Sayfa 1: idle / yürüme / zıplama / jab
-a=yukle(0); LAB,fr=segment(a); R=rows(fr)
-jump=sorted(R[2][1]+R[3][1]+R[4][1],key=lambda f:f['box'][0]) if False else None
-sol=[f for r in R for f in r[1]]
-# satırları y'ye göre ayır: idle(8) walk(7) jump(7: üç küme) back(8) punch(6)
-def kume(R,idx): return [f for i in idx for f in R[i][1]]
-print('sayfa1 satır sayıları',[len(r[1]) for r in R])
-satirlar['idle']=[kes(a,LAB,f) for f in sorted(R[0][1],key=lambda f:f['box'][0])]
-satirlar['walk']=[kes(a,LAB,f) for f in sorted(R[1][1],key=lambda f:f['box'][0])]
-satirlar['jump']=[kes(a,LAB,f) for f in sorted(kume(R,[2,3,4]),key=lambda f:f['box'][0])]
-satirlar['pa']=[kes(a,LAB,f) for f in sorted(R[6][1],key=lambda f:f['box'][0])]
-del a
-# --- Sayfa 3: saldırılar
-a=yukle(1); LAB,fr=segment(a); R=rows(fr)
-print('sayfa3 satır sayıları',[len(r[1]) for r in R])
-ja=sorted(kume(R,[1,2]),key=lambda f:f['box'][0])
-satirlar['ja']=[kes(a,LAB,f) for f in ja]
-satirlar['p']=[kes(a,LAB,f) for f in sorted(R[3][1],key=lambda f:f['box'][0])]
-k=bol(R[4][1],6); satirlar['k']=[kes(a,LAB,f) for f in k]
-m=bol(R[5][1],6); satirlar['m']=[kes(a,LAB,f) for f in m]
-del a
-for ad,c in satirlar.items(): print(ad,len(c))
-anims=isle(satirlar)
+# Satır başına tek ölçek: idle kafa genişliği referans
+kafa_med={ad:float(np.median([kafa(c[...,3]>20) for c in cr])) for ad,cr in satir.items()}
+idle_boy=float(np.median([c.shape[0] for c in satir['idle']]))
+k0=IDLE_BOY/idle_boy
+anims={}
+for ad,cr in satir.items():
+    kat=kafa_med['idle']/kafa_med[ad]
+    k=k0*kat
+    print(f'{ad:5s} kafa {kafa_med[ad]/D:5.1f}  satır çarpanı {kat:.3f}  nihai ölçek {k:.4f}')
+    fr=[]
+    for c in cr:
+        im=Image.fromarray(c,'RGBA'); w,h=im.size
+        im=im.resize((max(1,round(w*k)),max(1,round(h*k))),Image.LANCZOS)
+        al=np.array(im)[...,3]; Hh=al.shape[0]
+        ys=np.where(al.max(1)>40)[0]; bot=ys.max()
+        band=al[max(0,bot-int(Hh*0.07)):bot+1]; xs=np.where(band.max(0)>40)[0]
+        ax=float(xs.mean()) if len(xs) else im.size[0]/2
+        fr.append((im,ax,float(bot+1)))
+    anims[ad]=fr
 
-# --- Çift zıplama topu (tek kare, merkez çapalı)
-sp=Image.open(SPIN).convert('RGBA')
-bb=sp.getchannel('A').point(lambda v:255 if v>20 else 0).getbbox(); sp=sp.crop(bb)
-GEN=280; sp=sp.resize((GEN,round(sp.size[1]*GEN/sp.size[0])),Image.LANCZOS)
+# Çift zıplama topu
+sp=Image.open(SPIN).convert('RGBA'); bb=sp.getchannel('A').point(lambda v:255 if v>20 else 0).getbbox(); sp=sp.crop(bb)
+sp=sp.resize((SPIN_GEN,round(sp.size[1]*SPIN_GEN/sp.size[0])),Image.LANCZOS)
 
-# --- Atlas paketleme
-items=[]
-for n,fr in anims.items():
-    for i,(im,ax,ay) in enumerate(fr): items.append((f'{n}_{i}',im,ax,ay))
+# Atlas paketleme
+items=[(f'{n}_{i}',im,ax,ay) for n,fr in anims.items() for i,(im,ax,ay) in enumerate(fr)]
 items.append(('spin_0',sp,sp.size[0]/2,sp.size[1]/2))
 items.sort(key=lambda t:-t[1].size[1])
 PAD=2; W=2048; x=y=0; rowh=0; yer={}
@@ -115,9 +124,9 @@ for ad,im,ax,ay in items:
     w,h=im.size
     if x+w+PAD>W: x=0; y+=rowh+PAD; rowh=0
     yer[ad]=(x,y); x+=w+PAD; rowh=max(rowh,h)
-H=1
-while H<y+rowh+PAD: H*=2
-atlas=Image.new('RGBA',(W,H),(0,0,0,0)); frames={}; ankor={}
+Hh=1
+while Hh<y+rowh+PAD: Hh*=2
+atlas=Image.new('RGBA',(W,Hh),(0,0,0,0)); frames={}; ankor={}
 for ad,im,ax,ay in items:
     px,py=yer[ad]; atlas.paste(im,(px,py)); w,h=im.size
     frames[ad]={"frame":{"x":px,"y":py,"w":w,"h":h},"rotated":False,"trimmed":False,
@@ -125,11 +134,11 @@ for ad,im,ax,ay in items:
     ankor[ad]=[round(ax,1),round(ay,1),w,h]
 os.makedirs(HEDEF,exist_ok=True)
 atlas.save(f'{HEDEF}/popeye.png',optimize=True)
-json.dump({"frames":frames,"meta":{"image":"popeye.png","size":{"w":W,"h":H},"scale":"1"}},open(f'{HEDEF}/popeye.json','w'))
+json.dump({"frames":frames,"meta":{"image":"popeye.png","size":{"w":W,"h":Hh},"scale":"1"}},open(f'{HEDEF}/popeye.json','w'))
 sayi={n:len(v) for n,v in anims.items()}; sayi['spin']=1
 with open(f'{HEDEF}/popeye_data.js','w') as f:
     f.write('// Otomatik üretildi (tools/bake.py). Elle değiştirme.\n')
     f.write('// POPEYE_KARE: kare grubu -> kare adedi, POPEYE_ANKOR: kare -> [ayakX, ayakY, genişlik, yükseklik] (atlas pikseli)\n')
     f.write('const POPEYE_KARE = '+json.dumps(sayi)+';\n')
     f.write('const POPEYE_ANKOR = '+json.dumps(ankor,separators=(',',':'))+';\n')
-print('atlas',W,H,'kare',len(items),os.path.getsize(f'{HEDEF}/popeye.png')//1024,'KB')
+print('atlas',W,Hh,'kare',len(items),os.path.getsize(f'{HEDEF}/popeye.png')//1024,'KB')

@@ -4,6 +4,7 @@ const oyun = new Phaser.Game({
   parent: 'oyun',
   backgroundColor: '#000000',
   pixelArt: false,
+  render: { mipmapFilter: 'LINEAR_MIPMAP_LINEAR' },   // yüksek çözünürlüklü kareler küçültülürken net ve titremesiz kalır
   scale: {
     // EXPAND: yükseklik sabit (540), telefonun en-boy oranına göre genişlik uzar -> kenarlarda siyah boşluk kalmaz
     mode: Phaser.Scale.EXPAND !== undefined ? Phaser.Scale.EXPAND : Phaser.Scale.FIT,

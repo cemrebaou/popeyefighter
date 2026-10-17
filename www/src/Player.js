@@ -118,6 +118,7 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
   // ---------------- Saldırılar ----------------
 
   saldiriIstegi(tip, zaman) {
+    if (ZINCIR[tip].length === 0 && !HAVA[tip]) return;       // bu tuşa henüz hareket tanımlı değil
     if (!this.saldiri) this.saldiriBaslat(tip, zaman);
     else if (this.sira.length < AYAR.SIRA_LIMIT) this.sira.push(tip);
   }
@@ -127,7 +128,9 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     let ad;
     if (!yerde) {
       ad = HAVA[tip];
+      if (!ad) return;                                         // havada bu tuşa hareket yok
     } else {
+      if (ZINCIR[tip].length === 0) return;
       if (zaman - this.sonSaldiriBitis > AYAR.ZINCIR_SIFIRLAMA) this.zincir = { yumruk: 0, tekme: 0 };
       const liste = ZINCIR[tip];
       ad = liste[this.zincir[tip] % liste.length];

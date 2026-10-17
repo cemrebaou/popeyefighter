@@ -17,7 +17,7 @@ class UIScene extends Phaser.Scene {
     this.duraklatYazi = this.add.text(0, 0, 'PAUSED', this.stil(48)).setOrigin(0.5).setVisible(false);
     this.komboYazi = this.add.text(0, 0, '', this.stil(40)).setOrigin(1, 0.5).setAlpha(0);
     this.hareketYazi = this.add.text(0, 0, '', this.stil(16)).setOrigin(0.5, 1).setAlpha(0);
-    this.ipucu = this.add.text(0, 0, '← →  Move     ↑  Jump (x2)     J  Punch     K  Kick', this.stil(14)).setOrigin(0, 1);
+    this.ipucu = this.add.text(0, 0, '← →  Move     ↑  Jump (x2)     J  Punch', this.stil(14)).setOrigin(0, 1);
     if (Kontrol.dokunmatikAcik(this)) this.ipucu.setVisible(false);
     else this.time.delayedCall(9000, () => this.tweens.add({ targets: this.ipucu, alpha: 0, duration: 800 }));
 
@@ -127,7 +127,7 @@ class UIScene extends Phaser.Scene {
     ekle('sol', '◀');
     ekle('sag', '▶');
     ekle('yumruk', '✊');
-    ekle('tekme', '🦶');
+    // ekle('tekme', '🦶');   // tekme kareleri gelince açılacak
     ekle('zipla', '▲');
   }
 
