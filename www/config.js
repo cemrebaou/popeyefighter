@@ -1,7 +1,7 @@
 // Popeye Fighter - genel ayarlar
 // Her değişiklikte SURUM artırılır.
 const AYAR = {
-  SURUM: 'v0.06',
+  SURUM: 'v0.07',
 
   // Ekran (yatay)
   GENISLIK: 960,
@@ -26,7 +26,7 @@ const AYAR = {
   ZIPLAMA_TAMPON: 130,     // ms - yere değmeden az önce basılan zıplama
 
   // Karakter görseli
-  SPRITE_OLCEK: 0.5,       // atlas pikseli -> oyun birimi (atlas 2x çözünürlükte)
+  SPRITE_OLCEK: 0.25,      // atlas pikseli -> oyun birimi (atlas 4x çözünürlükte, telefon ve büyük ekranlarda net)
   GOVDE_G: 28,             // fizik gövdesi genişliği
   GOVDE_Y: 80,             // fizik gövdesi yüksekliği
 

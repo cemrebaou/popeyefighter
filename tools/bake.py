@@ -8,7 +8,7 @@ from seg2 import yukle, segment, rows, D
 
 HEDEF='/home/claude/popeyefighter/www/assets'
 SPIN='/root/.claude/uploads/44bdca3f-3d20-5eb2-a194-4572c570329f/d2ab9c58-image.png'
-ATLAS_OLCEK=0.42          # ortak ölçek -> atlas pikseli (oyunda sprite 0.5 ile gösterilir)
+ATLAS_OLCEK=0.84          # ortak ölçek -> atlas pikseli (oyunda sprite 0.5 ile gösterilir)
 HEDEF_KAFA=77.0*D         # idle kafa/şapka genişliği (tam çözünürlük px); tüm hareketler buna eşitlenir
 BAND=40*D
 KAT_EL={'k':1.135}   # önden görünen tekme satırı: boy, 'p' satırı duruşuyla eşitlendi
@@ -102,7 +102,7 @@ anims=isle(satirlar)
 # --- Çift zıplama topu (tek kare, merkez çapalı)
 sp=Image.open(SPIN).convert('RGBA')
 bb=sp.getchannel('A').point(lambda v:255 if v>20 else 0).getbbox(); sp=sp.crop(bb)
-GEN=140; sp=sp.resize((GEN,round(sp.size[1]*GEN/sp.size[0])),Image.LANCZOS)
+GEN=280; sp=sp.resize((GEN,round(sp.size[1]*GEN/sp.size[0])),Image.LANCZOS)
 
 # --- Atlas paketleme
 items=[]
@@ -110,7 +110,7 @@ for n,fr in anims.items():
     for i,(im,ax,ay) in enumerate(fr): items.append((f'{n}_{i}',im,ax,ay))
 items.append(('spin_0',sp,sp.size[0]/2,sp.size[1]/2))
 items.sort(key=lambda t:-t[1].size[1])
-PAD=2; W=1024; x=y=0; rowh=0; yer={}
+PAD=2; W=2048; x=y=0; rowh=0; yer={}
 for ad,im,ax,ay in items:
     w,h=im.size
     if x+w+PAD>W: x=0; y+=rowh+PAD; rowh=0
