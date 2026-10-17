@@ -5,6 +5,8 @@
 // her karede ayakları gövdenin altına oturtulur. Animasyon kareleri elle ilerletilir
 // (vuruş duraklaması ve hız bağlantılı yürüme için).
 
+const DONUS_SURESI = 340;   // ms - çift zıplamada bir tam tur
+
 class Oyuncu extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'govde');
@@ -198,16 +200,13 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     if (sa) {
       this.kareAyarla(sa.ad, Math.min(sa.kare, POPEYE_KARE[sa.ad] - 1));
     } else if (this.donuyor) {
-      const t = (zaman - this.donusBas) / 320;
-      if (t >= 1) this.donuyor = false;
-      else {
-        this.kareAyarla('jump', 4);
-        g.setOrigin(0.5, 0.55);
-        g.rotation = this.yon * Math.PI * 2 * t;
-        g.setPosition(b.center.x, b.center.y);
-        this.efektUygula(zaman);
-        return;
-      }
+      // Çift zıplama: top pozunda havada dönerek iner (yere değene kadar)
+      const t = (zaman - this.donusBas) / DONUS_SURESI;
+      this.kareAyarla('spin', 0);
+      g.rotation = this.yon * Math.PI * 2 * t;
+      g.setPosition(b.center.x, b.center.y);
+      this.efektUygula(zaman);
+      return;
     }
     if (!sa && !this.donuyor) {
       if (!yerde) {
