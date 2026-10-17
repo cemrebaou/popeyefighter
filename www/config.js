@@ -1,7 +1,7 @@
 // Popeye Fighter - genel ayarlar
 // Her değişiklikte SURUM artırılır.
 const AYAR = {
-  SURUM: 'v0.10',
+  SURUM: 'v0.11',
 
   // Ekran (yatay). Oyun 960x540 birimle tasarlanır; canvas RES kat büyük çizilir (daha net görüntü).
   RES: 2,                 // çizim çözünürlüğü çarpanı (2 = 1080 piksel yükseklik)

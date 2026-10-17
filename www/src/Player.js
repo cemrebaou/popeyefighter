@@ -182,7 +182,9 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
   kareAdiAyarla(adi) {
     const a = POPEYE_ANKOR[adi];
     this.gorsel.setFrame(adi);
-    this.gorsel.setOrigin(a[0] / a[2], a[1] / a[3]);
+    // Sola bakarken kare aynalanır; ayak noktası da aynalanmalı, yoksa karakter ileri geri kayar
+    const ox = a[0] / a[2];
+    this.gorsel.setOrigin(this.gorsel.flipX ? 1 - ox : ox, a[1] / a[3]);
   }
 
   gorselGuncelle(zaman, delta, yerde) {

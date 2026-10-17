@@ -13,7 +13,7 @@ SATIRLAR={            # ad: (dosya, kare adedi)
   'walk': ('0178d673-image.png',7),
   'jump': ('58c942ef-image.png',7),
   'p':    ('d1ec9286-image.png',6),
-  'pa':   ('a236f691-image.png',6),
+  'pa':   ('d2e77140-image.png',6),
 }
 SPIN=UP+'d2ab9c58-image.png'
 HEDEF='/home/claude/popeyefighter/www/assets'
