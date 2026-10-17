@@ -82,16 +82,18 @@ class GameScene extends Phaser.Scene {
       c.fillStyle = g; c.fillRect(0, 0, 4, 256);
       t.refresh();
     }
-    const w = this.scale.width, h = this.scale.height;
-    this.gok = this.add.image(0, 0, anahtar).setOrigin(0).setScrollFactor(0).setDisplaySize(w, h).setDepth(-10);
+    // Kamera RES kat yakınlaştırıldığı için ekrana sabit (scrollFactor 0) nesneler, ekran koordinatı + (ox, oy) ile yerleştirilir.
+    const e = this.ekran();
+    this.gok = this.add.image(e.ox, e.oy, anahtar).setOrigin(0).setScrollFactor(0).setDisplaySize(e.w, e.h).setDepth(-10);
 
     // Bulutlar
+    this.bulutlar = [];
     for (let i = 0; i < 12; i++) {
-      this.add.image(Phaser.Math.Between(0, this.dunyaG * 0.15 + 2000), Phaser.Math.Between(30, 220), 'bulut')
-        .setScrollFactor(0.1, 0.05).setDepth(-9).setAlpha(0.85).setScale(Phaser.Math.FloatBetween(0.6, 1.2));
+      this.bulutlar.push(this.add.image(e.ox + Phaser.Math.Between(0, this.dunyaG * 0.15 + 2000), e.oy + Phaser.Math.Between(30, 220), 'bulut')
+        .setScrollFactor(0.1, 0.05).setDepth(-9).setAlpha(0.85).setScale(Phaser.Math.FloatBetween(0.6, 1.2)));
     }
-    this.tepeUzak = this.add.tileSprite(0, h, w, 200, 'tepe_uzak').setOrigin(0, 1).setScrollFactor(0).setDepth(-8);
-    this.tepeYakin = this.add.tileSprite(0, h, w, 160, 'tepe_yakin').setOrigin(0, 1).setScrollFactor(0).setDepth(-7);
+    this.tepeUzak = this.add.tileSprite(e.ox, e.oy + e.h, e.w, 200, 'tepe_uzak').setOrigin(0, 1).setScrollFactor(0).setDepth(-8);
+    this.tepeYakin = this.add.tileSprite(e.ox, e.oy + e.h, e.w, 160, 'tepe_yakin').setOrigin(0, 1).setScrollFactor(0).setDepth(-7);
   }
 
   haritaKur() {
@@ -213,15 +215,23 @@ class GameScene extends Phaser.Scene {
     kam.setBounds(0, 0, this.dunyaG, this.dunyaY);
     kam.startFollow(this.oyuncu, true, AYAR.KAMERA_LERP, AYAR.KAMERA_LERP);
     kam.setDeadzone(AYAR.KAMERA_OLU_BOLGE_G, AYAR.KAMERA_OLU_BOLGE_Y);
-    kam.setRoundPixels(true);
+    kam.setZoom(AYAR.RES);
+    kam.setRoundPixels(false);
     kam.fadeIn(300);
   }
 
-  boyutDegisti(boyut) {
-    const w = boyut.width, h = boyut.height;
-    this.gok.setDisplaySize(w, h);
-    this.tepeUzak.setPosition(0, h).setSize(w, 200);
-    this.tepeYakin.setPosition(0, h).setSize(w, 160);
+  // Görünen alan (oyun birimi) ve ekrana sabit nesneler için kaydırma payı.
+  // Kamera zoom'u merkez etrafında uyguladığı için: ekranda x'e gelmesi için nesne x + ox konumuna konur.
+  ekran() {
+    const Z = AYAR.RES, W = this.scale.width, H = this.scale.height;
+    return { w: W / Z, h: H / Z, ox: W / 2 * (1 - 1 / Z), oy: H / 2 * (1 - 1 / Z) };
+  }
+
+  boyutDegisti() {
+    const e = this.ekran();
+    this.gok.setPosition(e.ox, e.oy).setDisplaySize(e.w, e.h);
+    this.tepeUzak.setPosition(e.ox, e.oy + e.h).setSize(e.w, 200);
+    this.tepeYakin.setPosition(e.ox, e.oy + e.h).setSize(e.w, 160);
   }
 
   // ---------------- Yardımcılar ----------------

@@ -5,6 +5,8 @@ class UIScene extends Phaser.Scene {
   constructor() { super('UI'); }
 
   create() {
+    // Canvas RES kat büyük çizildiği için tüm arayüz, RES ölçekli bir kapta durur; yerleşim oyun birimiyle yapılır.
+    this.kok = this.add.container(0, 0).setScale(AYAR.RES);
     this.kalpler = [];
     for (let i = 0; i < AYAR.CAN; i++) {
       this.kalpler.push(this.add.image(24 + i * 34, 26, 'kalp').setOrigin(0, 0.5));
@@ -28,13 +30,16 @@ class UIScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-ESC', () => this.duraklatDegistir());
 
     this.dokunmatikKur();
+    this.kok.add([...this.kalpler, this.paraIkon, this.paraYazi, this.bolumYazi, this.surumYazi, this.mesaj,
+      this.duraklatYazi, this.komboYazi, this.hareketYazi, this.ipucu, this.duraklatBtn,
+      ...this.butonlar.flatMap(({ b, y }) => [b, y])]);
     this.yerlestir();
     this.scale.on('resize', this.yerlestir, this);
     this.yenidenBagla();
   }
 
   stil(boyut) {
-    return { fontFamily: 'Arial Black, Arial, sans-serif', fontSize: boyut + 'px', color: '#ffffff', stroke: '#000000', strokeThickness: Math.max(3, boyut / 7) };
+    return { fontFamily: 'Arial Black, Arial, sans-serif', fontSize: boyut + 'px', color: '#ffffff', stroke: '#000000', strokeThickness: Math.max(3, boyut / 7), resolution: AYAR.RES };
   }
 
   // Oyun sahnesi her (yeniden) başladığında olaylara bağlanır
@@ -132,7 +137,7 @@ class UIScene extends Phaser.Scene {
   }
 
   yerlestir() {
-    const w = this.scale.width, h = this.scale.height;
+    const w = this.scale.width / AYAR.RES, h = this.scale.height / AYAR.RES;
     const paraX = 24 + AYAR.CAN * 34 + 24;
     this.paraIkon.setPosition(paraX, 26);
     this.paraYazi.setPosition(paraX + 18, 26);
