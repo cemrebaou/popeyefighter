@@ -137,7 +137,7 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     if (girdi !== 0) this.yon = girdi;
 
     const m = HAREKET[ad];
-    this.saldiri = { ad, m, tip, gecen: 0, kare: 0, yon: this.yon, yerdeBasladi: yerde, vurulan: new Set() };
+    this.saldiri = { ad, m, tip, gecen: 0, kare: 0, yon: this.yon, yerdeBasladi: yerde, pencere: -1, vurulan: new Set() };
     this.donuyor = false;
     if (yerde) this.body.velocity.x = this.yon * m.atilma;
     this.scene.events.emit('hareket', m.ad);
@@ -154,7 +154,9 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     const s = this.saldiri;
     if (!s) return null;
     const m = s.m;
-    if (s.kare < m.vurus[0] || s.kare > m.vurus[1]) return null;
+    const pencere = m.vurus.findIndex(([a, b]) => s.kare >= a && s.kare <= b);
+    if (pencere < 0) return null;
+    if (pencere !== s.pencere) { s.pencere = pencere; s.vurulan = new Set(); }   // yeni pencere: tekrar vurulabilir
     const b = this.body;
     const cx = b.center.x + s.yon * (b.width / 2 + m.menzil / 2 - 6);
     const cy = b.top + m.yOfs;
@@ -172,8 +174,9 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
 
   // ---------------- Görünüm ----------------
 
-  kareAyarla(ad, i) {
-    const adi = ad + '_' + i;
+  kareAyarla(ad, i) { this.kareAdiAyarla(ad + '_' + i); }
+
+  kareAdiAyarla(adi) {
     const a = POPEYE_ANKOR[adi];
     this.gorsel.setFrame(adi);
     this.gorsel.setOrigin(a[0] / a[2], a[1] / a[3]);
@@ -188,7 +191,7 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
       // vuruş duraklaması sırasında kare ilerlemez
       if (this.donma > 0) this.donma -= delta;
       else s.gecen += delta;
-      const n = POPEYE_KARE[s.ad];
+      const n = s.m.kareler.length;
       s.kare = Math.floor(s.gecen / 1000 * s.m.fps);
       if (s.kare >= n) { this.saldiriBitir(zaman); }
     }
@@ -198,7 +201,7 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     g.rotation = 0;
 
     if (sa) {
-      this.kareAyarla(sa.ad, Math.min(sa.kare, POPEYE_KARE[sa.ad] - 1));
+      this.kareAdiAyarla(sa.m.kareler[Math.min(sa.kare, sa.m.kareler.length - 1)]);
     } else if (this.donuyor) {
       // Çift zıplama: top pozunda havada dönerek iner (yere değene kadar)
       const t = (zaman - this.donusBas) / DONUS_SURESI;

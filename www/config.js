@@ -1,7 +1,7 @@
 // Popeye Fighter - genel ayarlar
 // Her değişiklikte SURUM artırılır.
 const AYAR = {
-  SURUM: 'v0.05',
+  SURUM: 'v0.06',
 
   // Ekran (yatay)
   GENISLIK: 960,
