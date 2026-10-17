@@ -1,7 +1,7 @@
 // Popeye Fighter - genel ayarlar
 // Her değişiklikte SURUM artırılır.
 const AYAR = {
-  SURUM: 'v0.01',
+  SURUM: 'v0.02',
 
   // Ekran (yatay)
   GENISLIK: 960,
@@ -14,6 +14,7 @@ const AYAR = {
 
   // Oyuncu hareketi
   KOSU_HIZI: 330,
+  KOSMA_ANIM_HIZI: 250,    // bu hızın üstünde "koşma" animasyonu oynar
   YER_IVME: 2600,
   HAVA_IVME: 1700,
   YER_SURTUNME: 3000,
@@ -25,10 +26,15 @@ const AYAR = {
   COYOTE_SURE: 110,        // ms - kenardan düştükten sonra zıplama hakkı
   ZIPLAMA_TAMPON: 130,     // ms - yere değmeden az önce basılan zıplama
 
+  // Karakter görseli
+  SPRITE_OLCEK: 0.5,       // atlas pikseli -> oyun birimi (atlas 2x çözünürlükte)
+  GOVDE_G: 28,             // fizik gövdesi genişliği
+  GOVDE_Y: 80,             // fizik gövdesi yüksekliği
+
   // Dövüş
-  YUMRUK_SURE: 180,        // ms
-  YUMRUK_BEKLEME: 300,     // ms
-  YUMRUK_MENZIL: 46,
+  ZINCIR_SIFIRLAMA: 450,   // ms - son saldırı bittikten sonra bu süre içinde basılırsa kombo sürer
+  SIRA_LIMIT: 3,           // hareket bitmeden basılıp sıraya alınabilecek en fazla tuş
+  VURUS_DURAKLAMA: 55,     // ms - vurunca kısa donma (vuruş hissi)
   CAN: 3,
   HASAR_KORUMA: 1200,      // ms - hasar sonrası dokunulmazlık
   GERI_TEPME_X: 320,

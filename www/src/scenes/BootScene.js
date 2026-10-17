@@ -5,9 +5,9 @@ class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
   preload() {
-    // Örnek (görseller gelince):
-    // this.load.image('oyuncu', 'assets/oyuncu.png');
-    // this.load.spritesheet('oyuncu_kos', 'assets/oyuncu_kos.png', { frameWidth: 64, frameHeight: 64 });
+    // Popeye atlası: idle, walk, run, jump, punch_a, jab, cross, upper, kick1, kick2, aerial
+    this.load.atlas('popeye', 'assets/popeye.png', 'assets/popeye.json');
+    // Sesler gelince:
     // this.load.audio('zipla', 'assets/zipla.mp3');
   }
 

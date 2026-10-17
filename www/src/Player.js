@@ -1,15 +1,20 @@
-// Oyuncu: koşma (ivmeli), çift zıplama, coyote time, zıplama tamponu,
-// değişken zıplama yüksekliği, yumruk, hasar/geri tepme.
+// Oyuncu: koşma (ivmeli), çift zıplama, coyote time, zıplama tamponu, değişken zıplama yüksekliği,
+// J = yumruk / K = tekme kombo zinciri, hasar/geri tepme.
+//
+// Yapı: Bu nesne yalnızca görünmez fizik gövdesidir. Görünen karakter `this.gorsel` (atlas kareleri);
+// her karede ayakları gövdenin altına oturtulur. Animasyon kareleri elle ilerletilir
+// (vuruş duraklaması ve hız bağlantılı yürüme için).
 
 class Oyuncu extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
-    super(scene, x, y, 'oyuncu');
+    super(scene, x, y, 'govde');
     scene.add.existing(this);
     scene.physics.add.existing(this);
-
-    this.body.setSize(28, 58).setOffset(6, 6);
+    this.setVisible(false);
+    this.body.setSize(AYAR.GOVDE_G, AYAR.GOVDE_Y);
     this.body.setMaxVelocity(AYAR.KOSU_HIZI * 1.6, AYAR.MAKS_DUSME);
-    this.setDepth(10);
+
+    this.gorsel = scene.add.sprite(x, y, 'popeye', 'idle_0').setScale(AYAR.SPRITE_OLCEK).setDepth(10);
 
     this.yon = 1;
     this.can = AYAR.CAN;
@@ -20,23 +25,29 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     this.yerdeydi = false;
     this.korumaBitis = 0;
     this.sersemBitis = 0;
-    this.yumrukBitis = 0;
-    this.yumrukHazir = 0;
     this.olu = false;
+    this.sonVy = 0;
 
-    // Yumruk vuruş alanı
-    this.vurus = scene.add.zone(x, y, AYAR.YUMRUK_MENZIL, 34);
-    scene.physics.add.existing(this.vurus);
-    this.vurus.body.setAllowGravity(false);
-    this.vurus.body.enable = false;
+    // Animasyon durumu
+    this.animZaman = 0;
+    this.inisBitis = 0;
+    this.donuyor = false;
+    this.donusBas = 0;
+
+    // Dövüş durumu
+    this.saldiri = null;                 // şu an oynayan saldırı
+    this.sira = [];                      // bitmesi beklenen sıradaki tuşlar ('yumruk' | 'tekme')
+    this.zincir = { yumruk: 0, tekme: 0 };
+    this.sonSaldiriBitis = -99999;
+    this.donma = 0;                      // vuruş duraklaması (ms)
   }
 
   get yerde() {
     return this.body.blocked.down || this.body.touching.down;
   }
 
-  get yumrukta() {
-    return this.scene.time.now < this.yumrukBitis;
+  get saldiriyor() {
+    return this.saldiri !== null;
   }
 
   guncelle(zaman, delta) {
@@ -49,17 +60,25 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     if (yerde) {
       this.sonYerZamani = zaman;
       this.ekstraZiplama = AYAR.EKSTRA_ZIPLAMA;
-      if (!this.yerdeydi) this.yereIndi();
+      if (!this.yerdeydi) this.yereIndi(zaman);
     }
     this.yerdeydi = yerde;
 
-    // --- Yatay hareket
+    // Yerde başlayan saldırı sırasında karakter yürüyemez/zıplayamaz
+    const kilit = this.saldiri && this.saldiri.yerdeBasladi && yerde;
     const sersem = zaman < this.sersemBitis;
-    const girdi = sersem ? 0 : (Kontrol.sag ? 1 : 0) - (Kontrol.sol ? 1 : 0);
+
+    // --- Saldırı girişleri (tuşlar sıraya eklenir, hareket bitmeden diğerine geçilmez)
+    if (!sersem) {
+      if (Kontrol.yumruk) this.saldiriIstegi('yumruk', zaman);
+      if (Kontrol.tekme) this.saldiriIstegi('tekme', zaman);
+    }
+
+    // --- Yatay hareket
+    const girdi = (sersem || kilit) ? 0 : (Kontrol.sag ? 1 : 0) - (Kontrol.sol ? 1 : 0);
     if (girdi !== 0) {
       this.yon = girdi;
       const ivme = yerde ? AYAR.YER_IVME : AYAR.HAVA_IVME;
-      // yön değiştirirken daha hızlı dön
       const donus = Math.sign(b.velocity.x) !== girdi && b.velocity.x !== 0 ? 1.8 : 1;
       b.velocity.x += girdi * ivme * donus * dt;
       b.velocity.x = Phaser.Math.Clamp(b.velocity.x, -AYAR.KOSU_HIZI, AYAR.KOSU_HIZI);
@@ -73,12 +92,13 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     if (Kontrol.zipla) this.tamponBitis = zaman + AYAR.ZIPLAMA_TAMPON;
     const tamponVar = zaman < this.tamponBitis;
     const coyote = zaman - this.sonYerZamani < AYAR.COYOTE_SURE;
+    const zipSerbest = !sersem && !kilit;
 
-    if (!sersem && tamponVar && (yerde || coyote)) {
-      this.ziplat(AYAR.ZIPLAMA_HIZI, false);
-    } else if (!sersem && Kontrol.zipla && !yerde && !coyote && this.ekstraZiplama > 0) {
+    if (zipSerbest && tamponVar && (yerde || coyote)) {
+      this.ziplat(AYAR.ZIPLAMA_HIZI, false, zaman);
+    } else if (zipSerbest && Kontrol.zipla && !yerde && !coyote && this.ekstraZiplama > 0) {
       this.ekstraZiplama--;
-      this.ziplat(AYAR.IKINCI_ZIPLAMA_HIZI, true);
+      this.ziplat(AYAR.IKINCI_ZIPLAMA_HIZI, true, zaman);
     }
 
     // Tuş erken bırakılırsa kısa zıplama
@@ -88,46 +108,153 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     }
     if (b.velocity.y >= 0) this.kesmeYapildi = true;
 
-    // --- Yumruk
-    if (Kontrol.yumruk && zaman >= this.yumrukHazir && !sersem) {
-      this.yumrukBitis = zaman + AYAR.YUMRUK_SURE;
-      this.yumrukHazir = zaman + AYAR.YUMRUK_BEKLEME;
-      this.scene.tweens.add({ targets: this, scaleX: 1.15, duration: 60, yoyo: true });
-    }
-    this.vurus.body.enable = this.yumrukta;
-    this.vurus.setPosition(this.x + this.yon * (14 + AYAR.YUMRUK_MENZIL / 2), this.y - 6);
-
-    // --- Görünüm
-    this.setFlipX(this.yon < 0);
-    if (!this.donuyor) {
-      const egim = Phaser.Math.Clamp(b.velocity.x / AYAR.KOSU_HIZI, -1, 1) * (yerde ? 0.06 : 0.12);
-      this.rotation = Phaser.Math.Linear(this.rotation, egim, 0.3);
-    }
-    if (zaman < this.korumaBitis) this.setAlpha(Math.floor(zaman / 80) % 2 ? 0.35 : 1);
-    else this.setAlpha(1);
+    // --- Animasyon / saldırı ilerletme
+    this.gorselGuncelle(zaman, delta, yerde);
+    this.sonVy = b.velocity.y;
   }
 
-  ziplat(hiz, ikinci) {
+  // ---------------- Saldırılar ----------------
+
+  saldiriIstegi(tip, zaman) {
+    if (!this.saldiri) this.saldiriBaslat(tip, zaman);
+    else if (this.sira.length < AYAR.SIRA_LIMIT) this.sira.push(tip);
+  }
+
+  saldiriBaslat(tip, zaman) {
+    const yerde = this.yerde;
+    let ad;
+    if (!yerde) {
+      ad = HAVA[tip];
+    } else {
+      if (zaman - this.sonSaldiriBitis > AYAR.ZINCIR_SIFIRLAMA) this.zincir = { yumruk: 0, tekme: 0 };
+      const liste = ZINCIR[tip];
+      ad = liste[this.zincir[tip] % liste.length];
+      this.zincir[tip]++;
+    }
+    const girdi = (Kontrol.sag ? 1 : 0) - (Kontrol.sol ? 1 : 0);
+    if (girdi !== 0) this.yon = girdi;
+
+    const m = HAREKET[ad];
+    this.saldiri = { ad, m, tip, gecen: 0, kare: 0, yon: this.yon, yerdeBasladi: yerde, vurulan: new Set() };
+    this.donuyor = false;
+    if (yerde) this.body.velocity.x = this.yon * m.atilma;
+    this.scene.events.emit('hareket', m.ad);
+  }
+
+  saldiriBitir(zaman) {
+    this.saldiri = null;
+    this.sonSaldiriBitis = zaman;
+    if (this.sira.length) this.saldiriBaslat(this.sira.shift(), zaman);
+  }
+
+  // Şu an hasar veren bir kare varsa vuruş dikdörtgenini döndürür
+  saldiriKutusu() {
+    const s = this.saldiri;
+    if (!s) return null;
+    const m = s.m;
+    if (s.kare < m.vurus[0] || s.kare > m.vurus[1]) return null;
+    const b = this.body;
+    const cx = b.center.x + s.yon * (b.width / 2 + m.menzil / 2 - 6);
+    const cy = b.top + m.yOfs;
+    return new Phaser.Geom.Rectangle(cx - m.menzil / 2, cy - m.yuks / 2, m.menzil, m.yuks);
+  }
+
+  // GameScene bir düşmana vurunca çağırır
+  vurusBasarili(dusman) {
+    const s = this.saldiri;
+    if (!s) return;
+    s.vurulan.add(dusman);
+    this.donma = AYAR.VURUS_DURAKLAMA;
+    this.scene.cameras.main.shake(90, s.m.sarsinti);
+  }
+
+  // ---------------- Görünüm ----------------
+
+  kareAyarla(ad, i) {
+    const adi = ad + '_' + i;
+    const a = POPEYE_ANKOR[adi];
+    this.gorsel.setFrame(adi);
+    this.gorsel.setOrigin(a[0] / a[2], a[1] / a[3]);
+  }
+
+  gorselGuncelle(zaman, delta, yerde) {
+    const g = this.gorsel;
+    const b = this.body;
+    const s = this.saldiri;
+
+    if (s) {
+      // vuruş duraklaması sırasında kare ilerlemez
+      if (this.donma > 0) this.donma -= delta;
+      else s.gecen += delta;
+      const n = POPEYE_KARE[s.ad];
+      s.kare = Math.floor(s.gecen / 1000 * s.m.fps);
+      if (s.kare >= n) { this.saldiriBitir(zaman); }
+    }
+
+    const sa = this.saldiri;
+    g.setFlipX((sa ? sa.yon : this.yon) < 0);
+    g.rotation = 0;
+
+    if (sa) {
+      this.kareAyarla(sa.ad, Math.min(sa.kare, POPEYE_KARE[sa.ad] - 1));
+    } else if (this.donuyor) {
+      const t = (zaman - this.donusBas) / 320;
+      if (t >= 1) this.donuyor = false;
+      else {
+        this.kareAyarla('jump', 4);
+        g.setOrigin(0.5, 0.55);
+        g.rotation = this.yon * Math.PI * 2 * t;
+        g.setPosition(b.center.x, b.center.y);
+        this.efektUygula(zaman);
+        return;
+      }
+    }
+    if (!sa && !this.donuyor) {
+      if (!yerde) {
+        let kare = 5;
+        for (const [esik, k] of ZIPLA_KARELERI) { if (b.velocity.y < esik) { kare = k; break; } }
+        this.kareAyarla('jump', kare);
+      } else if (zaman < this.inisBitis) {
+        this.kareAyarla('jump', 6);
+      } else {
+        const hiz = Math.abs(b.velocity.x);
+        let ad = 'idle', fps = HAREKET.idle.fps;
+        if (hiz > 25) {
+          if (hiz > AYAR.KOSMA_ANIM_HIZI) { ad = 'run'; fps = HAREKET.run.fps * (0.8 + 0.4 * hiz / AYAR.KOSU_HIZI); }
+          else { ad = 'walk'; fps = HAREKET.walk.fps * (0.6 + 0.8 * hiz / AYAR.KOSU_HIZI); }
+        }
+        this.animZaman += delta * fps / 1000;
+        this.kareAyarla(ad, Math.floor(this.animZaman) % POPEYE_KARE[ad]);
+      }
+    }
+    g.setPosition(b.center.x, b.bottom);
+    this.efektUygula(zaman);
+  }
+
+  efektUygula(zaman) {
+    const g = this.gorsel;
+    if (zaman < this.korumaBitis) g.setAlpha(Math.floor(zaman / 80) % 2 ? 0.35 : 1);
+    else g.setAlpha(1);
+  }
+
+  // ---------------- Hareket yardımcıları ----------------
+
+  ziplat(hiz, ikinci, zaman) {
     this.body.velocity.y = -hiz;
     this.tamponBitis = 0;
     this.sonYerZamani = -9999;
     this.kesmeYapildi = false;
-    this.setScale(0.85, 1.15);
-    this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 160 });
-    this.scene.toz(this.x, this.body.bottom, ikinci ? 8 : 5);
+    this.scene.toz(this.body.center.x, this.body.bottom, ikinci ? 8 : 5);
     if (ikinci) {
       this.donuyor = true;
-      this.scene.tweens.add({
-        targets: this, rotation: this.yon * Math.PI * 2, duration: 320,
-        onComplete: () => { this.rotation = 0; this.donuyor = false; }
-      });
+      this.donusBas = zaman;
     }
   }
 
-  yereIndi() {
-    this.setScale(1.18, 0.84);
-    this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 140 });
-    this.scene.toz(this.x, this.body.bottom, 4);
+  yereIndi(zaman) {
+    if (this.sonVy > 260) this.inisBitis = zaman + 110;
+    this.donuyor = false;
+    this.scene.toz(this.body.center.x, this.body.bottom, 4);
   }
 
   ezmeZiplamasi() {
@@ -143,23 +270,32 @@ class Oyuncu extends Phaser.Physics.Arcade.Sprite {
     this.can--;
     this.korumaBitis = z + AYAR.HASAR_KORUMA;
     this.sersemBitis = z + 260;
+    this.saldiri = null;
+    this.sira = [];
+    this.donuyor = false;
     const yon = this.x < kaynakX ? -1 : 1;
     this.body.velocity.x = yon * AYAR.GERI_TEPME_X;
     this.body.velocity.y = -AYAR.GERI_TEPME_Y;
     this.kesmeYapildi = true;
-    this.setTint(0xff6666);
-    this.scene.time.delayedCall(200, () => this.clearTint());
+    this.gorsel.setTint(0xff6666);
+    this.scene.time.delayedCall(200, () => this.gorsel.clearTint());
     this.scene.cameras.main.shake(140, 0.006);
     this.scene.events.emit('can', this.can);
     return true;
   }
 
+  oluGorunum() {
+    this.gorsel.setTint(0x666666);
+    this.scene.tweens.add({ targets: this.gorsel, y: this.gorsel.y - 80, angle: 180 * this.yon, duration: 500, ease: 'Quad.out' });
+  }
+
   dogur(x, y) {
     this.setPosition(x, y);
     this.body.reset(x, y);
-    this.rotation = 0;
-    this.setScale(1);
+    this.gorsel.setAngle(0);
     this.olu = false;
+    this.saldiri = null;
+    this.sira = [];
     this.korumaBitis = this.scene.time.now + AYAR.HASAR_KORUMA;
   }
 }

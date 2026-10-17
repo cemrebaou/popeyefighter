@@ -9,6 +9,8 @@ class GameScene extends Phaser.Scene {
   init(veri) {
     this.bolumNo = (veri && veri.bolum) || 0;
     this.bitti = false;
+    this.komboSayac = 0;
+    this.komboZamani = -99999;
   }
 
   create() {
@@ -195,13 +197,6 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    this.physics.add.overlap(o.vurus, this.dusmanlar, (v, d) => {
-      if (!d.olu && o.yumrukta) {
-        d.yenil(false);
-        this.cameras.main.shake(90, 0.005);
-      }
-    });
-
     this.physics.add.overlap(o, this.kontroller, (oy, k) => {
       if (k.aktif) return;
       k.aktif = true;
@@ -246,6 +241,25 @@ class GameScene extends Phaser.Scene {
     if (this.oyuncu.can <= 0) this.oyunBitti();
   }
 
+  // Yumruk/tekme vuruş kutusu ile düşmanları karşılaştırır; her saldırı bir düşmana bir kez vurur.
+  vurusKontrol(zaman) {
+    const o = this.oyuncu;
+    const kutu = o.saldiriKutusu();
+    if (!kutu) return;
+    const s = o.saldiri;
+    this.dusmanlar.getChildren().forEach(d => {
+      if (d.olu || s.vurulan.has(d)) return;
+      const db = new Phaser.Geom.Rectangle(d.body.x, d.body.y, d.body.width, d.body.height);
+      if (!Phaser.Geom.Intersects.RectangleToRectangle(kutu, db)) return;
+      o.vurusBasarili(d);
+      d.vurusAl(s.m.hasar, s.yon, s.m.itme, s.m.havaya);
+      // Kombo sayacı: vuruşlar arası 1.2 sn geçmezse artar
+      this.komboSayac = (zaman - (this.komboZamani || -99999) < 1200) ? (this.komboSayac || 0) + 1 : 1;
+      this.komboZamani = zaman;
+      this.events.emit('kombo', this.komboSayac);
+    });
+  }
+
   // ---------------- Akış ----------------
 
   update(zaman, delta) {
@@ -253,6 +267,7 @@ class GameScene extends Phaser.Scene {
     Kontrol.guncelle();
     this.oyuncu.guncelle(zaman, delta);
     this.dusmanlar.getChildren().forEach(d => d.guncelle());
+    this.vurusKontrol(zaman);
 
     // Kamera öngörüsü: baktığı yöne doğru biraz daha fazla göster
     const kam = this.cameras.main;
@@ -293,8 +308,7 @@ class GameScene extends Phaser.Scene {
     this.bitti = true;
     this.oyuncu.olu = true;
     this.oyuncu.body.enable = false;
-    this.oyuncu.setTint(0x666666);
-    this.tweens.add({ targets: this.oyuncu, y: this.oyuncu.y - 80, angle: 180, duration: 500, ease: 'Quad.out' });
+    this.oyuncu.oluGorunum();
     this.events.emit('mesaj', 'GAME OVER');
     this.registry.set('para', 0);
     this.time.delayedCall(1800, () => {

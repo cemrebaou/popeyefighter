@@ -14,17 +14,8 @@ const Taslak = {
   hepsi(scene) {
     const K = AYAR.KARE;
 
-    // Oyuncu: 40x64
-    Taslak.ciz(scene, 'oyuncu', 40, 64, (c) => {
-      c.fillStyle = '#1d3f8a'; c.fillRect(8, 40, 10, 22); c.fillRect(22, 40, 10, 22); // bacak
-      c.fillStyle = '#222'; c.fillRect(6, 58, 14, 6); c.fillRect(20, 58, 14, 6);      // ayakkabı
-      c.fillStyle = '#f2f2f2'; c.fillRect(6, 22, 28, 20);                              // gövde
-      c.fillStyle = '#c62828'; c.fillRect(6, 36, 28, 5);                               // kemer
-      c.fillStyle = '#f2c79b'; c.fillRect(30, 24, 10, 10);                             // yumruk (öne)
-      c.fillStyle = '#f2c79b'; c.fillRect(10, 4, 22, 20);                              // kafa
-      c.fillStyle = '#ffffff'; c.fillRect(8, 0, 26, 7);                                // şapka
-      c.fillStyle = '#000'; c.fillRect(25, 10, 3, 4);                                  // göz
-    });
+    // Oyuncunun görünmez fizik gövdesi (görünen karakter 'popeye' atlasından gelir)
+    Taslak.ciz(scene, 'govde', AYAR.GOVDE_G, AYAR.GOVDE_Y, () => {});
 
     // Düşman: 44x40
     Taslak.ciz(scene, 'dusman', 44, 40, (c) => {

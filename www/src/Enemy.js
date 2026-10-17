@@ -1,5 +1,5 @@
 // Devriye düşmanı: duvara veya uçuruma gelince döner.
-// Üstüne zıplanınca ya da yumruklanınca yenilir.
+// Üstüne zıplanınca anında yenilir; yumruk/tekmelerde can azalır, itilir ve sersemler.
 
 class Dusman extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
@@ -11,11 +11,16 @@ class Dusman extends Phaser.Physics.Arcade.Sprite {
     this.hiz = 70;
     this.yon = -1;
     this.olu = false;
+    this.hp = 3;
+    this.sersemBitis = 0;
   }
 
   guncelle() {
     if (this.olu || !this.body) return;
     const b = this.body;
+    const sersem = this.scene.time.now < this.sersemBitis;
+    if (sersem) return;     // itilirken devriye hızı üzerine yazılmaz
+
     if (b.blocked.left || b.touching.left) this.yon = 1;
     else if (b.blocked.right || b.touching.right) this.yon = -1;
 
@@ -26,6 +31,21 @@ class Dusman extends Phaser.Physics.Arcade.Sprite {
     }
     b.velocity.x = this.hiz * this.yon;
     this.setFlipX(this.yon > 0);
+  }
+
+  // Oyuncunun yumruğu/tekmesi. yon: vuran kişinin baktığı yön (+1 sağ, -1 sol)
+  vurusAl(hasar, yon, itme, havaya) {
+    if (this.olu) return;
+    this.hp -= hasar;
+    this.sersemBitis = this.scene.time.now + 350;
+    this.setTintFill(0xffffff);
+    this.scene.time.delayedCall(70, () => { if (this.active) this.clearTint(); });
+    this.scene.toz(this.x, this.y, 6);
+    if (this.hp <= 0) { this.yenil(false); return; }
+    this.body.velocity.x = yon * itme;
+    if (havaya > 0) this.body.velocity.y = -havaya;
+    else if (havaya < 0) this.body.velocity.y = -havaya;
+    else this.body.velocity.y = -120;
   }
 
   yenil(yukaridan) {

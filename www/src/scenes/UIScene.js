@@ -15,6 +15,11 @@ class UIScene extends Phaser.Scene {
     this.surumYazi = this.add.text(0, 0, AYAR.SURUM, this.stil(12)).setOrigin(1, 1).setAlpha(0.6);
     this.mesaj = this.add.text(0, 0, '', this.stil(52)).setOrigin(0.5).setAlpha(0);
     this.duraklatYazi = this.add.text(0, 0, 'PAUSED', this.stil(48)).setOrigin(0.5).setVisible(false);
+    this.komboYazi = this.add.text(0, 0, '', this.stil(40)).setOrigin(1, 0.5).setAlpha(0);
+    this.hareketYazi = this.add.text(0, 0, '', this.stil(16)).setOrigin(0.5, 1).setAlpha(0);
+    this.ipucu = this.add.text(0, 0, '← →  Move     ↑  Jump (x2)     J  Punch     K  Kick', this.stil(14)).setOrigin(0, 1);
+    if (Kontrol.dokunmatikAcik(this)) this.ipucu.setVisible(false);
+    else this.time.delayedCall(9000, () => this.tweens.add({ targets: this.ipucu, alpha: 0, duration: 800 }));
 
     // Duraklat butonu (dokunmatik + fare)
     this.duraklatBtn = this.add.text(0, 26, '❚❚', this.stil(26)).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
@@ -40,6 +45,10 @@ class UIScene extends Phaser.Scene {
     ev.off('para', this.paraGoster, this);
     ev.off('bolum', this.bolumGoster, this);
     ev.off('mesaj', this.mesajGoster, this);
+    ev.off('kombo', this.komboGoster, this);
+    ev.off('hareket', this.hareketGoster, this);
+    ev.on('kombo', this.komboGoster, this);
+    ev.on('hareket', this.hareketGoster, this);
     ev.on('can', this.canGoster, this);
     ev.on('para', this.paraGoster, this);
     ev.on('bolum', this.bolumGoster, this);
@@ -63,6 +72,22 @@ class UIScene extends Phaser.Scene {
 
   bolumGoster(no, ad) {
     this.bolumYazi.setText(`LEVEL ${no}`);
+  }
+
+  // Vuruş zinciri sayacı (2 ve üstünde görünür)
+  komboGoster(adet) {
+    if (adet < 2) return;
+    this.komboYazi.setText(adet + ' HIT COMBO!').setAlpha(1).setScale(1.25);
+    this.tweens.killTweensOf(this.komboYazi);
+    this.tweens.add({ targets: this.komboYazi, scale: 1, duration: 120 });
+    this.tweens.add({ targets: this.komboYazi, alpha: 0, duration: 400, delay: 1100 });
+  }
+
+  // Oynayan hareketin adı karakterin altında kısa süre belirir
+  hareketGoster(ad) {
+    this.hareketYazi.setText(ad).setAlpha(0.9);
+    this.tweens.killTweensOf(this.hareketYazi);
+    this.tweens.add({ targets: this.hareketYazi, alpha: 0, duration: 300, delay: 350 });
   }
 
   mesajGoster(metin) {
@@ -102,6 +127,7 @@ class UIScene extends Phaser.Scene {
     ekle('sol', '◀');
     ekle('sag', '▶');
     ekle('yumruk', '✊');
+    ekle('tekme', '🦶');
     ekle('zipla', '▲');
   }
 
@@ -115,10 +141,13 @@ class UIScene extends Phaser.Scene {
     this.mesaj.setPosition(w / 2, h * 0.4);
     this.duraklatYazi.setPosition(w / 2, h * 0.45);
     this.duraklatBtn.setPosition(w - 20, 26);
+    this.komboYazi.setPosition(w - 24, 80);
+    this.hareketYazi.setPosition(w / 2, h - 10);
+    this.ipucu.setPosition(16, h - 10);
 
     const konum = {
       sol: [80, h - 80], sag: [190, h - 80],
-      yumruk: [w - 190, h - 80], zipla: [w - 80, h - 110]
+      yumruk: [w - 190, h - 70], tekme: [w - 150, h - 175], zipla: [w - 70, h - 85]
     };
     this.butonlar.forEach(({ anahtar, b, y }) => {
       const [x, yy] = konum[anahtar];
