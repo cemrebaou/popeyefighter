@@ -99,6 +99,7 @@ anims={}
 for ad,cr in satir.items():
     kat=kafa_med['idle']/kafa_med[ad]
     k=k0*kat
+    if ad=='pa': k*=1.045   # jab kareleri diğer yumruk karelerinden ~%5 kısa çıkıyordu; boy eşitlendi
     print(f'{ad:5s} kafa {kafa_med[ad]/D:5.1f}  satır çarpanı {kat:.3f}  nihai ölçek {k:.4f}')
     fr=[]
     for c in cr:
