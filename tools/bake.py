@@ -12,7 +12,7 @@ SATIRLAR={            # ad: (dosya, kare adedi)
   'idle': ('5b3238e8-image.png',8),
   'walk': ('0178d673-image.png',7),
   'jump': ('58c942ef-image.png',7),
-  'p':    ('ec8007e7-image.png',6),
+  'p':    ('d1ec9286-image.png',6),
   'pa':   ('a236f691-image.png',6),
 }
 SPIN=UP+'d2ab9c58-image.png'
