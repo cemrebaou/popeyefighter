@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.52</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.53</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -866,11 +866,12 @@ function dusmanCiz(){
   }
 }
 function hud(dt){
+  if(S.kSon&&S.t-S.kSon.t>0.65&&!S.atk&&!S.kuyruk.length){S.kNo={no:S.kSon.no,t:S.t};S.kSon=null}      // zincir doğal olarak bitti
   const bw=Math.min(280,W*0.38),bx=(W-bw)/2,by=12;                        // can barı yok: can, karakterin kafasındaki yüzden okunur
   ctx.fillStyle='#fff';ctx.font='700 13px Nunito,sans-serif';ctx.textBaseline='middle';
   ctx.lineWidth=3;ctx.strokeStyle='rgba(31,42,51,.9)';ctx.textAlign='left';
   {const t='düşman: '+DUS.filter(e=>!e.olu).length,tx=bx+bw+10,ty=by+4;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
-  if(S.kNo&&S.t-S.kNo.t<2){const a=Math.min(1,(2-(S.t-S.kNo.t))*1.5);ctx.save();ctx.globalAlpha=a;ctx.font='900 30px Nunito,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';ctx.lineWidth=5;ctx.strokeStyle='rgba(31,42,51,.95)';ctx.fillStyle='#ffd23f';ctx.strokeText(S.kNo.no,bx-12,by+6);ctx.fillText(S.kNo.no,bx-12,by+6);ctx.restore();ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.textBaseline='middle'}
+  if(S.kNo&&S.t-S.kNo.t<1.2){const a=Math.min(1,(1.2-(S.t-S.kNo.t))*3);ctx.save();ctx.globalAlpha=a;ctx.font='900 30px Nunito,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';ctx.lineWidth=5;ctx.strokeStyle='rgba(31,42,51,.95)';ctx.fillStyle='#ffd23f';ctx.strokeText(S.kNo.no,bx-12,by+6);ctx.fillText(S.kNo.no,bx-12,by+6);ctx.restore();ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.textBaseline='middle'}
   {const sg=5,gap=4,sw=(bw-gap*(sg-1))/sg,ey=by;                          // çift parmak enerjisi: 5 kesikli sarı bar
     for(let i=0;i<sg;i++){
       const x0=bx+i*(sw+gap),f=Math.max(0,Math.min(1,S.en-i));
@@ -926,7 +927,7 @@ function sonrakiAd(tur){
   if(S.t-S.sonAtk>0.5)S.dizi[tur]=0;
   const z=ZINCIR[tur];return z[(S.dizi[tur]++)%z.length];
 }
-function atkYarat(tur){let fl='';if(/[*+]$/.test(tur)){fl=tur.slice(-1);tur=tur.slice(0,-1)}const tv=tur.indexOf('#!')===0;return {ad:sonrakiAd(tv?'#'+tur.slice(2):tur),t:0,tv,fl}}   // fl: '+' kombo ilerliyor, '*' kombo tamamlandı (ışıltı)   // tv: tutulan düşmana vuruş
+function atkYarat(tur){let fl='',no=0;if(/[*+]$/.test(tur)){fl=tur.slice(-1);tur=tur.slice(0,-1)}const mm=tur.match(/~(\d+)$/);if(mm){no=+mm[1];tur=tur.slice(0,mm.index)}const tv=tur.indexOf('#!')===0;return {ad:sonrakiAd(tv?'#'+tur.slice(2):tur),t:0,tv,fl,no}}   // fl: '+' kombo ilerliyor, '*' kombo tamamlandı (ışıltı)   // tv: tutulan düşmana vuruş
 function atkIstek(tur){
   if(!S.atk)S.atk=atkYarat(tur);
   else if(S.kuyruk.length<5)S.kuyruk.push(tur);
@@ -934,6 +935,7 @@ function atkIstek(tur){
 function atkGuncelle(dt){
   if(!S.atk)return;
   S.atk.t+=dt;
+  if(S.atk.no&&!S.atk.nG){const mv=HAREKET[S.atk.ad];if(S.atk.t/mv.dur>=(mv.win?mv.win[mv.win.length-1][0]:(mv.p?0.3:0.4))){S.atk.nG=true;S.kNo={no:S.atk.no,t:S.t}}}   // kombo numarası, tamamlayan vuruşun vurduğu anda görünür
   if(S.atk.t>=HAREKET[S.atk.ad].dur){
     S.sonAtk=S.t;S.atk=null;
     if(S.kuyruk.length)S.atk=atkYarat(S.kuyruk.shift());
@@ -1057,8 +1059,8 @@ function komboTap(d){
   if(!c){c=KB.ch[d];dp=1}                              // zincirde devamı yoksa yeni zincir başlar
   const son=!Object.keys(c.ch).length;
   S.kb.n=son?KB:c;S.kb.t=S.t;S.kb.d=son?0:dp;          // zincir bittiyse sıfırla
-  if(dp>=2&&c.no)S.kNo={no:c.no,t:S.t};                // tamamlanan kombonun numarası enerji barının yanında görünür
-  atkIstek('#'+c.m+(son&&dp>=3?'*':(dp>=2?'+':'')));
+  if(son&&dp>=2&&c.no){S.kSon=null}else if(dp>=2&&c.no)S.kSon={no:c.no,t:S.t};else S.kSon=null;     // zincir devam edebiliyorsa: durursa o an biten kombo sayılır
+  atkIstek('#'+c.m+(son&&dp>=2&&c.no?'~'+c.no:'')+(son&&dp>=3?'*':(dp>=2?'+':'')));
 }
 
 function ziplaBas(guc=1){
