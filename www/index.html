@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.5</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.6</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -233,11 +233,38 @@ function dusmanKur(){
   [650,-850,1700,-1900].forEach(x=>ekle('kus',x));
 }
 function yeniOyun(){S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;dusmanKur()}
+// ---- basit sesler (dosya yok, tarayıcıda üretiliyor) ----
+let AC=null,GURULTU=null;
+function sesAc(){
+  if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(_){return}}
+  if(AC.state==='suspended')AC.resume();
+}
+['pointerdown','keydown','touchstart','click'].forEach(ev=>addEventListener(ev,sesAc,{passive:true}));
+function gurultu(sure,ses,f0,f1){
+  const a=AC,t=a.currentTime;
+  if(!GURULTU){GURULTU=a.createBuffer(1,a.sampleRate*0.3,a.sampleRate);const d=GURULTU.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  const src=a.createBufferSource(),fl=a.createBiquadFilter(),g=a.createGain();
+  src.buffer=GURULTU;fl.type='lowpass';fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(f1,t+sure);
+  g.gain.setValueAtTime(ses,t);g.gain.exponentialRampToValueAtTime(0.001,t+sure);
+  src.connect(fl);fl.connect(g);g.connect(a.destination);src.start(t);src.stop(t+sure+0.02);
+}
+function ton(tip,f0,f1,sure,ses){
+  const a=AC,t=a.currentTime,o=a.createOscillator(),g=a.createGain();
+  o.type=tip;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+sure);
+  g.gain.setValueAtTime(ses,t);g.gain.exponentialRampToValueAtTime(0.001,t+sure);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+sure+0.02);
+}
+function ses(tip,f){
+  if(!AC||AC.state!=='running')return;
+  if(tip==='vur'){ton('sine',220-90*f,45,0.15,0.4+0.4*f);gurultu(0.07+0.05*f,0.3+0.3*f,3500,300)}   // sert vuruş = daha uzun ve gür
+  else if(tip==='oldu'){ton('sawtooth',320,60,0.35,0.25);gurultu(0.25,0.4,2500,150)}
+  else if(tip==='hasar'){ton('square',300,110,0.22,0.22);gurultu(0.12,0.25,1800,200)}
+}
 function vur(e,dmg,vx,vy,f){
   e.hp-=dmg;e.fl=0.15;e.st=S.t+0.45+0.5*f;
   const L=Math.hypot(vx,vy)||1;let dx=vx/L,dy=vy/L;dx+=(e.x>=S.x?1:-1)*0.35;
   const kb=700+2600*f;e.vx=dx*kb;e.vy=dy*kb+250;
-  if(e.hp<=0){e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700}
+  if(e.hp<=0){e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;ses('oldu',f)}else ses('vur',f);
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
   S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:'-'+dmg,f});
 }
@@ -315,7 +342,7 @@ function oyuncuHasar(){
       if(e.olu||S.t<e.st)continue;
       const cy=e.y+e.cy;
       if(Math.abs(e.x-S.x)<e.r+80&&cy+e.r*0.7>S.y&&cy-e.r*0.7<S.y+800){
-        S.hp-=e.t==='yengec'?8:6;S.inv=S.t+1.0;S.vx+=(S.x>=e.x?1:-1)*900;S.sars=Math.max(S.sars,10);
+        ses('hasar',0);S.hp-=e.t==='yengec'?8:6;S.inv=S.t+1.0;S.vx+=(S.x>=e.x?1:-1)*900;S.sars=Math.max(S.sars,10);
         break;
       }
     }
