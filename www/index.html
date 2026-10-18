@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.16</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.17</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol; hızlı = yumruk, hızlı ileri = kayarak yumruk, çok hızlı yukarı = shoryuken (iki elle = dönerek), yavaş götürüp basılı tut = yakala/fırlat, iki elle daire çiz + yana at = aduket</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -115,14 +115,15 @@ dokunTus('zipla',d=>{if(d&&!key.zipla)ziplaBas();key.zipla=d});
 // sağa/sola çevir = yürü (eğim ne kadar büyükse o kadar hızlı), direksiyonu hızla arkaya kır (ekran tavana) = zıpla (şiddet = zıplama gücü),
 // ekranı kendine doğru yatır = çömel
 const GYRO={egilKal:false,egilHazir:true,hazir:true,ak:false,steer:0,egil:false,zipBit:-9,u0z:0,kalT:0,oz:null,rate:0,sonT:0,sonZip:-9};
-const ACI_OLU=7, ACI_TAM=40, ZIP_ESIK=2.2;
+const ACI_OLU=3.5, ACI_TAM=20, ZIP_ESIK=2.2;
 const asagiMi=()=>key.asagi||GYRO.egilKal;
 const ziplaTut=()=>key.zipla||S.t<GYRO.zipBit;
 function ekranAci(){const a=(screen.orientation&&typeof screen.orientation.angle==='number')?screen.orientation.angle:(window.orientation||0);return((a%360)+360)%360}
 function gyroAx(){
   if(!GYRO.ak||performance.now()/1000-GYRO.sonT>0.5)return 0;
   const a=Math.abs(GYRO.steer);if(a<ACI_OLU)return 0;
-  return Math.sign(GYRO.steer)*Math.min(1,(a-ACI_OLU)/(ACI_TAM-ACI_OLU));
+  const r=a<8?0.12+0.33*(a-ACI_OLU)/(8-ACI_OLU):0.45+0.55*Math.min(1,(a-8)/(ACI_TAM-8));   // çok az eğim = rahat yürüyüş, ~20° = tam koşu
+  return Math.sign(GYRO.steer)*Math.min(1,r);
 }
 function sensorOku(e){
   if(e.beta==null||e.gamma==null)return;
@@ -876,11 +877,12 @@ function hedefPoz(){
     }
   }else if(hiz>0.05){
     const f=S.faz, s=Math.sin(f), c=Math.cos(f);
-    o.lN=-28*s; o.bN=38*Math.max(0,c);
-    o.lF=28*s;  o.bF=38*Math.max(0,-c);
-    o.torso=6+2*c*c; o.bas=1.5*s;
-    o.aNu=3-22*s; o.aNr=55+25*Math.max(0,s);     // kollar rahat sallanır
-    o.aFu=-2+22*s; o.aFr=55+25*Math.max(0,-s);
+    const r=kisit((hiz-0.55)/0.35,0,1), ly=(a,b)=>a+(b-a)*r;      // r: yürüyüşten koşuya geçiş
+    o.lN=ly(-28,-62)*s; o.bN=ly(38,105)*Math.max(0,c);
+    o.lF=ly(28,62)*s;  o.bF=ly(38,105)*Math.max(0,-c);
+    o.torso=ly(6+2*c*c,18+3*c*c); o.bas=ly(1.5*s,-4+2*s);
+    o.aNu=ly(3-22*s,-22-55*s); o.aNr=ly(55+25*Math.max(0,s),96-10*s);     // koşuda dirsekler 90° bükülü, kollar güçlü sallanır
+    o.aFu=ly(-2+22*s,-22+55*s); o.aFr=ly(55+25*Math.max(0,-s),96+10*s);
     o.bob=0;
   }else{            // bekleme: nefes alma
     const n=Math.sin(t*2.2);
@@ -1104,7 +1106,7 @@ function dongu(ms){
       if(S.dkick){S.dkick=null;zeminVur(0.5)}}
   }
   S.camY+=(S.y-S.camY)*(1-Math.exp(-dt*5));
-  if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05;
+  if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
   pozGuncelle(dt);
   ciz();
   elHiz(dt);vurusKontrol();grabKontrol(dt);mermiGuncelle(dt);dusmanGuncelle(dt);carpisma();pkGuncelle(dt);blokGuncelle(dt);zitKontrol();ciftKontrol();yereKontrol();alkisKontrol();inisGuncelle();oyuncuHasar();
