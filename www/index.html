@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.30</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.31</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -50,7 +50,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 (function(){
 'use strict';
 // ---------- Parçalar ----------
-const ADLAR=['kafa','govde','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_ac_n','el_ac_f','el_tut_n','el_tut_f'];
+const ADLAR=['kafa','govde','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_tut_n','el_tut_f'];
 const RES=2;                       // yeni parça görselleri oyun biriminin 2 katı çözünürlükte
 const R={};
 function koyult(img){            // arka taraftaki uzuvlar için hafif koyu kopya
@@ -62,7 +62,7 @@ function koyult(img){            // arka taraftaki uzuvlar için hafif koyu kopy
 let kalan=ADLAR.length;
 ADLAR.forEach(a=>{
   const im=new Image();
-  im.onload=()=>{R[a]=im;if(--kalan===0){['ustkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_ac_f','el_tut_f'].forEach(n=>R[n+'_k']=koyult(R[n]));basla();}};
+  im.onload=()=>{R[a]=im;if(--kalan===0){['ustkol','onkol2','uyluk','altpan','bacak_bot','el_ac_n','el_tut_n'].forEach(n=>R[n+'_k']=koyult(R[n]));basla();}};
   im.onerror=()=>{document.getElementById('yuk').textContent='Parça yüklenemedi: '+a};
   im.src='parca/'+a+'.png';
 });
@@ -971,7 +971,9 @@ function bacak(l,k,ank,koyu){
 let BONg=0;              // kalça eklemi ile gövde kalçası arasındaki yatay fark (karakter() içinde ayarlanır)
 function govdeUzayi(fn){ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D);ctx.translate(10.1+BONg,-81.4);ctx.rotate(P.torso*D);fn();ctx.restore()}   // gövde bel noktası: karnı kalçanın üstüne biner
 // Kol: üst kol -> dirsek -> ön kol (el, ön kolun altında; ön kol dirsek halkasında döner). Omuz noktaları bel noktasına göre.
-const KOL_EL={yum:['el_yum',28.2,91.2],ac:['el_ac',24.7,104.9,21.9,96.3],tut:['el_tut',20.9,73.8,17.5,67.5]};
+// el görselleri [anahtar, bilek x, bilek y]: yakın elde sırt görünür (yumruk, el_ac_f, el_tut_f); uzak elde avuç/parmaklar bize bakar (el_yum_f, el_ac_n, el_tut_n; sonuncular koyulaştırılmış)
+const KOL_EL={N:{yum:['el_yum',28.2,91.2],ac:['el_ac_f',21.9,96.3],tut:['el_tut_f',17.5,67.5]},
+              F:{yum:['el_yum_f',31.9,93.4],ac:['el_ac_n_k',24.7,104.9],tut:['el_tut_n_k',20.9,73.8]}};
 const HS={N:'yum',F:'yum'}, ACT={N:0,F:0};     // el durumu: yum = yumruk, ac = tutmaya hazır açık el, tut = düşmanı tutuyor
 function elDurum(dt){
   for(const k of ['N','F']){
@@ -986,11 +988,8 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   resim(R['ustkol'+sf],46.2,35.2);
   ctx.translate(-10.1,124.1);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);
-  {const d=KOL_EL[HS[ad]||'yum'];
-   let key,px,py;
-   if(d[0]==='el_yum'){key='el_yum'+sf;px=d[1];py=d[2]}
-   else{key=d[0]+(far?'_f_k':'_n');px=far?d[3]:d[1];py=far?d[4]:d[2]}
-   ctx.save();ctx.translate(140.4,0);resim(R[key],px,py);ctx.restore();}   // el bilekte
+  {const d=KOL_EL[ad][HS[ad]||'yum'];
+   ctx.save();ctx.translate(140.4,0);resim(R[d[0]],d[1],d[2]);ctx.restore();}   // el bilekte
   resim(R[far?'onkol2_k':'onkol'],40.7,101.6);
   ctx.restore();
 }
@@ -1030,7 +1029,7 @@ function karakter(){
   ctx.translate(P.ofs-P.hb,-yuk-P.lift);   // kalça ve üstü geriye (sola) kayar
   if(S.donuyor||S.tats>0||S.sman){ctx.translate(0,-170);ctx.rotate(S.spin);ctx.translate(0,170);}   // yuvarlanma: gövde ortasından ileri doğru döner
   BONg=BON;
-  govdeUzayi(()=>{ kol(36,-190,P.aFu,P.aFr,'F',true,0.88); });   // uzak kol en arka katmanda: biraz küçük, omza oturur
+  govdeUzayi(()=>{ kol(28,-158,P.aFu,P.aFr,'F',true,0.92); });   // uzak kol en arka katmanda: biraz küçük, omza oturur
   ctx.save();ctx.translate(BON,0);
   bacak(F.l,F.k,F.a,true);
   ctx.restore();
