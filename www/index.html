@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.32</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.33</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -73,6 +73,7 @@ for(let i=0;i<11;i++){const im=new Image();im.src='yuz/yuz'+i+'.png';YUZ.push(im
 function yuzNo(hp){return hp<=0?10:Math.min(9,Math.floor((100-hp)/10))}   // 100-91→0, 90-81→1 ... 10-1→9, 0→10
 
 // ---------- Ayarlar (parça birimi) ----------
+const CR_H=320;                 // çömelmede kalça yüksekliği
 const BACAK_BOY=477;            // eklemden zemine (kalça-diz 206 + diz-bilek 172 + bilek-taban 99)
 const KARAKTER_BOY=1020;
 const HIZ=1100, G=5600, ZIP1=2700, ZIP2=2400;
@@ -903,13 +904,13 @@ function hedefPoz(){
     o.aNu=4+2*n; o.aNr=60;
     o.aFu=-2+2*n; o.aFr=65;
   }
-  o.kN=0;o.kF=0;o.pelv=0;o.hx=0;o.hy=0;o.hb=0;
+  o.kN=0;o.kF=0;o.pelv=0;o.hx=0;o.hy=0;o.hb=0;o.cr=0;o.cw=0.5;
   if(S.yer&&asagiMi()){      // çömelme: bir bacak önde çapraz, diğeri diz üstü geride; yürürken bacaklar rol değiştirir
     const sn=Math.sin(S.faz), w=hiz>0.05?0.5+0.5*sn:1;      // w=1: yakın bacak önde
     const ON_={l:-90,b:135}, ARKA={l:20,b:37};   // ön bacak derin çömelme; arka bacak: üst bacak aşağı, alt bacak geride, ayak ucu yere değer
     o.lN=ARKA.l+(ON_.l-ARKA.l)*w; o.bN=ARKA.b+(ON_.b-ARKA.b)*w; o.kN=1-w;
     o.lF=ARKA.l+(ON_.l-ARKA.l)*(1-w); o.bF=ARKA.b+(ON_.b-ARKA.b)*(1-w); o.kF=w;
-    o.pelv=32; o.hy=14; o.hb=50+(hiz>0.05?6*sn:0); o.torso=13+(hiz>0.05?4*sn:0); o.bas=-26; o.aNu=-38; o.aNr=40; o.aFu=-26; o.aFr=45;
+    o.cr=1; o.cw=w; o.pelv=32; o.hy=14; o.hb=50+(hiz>0.05?6*sn:0); o.torso=13+(hiz>0.05?4*sn:0); o.bas=-26; o.aNu=-38; o.aNr=40; o.aFu=-26; o.aFr=45;
   }
   if(S.atk||S.t-S.sonAtk<0.9||kolVar()){   // vuruş sürerken guard; bırakınca kollar iner
     o.aNu=-26;o.aNr=-44;o.aFu=-10;o.aFr=-52;
@@ -950,7 +951,7 @@ function hedefPoz(){
   if(S.t<S.firT){const el=S.firEl||0;o.aNu=-90-el;o.aNr=90;o.aFu=-90-el;o.aFr=90;o.torso+=10}       // ateş: iki kol öne
   return o;
 }
-const ANAH=['lN','bN','lF','bF','torso','bas','aNu','aNr','aFu','aFr','ofs','lift','kN','kF','pelv','hx','hy','hb'];
+const ANAH=['lN','bN','lF','bF','torso','bas','aNu','aNr','aFu','aFr','ofs','lift','kN','kF','pelv','hx','hy','hb','cr','cw'];
 function pozGuncelle(dt){
   const h=hedefPoz(), k=1-Math.exp(-dt*((S.atk||kolVar()||S.yy||S.alk)?45:(S.yer?22:16)));
   ANAH.forEach(a=>{P[a]=(P[a]===undefined)?h[a]:P[a]+(h[a]-P[a])*k});
@@ -1015,15 +1016,17 @@ function karakter(){
   let N={l:P.lN,k:P.bN,kn:P.kN},F={l:P.lF,k:P.bF,kn:P.kF};
   N.a=ayakAci(N.l,N.k,N.kn);F.a=ayakAci(F.l,F.k,F.kn);
   const nN=ayakNokta(N.l,N.k,N.a,N.kn),nF=ayakNokta(F.l,F.k,F.a,F.kn);
-  const yuk=S.yer?Math.max(nN.cy,nF.cy):BACAK_BOY;
+  const yukN=S.yer?Math.max(nN.cy,nF.cy):BACAK_BOY;
+  const yuk=S.yer?yukN+(CR_H-yukN)*P.cr:BACAK_BOY;      // çömelmede kalça alçalır; her iki ayak da yere basar (aşağıda ters kinematik)
   const celme=S.kay&&S.t<S.kay.t0+S.kay.T;
   const ikAcik=S.yer&&!celme&&!S.sman&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
   if(ikAcik){
-    [[N,nN],[F,nF]].forEach(([B,n])=>{
+    [[N,nN,P.cw],[F,nF,1-P.cw]].forEach(([B,n,wf])=>{
       const dunyaX=S.x+S.yon*(P.ofs+BON+n.cx), gH=zemin(dunyaX);
-      const hedefCy=n.cy+(S.y-gH);                       // kalçadan ayağa gereken derinlik
+      const kz=P.cr, tx0=n.ax+P.hb, tx1=(-80+170*wf)+P.hb;      // çömelmede ayak noktaları: ön ayak öne, arka ayak geriye (kalçaya göre)
+      const hedefCy=n.cy+(yuk-n.cy)*kz+(S.y-gH);               // kalçadan yere gereken derinlik (çömelmede ayak tam yere iner)
       const fa=B.l+B.k+B.a;                               // ayağın yönü korunur
-      const t=ikCoz(n.ax+P.hb,hedefCy-n.cpy);   // kalça geri kaydıysa ayak yerinde kalır, bacaklar yeniden şekillenir
+      const t=ikCoz(tx0+(tx1-tx0)*kz,hedefCy-n.cpy);   // kalça geri kaydıysa ayak yerinde kalır, bacaklar yeniden şekillenir
       B.l=t.l;B.k=t.k;B.a=fa-(t.l+t.k);
     });
   }
