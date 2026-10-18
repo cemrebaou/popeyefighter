@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.60</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.61</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -767,7 +767,10 @@ function dusmanGuncelle(dt){
         if(e.t==='zombi'){             // yavaş zombi yürüyüşü; yaklaşınca yukarıdan aşağı tırmalar
           const su=typeof e.sk==='number'?S.t-e.sk:9;
           if(su<0.95)yuru=false;
-          else if(Math.abs(dx)<500&&S.durum==='oyun'&&S.t>=(e.skN||0)&&!(e.kopuk&&e.kopuk.kolN&&e.kopuk.kolF)){e.sk=S.t;e.skN=S.t+2.0;yuru=false}
+          else if(Math.abs(dx)<520){                    // kolları değecek mesafede yürümeyi bırakır, sadece tırmalar (aralarda bekler)
+            yuru=false;
+            if(S.durum==='oyun'&&S.t>=(e.skN||0)&&!(e.kopuk&&e.kopuk.kolN&&e.kopuk.kolF)){e.sk=S.t;e.skN=S.t+1.7}
+          }
         }
         if(yuru){
         e.moving=e.t==='zombi';
