@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.49</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.50</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -1184,7 +1184,7 @@ function karakter(){
       const kz=P.cr, tx0=n.ax+P.hb, tx1=(-80+170*wf)+P.hb;      // çömelmede ayak noktaları: ön ayak öne, arka ayak geriye (kalçaya göre)
       const hedefCy=n.cy+(yuk-n.cy)*kz+(S.y-gH);               // kalçadan yere gereken derinlik (çömelmede ayak tam yere iner)
       const fa=B.l+B.k+B.a;                               // ayağın yönü korunur
-      const t=ikCoz(tx0+(tx1-tx0)*kz,hedefCy-n.cpy);   // kalça geri kaydıysa ayak yerinde kalır, bacaklar yeniden şekillenir
+      const t=ikCoz(tx0+(tx1-tx0)*kz-P.ofs,hedefCy-n.cpy);      // yumruk atılırken ayaklar yerinde sabit kalır, kalça/gövde öne gider (bacaklar uzar/bükülür)   // kalça geri kaydıysa ayak yerinde kalır, bacaklar yeniden şekillenir
       const wI=1-kisit(P.lift/30,0,1),l0=B.l,k0=B.k;      // hafif zıplamada (aparkat, süpermen) bacaklar kareden gelir
       B.l=l0+(t.l-l0)*wI;B.k=k0+(t.k-k0)*wI;B.a=fa-(B.l+B.k);
     });
