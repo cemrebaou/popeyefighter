@@ -31,16 +31,16 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 @media (pointer:coarse){ .tus{display:flex} .ipucu{display:none} }
 #sol{left:max(16px,env(safe-area-inset-left,0px))} #sag{left:calc(max(16px,env(safe-area-inset-left,0px)) + 88px)}
 #zipla{right:max(16px,env(safe-area-inset-right,0px))}
-#asa{right:calc(max(16px,env(safe-area-inset-right,0px)) + 264px)} #yum{right:calc(max(16px,env(safe-area-inset-right,0px)) + 88px)} #tek{right:calc(max(16px,env(safe-area-inset-right,0px)) + 176px)}
+#asa{right:calc(max(16px,env(safe-area-inset-right,0px)) + 88px)}
 #yuk[hidden]{display:none}
 #yuk{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--gok-ust);font-family:var(--font);font-size:28px;letter-spacing:.08em}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.36</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.37</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
-<div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
+<div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
 <div class="mini" id="tam">⛶ Tam ekran</div>
 <div class="mini" id="kapat">✕</div>
@@ -119,7 +119,6 @@ function dokunTus(id,fn){
   el.addEventListener('pointerdown',bas);el.addEventListener('pointerup',birak);
   el.addEventListener('pointerleave',birak);el.addEventListener('pointercancel',birak);
 }
-dokunTus('yum',d=>{if(d)atkIstek('j')});dokunTus('tek',d=>{if(d)atkIstek('k')});
 dokunTus('asa',d=>key.asagi=d);
 dokunTus('sol',d=>key.sol=d);dokunTus('sag',d=>key.sag=d);
 dokunTus('zipla',d=>{if(d&&!key.zipla)ziplaBas();key.zipla=d});
