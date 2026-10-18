@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.37</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.38</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -933,7 +933,7 @@ function hedefPoz(){
   if(S.sup&&S.t<S.sup.t0+S.sup.T&&S.yer){      // süper kahraman inişi (yerde): tek diz yerde, yumruk yere
     Object.assign(o,{lN:-95,bN:125,kN:0,lF:30,bF:60,kF:1,pelv:28,hy:14,hb:40,torso:30,bas:-24,aNu:-20,aNr:90,aFu:70,aFr:90});
   }
-  if(S.blok&&S.yer){o.aNu=-100;o.aNr=-6;o.aFu=-92;o.aFr=-16;o.torso+=2;o.bas=-4}      // blok: dirsekler önde, yumruklar yüzün hizasında (guard)
+  if(S.blok&&S.yer){o.aNu=-90;o.aNr=4;o.aFu=-82;o.aFr=-6;o.torso+=2;o.bas=-4}      // blok: dirsekler önde, yumruklar yüzün hizasında (guard)
   if(S.sman){                       // süpermen: iki kol ileri, bacaklar arkada düz, gövde yatay
     Object.assign(o,{lN:8,bN:3,lF:-6,bF:4,kN:0,kF:0,torso:0,bas:0,pelv:0,hx:0,hy:0,hb:0,aNu:-175,aNr:85,aFu:-175,aFr:85,lift:-180});
   }
