@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.34</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.35</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -66,10 +66,10 @@ ADLAR.forEach(a=>{
     ['ustkol','onkol2','el_ac_n','el_tut_n'].forEach(n=>R[n+'_a']=koyult(R[n],.13));   // arkadaki kol: bacaktan daha açık ton
     basla();}};
   im.onerror=()=>{document.getElementById('yuk').textContent='Parça yüklenemedi: '+a};
-  im.src='parca/'+a+'.png';
+  im.src='parca/'+a+'.png?v=35';          // ?v= : görsel değişince tarayıcı eski önbelleği kullanmasın
 });
 const YUZ=[];                      // can göstergesi: 0 = tam can ... 9 = çok az can, 10 = ölü
-for(let i=0;i<11;i++){const im=new Image();im.src='yuz/yuz'+i+'.png';YUZ.push(im)}
+for(let i=0;i<11;i++){const im=new Image();im.src='yuz/yuz'+i+'.png?v=35';YUZ.push(im)}
 function yuzNo(hp){return hp<=0?10:Math.min(9,Math.floor((100-hp)/10))}   // 100-91→0, 90-81→1 ... 10-1→9, 0→10
 
 // ---------- Ayarlar (parça birimi) ----------
