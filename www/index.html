@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.23</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.24</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -774,13 +774,11 @@ function dusmanCiz(){
   }
 }
 function hud(dt){
-  const bw=Math.min(280,W*0.38),bx=(W-bw)/2,by=8,fh=Math.min(84,H*0.14),fw=fh*240/233;
-  {const im=YUZ[yuzNo(S.hp)];if(im&&im.complete&&im.naturalWidth)ctx.drawImage(im,(W-fw)/2,by,fw,fh)}   // can barı yerine yüz: canla birlikte hırpalanır
+  const bw=Math.min(280,W*0.38),bx=(W-bw)/2,by=12;                        // can barı yok: can, karakterin kafasındaki yüzden okunur
   ctx.fillStyle='#fff';ctx.font='700 13px Nunito,sans-serif';ctx.textBaseline='middle';
   ctx.lineWidth=3;ctx.strokeStyle='rgba(31,42,51,.9)';ctx.textAlign='left';
-  {const t='düşman: '+DUS.filter(e=>!e.olu).length,tx=(W+fw)/2+8,ty=by+fh/2;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
-  const ENY=by+fh+4;
-  {const sg=5,gap=4,sw=(bw-gap*(sg-1))/sg,ey=ENY;                       // çift parmak enerjisi: 5 kesikli sarı bar
+  {const t='düşman: '+DUS.filter(e=>!e.olu).length,tx=bx+bw+10,ty=by+4;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
+  {const sg=5,gap=4,sw=(bw-gap*(sg-1))/sg,ey=by;                          // çift parmak enerjisi: 5 kesikli sarı bar
     for(let i=0;i<sg;i++){
       const x0=bx+i*(sw+gap),f=Math.max(0,Math.min(1,S.en-i));
       ctx.fillStyle='rgba(31,42,51,.8)';ctx.fillRect(x0-1,ey-1,sw+2,10);
@@ -791,7 +789,7 @@ function hud(dt){
   const bs=DUS.find(e=>e.boss&&!e.olu);
   if(bs){
     const w2=Math.min(420,W*0.6),x2=(W-w2)/2;
-    const by2=ENY+38;
+    const by2=74;
     ctx.fillStyle='rgba(31,42,51,.85)';ctx.fillRect(x2-3,by2,w2+6,20);
     ctx.fillStyle='#e8453c';ctx.fillRect(x2,by2+3,w2*Math.max(0,bs.hp/bs.max),14);
     ctx.fillStyle='#fff';ctx.font='700 12px Nunito,sans-serif';ctx.textAlign='center';ctx.fillText('DEV YENGEÇ — gözlerine vur (shoryuken / aduket)',W/2,by2+10);
@@ -1020,7 +1018,7 @@ function karakter(){
   ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D);ctx.translate(-85-ALT,-112);ctx.drawImage(R.kalca,0,0);ctx.restore();
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // sağ (yakın) bacak kalçanın önünde
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(-3,-332);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);resim(R.kafa,100,200);ctx.restore();
+    ctx.save();ctx.translate(-3,-332);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{const fy=YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-100,-200,214,240):resim(R.kafa,100,200)}ctx.restore();
     kol(62,122,P.aNu,P.aNr,R.ustkol,R.onkol,40,82,'N');         // ön kol
   });
   ctx.restore();
