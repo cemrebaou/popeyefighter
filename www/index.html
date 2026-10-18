@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.48</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.49</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -929,34 +929,46 @@ function ph(arm,dur,fr){
 { // çift tekme: ufak sıçrayıp önce bir bacakla, sonra diğeriyle
   const G0={aNu:-26,aNa:-70,aFu:-10,aFa:-62}, GC={aNu:-50,aNa:-60,aFu:-5,aFa:-70}, GA={aNu:-85,aNa:-40,aFu:45,aFa:115}, GB={aNu:45,aNa:115,aFu:-85,aFa:-40};
   const K=(t,v)=>[t,Object.assign({torso:-4,bas:-2,ofs:0,lift:0},v)];
-  const A=[K(0,Object.assign({lN:-30,bN:75,lF:-9,bF:6},G0)),
+  const dbl=(h1,h2)=>[K(0,Object.assign({lN:-30,bN:75,lF:-9,bF:6},G0)),
     K(.14,Object.assign({lN:-105,bN:105,lF:6,bF:4,lift:55,ofs:10},GC)),
-    K(.27,Object.assign({lN:-92,bN:-6.5,lF:14,bF:20,lift:78,ofs:55},GA)),
+    K(.27,Object.assign({lN:h1,bN:-6.5,lF:14,bF:20,lift:78,ofs:55},GA)),
     K(.40,Object.assign({lN:-100,bN:100,lF:-40,bF:95,lift:80,ofs:25},GC)),
-    K(.55,Object.assign({lN:25,bN:30,lF:-92,bF:-6.5,lift:80,ofs:60},GB)),
+    K(.55,Object.assign({lN:25,bN:30,lF:h2,bF:-6.5,lift:80,ofs:60},GB)),
     K(.75,Object.assign({lN:20,bN:20,lF:-105,bF:105,lift:40,ofs:10},G0)),
     K(1,Object.assign({lN:7,bN:3,lF:-9,bF:6,torso:6,bas:0},G0))];
   const sw=o=>{const r={};for(const n in o){r[n.replace(/^([lbaz]*)([NF])/,(m,a,b)=>a+(b==='N'?'F':'N'))]=o[n]}return r};
-  HAREKET.kickDA={dur:.9,win:[[.22,.34],[.5,.62]],keys:A};
-  HAREKET.kickDB={dur:.9,win:[[.22,.34],[.5,.62]],keys:A.map(([t,v])=>[t,sw(v)])};
+  const cift=(a,b,h1,h2)=>{const A=dbl(h1,h2);HAREKET[a]={dur:.9,win:[[.22,.34],[.5,.62]],keys:A};HAREKET[b]={dur:.9,win:[[.22,.34],[.5,.62]],keys:A.map(([t,v])=>[t,sw(v)])}};
+  cift('kickDA','kickDB',-92,-92);      // çift tekme: ikisi de orta
+  cift('kickDC','kickDD',-92,-135);     // orta + üst
+  cift('kickDE','kickDF',-62,-95);      // alt + orta
+  { // alçak tekme (aşağı) ve kayarak tekme (Sub-Zero kayması)
+    const lo=JSON.parse(JSON.stringify(HAREKET.kick1));lo.keys.forEach(([t,v])=>{if(v.lN<-85)v.lN=-60});HAREKET.kickLo=lo;
+    const KS=(t,v)=>[t,Object.assign({torso:-4,bas:-2,ofs:0,lift:0},G0,v)];
+    HAREKET.kickSl={dur:.62,win:[[.3,.72]],keys:[
+      KS(0,{lN:-30,bN:75,lF:-9,bF:6}),
+      KS(.2,{lN:-72,bN:15,lF:30,bF:110,torso:-24,bas:-4,ofs:80,lift:-250}),
+      KS(.4,{lN:-76,bN:-6.5,lF:35,bF:115,torso:-28,bas:-5,ofs:200,lift:-280}),
+      KS(.72,{lN:-76,bN:-6.5,lF:35,bF:115,torso:-28,bas:-5,ofs:230,lift:-280}),
+      KS(.9,{lN:-30,bN:60,lF:10,bF:60,torso:-8,ofs:70,lift:-100}),
+      KS(1,{lN:7,bN:3,lF:-9,bF:6,torso:6,bas:0})]};
+  }
 }
 { // ters yönlü tekmeler (diğer bacak)
   const sw=o=>{const r={};for(const n in o){r[n.replace(/^([lbaz]*)([NF])/,(m,a,b)=>a+(b==='N'?'F':'N'))]=o[n]}return r};
-  for(const n of ['kick1','kick2','kick3'])HAREKET[n+'F']={dur:HAREKET[n].dur,keys:HAREKET[n].keys.map(([t,v])=>[t,sw(v)])};
+  for(const n of ['kick1','kick2','kick3','kickLo','kickSl'])HAREKET[n+'F']={dur:HAREKET[n].dur,keys:HAREKET[n].keys.map(([t,v])=>[t,sw(v)])};
   HAREKET.kick4N={dur:HAREKET.kick4.dur,keys:HAREKET.kick4.keys.map(([t,v])=>[t,sw(v)])};
 }
-const AYNA_HAR={kick1:'kick1F',kick2:'kick2F',kick3:'kick3F',kick1F:'kick1',kick2F:'kick2',kick3F:'kick3',kick4:'kick4N',kick4N:'kick4',dizF:'dizN',dizN:'dizF',kickDA:'kickDB',kickDB:'kickDA'};
+const AYNA_HAR={kick1:'kick1F',kick2:'kick2F',kick3:'kick3F',kick1F:'kick1',kick2F:'kick2',kick3F:'kick3',kick4:'kick4N',kick4N:'kick4',dizF:'dizN',dizN:'dizF',kickDA:'kickDB',kickDB:'kickDA',kickDC:'kickDD',kickDD:'kickDC',kickDE:'kickDF',kickDF:'kickDE',kickLo:'kickLoF',kickLoF:'kickLo',kickSl:'kickSlF',kickSlF:'kickSl'};
 const aynaAdim=st=>{const [d,m]=st.split(':');return (d==='R'?'L':'R')+':'+(AYNA_HAR[m]||(/[NF]$/.test(m)?m.slice(0,-1)+(m.slice(-1)==='N'?'F':'N'):m))};
-const KOMBO=[
-  'R:jN R:cN','L:jF L:cF','R:jN L:hF','L:jF R:hN',
-  'R:jN R:cN L:hF','L:jF L:cF R:hN','R:jN L:hF R:cN','L:jF R:hN L:cF','R:jN R:cN R:uN','L:jF L:cF L:uF',
-  'R:jN L:hF R:cN L:uF','L:jF R:hN L:cF R:uN','R:jN R:cN L:hF L:oF','L:jF L:cF R:hN R:oN',
-  'R:jN R:cN L:hF R:bN L:uF','L:jF L:cF R:hN L:bF R:uN','R:jN R:cN R:uN L:hF L:kick2',
-  'R:jN L:hF R:cN R:oN L:bF R:kickDA','R:jN R:cN R:uN R:bN R:oN L:kick4','L:jF R:hN L:cF R:uN L:dizF R:kickDB',
-  // 10 yeni kombo
-  'R:jN R:cN R:uN L:hF R:sN','R:jN L:hF L:wF L:kF','R:jN R:cN R:uN R:bN L:zF','R:jN L:hF R:cN R:oN R:sN','R:jN L:hF R:cN L:uF L:kickDB',
-  'R:jN L:hF L:wF R:zN','R:jN R:cN L:hF L:oF L:kF','R:jN R:cN L:hF R:bN R:kN','R:jN R:cN L:hF L:oF R:sN','R:jN R:cN R:uN L:hF R:sN L:kick3'
-];
+const KAGAC={   // tuş dizisi (r=sağ yarı, l=sol yarı) -> o adımdaki hareket; kombolar bu ağaçtan çıkar, ters yönlüleri otomatik eklenir
+  r:'jN', rr:'cN', rl:'hF',
+  rrl:'kickLo', rlr:'kick1', rll:'wF',
+  rrr:'uN', rrrl:'dizF', rrrll:'kick2', rrrlr:'sN', rrrlrl:'kick3', rrrr:'bN', rrrrr:'oN', rrrrrl:'kick4', rrrrl:'zF',
+  rrll:'oF', rrlll:'kF', rrllr:'sN', rrlr:'bN', rrlrl:'uF', rrlrr:'kN', rrlrlr:'kickSl',
+  rlrl:'uF', rlrlr:'dizN', rlrlrl:'kickDC', rlrll:'kickDE', rlrr:'oN', rlrrr:'sN', rlrrl:'bF', rlrrll:'kickDA',
+  rlll:'kF', rllr:'zN', rlllr:'kickSl'
+};
+const KOMBO=Object.keys(KAGAC).map(k=>[...k].map((c,i)=>(c==='r'?'R':'L')+':'+KAGAC[k.slice(0,i+1)]).join(' '));
 KOMBO.push(...KOMBO.map(k=>k.split(' ').map(aynaAdim).join(' ')));   // hepsinin ters yönlüsü (kollar/bacaklar yer değiştirir)
 const KB={ch:{}};
 for(const sq of KOMBO){let n=KB;for(const st of sq.split(' ')){const [d,m]=st.split(':');n=n.ch[d]||(n.ch[d]={m,ch:{}})}}
@@ -1090,7 +1102,7 @@ function resim(img,px,py){ctx.drawImage(img,-px,-py,img.width/RES,img.height/RES
 // Bacak: kalça (uyluk) -> diz (alt pantolon) -> ayak bileği (bacak + bot), üç ayrı parça (görsellerdeki halka merkezleri eklem noktası)
 const T_X=7,T_Y=205.9, S_X=-18.5,S_Y=172, F_SOL=99;
 function efSiddet(){const a=S.atk;if(!a||!a.fl)return 0;const u=a.t/HAREKET[a.ad].dur;return Math.sin(Math.PI*kisit((u-0.15)/0.7,0,1))}   // vuruş anında tepe yapan ışıltı şiddeti
-function efLeg(ad){if(/^kickD/.test(ad))return 'NF';if(ad==='kick4'||ad==='dizF'||/^kick[123]F$/.test(ad))return 'F';if(/^(kick|diz)/.test(ad))return 'N';return ''}
+function efLeg(ad){if(/^kickD/.test(ad))return 'NF';if(ad==='kick4'||ad==='dizF'||/^kick(?!D)\w*F$/.test(ad))return 'F';if(/^(kick|diz)/.test(ad))return 'N';return ''}
 function ekParla(img,x,y,I){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,I*0.8);resim(img,x,y);ctx.restore()}   // parçayı üstüne ekleyerek parlatır
 function parilti(x,y,r,I,fl){
   if(I<=0.02)return;const g=ctx.createRadialGradient(x,y,0,x,y,r);
