@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.46</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.47</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -206,7 +206,8 @@ function kayma(iz,pen){          // son 'pen' saniyede: yer değiştirme ve izle
   return {dx:son.x-a.x,dy:son.y-a.y,d:Math.hypot(son.x-a.x,son.y-a.y),yol};
 }
 function kolHesap(iz,x,y){
-  const dx=(x-iz.x0)*iz.yon, dy=y-iz.y0, L=Math.hypot(dx,dy), k=KOL[iz.t];
+  const yn=DUS.some(e=>e.tut===iz.t)?S.yon:iz.yon;      // tutan kol: karakter dönse de parmak hangi yöne giderse kol o yöne gider
+  const dx=(x-iz.x0)*yn, dy=y-iz.y0, L=Math.hypot(dx,dy), k=KOL[iz.t];
   if(DUS.some(e=>e.tut&&e.tut!==iz.t)){k.e=0;return}       // diğer elle tutuyorsak: bu taraf kol hareketi/jest yapmaz, dokunuşlar tutulana vuruş olur
   if(L<SINIR){k.e=0;return}
   k.th=Math.atan2(dy,dx)/D;
