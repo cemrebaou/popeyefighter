@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.35</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.36</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -905,6 +905,7 @@ function hedefPoz(){
     o.aFu=-2+2*n; o.aFr=65;
   }
   o.kN=0;o.kF=0;o.pelv=0;o.hx=0;o.hy=0;o.hb=0;o.cr=0;o.cw=0.5;
+  if(S.yer&&hiz>0.05){o.kN=kisit((o.bN-35)/45,0,1);o.kF=kisit((o.bF-35)/45,0,1)}   // koşuda geride kalkan ayak: parmak ucu aşağı, taban arkayı gösterir
   if(S.yer&&asagiMi()){      // çömelme: bir bacak önde çapraz, diğeri diz üstü geride; yürürken bacaklar rol değiştirir
     const sn=Math.sin(S.faz), w=hiz>0.05?0.5+0.5*sn:1;      // w=1: yakın bacak önde
     const ON_={l:-90,b:135}, ARKA={l:20,b:37};   // ön bacak derin çömelme; arka bacak: üst bacak aşağı, alt bacak geride, ayak ucu yere değer
