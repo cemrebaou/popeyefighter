@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.42</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.43</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -627,7 +627,7 @@ function vurusKontrol(){
   if(a&&a.tv&&!a.tvH&&a.t/HAREKET[a.ad].dur>=0.3){      // tutulana vuruş: kolun yumruğu vurduğu anda hasar
     a.tvH=true;
     const e=DUS.find(x=>x.tut&&!x.olu);
-    if(e){const L=a.ad[0],dm={j:6,c:12,h:10,u:14,o:16,b:9}[L]||8;vur(e,dm,S.yon,L==='u'?1:(L==='o'?-0.6:0.1),0.4+dm/40,e.y+e.cy)}
+    if(e){const L=a.ad[0],dm={j:6,c:12,h:10,u:14,o:16,b:9,w:8,s:18,z:15,k:17}[L]||8;vur(e,dm,S.yon,L==='u'?1:(L==='o'?-0.6:0.1),0.4+dm/40,e.y+e.cy)}
   }
   if(a&&/^(kick|diz)/.test(a.ad)){      // tekme / diz: sabit hasar, öne doğru fırlatır (çift tekmede iki ayrı vuruş penceresi)
     const mv=HAREKET[a.ad],u=a.t/mv.dur,PEN=mv.win||[[0.4,0.7]];
@@ -894,19 +894,24 @@ function atkPozu(o){
 // Ekranın sağ yarısına dokun = R (ön kol), sol yarısına dokun = L (arka kol). Peş peşe dokunuşlar kombo zincirini ilerletir (en çok 6 dokunuş).
 // Harf: j=jab, c=düz (cross), h=kanca (hook), u=aparkat, o=üstten (overhand), b=gövde yumruğu; N=ön kol, F=arka kol.
 const GK={N:['aNu','aNa','aFu','aFa',[-10,-62]],F:['aFu','aFa','aNu','aNa',[-26,-70]]};
+const LG={n:{lN:7,bN:3,lF:-9,bF:6},c:{lN:-18,bN:30,lF:-24,bF:36},t:{lN:-60,bN:90,lF:-40,bF:80},s:{lN:22,bN:30,lF:28,bF:40}};   // bacak pozları: n duruş, c çömel, t zıplarken topla, s süpermen (arkaya uzat)
 function ph(arm,dur,fr){
-  const g=GK[arm];
+  const g=GK[arm],bacak=fr.some(([t,v])=>v.lg);
   return {dur,p:true,keys:fr.map(([t,v])=>{const o={torso:v.tor||0,bas:v.bas||0,ofs:v.ofs||0,lift:v.lift||0};
-    o[g[0]]=v.u;o[g[1]]=v.a;o[g[2]]=g[4][0];o[g[3]]=g[4][1];return [t,o]})};
+    o[g[0]]=v.u;o[g[1]]=v.a;o[g[2]]=g[4][0];o[g[3]]=g[4][1];if(bacak)Object.assign(o,LG[v.lg||'n']);return [t,o]})};
 }
 ['N','F'].forEach(arm=>{
   const rn=arm==='N'?{u:-26,a:-70}:{u:-10,a:-62}, rec=[1,{u:rn.u,a:rn.a,tor:6}];
   HAREKET['j'+arm]=ph(arm,.26,[[0,{u:-12,a:-150,bas:-2}],[.28,{u:-90,a:0,tor:14,bas:4,ofs:55}],[.5,{u:-90,a:0,tor:14,bas:4,ofs:62}],rec]);
-  HAREKET['c'+arm]=ph(arm,.36,[[0,{u:-5,a:-150,tor:-6,bas:-3}],[.32,{u:-92,a:0,tor:26,bas:5,ofs:115}],[.55,{u:-92,a:0,tor:26,bas:5,ofs:125}],rec]);
-  HAREKET['h'+arm]=ph(arm,.38,[[0,{u:-80,a:-168,tor:-8,bas:-3}],[.3,{u:-88,a:-12,tor:24,bas:5,ofs:80}],[.52,{u:-88,a:-4,tor:24,bas:5,ofs:90}],rec]);
-  HAREKET['u'+arm]=ph(arm,.42,[[0,{u:20,a:20,tor:-6,bas:-4}],[.35,{u:-150,a:-90,tor:10,bas:5,ofs:70,lift:70}],[.6,{u:-150,a:-90,tor:10,bas:5,ofs:80,lift:90}],rec]);
-  HAREKET['o'+arm]=ph(arm,.40,[[0,{u:-165,a:-115,tor:-12,bas:-4}],[.3,{u:-82,a:14,tor:28,bas:6,ofs:105}],[.55,{u:-80,a:18,tor:28,bas:6,ofs:115}],rec]);
+  HAREKET['c'+arm]=ph(arm,.36,[[0,{u:-5,a:-150,tor:-14,bas:-4}],[.32,{u:-92,a:0,tor:34,bas:6,ofs:140}],[.55,{u:-92,a:0,tor:34,bas:6,ofs:150}],rec]);
+  HAREKET['h'+arm]=ph(arm,.38,[[0,{u:-70,a:-175,tor:-20,bas:-5}],[.3,{u:-88,a:-12,tor:32,bas:6,ofs:105}],[.52,{u:-88,a:-4,tor:32,bas:6,ofs:115}],rec]);
+  HAREKET['u'+arm]=ph(arm,.44,[[0,{u:20,a:20,tor:-10,bas:-4,lg:'c'}],[.35,{u:-150,a:-90,tor:14,bas:5,ofs:75,lift:44,lg:'t'}],[.6,{u:-150,a:-90,tor:14,bas:5,ofs:85,lift:50,lg:'t'}],rec]);
+  HAREKET['o'+arm]=ph(arm,.40,[[0,{u:-170,a:-120,tor:-20,bas:-5}],[.3,{u:-82,a:14,tor:36,bas:7,ofs:125}],[.55,{u:-80,a:18,tor:36,bas:7,ofs:135}],rec]);
   HAREKET['b'+arm]=ph(arm,.32,[[0,{u:-8,a:-120,tor:-4}],[.3,{u:-60,a:22,tor:30,bas:6,ofs:85}],[.55,{u:-60,a:22,tor:30,bas:6,ofs:95}],rec]);
+  HAREKET['w'+arm]=ph(arm,.38,[[0,{u:-12,a:-150,bas:-2}],[.18,{u:-90,a:0,tor:12,bas:3,ofs:50}],[.3,{u:-60,a:-60,tor:8,ofs:25}],[.46,{u:-90,a:0,tor:18,bas:5,ofs:80}],[.7,{u:-90,a:0,tor:18,bas:5,ofs:88}],rec]);   // çift hızlı jab
+  HAREKET['s'+arm]=ph(arm,.48,[[0,{u:-8,a:-130,tor:-14,bas:-3,lg:'c'}],[.3,{u:-92,a:0,tor:34,bas:6,ofs:175,lift:42,lg:'s'}],[.58,{u:-92,a:0,tor:34,bas:6,ofs:190,lift:40,lg:'s'}],rec]);   // süpermen yumruğu: ileri atılır
+  HAREKET['z'+arm]=ph(arm,.48,[[0,{u:75,a:-15,tor:-36,bas:-6}],[.36,{u:-92,a:0,tor:42,bas:8,ofs:125}],[.62,{u:-92,a:0,tor:42,bas:8,ofs:135}],rec]);   // dönerek arka yumruk
+  HAREKET['k'+arm]=ph(arm,.52,[[0,{u:-178,a:-100,tor:-22,bas:-6}],[.4,{u:-84,a:10,tor:38,bas:8,ofs:135}],[.64,{u:-84,a:10,tor:38,bas:8,ofs:145}],rec]);   // büyük kanca (haymaker)
 });
 { // çift tekme: ufak sıçrayıp önce bir bacakla, sonra diğeriyle
   const G0={aNu:-26,aNa:-70,aFu:-10,aFa:-62}, GC={aNu:-50,aNa:-60,aFu:-5,aFa:-70}, GA={aNu:-85,aNa:-40,aFu:45,aFa:115}, GB={aNu:45,aNa:115,aFu:-85,aFa:-40};
@@ -922,15 +927,26 @@ function ph(arm,dur,fr){
   HAREKET.kickDA={dur:.9,win:[[.22,.34],[.5,.62]],keys:A};
   HAREKET.kickDB={dur:.9,win:[[.22,.34],[.5,.62]],keys:A.map(([t,v])=>[t,sw(v)])};
 }
+{ // ters yönlü tekmeler (diğer bacak)
+  const sw=o=>{const r={};for(const n in o){r[n.replace(/^([lbaz]*)([NF])/,(m,a,b)=>a+(b==='N'?'F':'N'))]=o[n]}return r};
+  for(const n of ['kick1','kick2','kick3'])HAREKET[n+'F']={dur:HAREKET[n].dur,keys:HAREKET[n].keys.map(([t,v])=>[t,sw(v)])};
+  HAREKET.kick4N={dur:HAREKET.kick4.dur,keys:HAREKET.kick4.keys.map(([t,v])=>[t,sw(v)])};
+}
+const AYNA_HAR={kick1:'kick1F',kick2:'kick2F',kick3:'kick3F',kick1F:'kick1',kick2F:'kick2',kick3F:'kick3',kick4:'kick4N',kick4N:'kick4',dizF:'dizN',dizN:'dizF',kickDA:'kickDB',kickDB:'kickDA'};
+const aynaAdim=st=>{const [d,m]=st.split(':');return (d==='R'?'L':'R')+':'+(AYNA_HAR[m]||(/[NF]$/.test(m)?m.slice(0,-1)+(m.slice(-1)==='N'?'F':'N'):m))};
 const KOMBO=[
   'R:jN R:cN','L:jF L:cF','R:jN L:hF','L:jF R:hN',
   'R:jN R:cN L:hF','L:jF L:cF R:hN','R:jN L:hF R:cN','L:jF R:hN L:cF','R:jN R:cN R:uN','L:jF L:cF L:uF',
   'R:jN L:hF R:cN L:uF','L:jF R:hN L:cF R:uN','R:jN R:cN L:hF L:oF','L:jF L:cF R:hN R:oN',
   'R:jN R:cN L:hF R:bN L:uF','L:jF L:cF R:hN L:bF R:uN','R:jN R:cN R:uN L:hF L:kick2',
-  'R:jN L:hF R:cN R:oN L:bF R:kickDA','R:jN R:cN R:uN R:bN R:oN L:kick4','L:jF R:hN L:cF R:uN L:dizF R:kickDB'
+  'R:jN L:hF R:cN R:oN L:bF R:kickDA','R:jN R:cN R:uN R:bN R:oN L:kick4','L:jF R:hN L:cF R:uN L:dizF R:kickDB',
+  // 10 yeni kombo
+  'R:jN R:cN R:uN L:hF R:sN','R:jN L:hF L:wF L:kF','R:jN R:cN R:uN R:bN L:zF','R:jN L:hF R:cN R:oN R:sN','R:jN L:hF R:cN L:uF L:kickDB',
+  'R:jN L:hF L:wF R:zN','R:jN R:cN L:hF L:oF L:kF','R:jN R:cN L:hF R:bN R:kN','R:jN R:cN L:hF L:oF R:sN','R:jN R:cN R:uN L:hF R:sN L:kick3'
 ];
+KOMBO.push(...KOMBO.map(k=>k.split(' ').map(aynaAdim).join(' ')));   // hepsinin ters yönlüsü (kollar/bacaklar yer değiştirir)
 const KB={ch:{}};
-for(const sq of KOMBO){let n=KB;for(const st of sq.split(' ')){const [d,m]=st.split(':');n=n.ch[d]||(n.ch[d]={m,ch:{}});if(n.m!==m)console.warn('kombo çakışması:',sq)}}
+for(const sq of KOMBO){let n=KB;for(const st of sq.split(' ')){const [d,m]=st.split(':');n=n.ch[d]||(n.ch[d]={m,ch:{}})}}
 S.kb={n:KB,t:-9};
 const TUT_DESEN=['jjchuo','bbhhuc','huhuoc','jcbhuo','buchbo'];   // tutulana vuruş desenleri (6'şar): j jab, c düz, h kanca, u aparkat, o üstten, b gövde
 S.tk={i:0,p:0,t:-9};
@@ -1124,7 +1140,8 @@ function karakter(){
       const hedefCy=n.cy+(yuk-n.cy)*kz+(S.y-gH);               // kalçadan yere gereken derinlik (çömelmede ayak tam yere iner)
       const fa=B.l+B.k+B.a;                               // ayağın yönü korunur
       const t=ikCoz(tx0+(tx1-tx0)*kz,hedefCy-n.cpy);   // kalça geri kaydıysa ayak yerinde kalır, bacaklar yeniden şekillenir
-      B.l=t.l;B.k=t.k;B.a=fa-(t.l+t.k);
+      const wI=1-kisit(P.lift/30,0,1),l0=B.l,k0=B.k;      // hafif zıplamada (aparkat, süpermen) bacaklar kareden gelir
+      B.l=l0+(t.l-l0)*wI;B.k=k0+(t.k-k0)*wI;B.a=fa-(B.l+B.k);
     });
   }
   ctx.save();
