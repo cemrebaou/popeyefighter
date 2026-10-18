@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.59</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.60</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -662,7 +662,7 @@ function yirt(e,hiz){             // iki elle tutulan yengeci tam ortasından sa
   const sol=EL.N.wx<=EL.F.wx?'N':'F',sag=sol==='N'?'F':'N',hizli=hiz>1000,v=kisit(hiz*0.9,1200,4200);
   if(e.t==='zombi'){             // belden ikiye: üst gövde (kafa, kollar) N elinde, alt gövde (kalça, bacaklar) F elinde
     const z={yon:e.yon,anim:e.anim,kopuk:Object.assign({},e.kopuk),fl:0,moving:false};
-    for(const el of ['N','F']){const yan=EL[el].wx<=EL[el==='N'?'F':'N'].wx?-1:1;S.parcalar.push({el,yan,tip:'zombi',kind:el==='N'?'ust':'alt',z,t0:S.t,k:1,at:hizli,tT:hizli?S.t:0,x:EL[el].wx,y:EL[el].wy,vx:yan*v,vy:hizli?900:0,rot:0})}
+    for(const el of ['N','F']){const yan=EL[el].wx<=EL[el==='N'?'F':'N'].wx?-1:1;S.parcalar.push({el,yan,tip:'zombi',kind:el==='N'?'ust':'alt',z,phi:e.phi||0,t0:S.t,k:1,at:hizli,tT:hizli?S.t:0,x:EL[el].wx,y:EL[el].wy,vx:yan*v,vy:hizli?900:0,rot:0})}
     S.yirtT=S.t;e.iki=false;vur(e,99999,0,0,0.3,e.y);S.pops.pop();e.ol=0.95;titre(60);
     return;
   }      // çekişin gücü = yarıların fırlama hızı
@@ -740,6 +740,10 @@ function tutBirak(k){
 function dusmanGuncelle(dt){
   for(let i=DUS.length-1;i>=0;i--){
     const e=DUS[i];e.anim+=dt;if(e.fl>0)e.fl-=dt;
+    if(e.tut&&!e.olu&&e.iki&&e.t==='zombi'){      // boyun N elinde, kalça F elinde sabit; eller oynadıkça gövde onlarla birlikte yönlenir
+      const ek=zEksen(),u=Math.min(1,(S.t-(e.yatT||S.t))/0.45);
+      e.x=(EL.N.wx+EL.F.wx)/2+ek.ux*13.5;e.y=(EL.N.wy+EL.F.wy)/2+ek.uy*13.5-e.cy;e.phi=u*u*(3-2*u)*ek.phi;e.st=S.t+0.3;e.vx=e.vy=0;continue;
+    }
     if(e.tut&&!e.olu){const h=e.iki?{wx:(EL.N.wx+EL.F.wx)/2,wy:(EL.N.wy+EL.F.wy)/2}:EL[e.tut];e.x=h.wx+e.tx;e.y=h.wy+e.ty-e.cy;e.st=S.t+0.3;e.vx=e.vy=0;continue}
     if(e.olu){e.ol+=dt;e.vy-=G*0.5*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;e.rot+=dt*9*(e.vx<0?-1:1);if(e.ol>0.9)DUS.splice(i,1);continue}
     const stun=S.t<e.st, dx=S.x-e.x;
@@ -863,6 +867,11 @@ function ciziZombi(e,mask){
 }
 const KH={kickLo:130,kick1:260,kick2:380,kick3:520,kick4:600,kickSl:70,dizF:340,dizN:340,kickDA:[300,300],kickDB:[300,300],kickDC:[300,520],kickDD:[300,520],kickDE:[130,300],kickDF:[130,300]};
 function kickH(ad,wi){let b=ad;if(/^kick(?!D)\w*[FN]$/.test(b))b=b.slice(0,-1);const h=KH[b];return Array.isArray(h)?h[Math.min(wi,1)]:(h||330)}   // tekmenin vurduğu yükseklik
+function zEksen(){               // iki elle tutulan zombi: N eli boyunda, F eli kalçasında; gövde iki elin arasındaki eksene dizilir
+  const N=EL.N,F=EL.F;let dx=N.wx-F.wx,dy=N.wy-F.wy;
+  if(Math.hypot(dx,dy)<80){dx=(dx>=0?1:-1)*80;dy=0}
+  const L=Math.hypot(dx,dy);return {ux:dx/L,uy:dy/L,phi:Math.atan2(dx,dy)};
+}
 function zombiKopar(e,hy){       // %25'lik can eşiği geçilince: vurulan uzuv kopup gider (kafa/bacak = ölür, kol = tek kolla devam)
   const kp=e.kopuk||(e.kopuk={}),rel=hy===undefined?0.5:(hy-e.y)/1000;let kind=null;
   if(rel>0.72){if(!kp.kafa)kind='kafa'}
@@ -922,7 +931,7 @@ function parcaCiz(){
       ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);
       if(p.at){const u=S.t-p.tT;if(u>1.1)ctx.globalAlpha=Math.max(0,1-(u-1.1)/0.7)}
       let ang=p.at?p.rot:0;
-      if(p.kind==='ust')ang+=p.yan*Math.PI/2;else if(p.kind==='alt')ang+=-p.yan*Math.PI/2;
+      if(p.kind==='ust'||p.kind==='alt'){if(!p.at)p.phi=zEksen().phi;ang+=p.phi||0}
       ctx.rotate(ang);
       if(p.kind==='ust')ctx.translate(0,725);else if(p.kind==='alt')ctx.translate(0,238);
       ciziZombi(p.z,p.kind);
@@ -945,7 +954,7 @@ function dusmanCiz(){
     ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);
     if(e.olu){ctx.globalAlpha=Math.max(0,1-e.ol/0.9);ctx.translate(0,-e.cy);ctx.rotate(e.rot);ctx.translate(0,e.cy)}
     if(e.tut){ctx.translate(0,-e.cy);ctx.rotate(Math.sin(e.anim*14)*0.12);ctx.translate(0,e.cy)}   // tutulunca çırpınır
-    if(e.iki&&e.t==='zombi'){const u=Math.min(1,(S.t-(e.yatT||S.t))/0.45),hs=EL.N.wx>=EL.F.wx?1:-1;ctx.translate(0,-e.cy);ctx.rotate(u*u*(3-2*u)*hs*Math.PI/2);ctx.translate(0,e.cy)}   // iki elle tutulunca zombi yatay durur (kafa N elinin tarafında)
+    if(e.iki&&e.t==='zombi'){ctx.translate(0,-e.cy);ctx.rotate(e.phi||0);ctx.translate(0,e.cy)}   // iki elle tutulunca zombi iki elin eksenine yatar (kafa N elinin tarafında)
     e.t==='yengec'?ciziYengec(e):e.t==='zombi'?ciziZombi(e):ciziKus(e);
     ctx.restore();
     if(!e.olu&&!e.boss&&e.hp<e.max){
