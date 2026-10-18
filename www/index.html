@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.17</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.18</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol; hızlı = yumruk, hızlı ileri = kayarak yumruk, çok hızlı yukarı = shoryuken (iki elle = dönerek), yavaş götürüp basılı tut = yakala/fırlat, iki elle daire çiz + yana at = aduket</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -881,8 +881,8 @@ function hedefPoz(){
     o.lN=ly(-28,-62)*s; o.bN=ly(38,105)*Math.max(0,c);
     o.lF=ly(28,62)*s;  o.bF=ly(38,105)*Math.max(0,-c);
     o.torso=ly(6+2*c*c,18+3*c*c); o.bas=ly(1.5*s,-4+2*s);
-    o.aNu=ly(3-22*s,-22-55*s); o.aNr=ly(55+25*Math.max(0,s),96-10*s);     // koşuda dirsekler 90° bükülü, kollar güçlü sallanır
-    o.aFu=ly(-2+22*s,-22+55*s); o.aFr=ly(55+25*Math.max(0,-s),96+10*s);
+    o.aNu=ly(3-22*s,-15+55*s); o.aNr=ly(55+25*Math.max(0,s),-45-15*s);     // koşuda dirsekler ~90° bükülü, yumruklar göğüs/çene hizasında, kollar bacakların tersine sallanır
+    o.aFu=ly(-2+22*s,-15-55*s); o.aFr=ly(55+25*Math.max(0,-s),-45+15*s);
     o.bob=0;
   }else{            // bekleme: nefes alma
     const n=Math.sin(t*2.2);
@@ -988,7 +988,7 @@ function ikCoz(tx,ty){
   return {l:(th-DL1)/D,k:(th+flex-DL2-(th-DL1))/D};
 }
 function karakter(){
-  const BON=6/SC;   // kalçadan aşağısı ekranda 6 piksel öne
+  const ALT=15, BON=6/SC-ALT;   // kalçadan aşağısı (kalça + bacaklar) ekranda 6 piksel öne, ayrıca 15 birim geriye
   let N={l:P.lN,k:P.bN,kn:P.kN},F={l:P.lF,k:P.bF,kn:P.kF};
   N.a=ayakAci(N.l,N.k,N.kn);F.a=ayakAci(F.l,F.k,F.kn);
   const nN=ayakNokta(N.l,N.k,N.a,N.kn),nF=ayakNokta(F.l,F.k,F.a,F.kn);
@@ -1012,7 +1012,7 @@ function karakter(){
   bacak(F.l,F.k,F.a,true);
   ctx.restore();
   govdeUzayi(()=>{ resim(R.govde,TX,TY); });
-  ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D);ctx.translate(-85,-112);ctx.drawImage(R.kalca,0,0);ctx.restore();
+  ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D);ctx.translate(-85-ALT,-112);ctx.drawImage(R.kalca,0,0);ctx.restore();
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // sağ (yakın) bacak kalçanın önünde
   govdeUzayi(()=>{
     ctx.save();ctx.translate(-3,-332);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);resim(R.kafa,100,200);ctx.restore();
