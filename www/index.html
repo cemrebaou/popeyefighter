@@ -194,7 +194,7 @@ const izler=new Map(), SINIR=14, TAM=120, TUT=0.14;
 const kolAktif=k=>k.ak||S.t-k.bit<TUT;
 const kolVar=()=>kolAktif(KOL.N)||kolAktif(KOL.F);
 const tutan=k=>DUS.some(e=>e.tut&&!e.olu&&(e.tut===k||e.iki));      // bu el bir düşmanı tutuyor mu (iki elle tutuşta ikisi de)
-const ikiYakin=()=>{if(S.t-(S.yirtT||-9)<1)return true;if(!(KOL.N.ak&&KOL.F.ak))return false;for(const e of DUS){if(e.olu||e.tut||e.boss||e.t!=='yengec')continue;if(Math.hypot(EL.N.wx-e.x,EL.N.wy-(e.y+e.cy))<e.r+70&&Math.hypot(EL.F.wx-e.x,EL.F.wy-(e.y+e.cy))<e.r+70)return true}return false};
+const ikiYakin=()=>{if(S.t-(S.yirtT||-9)<1)return true;if(!(KOL.N.ak&&KOL.F.ak))return false;for(const e of DUS){if(e.olu||e.tut||e.boss)continue;if(Math.hypot(EL.N.wx-e.x,EL.N.wy-(e.y+e.cy))<e.r+70&&Math.hypot(EL.F.wx-e.x,EL.F.wy-(e.y+e.cy))<e.r+70)return true}return false};
 const izBul=t=>{for(const z of izler.values())if(z.t===t)return z;return null};
 function izHiz(iz,pen){          // piksel/sn: son 'pen' saniyedeki yer değiştirme
   const h=iz.hist;if(h.length<2)return 0;
@@ -655,8 +655,8 @@ function vurusKontrol(){
 }
 // ---- tutma: ekrana basılı tut, eli yavaş götür, düşmanı yakala; bırakınca fırlat ----
 function yirt(e,hiz){             // iki elle tutulan yengeci tam ortasından sağ/sol ikiye ayır: yarılar ellerde kalır, hızlı çekişte fırlar
-  const sol=EL.N.wx<=EL.F.wx?'N':'F',sag=sol==='N'?'F':'N',hizli=hiz>1500,v=kisit(hiz*0.9,900,4200);
-  for(const [el,yan] of [[sol,-1],[sag,1]])S.parcalar.push({el,yan,t0:S.t,k:e.k||3.6,anim:e.anim,yon:e.yon,at:hizli,tT:hizli?S.t:0,x:EL[el].wx,y:EL[el].wy,vx:yan*v,vy:hizli?900:0,rot:0});
+  const sol=EL.N.wx<=EL.F.wx?'N':'F',sag=sol==='N'?'F':'N',hizli=true,v=kisit(hiz*0.9,1200,4200);      // çekişin gücü = yarıların fırlama hızı
+  for(const [el,yan] of [[sol,-1],[sag,1]])S.parcalar.push({el,yan,tip:e.t,t0:S.t,k:e.k||(e.t==='yengec'?3.6:1.8),anim:e.anim,yon:e.yon,at:hizli,tT:hizli?S.t:0,x:EL[el].wx,y:EL[el].wy,vx:yan*v,vy:hizli?900:0,rot:0});
   S.yirtT=S.t;e.iki=false;vur(e,99999,0,0,0.3,e.y);S.pops.pop();e.ol=0.95;titre(60);
 }
 function ikiElKontrol(dt){
@@ -686,7 +686,7 @@ function grabKontrol(dt){
     const hz=EL.N.v<=1100&&EL.F.v<=1100&&KOL.N.e>=0.25&&KOL.F.e>=0.25;
     let en=null;
     if(hz)for(const e of DUS){
-      if(e.olu||e.tut||e.boss||e.t!=='yengec')continue;
+      if(e.olu||e.tut||e.boss)continue;
       if(Math.hypot(EL.N.wx-e.x,EL.N.wy-(e.y+e.cy))<e.r+70&&Math.hypot(EL.F.wx-e.x,EL.F.wy-(e.y+e.cy))<e.r+70){en=e;break}
     }
     if(en){
@@ -845,12 +845,12 @@ function parcaCiz(){
       if(p.y<zemin(p.x)+160){p.y=zemin(p.x)+160;p.vy=Math.abs(p.vy)*0.3;p.vx*=0.85}
       p.pt=S.t;
     }
-    const sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC,k=p.k,cx=p.yan*200;
+    const sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC,k=p.k,kus=p.tip!=='yengec',cx=p.yan*(kus?110:200);
     ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);
     if(p.at){const u=S.t-p.tT;if(u>1.1)ctx.globalAlpha=Math.max(0,1-(u-1.1)/0.7);ctx.rotate(p.rot)}
-    ctx.translate(-cx,110*k);
+    ctx.translate(-cx,kus?0:110*k);
     ctx.beginPath();if(p.yan<0)ctx.rect(-900,-1500,900,2100);else ctx.rect(0,-1500,900,2100);ctx.clip();
-    ciziYengec({k,anim:p.anim,yon:p.yon,fl:0,y:-1e9,x:0,boss:false});
+    if(kus)ciziKus({anim:p.anim,yon:p.yon,fl:0});else ciziYengec({k,anim:p.anim,yon:p.yon,fl:0,y:-1e9,x:0,boss:false});
     ctx.restore();
   }
 }
