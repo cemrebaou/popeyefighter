@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.43</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.44</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -300,6 +300,7 @@ Object.assign(S,{hp:100,inv:0,dur:0,sars:0,shx:0,shy:0,durum:'oyun',durumT:0,pop
 const ZY=()=>H*0.80, kisit=(v,a,b)=>Math.max(a,Math.min(b,v));
 const EL={N:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}},F:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}}}, DW={N:0,F:0};
 let sonYon=1, DUS=[], MERMI=[];
+function dunyaNok(lx,ly){const m=ctx.getTransform(),sx=(m.a*lx+m.c*ly+m.e)/DPR-S.shx,sy=(m.b*lx+m.d*ly+m.f)/DPR-S.shy;return [S.x+(sx-W/2)/SC,S.camY+(ZY()-sy)/SC]}
 function elKaydet(ad){            // ön kol uzayında yumruk noktasının dünya konumu
   const m=ctx.getTransform(), lx=248, ly=0, h=EL[ad];
   const sx=(m.a*lx+m.c*ly+m.e)/DPR-S.shx, sy=(m.b*lx+m.d*ly+m.f)/DPR-S.shy;
@@ -875,15 +876,22 @@ function atkPozu(o){
   let i=0;while(i<K.length-2&&u>K[i+1][0])i++;
   const a=K[i],b=K[i+1];let f=(u-a[0])/(b[0]-a[0]);f=Math.max(0,Math.min(1,f));f=f*f*(3-2*f);
   for(const n in a[1])o[n]=a[1][n]+(b[1][n]-a[1][n])*f;
-  if(S.atk.tv){                                   // tutulana vuruş: vuran kol tutulan düşmana doğru uzanır, yumruk bitişi düşmanın üstünde
+  if(S.atk.tv){                                   // tutulana vuruş: vuran kol tutan elin konumuna uzanır, yumruk orada biter
     const e=DUS.find(x=>x.tut&&!x.olu),ar=S.atk.ad[1];
     if(e&&(ar==='N'||ar==='F')){
-      const dxl=(e.x-S.x)*S.yon,dyl=(e.y+e.cy)-(S.y+155+(o.lift||0));
-      const ph=kisit(Math.atan2(dyl,Math.max(dxl,60))/D,-75,115);
-      const w=u<0.3?u/0.3:(u<0.58?1:Math.max(0,1-(u-0.58)/0.42)), sw=w*w*(3-2*w);
-      const au=ar==='N'?'aNu':'aFu',aa=ar==='N'?'aNa':'aFa';
-      o[au]=o[au]*(1-sw)+(-ph-90)*sw;o[aa]=o[aa]*(1-sw)+(-ph)*sw;
-      if(o.ofs!==undefined)o.ofs*=1-0.6*sw;
+      const sh=EL[ar],hd=EL[e.tut];
+      if(sh.sx!==undefined){
+        const dxl=(hd.wx-sh.sx)*S.yon,dyl=hd.wy-sh.sy,d=Math.max(30,Math.hypot(dxl,dyl)),sc=ar==='N'?1.1:1.0,L1=124.1*sc,L2=248*sc;
+        let fu,ff;
+        const phT=Math.atan2(dyl,dxl);
+        if(d>=L1+L2-2){fu=ff=phT}
+        else{const al=Math.acos(kisit((L1*L1+d*d-L2*L2)/(2*L1*d),-1,1));fu=phT-al;      // dirsek aşağıda
+          const ex=L1*Math.cos(fu),ey=L1*Math.sin(fu);ff=Math.atan2(dyl-ey,dxl-ex)}
+        const w=u<0.3?u/0.3:(u<0.58?1:Math.max(0,1-(u-0.58)/0.42)), sw=w*w*(3-2*w);
+        const au=ar==='N'?'aNu':'aFu',aa=ar==='N'?'aNa':'aFa';
+        o[au]=o[au]*(1-sw)+(-fu/D-90)*sw;o[aa]=o[aa]*(1-sw)+(-ff/D)*sw;
+      }
+      o.torso*=0.3;o.bas*=0.3;o.ofs=0;o.lift=0;
     }
   }
   if(o.aNa!==undefined)o.aNr=o.aNa-o.aNu;
@@ -1100,7 +1108,7 @@ function elDurum(dt){
 }
 function kol(omuzX,omuzY,u,r,ad,far,sc){
   const sf=far?'_a':'';
-  ctx.save();ctx.translate(omuzX,omuzY);ctx.scale(sc,sc);ctx.rotate(u*D);
+  ctx.save();ctx.translate(omuzX,omuzY);{const q=dunyaNok(0,0);EL[ad].sx=q[0];EL[ad].sy=q[1]}ctx.scale(sc,sc);ctx.rotate(u*D);
   resim(R['ustkol'+sf],46.2,35.2);
   ctx.translate(-10.1,124.1);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);
