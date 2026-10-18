@@ -1,28 +1,456 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <title>Popeye Fighter</title>
-  <style>
-    html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; touch-action: none; }
-    #oyun { width: 100%; height: 100%; }
-  </style>
-</head>
-<body>
-  <div id="oyun"></div>
-  <script src="lib/phaser.min.js"></script>
-  <script src="config.js"></script>
-  <script src="assets/popeye_data.js"></script>
-  <script src="src/moves.js"></script>
-  <script src="src/levels.js"></script>
-  <script src="src/textures.js"></script>
-  <script src="src/controls.js"></script>
-  <script src="src/Player.js"></script>
-  <script src="src/Enemy.js"></script>
-  <script src="src/scenes/BootScene.js"></script>
-  <script src="src/scenes/GameScene.js"></script>
-  <script src="src/scenes/UIScene.js"></script>
-  <script src="src/main.js"></script>
-</body>
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Popeye Fighter</title></head><body>
+<style>
+/* Düzen: tam ekran tek canvas; üstte küçük etiket, altta tuş ipucu ve dokunmatik düğmeler.
+   Tek bir görünüm: liman gündüzü (oyun sahnesi), tema ayrımı yok. */
+:root{
+  --gok-ust:#bfe3ee; --gok-alt:#f1ead2; --deniz:#5a93a6; --kara:#8b6a45; --kara-ust:#a98557;
+  --yazi:#1f2a33; --yazi-ters:#fffaf0; --panel:rgba(255,250,240,.88); --cizgi:#1f2a33;
+  --font:'Bangers','Arial Black',Impact,sans-serif; --font-ui:'Nunito','Segoe UI',system-ui,sans-serif;
+}
+html,body{height:100%;margin:0;background:var(--gok-ust);color:var(--yazi);overflow:hidden;font-family:var(--font-ui)}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.etiket{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));
+  background:var(--panel);border:2px solid var(--cizgi);border-radius:6px;padding:6px 12px;font-size:14px;font-weight:700;letter-spacing:.02em}
+.etiket b{font-family:var(--font);font-size:20px;letter-spacing:.06em;font-weight:400;margin-right:8px}
+.ipucu{position:fixed;bottom:calc(12px + env(safe-area-inset-bottom,0px));left:max(16px,env(safe-area-inset-left,0px));
+  background:var(--panel);border:2px solid var(--cizgi);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:700}
+.tus{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:72px;height:72px;border-radius:50%;
+  border:3px solid var(--cizgi);background:var(--panel);font-size:28px;font-weight:800;color:var(--yazi);display:none;
+  align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;touch-action:none}
+canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
+.mini{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));
+  background:var(--panel);border:2px solid var(--cizgi);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:800;color:var(--yazi);user-select:none;-webkit-user-select:none;cursor:pointer}
+#dbg{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(20,24,30,.82);color:#9dffb0;font:12px/1.35 ui-monospace,Menlo,monospace;padding:6px 10px;border-radius:6px;pointer-events:none;white-space:pre;z-index:5;max-width:94vw}
+#sifir{top:calc(54px + env(safe-area-inset-top,0px))}
+.tus:active,.tus.bas{background:#ffd36b}
+@media (pointer:coarse){ .tus{display:flex} .ipucu{display:none} }
+#sol{left:max(16px,env(safe-area-inset-left,0px))} #sag{left:calc(max(16px,env(safe-area-inset-left,0px)) + 88px)}
+#zipla{right:max(16px,env(safe-area-inset-right,0px))}
+#asa{right:calc(max(16px,env(safe-area-inset-right,0px)) + 264px)} #yum{right:calc(max(16px,env(safe-area-inset-right,0px)) + 88px)} #tek{right:calc(max(16px,env(safe-area-inset-right,0px)) + 176px)}
+#yuk[hidden]{display:none}
+#yuk{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--gok-ust);font-family:var(--font);font-size:28px;letter-spacing:.08em}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
+
+<canvas id="c"></canvas>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.0</div>
+<div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol</b></div>
+<div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
+<div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
+<div id="dbg">sensör bilgisi bekleniyor…</div>
+<div id="yuk">YÜKLENİYOR…</div>
+
+<script>
+(function(){
+'use strict';
+// ---------- Parçalar ----------
+const ADLAR=['kafa','govde','ustkol','onkol','onkol2','kalca','uyluk','altpan','bacak_bot'];
+const R={};
+function koyult(img){            // arka taraftaki uzuvlar için hafif koyu kopya
+  const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
+  const x=c.getContext('2d');x.drawImage(img,0,0);
+  x.globalCompositeOperation='source-atop';x.fillStyle='rgba(40,35,60,.28)';x.fillRect(0,0,c.width,c.height);
+  return c;
+}
+let kalan=ADLAR.length;
+ADLAR.forEach(a=>{
+  const im=new Image();
+  im.onload=()=>{R[a]=im;if(--kalan===0){['ustkol','onkol2','uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));basla();}};
+  im.onerror=()=>{document.getElementById('yuk').textContent='Parça yüklenemedi: '+a};
+  im.src='parca/'+a+'.png';
+});
+
+// ---------- Ayarlar (parça birimi) ----------
+const BACAK_BOY=398;            // eklemden zemine
+const KARAKTER_BOY=1020;
+const HIZ=1100, G=5600, ZIP1=2700, ZIP2=2400;
+const D=Math.PI/180;
+
+// ---------- Durum ----------
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1,SC=1;
+function boyut(){
+  DPR=Math.min(window.devicePixelRatio||1,3);
+  W=window.innerWidth;H=window.innerHeight;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+  SC=Math.min(H*0.58/KARAKTER_BOY, W*0.45/KARAKTER_BOY);
+}
+window.addEventListener('resize',boyut);boyut();
+
+const key={sol:false,sag:false,zipla:false,asagi:false};
+const S={camY:0,atk:null,kuyruk:[],dizi:{j:0,k:0},sonAtk:-9,x:0,y:0,vx:0,vy:0,yer:true,yon:1,ziplaTut:false,ekstra:1,spin:0,donuyor:false,faz:0,t:0};
+const ROLL_SURE=0.55;
+const P={}; // yumuşatılmış açılar
+function tus(e,d){
+  const k=e.key;
+  if(k==='ArrowLeft'||k==='a'||k==='A')key.sol=d;
+  else if(k==='ArrowRight'||k==='d'||k==='D')key.sag=d;
+  else if(k==='ArrowUp'||k===' '||k==='w'||k==='W'||k==='z'||k==='Z'){ if(d&&!key.zipla)ziplaBas(); key.zipla=d; }
+  else if(k==='ArrowDown'||k==='s'||k==='S')key.asagi=d;
+  else if((k==='j'||k==='J')&&d&&!e.repeat)atkIstek('j');
+  else if((k==='k'||k==='K')&&d&&!e.repeat)atkIstek('k');
+  else return;
+  e.preventDefault();
+}
+addEventListener('keydown',e=>tus(e,true));addEventListener('keyup',e=>tus(e,false));
+function dokunTus(id,fn){
+  const el=document.getElementById(id);
+  const bas=e=>{e.preventDefault();el.classList.add('bas');fn(true)};
+  const birak=e=>{e.preventDefault();el.classList.remove('bas');fn(false)};
+  el.addEventListener('pointerdown',bas);el.addEventListener('pointerup',birak);
+  el.addEventListener('pointerleave',birak);el.addEventListener('pointercancel',birak);
+}
+dokunTus('yum',d=>{if(d)atkIstek('j')});dokunTus('tek',d=>{if(d)atkIstek('k')});
+dokunTus('asa',d=>key.asagi=d);
+dokunTus('sol',d=>key.sol=d);dokunTus('sag',d=>key.sag=d);
+dokunTus('zipla',d=>{if(d&&!key.zipla)ziplaBas();key.zipla=d});
+
+// ---------- Sensör: telefonu direksiyon gibi tut ----------
+// sağa/sola çevir = yürü (eğim ne kadar büyükse o kadar hızlı), direksiyonu hızla arkaya kır (ekran tavana) = zıpla (şiddet = zıplama gücü),
+// ekranı kendine doğru yatır = çömel
+const GYRO={ak:false,steer:0,egil:false,zipBit:-9,u0z:0,kalT:0,oz:null,rate:0,sonT:0,sonZip:-9};
+const ACI_OLU=7, ACI_TAM=40, ZIP_ESIK=2.2;
+const asagiMi=()=>key.asagi||GYRO.egil;
+const ziplaTut=()=>key.zipla||S.t<GYRO.zipBit;
+function ekranAci(){const a=(screen.orientation&&typeof screen.orientation.angle==='number')?screen.orientation.angle:(window.orientation||0);return((a%360)+360)%360}
+function gyroAx(){
+  if(!GYRO.ak||performance.now()/1000-GYRO.sonT>0.5)return 0;
+  const a=Math.abs(GYRO.steer);if(a<ACI_OLU)return 0;
+  return Math.sign(GYRO.steer)*Math.min(1,(a-ACI_OLU)/(ACI_TAM-ACI_OLU));
+}
+function sensorOku(e){
+  if(e.beta==null||e.gamma==null)return;
+  const now=performance.now()/1000, b=e.beta*D, g=e.gamma*D;
+  const ux=-Math.sin(g)*Math.cos(b), uy=Math.sin(b), uz=Math.cos(g)*Math.cos(b);   // "yukarı" vektörü cihaz eksenlerinde
+  const a=ekranAci();let sr,su;                                                   // ekran düzlemine çevir
+  if(a===90){sr=-uy;su=ux}else if(a===270){sr=uy;su=-ux}else if(a===180){sr=-ux;su=-uy}else{sr=ux;su=uy}
+  if(Math.hypot(sr,su)>0.35){const ang=Math.max(-90,Math.min(90,Math.atan2(-sr,su)/D));GYRO.steer+=(ang-GYRO.steer)*0.4}
+  else GYRO.steer*=0.8;
+  if(now<GYRO.kalT){GYRO.u0z=uz;GYRO.oz=uz;GYRO.sonT=now;return}                 // dengeleme: tuttuğun duruş "nötr"
+  const dz=uz-GYRO.u0z;
+  if(dz<-0.35)GYRO.egil=true;else if(dz>-0.22)GYRO.egil=false;
+  if(GYRO.oz!==null&&GYRO.sonT>0){
+    const dt=now-GYRO.sonT;
+    if(dt>0.001){GYRO.rate+=((uz-GYRO.oz)/dt-GYRO.rate)*0.5}
+  }
+  GYRO.oz=uz;GYRO.sonT=now;
+  if(GYRO.rate>ZIP_ESIK&&now-GYRO.sonZip>0.35){
+    const guc=0.55+0.7*Math.min(1,(GYRO.rate-ZIP_ESIK)/4);
+    ziplaBas(guc);GYRO.zipBit=S.t+0.9;GYRO.sonZip=now;
+  }
+}
+const sensBtn=document.getElementById('sens'), yaz=t=>{sensBtn.textContent='🎮 SENSÖR: '+t};
+async function sensorToggle(){
+  if(GYRO.ak){GYRO.ak=false;GYRO.egil=false;removeEventListener('deviceorientation',sensorOku);yaz('KAPALI');return}
+  try{
+    if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){
+      if(await DeviceOrientationEvent.requestPermission()!=='granted'){yaz('İZİN YOK');return}
+    }
+  }catch(_){yaz('İZİN YOK');return}
+  GYRO.steer=0;GYRO.rate=0;GYRO.sonT=0;GYRO.oz=null;GYRO.kalT=performance.now()/1000+1.5;GYRO.ak=true;
+  addEventListener('deviceorientation',sensorOku);
+  yaz('HAZIRLAN… (nötr tut)');
+  setTimeout(()=>{if(!GYRO.ak)return;yaz(GYRO.sonT?'AÇIK':'VERİ YOK')},1600);
+}
+sensBtn.addEventListener('click',sensorToggle);
+// ---- Hata ayıklama: sensör olayları geliyor mu? (her zaman dinler) ----
+const DBG={oN:0,mN:0,b:null,g:null,a:null,ax:null,ay:null,az:null,t:0};
+addEventListener('deviceorientation',e=>{DBG.oN++;DBG.b=e.beta;DBG.g=e.gamma;DBG.a=e.alpha});
+addEventListener('devicemotion',e=>{DBG.mN++;const a=e.accelerationIncludingGravity;if(a){DBG.ax=a.x;DBG.ay=a.y;DBG.az=a.z}});
+const dbgEl=document.getElementById('dbg'), f1=v=>v==null?'—':(+v).toFixed(1);
+let iframeIci=false;try{iframeIci=window.self!==window.top}catch(_){iframeIci=true}
+function dbgYaz(){
+  dbgEl.textContent=
+    'güvenli:'+(window.isSecureContext?'evet':'HAYIR')+'  iframe:'+(iframeIci?'evet':'hayır')+'  ekran:'+ekranAci()+'°\n'+
+    'orientation olay:'+DBG.oN+'  motion olay:'+DBG.mN+(DBG.oN+DBG.mN===0?'   ← HİÇ OLAY GELMİYOR':'')+'\n'+
+    'beta '+f1(DBG.b)+'  gamma '+f1(DBG.g)+'  alpha '+f1(DBG.a)+'\n'+
+    'ivme x '+f1(DBG.ax)+'  y '+f1(DBG.ay)+'  z '+f1(DBG.az)+'\n'+
+    'sensör:'+(GYRO.ak?'AÇIK':'kapalı')+'  direksiyon '+f1(GYRO.steer)+'°  yön/hız '+gyroAx().toFixed(2)+'\n'+
+    'eğim(dz) '+f1(GYRO.oz==null?null:GYRO.oz-GYRO.u0z)+'  hız(rate) '+f1(GYRO.rate)+'  çömel:'+(GYRO.egil?'EVET':'hayır');
+}
+document.getElementById('sifir').addEventListener('click',()=>{if(GYRO.ak){GYRO.kalT=performance.now()/1000+1;yaz('HAZIRLAN… (nötr tut)');setTimeout(()=>{if(GYRO.ak)yaz('AÇIK')},1100)}});
+
+// ---------- Kol kontrolü: ekranda sürükle, kol o yöne vursun ----------
+// sağ yarı = ön kol (N), sol yarı = arka kol (F). Sürükleme yönü = kolun yönü, mesafe = uzanma
+const KOL={N:{ak:false,th:0,e:0,bit:-9},F:{ak:false,th:0,e:0,bit:-9}};
+const izler=new Map(), SINIR=14, TAM=120, TUT=0.14;
+const kolAktif=k=>k.ak||S.t-k.bit<TUT;
+const kolVar=()=>kolAktif(KOL.N)||kolAktif(KOL.F);
+function kolHesap(iz,x,y){
+  const dx=(x-iz.x0)*iz.yon, dy=y-iz.y0, L=Math.hypot(dx,dy), k=KOL[iz.t];
+  if(L<SINIR){k.e=0;return}
+  k.th=Math.atan2(dy,dx)/D;
+  k.e=Math.min(1,(L-SINIR)/(TAM-SINIR));
+}
+cv.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  const t=e.clientX<W/2?'F':'N';
+  if(KOL[t].ak)return;
+  try{cv.setPointerCapture(e.pointerId)}catch(_){}
+  izler.set(e.pointerId,{t,x0:e.clientX,y0:e.clientY,yon:S.yon});
+  KOL[t].ak=true;KOL[t].e=0;
+});
+cv.addEventListener('pointermove',e=>{const iz=izler.get(e.pointerId);if(iz)kolHesap(iz,e.clientX,e.clientY)});
+const kolBit=e=>{const iz=izler.get(e.pointerId);if(!iz)return;izler.delete(e.pointerId);const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t};
+cv.addEventListener('pointerup',kolBit);cv.addEventListener('pointercancel',kolBit);
+function kolUygula(o,k,u,r,gu,ga){
+  const wr=a=>((a+540)%360)-180, eu=k.e, ef=Math.min(1,k.e*1.5);   // yumruk önde gider, üst kol arkadan gelir
+  const U=gu+wr(k.th-90-gu)*eu, A=ga+wr(k.th-ga)*ef;
+  o[u]=U;o[r]=A-U;
+  return Math.cos(k.th*D)*k.e;
+}
+
+// ---------- Saldırılar (parça pozları, zaman çizelgesi 0..1) ----------
+// aNu/aFu: üst kol açısı (0 = aşağı sarkık, -90 = ileri); aNa/aFa: ön kolun mutlak yönü (0 = ileri, -90 = yukarı)
+const GARD={aNu:-26,aNa:-70,aFu:-10,aFa:-62,torso:6,bas:0,ofs:0,lift:0};
+const HAREKET={
+  jab:{dur:.30,keys:[[0,{aNu:-12,aNa:-150,torso:0,bas:-2,ofs:0,lift:0}],[.30,{aNu:-90,aNa:0,torso:15,bas:4,ofs:60,lift:0}],[.55,{aNu:-90,aNa:0,torso:15,bas:4,ofs:70,lift:0}],[1,{aNu:-26,aNa:-70,torso:6,bas:0,ofs:0,lift:0}]]},
+  cross:{dur:.36,keys:[[0,{aFu:0,aFa:-150,aNu:-40,aNa:-100,torso:-4,bas:-3,ofs:0,lift:0}],[.32,{aFu:-92,aFa:0,aNu:-50,aNa:-120,torso:24,bas:5,ofs:110,lift:0}],[.55,{aFu:-92,aFa:0,aNu:-50,aNa:-120,torso:24,bas:5,ofs:120,lift:0}],[1,{aFu:-10,aFa:-62,aNu:-26,aNa:-70,torso:6,bas:0,ofs:0,lift:0}]]},
+  upper:{dur:.42,keys:[[0,{aNu:20,aNa:20,torso:-6,bas:-4,ofs:0,lift:0}],[.35,{aNu:-150,aNa:-90,torso:10,bas:5,ofs:70,lift:70}],[.6,{aNu:-150,aNa:-90,torso:10,bas:5,ofs:80,lift:90}],[1,{aNu:-26,aNa:-70,torso:6,bas:0,ofs:0,lift:0}]]},
+  kick1:{dur:0.62,keys:[[0,{lN:-30,bN:75,torso:-4,bas:-2,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.22,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[0.42,{lN:-92,bN:-6.5,torso:-6,bas:-2,ofs:55,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.66,{lN:-93,bN:-6.5,torso:-7,bas:-2,ofs:65,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.85,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[1,{lN:7,bN:3,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]},
+  kick2:{dur:0.62,keys:[[0,{lN:-30,bN:75,torso:-4,bas:-2,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.22,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[0.42,{lN:-112,bN:-6.5,torso:-6,bas:-2,ofs:55,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.66,{lN:-113,bN:-6.5,torso:-7,bas:-2,ofs:65,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.85,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[1,{lN:7,bN:3,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]},
+  kick3:{dur:0.62,keys:[[0,{lN:-30,bN:75,torso:-4,bas:-2,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.22,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[0.42,{lN:-135,bN:-6.5,torso:-6,bas:-2,ofs:55,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.66,{lN:-136,bN:-6.5,torso:-7,bas:-2,ofs:65,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.85,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[1,{lN:7,bN:3,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]},
+  kick4:{dur:0.62,keys:[[0,{lF:-30,bF:75,torso:-4,bas:-2,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.22,{lF:-105,bF:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-5,aNa:-70,aFu:-50,aFa:-60}],[0.42,{lF:-150,bF:-6.5,torso:-6,bas:-2,ofs:55,lift:0,aNu:45,aNa:115,aFu:-85,aFa:-40}],[0.66,{lF:-151,bF:-6.5,torso:-7,bas:-2,ofs:65,lift:0,aNu:45,aNa:115,aFu:-85,aFa:-40}],[0.85,{lF:-105,bF:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-5,aNa:-70,aFu:-50,aFa:-60}],[1,{lF:-9,bF:6,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]},
+  dizF:{dur:.46,keys:[[0,{lF:-20,bF:50,torso:2,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.35,{lF:-112,bF:112,torso:12,bas:-4,ofs:50,lift:0,aNu:-30,aNa:-60,aFu:-20,aFa:-60}],[0.62,{lF:-114,bF:114,torso:14,bas:-4,ofs:62,lift:0,aNu:-30,aNa:-60,aFu:-20,aFa:-60}],[1,{lF:-9,bF:6,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]},
+  dizN:{dur:.46,keys:[[0,{lN:-20,bN:50,torso:2,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.35,{lN:-112,bN:112,torso:12,bas:-4,ofs:50,lift:0,aNu:-30,aNa:-60,aFu:-20,aFa:-60}],[0.62,{lN:-114,bN:114,torso:14,bas:-4,ofs:62,lift:0,aNu:-30,aNa:-60,aFu:-20,aFa:-60}],[1,{lN:7,bN:3,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]}
+};
+const ZINCIR={j:['jab','cross','upper'],k:['kick1','dizF','kick2','dizN','kick3','kick4']};   // düz tekme, diz, biraz yukarı, diz, daha yukarı, en yukarı
+function sonrakiAd(tur){
+  if(S.t-S.sonAtk>0.5)S.dizi[tur]=0;
+  const z=ZINCIR[tur];return z[(S.dizi[tur]++)%z.length];
+}
+function atkIstek(tur){
+  if(!S.atk)S.atk={ad:sonrakiAd(tur),t:0};
+  else if(S.kuyruk.length<2)S.kuyruk.push(tur);
+}
+function atkGuncelle(dt){
+  if(!S.atk)return;
+  S.atk.t+=dt;
+  if(S.atk.t>=HAREKET[S.atk.ad].dur){
+    S.sonAtk=S.t;S.atk=null;
+    if(S.kuyruk.length)S.atk={ad:sonrakiAd(S.kuyruk.shift()),t:0};
+  }
+}
+function atkPozu(o){
+  const m=HAREKET[S.atk.ad],u=Math.min(1,S.atk.t/m.dur),K=m.keys;
+  let i=0;while(i<K.length-2&&u>K[i+1][0])i++;
+  const a=K[i],b=K[i+1];let f=(u-a[0])/(b[0]-a[0]);f=Math.max(0,Math.min(1,f));f=f*f*(3-2*f);
+  for(const n in a[1])o[n]=a[1][n]+(b[1][n]-a[1][n])*f;
+  if(o.aNa!==undefined)o.aNr=o.aNa-o.aNu;
+  if(o.aFa!==undefined)o.aFr=o.aFa-o.aFu;
+}
+
+function ziplaBas(guc=1){
+  if(S.yer){S.vy=-ZIP1*guc;S.yer=false;S.ekstra=1;S.donuyor=false;}
+  else if(S.ekstra>0){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;}
+}
+
+// ---------- Zemin: düz yol + iki yanda merdiven ----------
+function zemin(x){
+  const a=Math.abs(x);
+  if(a<1400)return 0; if(a<1700)return 50; if(a<2000)return 100; if(a<2300)return 150;
+  if(a<3000)return 150; if(a<3300)return 100; if(a<3600)return 50; return 0;
+}
+
+// ---------- Poz hesabı ----------
+function hedefPoz(){
+  const t=S.t, hiz=Math.abs(S.vx)/HIZ;
+  const o={};
+  if(!S.yer){
+    if(S.donuyor){   // top pozu: bacaklar karna, kollar göğse
+      Object.assign(o,{lN:-125,bN:145,lF:-112,bF:140,torso:72,bas:-12,aNu:-62,aNr:92,aFu:-78,aFr:105,bob:0});   // sıkı top: dizler karına, kollar dizleri sarar, çene göğse
+    }else if(S.vy<0){
+      Object.assign(o,{lN:-40,bN:75,lF:-12,bF:35,torso:6,bas:0,aNu:-80,aNr:30,aFu:-60,aFr:25,bob:0});
+    }else{
+      Object.assign(o,{lN:-18,bN:12,lF:14,bF:25,torso:4,bas:2,aNu:-30,aNr:40,aFu:-20,aFr:45,bob:0});
+    }
+  }else if(hiz>0.05){
+    const f=S.faz, s=Math.sin(f), c=Math.cos(f);
+    o.lN=-28*s; o.bN=38*Math.max(0,c);
+    o.lF=28*s;  o.bF=38*Math.max(0,-c);
+    o.torso=6+2*c*c; o.bas=1.5*s;
+    o.aNu=3-22*s; o.aNr=55+25*Math.max(0,s);     // kollar rahat sallanır
+    o.aFu=-2+22*s; o.aFr=55+25*Math.max(0,-s);
+    o.bob=0;
+  }else{            // bekleme: nefes alma
+    const n=Math.sin(t*2.2);
+    o.lN=7; o.bN=3; o.lF=-9; o.bF=6;
+    o.torso=2+1.2*n; o.bas=-1*n;
+    o.aNu=4+2*n; o.aNr=60;
+    o.aFu=-2+2*n; o.aFr=65;
+    o.bob=0;
+  }
+  o.kN=0;o.kF=0;o.pelv=0;o.hx=0;o.hy=0;o.hb=0;
+  if(S.yer&&asagiMi()){      // çömelme: bir bacak önde çapraz, diğeri diz üstü geride; yürürken bacaklar rol değiştirir
+    const sn=Math.sin(S.faz), w=hiz>0.05?0.5+0.5*sn:1;      // w=1: yakın bacak önde
+    const ON_={l:-90,b:135}, ARKA={l:20,b:37};   // ön bacak derin çömelme; arka bacak: üst bacak aşağı, alt bacak geride, ayak ucu yere değer
+    o.lN=ARKA.l+(ON_.l-ARKA.l)*w; o.bN=ARKA.b+(ON_.b-ARKA.b)*w; o.kN=1-w;
+    o.lF=ARKA.l+(ON_.l-ARKA.l)*(1-w); o.bF=ARKA.b+(ON_.b-ARKA.b)*(1-w); o.kF=w;
+    o.pelv=32; o.hy=14; o.hb=50+(hiz>0.05?6*sn:0); o.torso=13+(hiz>0.05?4*sn:0); o.bas=-26; o.aNu=-38; o.aNr=40; o.aFu=-26; o.aFr=45;
+  }
+  if(S.atk||S.t-S.sonAtk<0.9||kolVar()){   // vuruş sürerken guard; bırakınca kollar iner
+    o.aNu=-26;o.aNr=-44;o.aFu=-10;o.aFr=-52;
+  }
+  o.ofs=0;o.lift=0;
+  if(S.atk)atkPozu(o);
+  if(kolVar()&&!S.donuyor){      // sürükleme: o kol parmağı izler, ayaklar yerinde
+    let ileri=0;
+    if(kolAktif(KOL.N))ileri+=kolUygula(o,KOL.N,'aNu','aNr',-26,-70);
+    if(kolAktif(KOL.F))ileri+=kolUygula(o,KOL.F,'aFu','aFr',-10,-62);
+    o.torso+=12*ileri;o.bas+=2*ileri;
+  }
+  return o;
+}
+const ANAH=['lN','bN','lF','bF','torso','bas','aNu','aNr','aFu','aFr','ofs','lift','kN','kF','pelv','hx','hy','hb'];
+function pozGuncelle(dt){
+  const h=hedefPoz(), k=1-Math.exp(-dt*((S.atk||kolVar())?45:(S.yer?22:16)));
+  ANAH.forEach(a=>{P[a]=(P[a]===undefined)?h[a]:P[a]+(h[a]-P[a])*k});
+}
+
+// ---------- Çizim ----------
+function resim(img,px,py){ctx.drawImage(img,-px,-py)}
+// Bacak: kalça (uyluk) -> diz (alt pantolon) -> ayak bileği (bacak + bot), üç ayrı parça
+const T_X=7,T_Y=118, S_X=-6,S_Y=110, F_SOL=173;
+function bacak(l,k,ank,koyu){
+  const sfx=koyu?'_k':'';
+  ctx.save();ctx.rotate(l*D);
+  ctx.save();ctx.translate(T_X,T_Y);ctx.rotate(k*D);
+  ctx.save();ctx.translate(S_X,S_Y);ctx.rotate(ank*D);resim(R['bacak_bot'+sfx],56,30);ctx.restore();   // bot en arkada
+  resim(R['altpan'+sfx],66,22);
+  ctx.restore();
+  resim(R['uyluk'+sfx],57,22);                                                                          // uyluk dizi örter
+  ctx.restore();
+}
+const TX=125,TY=360;     // gövde bel noktası
+function govdeUzayi(fn){ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D);ctx.translate(3,-86);ctx.rotate(P.torso*D);fn();ctx.restore()}
+function kol(omuzX,omuzY,u,r,ust,on,ox,oy){
+  ctx.save();ctx.translate(omuzX-TX,omuzY-TY);ctx.rotate(u*D);
+  resim(ust,50,22);
+  const dv=rot(15,-5,-u);ctx.translate(2+dv[0],166+ox+dv[1]);ctx.rotate(r*D);resim(on,ox,oy);   // dirsek: üst kolun ucu (172) ile ön kolun arka ucu ancak değer
+  ctx.restore();
+}
+function ayakAci(l,b,diz){const f=(S.atk&&S.atk.ad.indexOf('kick')===0)?0:((S.yer&&!S.atk)?0.85:0.45),d=-(l+b)*f;return d+((100-(l+b))-d)*diz}   // diz: 1 = geride, ayak ucu yere değer
+// ---- Ayak-zemin uyumu (iki kemikli ters kinematik) ----
+const rot=(x,y,deg)=>{const t=deg*D,c=Math.cos(t),s=Math.sin(t);return [x*c-y*s,x*s+y*c]};
+const L1=Math.hypot(T_X,T_Y),L2=Math.hypot(S_X,S_Y),DL1=Math.atan2(-T_X,T_Y),DL2=Math.atan2(-S_X,S_Y);
+function ayakNokta(l,k,ank,kn){          // kalça uzayında bilek ve zemine değen nokta (topuk/ayak ucu karışımı)
+  const v1=rot(T_X,T_Y,l),v2=rot(S_X,S_Y,l+k),ax=v1[0]+v2[0],ay=v1[1]+v2[1];
+  const c=rot(104*kn,F_SOL-38*kn,l+k+ank);
+  return {ax,ay,cpx:c[0],cpy:c[1],cx:ax+c[0],cy:ay+c[1]};
+}
+function ikCoz(tx,ty){
+  const d=Math.min(L1+L2-0.5,Math.max(Math.abs(L1-L2)+0.5,Math.hypot(tx,ty)));
+  const tau=Math.atan2(-tx,ty),al=Math.acos((L1*L1+d*d-L2*L2)/(2*L1*d)),ga=Math.acos((L1*L1+L2*L2-d*d)/(2*L1*L2));
+  const th=tau-al,flex=Math.PI-ga;
+  return {l:(th-DL1)/D,k:(th+flex-DL2-(th-DL1))/D};
+}
+function karakter(){
+  const BON=6/SC;   // kalçadan aşağısı ekranda 6 piksel öne
+  let N={l:P.lN,k:P.bN,kn:P.kN},F={l:P.lF,k:P.bF,kn:P.kF};
+  N.a=ayakAci(N.l,N.k,N.kn);F.a=ayakAci(F.l,F.k,F.kn);
+  const nN=ayakNokta(N.l,N.k,N.a,N.kn),nF=ayakNokta(F.l,F.k,F.a,F.kn);
+  const yuk=S.yer?Math.max(nN.cy,nF.cy):BACAK_BOY;
+  const ikAcik=S.yer&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
+  if(ikAcik){
+    [[N,nN],[F,nF]].forEach(([B,n])=>{
+      const dunyaX=S.x+S.yon*(P.ofs+BON+n.cx), gH=zemin(dunyaX);
+      const hedefCy=n.cy+(S.y-gH);                       // kalçadan ayağa gereken derinlik
+      const fa=B.l+B.k+B.a;                               // ayağın yönü korunur
+      const t=ikCoz(n.ax+P.hb,hedefCy-n.cpy);   // kalça geri kaydıysa ayak yerinde kalır, bacaklar yeniden şekillenir
+      B.l=t.l;B.k=t.k;B.a=fa-(t.l+t.k);
+    });
+  }
+  ctx.save();
+  ctx.translate(P.ofs-P.hb,-yuk-P.lift);   // kalça ve üstü geriye (sola) kayar
+  if(S.donuyor){ctx.translate(0,-170);ctx.rotate(S.spin);ctx.translate(0,170);}   // yuvarlanma: gövde ortasından ileri doğru döner
+  govdeUzayi(()=>{ kol(100,127,P.aFu,P.aFr,R.ustkol_k,R.onkol2_k,35,68); });   // sol (uzak) kol en arka katmanda
+  ctx.save();ctx.translate(BON,0);
+  bacak(F.l,F.k,F.a,true);
+  ctx.restore();
+  govdeUzayi(()=>{ resim(R.govde,TX,TY); });
+  ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D);ctx.translate(-85,-112);ctx.drawImage(R.kalca,0,0);ctx.restore();
+  ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // sağ (yakın) bacak kalçanın önünde
+  govdeUzayi(()=>{
+    ctx.save();ctx.translate(-3,-332);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);resim(R.kafa,100,200);ctx.restore();
+    kol(62,122,P.aNu,P.aNr,R.ustkol,R.onkol,40,82);         // ön kol
+  });
+  ctx.restore();
+}
+function arkaPlan(camX,zeminY){
+  const g=ctx.createLinearGradient(0,0,0,zeminY);g.addColorStop(0,getComputedStyle(document.documentElement).getPropertyValue('--gok-ust'));
+  g.addColorStop(1,getComputedStyle(document.documentElement).getPropertyValue('--gok-alt'));
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // deniz şeridi
+  ctx.fillStyle='#5a93a6';ctx.fillRect(0,zeminY-H*0.10,W,H*0.10);
+  ctx.fillStyle='rgba(255,255,255,.35)';
+  for(let i=-1;i<W/90+2;i++){const x=((i*90-camX*0.15)%(W+180)+W+180)%(W+180)-90;ctx.fillRect(x,zeminY-H*0.07,36,2);ctx.fillRect(x+40,zeminY-H*0.03,24,2)}
+  // uzak tepeler
+  ctx.fillStyle='#9db8a3';ctx.beginPath();ctx.moveTo(0,zeminY-H*0.10);
+  for(let x=0;x<=W;x+=20){ctx.lineTo(x,zeminY-H*0.10-(Math.sin((x+camX*0.2)/170)*0.5+0.5)*H*0.11-H*0.02)}
+  ctx.lineTo(W,zeminY-H*0.10);ctx.fill();
+  // iskele direkleri
+  ctx.fillStyle='#6b5233';
+  const aralik=260;
+  for(let i=-1;i<W/aralik+2;i++){const x=((i*aralik-camX*0.6)%(W+aralik*2)+W+aralik*2)%(W+aralik*2)-aralik;ctx.fillRect(x,zeminY-H*0.16,10,H*0.16)}
+  // zemin
+  // zemin ve merdivenler (dünya yüksekliğine göre)
+  const ys=x=>zeminY-(zemin(camX+(x-W/2)/SC)-S.camY)*SC;
+  ctx.fillStyle='#8b6a45';ctx.beginPath();ctx.moveTo(0,H);
+  for(let x=0;x<=W;x+=4){ctx.lineTo(x,ys(x))}
+  ctx.lineTo(W,H);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#a98557';ctx.lineWidth=6;ctx.beginPath();
+  for(let x=0;x<=W;x+=4){const y=ys(x);x===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}
+  ctx.stroke();
+  ctx.fillStyle='rgba(31,42,51,.30)';
+  const tahta=120*SC*2.2;
+  for(let x=-((camX*SC)%tahta);x<W;x+=tahta){const y=ys(x+W*0+0);ctx.fillRect(x,y+8,3,H-y)}
+}
+function ciz(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  const zeminY=H*0.80;
+  arkaPlan(S.x,zeminY);
+  ctx.save();
+  ctx.translate(W/2,zeminY-(S.y-S.camY)*SC);
+  ctx.scale(SC*S.yon,SC);
+  karakter();
+  ctx.restore();
+}
+
+// ---------- Döngü ----------
+let son=0;
+function dongu(ms){
+  const dt=Math.min(0.033,(ms-son)/1000||0.016);son=ms;S.t+=dt;
+  const ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gyroAx())), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
+  const ivme=S.yer?9000:6000, hed=ax*HIZ*(S.atk&&S.yer?0.35:1)*(S.yer&&asagiMi()?0.45:1);
+  if(yon){S.yon=yon;S.vx+=Math.sign(hed-S.vx)*Math.min(Math.abs(hed-S.vx),ivme*dt)}
+  else{S.vx-=Math.sign(S.vx)*Math.min(Math.abs(S.vx),(S.yer?12000:2500)*dt)}
+  S.x+=S.vx*dt;
+  atkGuncelle(dt);
+  const zH=zemin(S.x);
+  if(S.yer){
+    if(zH<S.y-70){S.yer=false;S.vy=0}                      // yüksek basamaktan düşme
+    else{S.y+=(zH-S.y)*(1-Math.exp(-dt*(zH>S.y?28:22)));if(Math.abs(S.y-zH)<0.4)S.y=zH}
+  }
+  if(!S.yer){
+    S.vy+=G*dt;S.y-=S.vy*dt;
+    if(!ziplaTut()&&S.vy<0&&!S.donuyor)S.vy*=Math.pow(0.0005,dt);   // kısa zıplama
+    if(S.donuyor){S.spin+=dt*Math.PI*2/ROLL_SURE;if(S.spin>=Math.PI*2){S.spin=0;S.donuyor=false}}
+    if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;S.donuyor=false;S.spin=0}
+  }
+  S.camY+=(S.y-S.camY)*(1-Math.exp(-dt*5));
+  if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05;
+  pozGuncelle(dt);
+  if(S.t-DBG.t>0.1){DBG.t=S.t;dbgYaz()}
+  ciz();
+  requestAnimationFrame(dongu);
+}
+function basla(){
+  document.getElementById('yuk').hidden=true;
+  requestAnimationFrame(dongu);
+}
+})();
+</script>
+
 </html>
