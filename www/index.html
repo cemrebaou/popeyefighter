@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.58</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.59</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -67,7 +67,7 @@ ADLAR.forEach(a=>{
     R.z_kol_k=koyult(R.z_kol,.38);R.z_bacak_k=koyult(R.z_bacak,.38);      // zombinin arkadaki kolu/bacağı daha koyu   // arkadaki kol: bacaktan daha açık ton
     basla();}};
   im.onerror=()=>{document.getElementById('yuk').textContent='Parça yüklenemedi: '+a};
-  im.src='parca/'+a+'.png?v=36';          // ?v= : görsel değişince tarayıcı eski önbelleği kullanmasın
+  im.src='parca/'+a+'.png?v=37';          // ?v= : görsel değişince tarayıcı eski önbelleği kullanmasın
 });
 const YUZ=[];                      // can göstergesi: 0 = tam can ... 9 = çok az can, 10 = ölü
 for(let i=0;i<11;i++){const im=new Image();im.src='yuz/yuz'+i+'.png?v=35';YUZ.push(im)}
@@ -825,19 +825,19 @@ function oyuncuHasar(){
 // ---- çizim ----
 const CIZGI='#1f2a33';
 // ---------- Zombi (parçalı): kafa, gövde, kalça, kol, bacak ----------
-const ZU=0.42, ZA={kafa:[200,548],govde:[212,548],kalca:[163,353],kol:[73,85],bacak:[88,48]}, ZHY=-216;   // ZU: tam çözünürlük pikseli başına oyun birimi; ZA: parça bağlantı noktaları
+const ZU=0.42, ZA={kafa:[200,548],govde:[212,548],kalca:[163,353],kol:[88,78],bacak:[88,48]}, ZHY=-216;   // ZU: tam çözünürlük pikseli başına oyun birimi; ZA: parça bağlantı noktaları
 function zp(img,a,fl){
   const x=-a[0]*ZU,y=-a[1]*ZU,w=img.width*2*ZU,h=img.height*2*ZU;
   ctx.drawImage(img,x,y,w,h);
   if(fl){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.55;ctx.drawImage(img,x,y,w,h);ctx.restore()}
 }
 function zKolAci(e,far){
-  const base=-28+Math.sin(e.anim*2+(far?1.7:0))*5, u=typeof e.sk==='number'?S.t-e.sk-(far?0.05:0):-9, ez=x=>x*x*(3-2*x);
+  const base=-90+Math.sin(e.anim*2+(far?1.7:0))*4, u=typeof e.sk==='number'?S.t-e.sk-(far?0.05:0):-9, ez=x=>x*x*(3-2*x);
   if(u<0||u>0.95)return base;
-  if(u<0.4)return base+(-85-base)*ez(u/0.4);                // kollar yukarı kalkar
-  if(u<0.55)return -85+107*ez((u-0.4)/0.15);                // yukarıdan aşağı tırmalar
-  if(u<0.75)return 22;
-  return 22+(base-22)*ez((u-0.75)/0.2);
+  if(u<0.4)return base+(-165-base)*ez(u/0.4);               // kollar yukarı kalkar
+  if(u<0.55)return -165+145*ez((u-0.4)/0.15);               // yukarıdan aşağı tırmalar
+  if(u<0.75)return -20;
+  return -20+(base+20)*ez((u-0.75)/0.2);
 }
 function ciziZombi(e,mask){
   const fl=e.fl>0,kp=e.kopuk||{};
