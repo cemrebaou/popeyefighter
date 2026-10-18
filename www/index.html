@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.50</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.51</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -808,6 +808,7 @@ function hud(dt){
   ctx.fillStyle='#fff';ctx.font='700 13px Nunito,sans-serif';ctx.textBaseline='middle';
   ctx.lineWidth=3;ctx.strokeStyle='rgba(31,42,51,.9)';ctx.textAlign='left';
   {const t='düşman: '+DUS.filter(e=>!e.olu).length,tx=bx+bw+10,ty=by+4;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
+  if(S.kNo&&S.t-S.kNo.t<2){const a=Math.min(1,(2-(S.t-S.kNo.t))*1.5);ctx.save();ctx.globalAlpha=a;ctx.font='900 30px Nunito,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';ctx.lineWidth=5;ctx.strokeStyle='rgba(31,42,51,.95)';ctx.fillStyle='#ffd23f';ctx.strokeText(S.kNo.no,bx-12,by+6);ctx.fillText(S.kNo.no,bx-12,by+6);ctx.restore();ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.textBaseline='middle'}
   {const sg=5,gap=4,sw=(bw-gap*(sg-1))/sg,ey=by;                          // çift parmak enerjisi: 5 kesikli sarı bar
     for(let i=0;i<sg;i++){
       const x0=bx+i*(sw+gap),f=Math.max(0,Math.min(1,S.en-i));
@@ -946,10 +947,10 @@ function ph(arm,dur,fr){
     const KS=(t,v)=>[t,Object.assign({torso:-4,bas:-2,ofs:0,lift:0},G0,v)];
     HAREKET.kickSl={dur:.62,win:[[.3,.72]],keys:[
       KS(0,{lN:-30,bN:75,lF:-9,bF:6}),
-      KS(.2,{lN:-72,bN:15,lF:30,bF:110,torso:-24,bas:-4,ofs:80,lift:-250}),
-      KS(.4,{lN:-76,bN:-6.5,lF:35,bF:115,torso:-28,bas:-5,ofs:200,lift:-280}),
-      KS(.72,{lN:-76,bN:-6.5,lF:35,bF:115,torso:-28,bas:-5,ofs:230,lift:-280}),
-      KS(.9,{lN:-30,bN:60,lF:10,bF:60,torso:-8,ofs:70,lift:-100}),
+      KS(.2,{lN:-68,bN:15,lF:70,bF:60,torso:-24,bas:-4,ofs:80,lift:-60}),
+      KS(.4,{lN:-74,bN:-6.5,lF:80,bF:55,torso:-28,bas:-5,ofs:200,lift:-70}),
+      KS(.72,{lN:-74,bN:-6.5,lF:80,bF:55,torso:-28,bas:-5,ofs:230,lift:-70}),
+      KS(.9,{lN:-30,bN:60,lF:10,bF:60,torso:-8,ofs:70,lift:-40}),
       KS(1,{lN:7,bN:3,lF:-9,bF:6,torso:6,bas:0})]};
   }
 }
@@ -971,7 +972,7 @@ const KAGAC={   // tuş dizisi (r=sağ yarı, l=sol yarı) -> o adımdaki hareke
 const KOMBO=Object.keys(KAGAC).map(k=>[...k].map((c,i)=>(c==='r'?'R':'L')+':'+KAGAC[k.slice(0,i+1)]).join(' '));
 KOMBO.push(...KOMBO.map(k=>k.split(' ').map(aynaAdim).join(' ')));   // hepsinin ters yönlüsü (kollar/bacaklar yer değiştirir)
 const KB={ch:{}};
-for(const sq of KOMBO){let n=KB;for(const st of sq.split(' ')){const [d,m]=st.split(':');n=n.ch[d]||(n.ch[d]={m,ch:{}})}}
+KOMBO.forEach((sq,qi)=>{let n=KB;for(const st of sq.split(' ')){const [d,m]=st.split(':');n=n.ch[d]||(n.ch[d]={m,ch:{}})}if(!n.no)n.no=qi+1});   // her kombonun numarası (sıra no)
 S.kb={n:KB,t:-9};
 const TUT_DESEN=['jjchuo','bbhhuc','huhuoc','jcbhuo','buchbo'];   // tutulana vuruş desenleri (6'şar): j jab, c düz, h kanca, u aparkat, o üstten, b gövde
 S.tk={i:0,p:0,t:-9};
@@ -993,6 +994,7 @@ function komboTap(d){
   if(!c){c=KB.ch[d];dp=1}                              // zincirde devamı yoksa yeni zincir başlar
   const son=!Object.keys(c.ch).length;
   S.kb.n=son?KB:c;S.kb.t=S.t;S.kb.d=son?0:dp;          // zincir bittiyse sıfırla
+  if(dp>=2&&c.no)S.kNo={no:c.no,t:S.t};                // tamamlanan kombonun numarası enerji barının yanında görünür
   atkIstek('#'+c.m+(son&&dp>=3?'*':(dp>=2?'+':'')));
 }
 
