@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.19</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.20</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol; hızlı = yumruk, hızlı ileri = kayarak yumruk, çok hızlı yukarı = shoryuken (iki elle = dönerek), yavaş götürüp basılı tut = yakala/fırlat, iki elle daire çiz + yana at = aduket</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -216,30 +216,26 @@ function kolHesap(iz,x,y){
     else ciftAtil(dirW);   // tek parmak: Sub-Zero kayması
   }
 }
-function daireKontrol(){         // iki parmakla daire = enerji topu şarjı; şarj sürerken kollar parmakları izler, parmaklar kalkınca top ele göre yöne gider
+function daireKontrol(){         // iki parmakla bir daire = aduket hazır (tam dolu); sonrası parmaklar sadece yön verir, kalkınca top o yöne gider
   if(S.durum!=='oyun')return;
   const a=izBul('N'),b=izBul('F');
+  if(!a||!b)return;
   if(S.sarj>0){
-    if(!a||!b){                                                    // parmaklar kalktı: ateş
-      const m=S.sarjP;S.sarjP=null;
-      if(S.sarj>=0.3&&m)ates(m.dx,m.dy,S.sarj,m.bx,m.by);else S.sarj=0;
-      return;
-    }
-    let mx=0;for(const iz of [a,b])if(KOL[iz.t].e>0.25)mx+=(iz.lx-iz.x0);
+    let mx=0,my=0,n=0;for(const iz of [a,b]){mx+=iz.lx-iz.x0;my+=iz.ly-iz.y0;n++}
+    mx/=n;my/=n;
     const d=Math.sign(mx);
-    if(Math.abs(mx)>50&&d!==S.yon){                                // kollar hangi yana çekilirse karakter oraya döner
+    if(Math.abs(mx)>40&&d!==S.yon){                                // kollar hangi yana çekilirse karakter oraya döner
       donDon(d);
       for(const iz of [a,b]){const k=KOL[iz.t];k.th=Math.atan2(iz.ly-iz.y0,(iz.lx-iz.x0)*iz.yon)/D}
     }
-    const t=Math.min(Math.abs(a.turn),Math.abs(b.turn));
-    S.sarj=Math.max(S.sarj,Math.min(1,t/(3*Math.PI)));            // her parmak ~1,5 tur = tam şarj
-    const bx=(EL.N.wx+EL.F.wx)/2,by=(EL.N.wy+EL.F.wy)/2;
-    S.sarjP={dx:bx-S.x,dy:by-(S.y+330),bx,by};
+    S.sarjP={dx:mx,dy:-my,bx:(EL.N.wx+EL.F.wx)/2,by:(EL.N.wy+EL.F.wy)/2};   // ekrandaki kol yönü = atış yönü
     return;
   }
-  if(!a||!b)return;
   const t=Math.min(Math.abs(a.turn),Math.abs(b.turn));
-  if(t>Math.PI){if(S.en>=1&&!S.sman&&!S.yy&&!S.alk&&!(S.tats>0))S.sarj=0.05;else{S.noEn=S.t;a.turn=0;b.turn=0}}
+  if(t>1.6*Math.PI){
+    a.turn=0;b.turn=0;
+    if(S.en>=1&&!S.sman&&!S.yy&&!S.alk&&!(S.tats>0)){S.sarj=1;S.sarjP=null;ses('ates',0.3)}else S.noEn=S.t;
+  }
 }
 cv.addEventListener('pointerdown',e=>{
   e.preventDefault();
@@ -265,7 +261,7 @@ cv.addEventListener('pointermove',e=>{
 const kolBit=e=>{
   const iz=izler.get(e.pointerId);if(!iz)return;izler.delete(e.pointerId);tutBirak(iz.t);
   const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t;
-  if(S.sarj>0){S.sarj=0;for(const z of izler.values())z.turn=0}   // parmak kalkınca şarj iptal
+  if(S.sarj>0){const m=S.sarjP;S.sarjP=null;if(m)ates(m.dx,m.dy,1,m.bx,m.by);else S.sarj=0;for(const z of izler.values())z.turn=0}   // parmak kalkınca aduket kol yönüne gider
 };
 cv.addEventListener('pointerup',kolBit);cv.addEventListener('pointercancel',kolBit);
 function kolUygula(o,k,u,r,gu,ga){
@@ -463,7 +459,7 @@ function bossKur(){
 function ates(dx,dy,ch,bx,by){    // aduket: topun ele göre yönüne (yukarı/aşağı dahil) gider
   if(!enerji(1)){S.sarj=0;return}
   const L=Math.hypot(dx,dy);let ux=dx/L,uy=dy/L;
-  if(!(L>120)){ux=S.yon;uy=0}
+  if(!(L>30)){ux=S.yon;uy=0}
   if(Math.abs(ux)>0.15&&Math.sign(ux)!==S.yon)donDon(Math.sign(ux));
   S.firT=S.t+0.4;S.firEl=Math.atan2(uy,Math.abs(ux))/D;S.sarj=0;
   MERMI.push({x:bx,y:by,vx:ux*2800,vy:uy*2800,r:60+120*ch,ch,t:0,hit:new Set()});
