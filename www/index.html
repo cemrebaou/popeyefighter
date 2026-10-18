@@ -37,7 +37,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.1</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.2</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -112,7 +112,7 @@ dokunTus('zipla',d=>{if(d&&!key.zipla)ziplaBas();key.zipla=d});
 // ---------- Sensör: telefonu direksiyon gibi tut ----------
 // sağa/sola çevir = yürü (eğim ne kadar büyükse o kadar hızlı), direksiyonu hızla arkaya kır (ekran tavana) = zıpla (şiddet = zıplama gücü),
 // ekranı kendine doğru yatır = çömel
-const GYRO={ak:false,steer:0,egil:false,zipBit:-9,u0z:0,kalT:0,oz:null,rate:0,sonT:0,sonZip:-9};
+const GYRO={hazir:true,ak:false,steer:0,egil:false,zipBit:-9,u0z:0,kalT:0,oz:null,rate:0,sonT:0,sonZip:-9};
 const ACI_OLU=7, ACI_TAM=40, ZIP_ESIK=2.2;
 const asagiMi=()=>key.asagi||GYRO.egil;
 const ziplaTut=()=>key.zipla||S.t<GYRO.zipBit;
@@ -138,9 +138,11 @@ function sensorOku(e){
     if(dt>0.001){GYRO.rate+=((uz-GYRO.oz)/dt-GYRO.rate)*0.5}
   }
   GYRO.oz=uz;GYRO.sonT=now;
-  if(GYRO.rate>ZIP_ESIK&&now-GYRO.sonZip>0.35){
-    const guc=0.55+0.7*Math.min(1,(GYRO.rate-ZIP_ESIK)/4);
-    ziplaBas(guc);GYRO.zipBit=S.t+0.9;GYRO.sonZip=now;
+  if(GYRO.rate<0.4)GYRO.hazir=true;                       // bir hareket = bir zıplama: önce sakinleşmeli
+  const esik=S.yer?1.6:1.0;                                // havada ikinci zıplama için daha hafif hareket yeter
+  if(GYRO.hazir&&GYRO.rate>esik&&now-GYRO.sonZip>0.2){
+    const guc=Math.max(S.yer?0.55:0.8,0.55+0.7*Math.min(1,(GYRO.rate-esik)/4));
+    ziplaBas(guc);GYRO.zipBit=S.t+0.9;GYRO.sonZip=now;GYRO.hazir=false;
   }
 }
 const sensBtn=document.getElementById('sens'), yaz=t=>{sensBtn.textContent='🎮 SENSÖR: '+t};
