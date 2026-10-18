@@ -655,7 +655,7 @@ function vurusKontrol(){
 }
 // ---- tutma: ekrana basılı tut, eli yavaş götür, düşmanı yakala; bırakınca fırlat ----
 function yirt(e,hiz){             // iki elle tutulan yengeci tam ortasından sağ/sol ikiye ayır: yarılar ellerde kalır, hızlı çekişte fırlar
-  const sol=EL.N.wx<=EL.F.wx?'N':'F',sag=sol==='N'?'F':'N',hizli=true,v=kisit(hiz*0.9,1200,4200);      // çekişin gücü = yarıların fırlama hızı
+  const sol=EL.N.wx<=EL.F.wx?'N':'F',sag=sol==='N'?'F':'N',hizli=hiz>1000,v=kisit(hiz*0.9,1200,4200);      // çekişin gücü = yarıların fırlama hızı
   for(const [el,yan] of [[sol,-1],[sag,1]])S.parcalar.push({el,yan,tip:e.t,t0:S.t,k:e.k||(e.t==='yengec'?3.6:1.8),anim:e.anim,yon:e.yon,at:hizli,tT:hizli?S.t:0,x:EL[el].wx,y:EL[el].wy,vx:yan*v,vy:hizli?900:0,rot:0});
   S.yirtT=S.t;e.iki=false;vur(e,99999,0,0,0.3,e.y);S.pops.pop();e.ol=0.95;titre(60);
 }
@@ -676,7 +676,7 @@ function ikiElKontrol(dt){
   const sp=Math.abs(a.lx-b.lx),now=S.t;
   e.sph=e.sph||[];e.sph.push({t:now,sp});while(e.sph.length>1&&now-e.sph[0].t>0.2)e.sph.shift();
   const rate=(sp-e.sph[0].sp)/Math.max(0.05,now-e.sph[0].t);     // parmakların ayrılma hızı (px/sn) = çekişin gücü
-  if(sp-e.sp0>Math.max(90,W*0.1)&&rate>600&&S.t>=e.ripT){          // güçlü çekiş: enerji harca, yengeci ortadan yırt; yavaş çekişte tutmaya devam eder
+  if(sp-e.sp0>Math.max(90,W*0.1)&&S.t>=e.ripT){          // güçlü çekiş: enerji harca, yengeci ortadan yırt; yavaş çekişte tutmaya devam eder
     if(enerji(1))yirt(e,rate);else e.ripT=S.t+0.8;
   }
 }
@@ -839,7 +839,7 @@ function parcaCiz(){
   for(const p of S.parcalar){
     if(!p.at){
       if(izBul(p.el)&&S.t-p.t0<6){const h=EL[p.el];p.yan=h.wx<=EL[p.el==='N'?'F':'N'].wx?-1:1;p.x=h.wx+p.yan*70;p.y=h.wy;p.pt=S.t}      // parmak basılı: yarım ellerde kalır
-      else{p.at=true;p.tT=S.t;const h=EL[p.el];p.vx=h.sv.x+S.vx+p.yan*900;p.vy=h.sv.y+500}     // parmak kalktı: yarım elin hızıyla fırlar
+      else{p.at=true;p.tT=S.t;const h=EL[p.el];p.vx=h.sv.x+S.vx+p.yan*250;p.vy=h.sv.y}     // parmak kalktı: yarım elin hızıyla bırakılır, yere düşer
     }else{
       const dt=Math.min(0.05,S.t-(p.pt||S.t));p.vy-=G*0.5*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.yan*dt*6;
       if(p.y<zemin(p.x)+160){p.y=zemin(p.x)+160;p.vy=Math.abs(p.vy)*0.3;p.vx*=0.85}
