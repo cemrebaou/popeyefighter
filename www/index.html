@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.40</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.41</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -218,14 +218,18 @@ function kolHesap(iz,x,y){
     return;
   }
   if(k.e<0.9)return;
+  const o2=izBul(iz.t==='N'?'F':'N');      // iki parmak öncelikli: diğer parmak da hareket ediyorsa tek parmak hareketleri yerine çift parmak hareketleri çalışır
+  const ikili=!!(o2&&KOL[o2.t].ak&&(KOL[o2.t].e>0.25||izHiz(o2,0.2)>300));
   if(!iz.sho&&yukari&&hz>1600){iz.sho=true;shoryu(iz)}                              // çok hızlı yukarı = shoryuken
-  else if(!iz.sla&&asagiG&&hz>1500&&!S.yer&&!S.pend){iz.sla=true;S.pend={t:S.t+0.07,iz,dx,dy}}   // havada hızlı aşağı: ikinci parmağa kısa süre bak, sonra karar ver
+  else if(!iz.sla&&asagiG&&hz>1500&&!S.yer&&!S.pend){iz.sla=true;S.pend={t:S.t+(o2&&KOL[o2.t].ak?0.22:0.07),iz,dx,dy}}   // havada hızlı aşağı: ikinci parmağa kısa süre bak, sonra karar ver
   else if(!iz.atil&&Math.abs(dy)<0.7*Math.abs(dx)&&hz>1100){      // yatay hızlı sürükleme (her iki yön): karakter o yöne döner ve kayar
     const o=izBul(iz.t==='N'?'F':'N'), ko=o?kayma(o,0.2):null;
     if(ko&&Math.abs(ko.dx)>50&&ko.dx*dx<0)return;      // diğer parmak ters yöne gidiyor: birleştirme/açma hareketi, kayma değil
+    const sup2=!!(o&&KOL[o.t].ak&&KOL[o.t].e>0.5&&Math.abs(Math.cos(KOL[o.t].th*D))>0.5&&Math.sign(Math.cos(KOL[o.t].th*D))===Math.sign(dx));
+    if(ikili&&!sup2)return;                               // diğer parmak başka iş yapıyorsa tek parmak kayması tetiklenmez
     iz.atil=true;
     const dirW=Math.sign(x-iz.x0)||iz.yon;
-    if(o&&KOL[o.t].ak&&KOL[o.t].e>0.5&&Math.abs(Math.cos(KOL[o.t].th*D))>0.5&&Math.sign(Math.cos(KOL[o.t].th*D))===Math.sign(dx)){o.atil=true;supermenKay(dirW)}   // iki parmak: süpermen kayması (çelme kaymasının 2 katı)
+    if(sup2){o.atil=true;supermenKay(dirW)}   // iki parmak: süpermen kayması (çelme kaymasının 2 katı)
     else ciftAtil(dirW);   // tek parmak: Sub-Zero kayması
   }
 }
@@ -346,7 +350,7 @@ function inisGuncelle(){          // havada aşağı sürükleme: tek parmak = �
   S.pend=null;
   if(S.yer||S.slam||S.dkick||S.tats>0)return;
   const o=izBul(q.iz.t==='N'?'F':'N');
-  if(o&&KOL[o.t].ak&&KOL[o.t].e>0.4&&Math.sin(KOL[o.t].th*D)>0.3){      // süper kahraman: hızla iner, yumruk yere
+  if(o&&KOL[o.t].ak&&KOL[o.t].e>0.25&&Math.sin(KOL[o.t].th*D)>0.2){      // süper kahraman: hızla iner, yumruk yere
     if(!enerji(1))return;
     S.slam=true;S.vy=Math.max(S.vy,0)+4800;S.donuyor=false;S.shoryu=0;S.vx*=0.3;ses('atla',0);
   }else{                                                                 // uçan tekme: swipe yönünde, bacak o yöne uzanır
