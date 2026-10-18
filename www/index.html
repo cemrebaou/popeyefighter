@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.4</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.5</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -114,9 +114,9 @@ dokunTus('zipla',d=>{if(d&&!key.zipla)ziplaBas();key.zipla=d});
 // ---------- Sensör: telefonu direksiyon gibi tut ----------
 // sağa/sola çevir = yürü (eğim ne kadar büyükse o kadar hızlı), direksiyonu hızla arkaya kır (ekran tavana) = zıpla (şiddet = zıplama gücü),
 // ekranı kendine doğru yatır = çömel
-const GYRO={hazir:true,ak:false,steer:0,egil:false,zipBit:-9,u0z:0,kalT:0,oz:null,rate:0,sonT:0,sonZip:-9};
+const GYRO={egilKal:false,egilHazir:true,hazir:true,ak:false,steer:0,egil:false,zipBit:-9,u0z:0,kalT:0,oz:null,rate:0,sonT:0,sonZip:-9};
 const ACI_OLU=7, ACI_TAM=40, ZIP_ESIK=2.2;
-const asagiMi=()=>key.asagi||GYRO.egil;
+const asagiMi=()=>key.asagi||GYRO.egilKal;
 const ziplaTut=()=>key.zipla||S.t<GYRO.zipBit;
 function ekranAci(){const a=(screen.orientation&&typeof screen.orientation.angle==='number')?screen.orientation.angle:(window.orientation||0);return((a%360)+360)%360}
 function gyroAx(){
@@ -134,7 +134,8 @@ function sensorOku(e){
   else GYRO.steer*=0.8;
   if(now<GYRO.kalT){GYRO.u0z=uz;GYRO.oz=uz;GYRO.sonT=now;return}                 // dengeleme: tuttuğun duruş "nötr"
   const dz=uz-GYRO.u0z;
-  if(dz<-0.35)GYRO.egil=true;else if(dz>-0.22)GYRO.egil=false;
+  if(dz<-0.35){if(GYRO.egilHazir){GYRO.egilKal=!GYRO.egilKal;GYRO.egilHazir=false}}   // ekranı kendine yatır: eğil / bir daha yatır: kalk
+  else if(dz>-0.22)GYRO.egilHazir=true;
   if(GYRO.oz!==null&&GYRO.sonT>0){
     const dt=now-GYRO.sonT;
     if(dt>0.001){GYRO.rate+=((uz-GYRO.oz)/dt-GYRO.rate)*0.5}
@@ -149,7 +150,7 @@ function sensorOku(e){
 }
 const sensBtn=document.getElementById('sens'), yaz=t=>{sensBtn.textContent='🎮 SENSÖR: '+t};
 async function sensorToggle(){
-  if(GYRO.ak){GYRO.ak=false;GYRO.egil=false;GYRO.steer=0;document.body.classList.remove('sensor');removeEventListener('deviceorientation',sensorOku);yaz('KAPALI');return}
+  if(GYRO.ak){GYRO.ak=false;GYRO.egilKal=false;GYRO.steer=0;document.body.classList.remove('sensor');removeEventListener('deviceorientation',sensorOku);yaz('KAPALI');return}
   try{
     if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){
       if(await DeviceOrientationEvent.requestPermission()!=='granted'){yaz('İZİN YOK');return}
@@ -226,7 +227,7 @@ function elHiz(dt){
 function dusmanKur(){
   DUS=[];
   const ekle=(t,x)=>DUS.push(t==='yengec'
-    ?{t,x,y:zemin(x),vx:0,vy:0,hp:70,max:70,cy:150,r:130,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0}}
+    ?{t,x,y:zemin(x),vx:0,vy:0,hp:70,max:70,cy:300,r:250,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0}}
     :{t,x,y:zemin(x)+650,hy:zemin(x)+650,vx:0,vy:0,hp:45,max:45,cy:0,r:105,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},mod:'bekle',mt:0,sogut:0});
   [1000,2000,-1100,-2200].forEach(x=>ekle('yengec',x));
   [650,-850,1700,-1900].forEach(x=>ekle('kus',x));
@@ -280,7 +281,7 @@ function dusmanGuncelle(dt){
         const z=zemin(e.x);if(e.y<=z){e.y=z;e.vy=e.vy<-1500?-e.vy*0.25:0}
       }else{
         e.vx=0;e.vy=0;e.y=zH;e.yon=dx>=0?1:-1;
-        const nx=e.x+e.yon*270*dt;
+        const nx=e.x+e.yon*300*dt;
         if(zemin(nx)-e.y<=70){e.x=nx;e.y=Math.max(e.y,zemin(nx))}else e.vy=1800;   // basamak yüksekse zıpla
       }
     }else{
@@ -325,8 +326,8 @@ function oyuncuHasar(){
 // ---- çizim ----
 const CIZGI='#1f2a33';
 function ciziYengec(e){
-  const k=1.8,a=e.anim,fl=e.fl>0,ren=fl?'#fff':'#e0583a',ren2=fl?'#fff':'#f08a5d',yer=e.y<=zemin(e.x)+1;
-  ctx.scale(k,k);ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';ctx.strokeStyle=CIZGI;
+  const k=3.6,a=e.anim,fl=e.fl>0,ren=fl?'#fff':'#e0583a',ren2=fl?'#fff':'#f08a5d',yer=e.y<=zemin(e.x)+1;
+  ctx.scale(k,k);ctx.lineWidth=3;ctx.lineJoin='round';ctx.lineCap='round';ctx.strokeStyle=CIZGI;
   for(let i=0;i<3;i++)for(const s of[-1,1]){
     const sw=Math.sin(a*14+i*2+(s>0?0:Math.PI))*8*(yer?1:0.3);
     ctx.beginPath();ctx.moveTo(s*(30+i*10),-55);ctx.lineTo(s*(62+i*14)+sw,-22);ctx.lineTo(s*(70+i*14)+sw,0);ctx.stroke();
