@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.24</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.25</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -1018,7 +1018,7 @@ function karakter(){
   ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D);ctx.translate(-85-ALT,-112);ctx.drawImage(R.kalca,0,0);ctx.restore();
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // sağ (yakın) bacak kalçanın önünde
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(-3,-332);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{const fy=YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-100,-200,214,240):resim(R.kafa,100,200)}ctx.restore();
+    ctx.save();ctx.translate(-3,-332);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{const fy=YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-150,-300,321,360):resim(R.kafa,100,200)}ctx.restore();
     kol(62,122,P.aNu,P.aNr,R.ustkol,R.onkol,40,82,'N');         // ön kol
   });
   ctx.restore();
