@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.13</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.14</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol; hızlı = yumruk, hızlı ileri = kayarak yumruk, çok hızlı yukarı = shoryuken (iki elle = dönerek), yavaş götürüp basılı tut = yakala/fırlat, iki elle daire çiz + yana at = aduket</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -209,9 +209,8 @@ function kolHesap(iz,x,y){
   else if(!iz.atil&&Math.abs(dy)<0.7*Math.abs(dx)&&hz>1100){      // yatay hızlı sürükleme (her iki yön): karakter o yöne döner ve kayar
     iz.atil=true;
     const dirW=Math.sign(x-iz.x0)||iz.yon, o=izBul(iz.t==='N'?'F':'N');
-    if(o&&Math.min(iz.pk,o.pk)>0.3&&dx>0){o.atil=true;buyukYumruk(iz)}                // iki elle geri çekilip ileri atıldı: süpermen uçuşu
-    else if(o&&KOL[o.t].ak&&KOL[o.t].e>0.5&&Math.abs(Math.cos(KOL[o.t].th*D))>0.5&&Math.sign(Math.cos(KOL[o.t].th*D))===Math.sign(dx)){o.atil=true;ciftAtil(dirW)}   // iki parmak: çelme kayması
-    else ileriAtil(iz,dirW);
+    if(o&&KOL[o.t].ak&&KOL[o.t].e>0.5&&Math.abs(Math.cos(KOL[o.t].th*D))>0.5&&Math.sign(Math.cos(KOL[o.t].th*D))===Math.sign(dx)){o.atil=true;supermenKay(dirW)}   // iki parmak: süpermen kayması (çelme kaymasının 2 katı)
+    else ciftAtil(dirW);   // tek parmak: Sub-Zero kayması
   }
 }
 function daireKontrol(){         // iki parmakla iki yanda daire = enerji topu şarjı; sonra ikisini birlikte yana at = ateş
@@ -304,7 +303,7 @@ function ciftKontrol(){
   const ka=kayma(a,0.15),kb=kayma(b,0.15);
   if(!ka||!kb||izHiz(a,0.12)<800||izHiz(b,0.12)<800)return;
   const ok=k=>k.d>80&&Math.abs(k.dy)<0.9*Math.abs(k.dx)&&k.d/k.yol>0.7;
-  if(ok(ka)&&ok(kb)&&ka.dx*kb.dx>0){a.atil=b.atil=true;ciftAtil(Math.sign(ka.dx))}
+  if(ok(ka)&&ok(kb)&&ka.dx*kb.dx>0){a.atil=b.atil=true;supermenKay(Math.sign(ka.dx))}
 }
 function shoryu(iz){              // çok hızlı yukarı sürükleme: tek dizi katlayarak yükselen yumruk; havada ikincisi DİĞER elle ve diğer dizle
   const o=KOL[iz.t==='N'?'F':'N'], both=o.ak&&o.e>0.6&&Math.sin(o.th*D)<-0.5;
@@ -346,12 +345,13 @@ function suplex(k){               // tutulan düşman + hızlı aşağı sürük
   e.tut=null;vur(e,38,0,-1,0.8);
   S.halka={x:e.x,y:zemin(e.x),t:S.t,r:500};ses('yer',0.8);titre(90);
 }
-function buyukYumruk(iz){         // geri çekip şarj et, sonra hızlı ileri: süpermen gibi yatay uçup ileri yumruk
-  const o=izBul(iz.t==='N'?'F':'N'),ch=o?Math.min(iz.pk,o.pk):iz.pk;iz.pk=0;if(o)o.pk=0;
-  S.sman={t0:S.t,T:0.5,dir:iz.yon,ch};S.lungeT=-1;S.kay=null;S.shoryu=0;
-  ses('ates',ch);S.sars=Math.max(S.sars,10+10*ch);
+function supermenKay(dir){        // iki parmak yatay kaydırma: süpermen gibi yatay uçarak ileri yumruk (Sub-Zero kaymasının ~2 katı mesafe)
+  donDon(dir);
+  S.sman={t0:S.t,T:0.38,dir,ch:0.5};S.lungeT=-1;S.kay=null;S.shoryu=0;S.kayCif=S.t;
+  ses('ates',0.5);S.sars=Math.max(S.sars,12);
 }
-function pkGuncelle(dt){          // basılı parmak geriye yavaş çekilirken yumruk şarj olur
+function pkGuncelle(dt){          // (şarj kaldırıldı)
+  return;
   for(const iz of izler.values()){
     const k=KOL[iz.t];
     if(!k.ak||S.sarj>0||DUS.some(e=>e.tut===iz.t)){continue}
