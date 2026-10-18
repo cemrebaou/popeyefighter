@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.15</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.16</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol; hızlı = yumruk, hızlı ileri = kayarak yumruk, çok hızlı yukarı = shoryuken (iki elle = dönerek), yavaş götürüp basılı tut = yakala/fırlat, iki elle daire çiz + yana at = aduket</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -207,8 +207,10 @@ function kolHesap(iz,x,y){
   if(!iz.sho&&yukari&&hz>1600){iz.sho=true;shoryu(iz)}                              // çok hızlı yukarı = shoryuken
   else if(!iz.sla&&asagiG&&hz>1500&&!S.yer&&!S.pend){iz.sla=true;S.pend={t:S.t+0.07,iz,dx,dy}}   // havada hızlı aşağı: ikinci parmağa kısa süre bak, sonra karar ver
   else if(!iz.atil&&Math.abs(dy)<0.7*Math.abs(dx)&&hz>1100){      // yatay hızlı sürükleme (her iki yön): karakter o yöne döner ve kayar
+    const o=izBul(iz.t==='N'?'F':'N'), ko=o?kayma(o,0.2):null;
+    if(ko&&Math.abs(ko.dx)>50&&ko.dx*dx<0)return;      // diğer parmak ters yöne gidiyor: birleştirme/açma hareketi, kayma değil
     iz.atil=true;
-    const dirW=Math.sign(x-iz.x0)||iz.yon, o=izBul(iz.t==='N'?'F':'N');
+    const dirW=Math.sign(x-iz.x0)||iz.yon;
     if(o&&KOL[o.t].ak&&KOL[o.t].e>0.5&&Math.abs(Math.cos(KOL[o.t].th*D))>0.5&&Math.sign(Math.cos(KOL[o.t].th*D))===Math.sign(dx)){o.atil=true;supermenKay(dirW)}   // iki parmak: süpermen kayması (çelme kaymasının 2 katı)
     else ciftAtil(dirW);   // tek parmak: Sub-Zero kayması
   }
@@ -217,7 +219,7 @@ function daireKontrol(){         // iki parmakla iki yanda daire = enerji topu �
   const a=izBul('N'),b=izBul('F');
   if(!a||!b||S.durum!=='oyun')return;
   const t=Math.min(Math.abs(a.turn),Math.abs(b.turn));
-  if(S.sarj<=0&&t>Math.PI){S.sarj=0.05}
+  if(S.sarj<=0&&t>Math.PI){if(S.en>=1)S.sarj=0.05;else{S.noEn=S.t;a.turn=0;b.turn=0}}
   if(S.sarj>0){
     S.sarj=Math.max(S.sarj,Math.min(1,t/(3*Math.PI)));      // her parmak ~1,5 tur = tam şarj
     if(S.sarj>=0.45){
@@ -265,7 +267,7 @@ function kolUygula(o,k,u,r,gu,ga){
 
 // ---------- Düşmanlar ve dövüş ----------
 // Yumruk hızı (elin gövdeye göre hızı) hasarı ve geri fırlatmayı belirler; J/K düğmeleri sabit hasar verir.
-Object.assign(S,{hp:100,inv:0,dur:0,sars:0,shx:0,shy:0,durum:'oyun',durumT:0,pops:[],sarj:0,firT:-1,lungeT:-1,lungeS:0,lungeV:0,shoryu:0,sdSpin:false,shId:0,shArm:'N',shBoth:false,shDiz:'F',slam:false,tats:0,blok:false,blokT:-9,blokDw:0,bossGeldi:false,halka:null,flash:null,mesaj:'',mesajT:-9,kay:null,sman:null,kayCif:-9,dkick:null,sup:null,pend:null});
+Object.assign(S,{hp:100,inv:0,dur:0,sars:0,shx:0,shy:0,durum:'oyun',durumT:0,pops:[],sarj:0,firT:-1,lungeT:-1,lungeS:0,lungeV:0,shoryu:0,sdSpin:false,shId:0,shArm:'N',shBoth:false,shDiz:'F',slam:false,tats:0,blok:false,blokT:-9,blokDw:0,bossGeldi:false,halka:null,flash:null,mesaj:'',mesajT:-9,kay:null,sman:null,en:5,noEn:-9,kayCif:-9,dkick:null,sup:null,pend:null});
 const ZY=()=>H*0.80, kisit=(v,a,b)=>Math.max(a,Math.min(b,v));
 const EL={N:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}},F:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}}}, DW={N:0,F:0};
 let sonYon=1, DUS=[], MERMI=[];
@@ -285,6 +287,7 @@ function elHiz(dt){
   sonYon=S.yon;
 }
 // ---- özel hareketler ----
+function enerji(n){if(S.en>=n-1e-6){S.en-=n;return true}S.noEn=S.t;return false}
 function donDon(d){S.yon=d;for(const z of izler.values())z.yon=d}
 function ileriAtil(iz,dir){           // hızlı ileri sürükleme: Sub-Zero gibi hafif eğilip yumruk önde öne kayar
   if(!S.yer||S.shoryu>0)return;
@@ -303,7 +306,7 @@ function ciftKontrol(){
   const ka=kayma(a,0.15),kb=kayma(b,0.15);
   if(!ka||!kb||izHiz(a,0.12)<800||izHiz(b,0.12)<800)return;
   const ok=k=>k.d>80&&Math.abs(k.dy)<0.9*Math.abs(k.dx)&&k.d/k.yol>0.7;
-  if(ok(ka)&&ok(kb)&&ka.dx*kb.dx>0){a.atil=b.atil=true;supermenKay(Math.sign(ka.dx))}
+  if(ok(ka)&&ok(kb)&&ka.dx*kb.dx>0&&Math.abs(ka.dx-kb.dx)<0.6*Math.max(Math.abs(ka.dx),Math.abs(kb.dx))){a.atil=b.atil=true;supermenKay(Math.sign(ka.dx))}
 }
 function shoryu(iz){              // çok hızlı yukarı sürükleme: tek dizi katlayarak yükselen yumruk; havada ikincisi DİĞER elle ve diğer dizle
   const o=KOL[iz.t==='N'?'F':'N'], both=o.ak&&o.e>0.6&&Math.sin(o.th*D)<-0.5;
@@ -324,6 +327,7 @@ function inisGuncelle(){          // havada aşağı sürükleme: tek parmak = �
   if(S.yer||S.slam||S.dkick||S.tats>0)return;
   const o=izBul(q.iz.t==='N'?'F':'N');
   if(o&&KOL[o.t].ak&&KOL[o.t].e>0.4&&Math.sin(KOL[o.t].th*D)>0.3){      // süper kahraman: hızla iner, yumruk yere
+    if(!enerji(1))return;
     S.slam=true;S.vy=Math.max(S.vy,0)+4800;S.donuyor=false;S.shoryu=0;S.vx*=0.3;ses('atla',0);
   }else{                                                                 // uçan tekme: swipe yönünde, bacak o yöne uzanır
     const L=Math.hypot(q.dx,q.dy)||1,sd=(Math.sign(q.dx)*q.iz.yon)||S.yon;
@@ -346,6 +350,7 @@ function suplex(k){               // tutulan düşman + hızlı aşağı sürük
   S.halka={x:e.x,y:zemin(e.x),t:S.t,r:500};ses('yer',0.8);titre(90);
 }
 function supermenKay(dir){        // iki parmak yatay kaydırma: süpermen gibi yatay uçarak ileri yumruk (Sub-Zero kaymasının ~2 katı mesafe)
+  if(!enerji(1))return;
   donDon(dir);
   S.sman={t0:S.t,T:0.38,dir,ch:0.5};S.lungeT=-1;S.kay=null;S.shoryu=0;S.kayCif=S.t;
   ses('ates',0.5);S.sars=Math.max(S.sars,12);
@@ -370,6 +375,7 @@ function yereKontrol(){           // yerdeyken iki parmak birlikte hızlı aşa�
   const ok=k=>k.dy>70&&Math.abs(k.dx)<0.8*k.dy;
   if(ok(ka)&&ok(kb)){
     a.atil=b.atil=a.sla=b.sla=true;
+    if(!enerji(1))return;
     S.yy={t0:S.t,T:0.55,dir:S.yon,hit:false};S.kay=null;S.lungeT=-1;S.vx=0;ses('atla',0);
   }
 }
@@ -397,6 +403,7 @@ function alkisKontrol(){          // iki parmak ortaya doğru birleşir = alkı�
   const sol=a.lx<b.lx?ka:kb, sag=a.lx<b.lx?kb:ka;
   if(sol.dx>110&&sag.dx<-110&&Math.abs(sol.dy)<0.7*sol.dx&&Math.abs(sag.dy)<0.7*(-sag.dx)){
     a.atil=b.atil=true;a.turn=0;b.turn=0;
+    if(!enerji(1))return;
     S.alk={t0:S.t,T:0.75,hit:false};S.vx*=0.2;S.kay=null;S.lungeT=-1;ses('atla',0);
   }
 }
@@ -414,6 +421,7 @@ function zitKontrol(){            // iki parmak zıt yöne yatay kayar = kasırg
   if(!a||!b||S.sarj>0||S.tats>0||S.durum!=='oyun'||Math.abs(a.turn)>1||Math.abs(b.turn)>1)return;
   const ka=kayma(a,0.2),kb=kayma(b,0.2);
   if(ka&&kb&&ka.d>130&&kb.d>130&&ka.dx*kb.dx<0&&(a.lx<b.lx?ka.dx<0:kb.dx<0)&&Math.abs(ka.dy)<0.6*Math.abs(ka.dx)&&Math.abs(kb.dy)<0.6*Math.abs(kb.dx)&&ka.d/ka.yol>0.85&&kb.d/kb.yol>0.85){
+    if(!enerji(1)){a.turn=0;b.turn=0;return}
     S.tats=S.t;S.spin=0;S.shoryu=0;S.slam=false;S.donuyor=false;S.vx=S.yon*500;
     if(S.yer){S.yer=false;S.vy=-900}
     a.turn=0;b.turn=0;ses('atla',0);
@@ -443,6 +451,7 @@ function bossKur(){
   DUS.push({t:'yengec',boss:true,k:6.5,x,y:zemin(x),vx:0,vy:0,hp:500,max:500,cy:540,r:450,yon:1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},nj:S.t+4});
 }
 function ates(dir,ch){            // aduket
+  if(!enerji(1)){S.sarj=0;return}
   S.yon=dir;S.firT=S.t+0.4;S.sarj=0;
   MERMI.push({x:(EL.N.wx+EL.F.wx)/2,y:(EL.N.wy+EL.F.wy)/2,vx:dir*2800,r:60+120*ch,ch,t:0,hit:new Set()});
   ses('ates',ch);
@@ -494,7 +503,7 @@ function dusmanKur(){
   [1000,2000,-1100,-2200].forEach(x=>ekle('yengec',x));
   [650,-850,1700,-1900].forEach(x=>ekle('kus',x));
 }
-function yeniOyun(){MERMI=[];S.yy=null;S.alk=null;S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.halka=null;S.flash=null;S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;dusmanKur()}
+function yeniOyun(){MERMI=[];S.en=5;S.noEn=-9;S.yy=null;S.alk=null;S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.halka=null;S.flash=null;S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;dusmanKur()}
 // ---- basit sesler (dosya yok, tarayıcıda üretiliyor) ----
 let AC=null,GURULTU=null;
 function sesAc(){
@@ -758,12 +767,20 @@ function hud(dt){
   ctx.fillStyle=S.hp>30?'#4cc46a':'#e8453c';ctx.fillRect(bx,by,bw*S.hp/100,16);
   ctx.fillStyle='#fff';ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.textBaseline='middle';
   ctx.fillText('CAN',bx+6,by+9);ctx.textAlign='right';ctx.fillText('düşman: '+DUS.filter(e=>!e.olu).length,bx+bw-6,by+9);
+  {const sg=5,gap=4,sw=(bw-gap*(sg-1))/sg,ey=by+25;                       // çift parmak enerjisi: 5 kesikli sarı bar
+    for(let i=0;i<sg;i++){
+      const x0=bx+i*(sw+gap),f=Math.max(0,Math.min(1,S.en-i));
+      ctx.fillStyle='rgba(31,42,51,.8)';ctx.fillRect(x0-1,ey-1,sw+2,10);
+      ctx.fillStyle=f>=1?'#ffd23f':'#b8932a';ctx.fillRect(x0,ey,sw*f,8);
+    }
+    if(S.t-S.noEn<1.0&&Math.floor((S.t-S.noEn)*8)%2===0){ctx.fillStyle='#ff5a4a';ctx.font='900 14px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('NO ENERGY',W/2,ey+24)}
+  }
   const bs=DUS.find(e=>e.boss&&!e.olu);
   if(bs){
     const w2=Math.min(420,W*0.6),x2=(W-w2)/2;
-    ctx.fillStyle='rgba(31,42,51,.85)';ctx.fillRect(x2-3,38,w2+6,20);
-    ctx.fillStyle='#e8453c';ctx.fillRect(x2,41,w2*Math.max(0,bs.hp/bs.max),14);
-    ctx.fillStyle='#fff';ctx.font='700 12px Nunito,sans-serif';ctx.textAlign='center';ctx.fillText('DEV YENGEÇ — gözlerine vur (shoryuken / aduket)',W/2,48);
+    ctx.fillStyle='rgba(31,42,51,.85)';ctx.fillRect(x2-3,74,w2+6,20);
+    ctx.fillStyle='#e8453c';ctx.fillRect(x2,77,w2*Math.max(0,bs.hp/bs.max),14);
+    ctx.fillStyle='#fff';ctx.font='700 12px Nunito,sans-serif';ctx.textAlign='center';ctx.fillText('DEV YENGEÇ — gözlerine vur (shoryuken / aduket)',W/2,84);
   }
   if(S.t-S.mesajT<2){
     ctx.globalAlpha=Math.min(1,2-(S.t-S.mesajT));ctx.textAlign='center';ctx.font='56px Bangers,Impact,sans-serif';ctx.lineWidth=7;ctx.strokeStyle='#1f2a33';
@@ -907,7 +924,7 @@ function hedefPoz(){
   if(S.sup&&S.t<S.sup.t0+S.sup.T&&S.yer){      // süper kahraman inişi (yerde): tek diz yerde, yumruk yere
     Object.assign(o,{lN:-95,bN:125,kN:0,lF:30,bF:60,kF:1,pelv:28,hy:14,hb:40,torso:30,bas:-24,aNu:-20,aNr:90,aFu:70,aFr:90});
   }
-  if(S.blok&&S.yer){o.aNu=-82;o.aNr=-12;o.aFu=-72;o.aFr=-24;o.torso+=2;o.bas=-4}      // blok: dirsekler önde, yumruklar yüzün hizasında (guard)
+  if(S.blok&&S.yer){o.aNu=-100;o.aNr=-6;o.aFu=-92;o.aFr=-16;o.torso+=2;o.bas=-4}      // blok: dirsekler önde, yumruklar yüzün hizasında (guard)
   if(S.sman){                       // süpermen: iki kol ileri, bacaklar arkada düz, gövde yatay
     Object.assign(o,{lN:8,bN:3,lF:-6,bF:4,kN:0,kF:0,torso:0,bas:0,pelv:0,hx:0,hy:0,hb:0,aNu:-175,aNr:85,aFu:-175,aFr:85,lift:-180});
   }
@@ -1066,6 +1083,7 @@ function dongu(ms){
   if(S.yy){const m=S.yy,u=(S.t-m.t0)/m.T;S.vx=0;S.yon=m.dir;if(u>=1)S.yy=null;else if(!m.hit&&u>=0.3){m.hit=true;yerYumrukVur(m)}}
   if(S.alk){const m=S.alk,u=(S.t-m.t0)/m.T;if(u>=1)S.alk=null;else{if(u<0.4)S.vx*=0.8;if(!m.hit&&u>=0.4)alkisVur()}}
   catlakGuncelle();
+  S.en=Math.min(5,S.en+dt*0.2);
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
   if(S.dkick)S.vx=S.dkick.vx;
   if(S.sup&&S.t<S.sup.t0+S.sup.T)S.vx=0;      // kayarak yumruk: kısa süre öne atılır
