@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.57</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.58</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -579,10 +579,10 @@ function vur(e,dmg,vx,vy,f,hy){
   let krit=false;
   if(e.boss){f*=0.25;if(hy!==undefined&&hy>e.y+650){dmg*=3;krit=true}}      // dev yengeç: zayıf noktası gözleri (yüksek vuruş)
   dmg=Math.round(dmg);titre(12+Math.round(70*f));
-  e.hp-=dmg;e.fl=0.15;e.st=S.t+0.45+0.5*f;
+  const hp0=e.hp;e.hp-=dmg;e.fl=0.15;e.st=S.t+0.45+0.5*f;
   const L=Math.hypot(vx,vy)||1;let dx=vx/L,dy=vy/L;dx+=(e.x>=S.x?1:-1)*0.35;
   const kb=700+2600*f;if(!e.tut){e.vx=dx*kb;e.vy=dy*kb+250}
-  if(e.t==='zombi'&&!e.olu&&e.hp<=e.max*0.25&&dmg<9999)zombiKopar(e,hy);
+  if(e.t==='zombi'&&!e.olu&&dmg<9999){const kay=h=>Math.floor((e.max-Math.max(0,h))/(e.max*0.25)+1e-6);if(kay(e.hp)>kay(hp0))zombiKopar(e,hy)}      // her %25 can kaybında vurulan uzuv kopar (75, 50, 25, 0)
   if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;ses('oldu',f)}else ses('vur',f);
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
   S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:(krit?'KRİTİK -':'-')+dmg,f:krit?1:f});
@@ -863,7 +863,7 @@ function ciziZombi(e,mask){
 }
 const KH={kickLo:130,kick1:260,kick2:380,kick3:520,kick4:600,kickSl:70,dizF:340,dizN:340,kickDA:[300,300],kickDB:[300,300],kickDC:[300,520],kickDD:[300,520],kickDE:[130,300],kickDF:[130,300]};
 function kickH(ad,wi){let b=ad;if(/^kick(?!D)\w*[FN]$/.test(b))b=b.slice(0,-1);const h=KH[b];return Array.isArray(h)?h[Math.min(wi,1)]:(h||330)}   // tekmenin vurduğu yükseklik
-function zombiKopar(e,hy){       // canı %25'e inince: vurulan uzuv kopup gider (kafa/bacak = ölür, kol = tek kolla devam)
+function zombiKopar(e,hy){       // %25'lik can eşiği geçilince: vurulan uzuv kopup gider (kafa/bacak = ölür, kol = tek kolla devam)
   const kp=e.kopuk||(e.kopuk={}),rel=hy===undefined?0.5:(hy-e.y)/1000;let kind=null;
   if(rel>0.72){if(!kp.kafa)kind='kafa'}
   else if(rel>=0.33){kind=!kp.kolN?'kolN':(!kp.kolF?'kolF':null)}
