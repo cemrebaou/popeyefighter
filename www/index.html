@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.12</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.13</div>
 <div class="ipucu">← → yürü &nbsp; ↑ / Boşluk zıpla (havada 2. kez: yuvarlanma) &nbsp; J yumruk &nbsp; K tekme (art arda bas: kombo) &nbsp; ↓ çömel &nbsp;  <b>fare/parmak sürükle: sağ yarı = ön kol, sol yarı = arka kol; hızlı = yumruk, hızlı ileri = kayarak yumruk, çok hızlı yukarı = shoryuken (iki elle = dönerek), yavaş götürüp basılı tut = yakala/fırlat, iki elle daire çiz + yana at = aduket</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="yum">J</div><div class="tus" id="tek">K</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -209,7 +209,7 @@ function kolHesap(iz,x,y){
   else if(!iz.atil&&Math.abs(dy)<0.7*Math.abs(dx)&&hz>1100){      // yatay hızlı sürükleme (her iki yön): karakter o yöne döner ve kayar
     iz.atil=true;
     const dirW=Math.sign(x-iz.x0)||iz.yon, o=izBul(iz.t==='N'?'F':'N');
-    if(iz.pk>0.35&&dx>0)buyukYumruk(iz);                                              // şarjlı: süpermen uçuşu
+    if(o&&Math.min(iz.pk,o.pk)>0.3&&dx>0){o.atil=true;buyukYumruk(iz)}                // iki elle geri çekilip ileri atıldı: süpermen uçuşu
     else if(o&&KOL[o.t].ak&&KOL[o.t].e>0.5&&Math.abs(Math.cos(KOL[o.t].th*D))>0.5&&Math.sign(Math.cos(KOL[o.t].th*D))===Math.sign(dx)){o.atil=true;ciftAtil(dirW)}   // iki parmak: çelme kayması
     else ileriAtil(iz,dirW);
   }
@@ -347,7 +347,7 @@ function suplex(k){               // tutulan düşman + hızlı aşağı sürük
   S.halka={x:e.x,y:zemin(e.x),t:S.t,r:500};ses('yer',0.8);titre(90);
 }
 function buyukYumruk(iz){         // geri çekip şarj et, sonra hızlı ileri: süpermen gibi yatay uçup ileri yumruk
-  const ch=iz.pk;iz.pk=0;
+  const o=izBul(iz.t==='N'?'F':'N'),ch=o?Math.min(iz.pk,o.pk):iz.pk;iz.pk=0;if(o)o.pk=0;
   S.sman={t0:S.t,T:0.5,dir:iz.yon,ch};S.lungeT=-1;S.kay=null;S.shoryu=0;
   ses('ates',ch);S.sars=Math.max(S.sars,10+10*ch);
 }
@@ -355,7 +355,9 @@ function pkGuncelle(dt){          // basılı parmak geriye yavaş çekilirken y
   for(const iz of izler.values()){
     const k=KOL[iz.t];
     if(!k.ak||S.sarj>0||DUS.some(e=>e.tut===iz.t)){continue}
-    if(Math.cos(k.th*D)<-0.4&&k.e>0.4&&izHiz(iz,0.2)<500)iz.pk=Math.min(1,iz.pk+dt*0.9);
+    const o=izBul(iz.t==='N'?'F':'N'),cift=o&&KOL[o.t].ak&&Math.cos(KOL[o.t].th*D)<-0.4&&KOL[o.t].e>0.4;   // yalnız iki el birlikte geride ise şarj
+    if(cift&&Math.cos(k.th*D)<-0.4&&k.e>0.4&&izHiz(iz,0.25)<800)iz.pk=Math.min(1,iz.pk+dt*1.5);
+    else if(!cift&&!(k.e>=0.2&&iz.pk>0&&izHiz(iz,0.1)>800))iz.pk=Math.max(0,iz.pk-dt*0.5);
     else if(k.e<0.2)iz.pk=0;
   }
 }
@@ -425,7 +427,7 @@ function efektCiz(){
       ctx.strokeStyle='rgba(255,255,255,'+(1-u)+')';ctx.lineWidth=2+8*(1-u);ctx.beginPath();ctx.ellipse(sx,sy,R,R*0.22,0,0,Math.PI*2);ctx.stroke()}
   }
   if(S.flash){const u=(S.t-S.flash.t)/0.25;if(u>=1)S.flash=null;else topCiz(S.flash.x,S.flash.y,120+260*u,S.t,1-u)}
-  for(const iz of izler.values())if(iz.pk>0.05)topCiz(EL[iz.t].wx,EL[iz.t].wy,50+130*iz.pk,S.t,0.9);    // şarjlı yumruk parlaması
+  for(const iz of izler.values())if(iz.pk>0.05&&izBul(iz.t==='N'?'F':'N'))topCiz(EL[iz.t].wx,EL[iz.t].wy,50+130*iz.pk,S.t,0.9);    // şarjlı yumruk parlaması
   if(S.sarj>0)topCiz((EL.N.wx+EL.F.wx)/2,(EL.N.wy+EL.F.wy)/2,40+170*S.sarj,S.t,1);
   for(const p of MERMI){for(let i=3;i>=1;i--)topCiz(p.x-Math.sign(p.vx)*i*100,p.y,p.r*(1-0.18*i),S.t+i,0.35/i*1.5);topCiz(p.x,p.y,p.r,S.t,1)}
 }
