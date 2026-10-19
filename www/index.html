@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.08</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.09</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -670,12 +670,6 @@ function karCiz(arka){      // arka: karakterlerin arkasındaki sabit kar şerid
   if(!top.length)return;
   ctx.beginPath();ctx.moveTo(top[0][0],top[0][1]);for(const p of top)ctx.lineTo(p[0],p[1]);
   for(let j=top.length-1;j>=0;j--)ctx.lineTo(top[j][0],top[j][2]);ctx.closePath();
-  if(!KZP&&KZI.complete&&KZI.naturalWidth)KZP=ctx.createPattern(KZI,'repeat');
-  if(KZP){const k=1100*SC/KZI.naturalWidth,px=arka?0.85:1;      // desen dünyayla birlikte kayar (arka şerit biraz yavaş)
-    KZP.setTransform(new DOMMatrix().translateSelf(W/2-S.x*SC*px,ZY()+S.camY*SC).scaleSelf(k,k));ctx.fillStyle=KZP}
-  else ctx.fillStyle='#3a5068';
-  ctx.fill();
-  if(arka){ctx.fillStyle='rgba(10,20,35,.28)';ctx.fill()}
   ctx.beginPath();ctx.moveTo(top[0][0],top[0][1]);for(const p of top)ctx.lineTo(p[0],p[1]);
   ctx.lineJoin='round';
   ctx.strokeStyle='rgba(150,195,230,.9)';ctx.lineWidth=5;ctx.stroke();      // üst kenar: buzlu parlak sırt
@@ -1909,6 +1903,7 @@ function ciz(){
   S.shx=S.sars>0.3?(Math.random()-.5)*S.sars:0;S.shy=S.sars>0.3?(Math.random()-.5)*S.sars:0;
   ctx.translate(S.shx,S.shy);
   arkaPlan(S.x,zeminY);
+  karCiz(true);
   dusmanCiz();
   kanCiz(false);
   ctx.save();
@@ -1916,6 +1911,7 @@ function ciz(){
   ctx.scale(SC*S.yon,SC);
   karakter();
   ctx.restore();
+  karCiz(false);
   kanCiz(true);
   ctx.globalAlpha=1;
   efektCiz();
