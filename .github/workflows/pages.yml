@@ -1,10 +1,8 @@
-# www/ klasörünü GitHub Pages'e yayınlar (tarayıcıdan test için).
+# www/ klasörünü GitHub Pages'e yayınlar — SADECE elle (Actions > Web Önizleme > Run workflow).
 name: Web Önizleme
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  workflow_dispatch:      # sadece elle; push'ta yayın yok (test: raw.githack.com/cemrebaou/popeyefighter/main/www/index.html)
 
 permissions:
   contents: read
