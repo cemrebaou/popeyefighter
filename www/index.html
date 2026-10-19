@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.62</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.63</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -71,6 +71,8 @@ ADLAR.forEach(a=>{
 });
 const YUZ=[];                      // can göstergesi: 0 = tam can ... 9 = en kötü (ölünce de 9)
 for(let i=0;i<10;i++){const im=new Image();im.src='yuz/yuz'+i+'.png?v=40';YUZ.push(im)}
+const YUZA=[];                     // ağıran (darbe) yüzleri: 0-9 can aralıkları, 10 = can 0
+for(let i=0;i<11;i++){const im=new Image();im.src='yuz/yuzA'+i+'.png?v=40';YUZA.push(im)}
 function yuzNo(hp){return hp<=0?9:Math.min(9,Math.floor((100-hp)/10))}   // 100→0, 90-81→1 ... 10-1→9, 0→9
 
 // ---------- Ayarlar (parça birimi) ----------
@@ -1370,7 +1372,7 @@ function karakter(){
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak kalçanın önünde
   govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R.govde,97.7,246.4); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(-8,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{const fy=YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-106.8,-213.8,228.7,256.6):ctx.drawImage(R.kafa,-85,-170,182,204)}ctx.restore();
+    ctx.save();ctx.translate(-8,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S.hp<(S._lh==null?S.hp:S._lh))S.agT=S.t+0.6;S._lh=S.hp;const ag=S.hp<=0||S.t<(S.agT||0);const fy=ag?YUZA[S.hp<=0?10:yuzNo(S.hp)]:YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-106.8,-213.8,228.7,256.6):ctx.drawImage(R.kafa,-85,-170,182,204)}ctx.restore();
     kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
   });
   ctx.restore();
