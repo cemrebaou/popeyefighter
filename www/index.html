@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.86</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.87</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -605,15 +605,7 @@ function yumrukCal(){
 function ses(tip,f){
   if(!AC||AC.state!=='running')return;
   const n=AC.currentTime;if(n-(SES_SON[tip]||-1)<0.045)return;SES_SON[tip]=n;   // aynı anda çok vuruş: tek ses (ses düğümü yığılmasın)
-  if(tip==='yumruk'){if(!yumrukCal())ses('vur',f)}
-  else if(tip==='vur'){ton('sine',220-90*f,45,0.15,0.4+0.4*f);gurultu(0.07+0.05*f,0.3+0.3*f,3500,300)}   // sert vuruş = daha uzun ve gür
-  else if(tip==='oldu'){ton('sawtooth',320,60,0.35,0.25);gurultu(0.25,0.4,2500,150)}
-  else if(tip==='yer'){ton('sine',130,35,0.35,0.6);gurultu(0.3,0.5,1500,100)}
-  else if(tip==='parry'){ton('square',900,1500,0.08,0.2);ton('triangle',1500,700,0.18,0.2)}
-  else if(tip==='atla')ton('triangle',260,640,0.2,0.22);
-  else if(tip==='ates'){ton('sawtooth',180,900,0.3,0.25);gurultu(0.35,0.3+0.2*f,4500,400)}
-  else if(tip==='tut')ton('triangle',140,260,0.09,0.3);
-  else if(tip==='hasar'){ton('square',300,110,0.22,0.22);gurultu(0.12,0.25,1800,200)}
+  if(tip==='yumruk')yumrukCal();   // tek ses kaynağı: yumruk örnekleri
 }
 let TITRE_SON=0;
 function titre(ms){const n=performance.now();if(n-TITRE_SON<60)return;TITRE_SON=n;try{if(navigator.vibrate)navigator.vibrate(ms)}catch(_){}}
@@ -627,7 +619,7 @@ function vur(e,dmg,vx,vy,f,hy){
   if(!e.tut){e.vx=dx*kb;e.vy=e.t==='dev'?0:dy*kb+250}
   if(e.t==='zombi'&&!e.olu&&dmg<9999){const kay=h=>Math.floor((e.max-Math.max(0,h))/(e.max*0.25)+1e-6);if(kay(e.hp)>kay(hp0))zombiKopar(e,hy)}
   if(e.t==='emek'&&!e.olu&&dmg<9999){const kay=h=>Math.floor((e.max-Math.max(0,h))/(e.max*0.25)+1e-6);if(kay(e.hp)>kay(hp0))emekKopar(e,hy)}      // her %25 can kaybında vurulan uzuv kopar (75, 50, 25, 0)
-  if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;ses('oldu',f);if(S.pSes)ses('yumruk',f)}else ses(S.pSes?'yumruk':'vur',f);
+  if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;if(S.pSes)ses('yumruk',f)}else if(S.pSes)ses('yumruk',f);
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
   S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:(krit?'KRİTİK -':'-')+dmg,f:krit?1:f});
 }
