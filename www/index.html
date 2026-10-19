@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.91</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.92</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -591,10 +591,11 @@ function ton(tip,f0,f1,sure,ses){
   o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+sure+0.02);
 }
 const SES_SON={};
-let PB=[],PBAG=[],PYUK=false,PPAR=null,AD=[],ADBAG=[],AD_SON=0;      // yumruk sesleri: hepsi bir kez çalınana kadar sırayla rastgele (torba), sonra yeniden dolar
+let PB=[],PBAG=[],PYUK=false,PPAR=null,AD=[],ADBAG=[],AD_SON=0,TK=[],TKBAG=[];      // yumruk sesleri: hepsi bir kez çalınana kadar sırayla rastgele (torba), sonra yeniden dolar
 function yumrukYukle(){
   if(PYUK||!AC)return;PYUK=true;
   for(let i=1;i<=6;i++)fetch('ses/stepsnow_'+i+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>AD.push(buf)).catch(()=>{});
+  for(let i=1;i<=6;i++)fetch('ses/kick_'+i+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>TK.push(buf)).catch(()=>{});
   fetch('ses/parcalanma.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>{PPAR=buf}).catch(()=>{});
   for(let i=1;i<=7;i++)fetch('ses/punch_'+i+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>PB.push(buf)).catch(()=>{});
 }
@@ -616,6 +617,7 @@ function ses(tip,f){
   if(!AC||AC.state!=='running')return;
   const n=AC.currentTime;if(n-(SES_SON[tip]||-1)<0.045)return;SES_SON[tip]=n;   // aynı anda çok vuruş: tek ses (ses düğümü yığılmasın)
   if(tip==='parca'){if(PPAR){const src=AC.createBufferSource(),g=AC.createGain();src.buffer=PPAR;g.gain.value=1;src.connect(g);g.connect(AC.destination);src.start()}}
+  else if(tip==='tekme'){if(TK.length){if(!TKBAG.length)TKBAG=TK.map((_,i)=>i);const i=TKBAG.splice(Math.floor(Math.random()*TKBAG.length),1)[0];const src=AC.createBufferSource(),g=AC.createGain();src.buffer=TK[i];g.gain.value=0.95;src.connect(g);g.connect(AC.destination);src.start()}}
   else if(tip==='yumruk')yumrukCal();   // tek ses kaynağı: yumruk örnekleri
 }
 let TITRE_SON=0;
@@ -630,7 +632,7 @@ function vur(e,dmg,vx,vy,f,hy){
   if(!e.tut){e.vx=dx*kb;e.vy=e.t==='dev'?0:dy*kb+250}
   if(e.t==='zombi'&&!e.olu&&dmg<9999){const kay=h=>Math.floor((e.max-Math.max(0,h))/(e.max*0.25)+1e-6);if(kay(e.hp)>kay(hp0))zombiKopar(e,hy)}
   if(e.t==='emek'&&!e.olu&&dmg<9999){const kay=h=>Math.floor((e.max-Math.max(0,h))/(e.max*0.25)+1e-6);if(kay(e.hp)>kay(hp0))emekKopar(e,hy)}      // her %25 can kaybında vurulan uzuv kopar (75, 50, 25, 0)
-  if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;if(S.pSes)ses('yumruk',f)}else if(S.pSes)ses('yumruk',f);
+  if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;if(S.pSes)ses(S.pSes==='tekme'?'tekme':'yumruk',f)}else if(S.pSes)ses(S.pSes==='tekme'?'tekme':'yumruk',f);
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
   S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:(krit?'KRİTİK -':'-')+dmg,f:krit?1:f});
 }
@@ -652,7 +654,7 @@ function vurusKontrol(){
       if(e.olu||e.kyT===S.kay.t0)continue;
       const dx=(e.x-S.x)*S.yon;
       if(dx<-100||dx>520+e.r*0.7||e.y>S.y+300)continue;
-      e.kyT=S.kay.t0;vur(e,18,S.yon*0.5,1,0.6,S.y+50);if(!e.tut&&e.t!=='dev'){e.vy=1900;e.vx=S.yon*300}      // kayan tekme: yarım zıplama kadar yukarı, çok az ileri
+      e.kyT=S.kay.t0;S.pSes='tekme';vur(e,18,S.yon*0.5,1,0.6,S.y+50);S.pSes=false;if(!e.tut&&e.t!=='dev'){e.vy=1900;e.vx=S.yon*300}      // kayan tekme: yarım zıplama kadar yukarı, çok az ileri
     }
   }
   if(S.sman){                       // süpermen uçuşu: önündeki her şeye çarpar
@@ -667,7 +669,7 @@ function vurusKontrol(){
     const al=S.dkick.al*D,fx=S.x+S.dkick.dir*Math.sin(al)*430,fy=S.y+398-Math.cos(al)*430;
     for(const e of DUS){
       if(e.olu||e.dkT===S.dkick.t0)continue;
-      if(Math.hypot(fx-e.x,fy-(e.y+e.cy))<e.r+130){e.dkT=S.dkick.t0;vur(e,30,S.dkick.dir,-0.5,0.8,fy)}
+      if(Math.hypot(fx-e.x,fy-(e.y+e.cy))<e.r+130){e.dkT=S.dkick.t0;S.pSes='tekme';vur(e,30,S.dkick.dir,-0.5,0.8,fy);S.pSes=false}
     }
   }
   if(S.tats>0){                     // kasırga: etrafındaki herkese vurur
@@ -701,7 +703,7 @@ function vurusKontrol(){
         const dx=(e.x-S.x)*S.yon, ey=e.y+e.cy-S.y;
         if(dx<0||dx>menzil+e.r||ey<-e.r||ey>(tekme?1000:700))continue;
         const kd=kDmg(a);if(kd!==null)S.cE=e;
-        vur(e,kd!==null?Math.max(1,Math.round(kd/PEN.length)):(tekme?24:16),S.yon,0.3,tekme?0.7:0.5,S.y+kickH(a.ad,wi));a.vw[wi]=true;
+        S.pSes=tekme?'tekme':true;vur(e,kd!==null?Math.max(1,Math.round(kd/PEN.length)):(tekme?24:16),S.yon,0.3,tekme?0.7:0.5,S.y+kickH(a.ad,wi));S.pSes=false;a.vw[wi]=true;
       }
     }
   }
