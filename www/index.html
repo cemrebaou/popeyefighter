@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.24</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.25</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -269,7 +269,8 @@ function daireKontrol(){         // iki parmakla bir daire = aduket hazır (tam 
       donDon(d);
       for(const iz of [a,b]){const k=KOL[iz.t];k.th=Math.atan2(iz.ly-iz.y0,(iz.lx-iz.x0)*iz.yon)/D}
     }
-    S.sarjP={dx:mx,dy:-my,bx:(EL.N.wx+EL.F.wx)/2,by:(EL.N.wy+EL.F.wy)/2};   // ekrandaki kol yönü = atış yönü
+    const yo=Math.abs(mx)>40?d:S.yon,rf=(EL.N.wx*yo>=EL.F.wx*yo)?'N':'F',riz=rf==='N'?a:b;      // aduket: bakılan yöndeki el/parmak referans (sağa bakıyorsa sağdaki, sola bakıyorsa soldaki)
+    S.sarjP={dx:riz.lx-riz.x0,dy:-(riz.ly-riz.y0),bx:EL[rf].wx,by:EL[rf].wy};   // atış yönü ve çıkış noktası o elden
     return;
   }
   const t=Math.min(Math.abs(a.turn),Math.abs(b.turn));
@@ -568,7 +569,7 @@ function efektCiz(){
     ctx.stroke();
     ctx.strokeStyle='rgba(255,230,160,'+al+')';ctx.lineWidth=2;ctx.stroke();
   }
-  if(S.sarj>0)topCiz((EL.N.wx+EL.F.wx)/2,(EL.N.wy+EL.F.wy)/2,40+170*S.sarj,S.t,1);
+  if(S.sarj>0){const rh=(EL.N.wx*S.yon>=EL.F.wx*S.yon)?EL.N:EL.F;topCiz(rh.wx,rh.wy,40+170*S.sarj,S.t,1)}      // top, bakılan yöndeki elde büyür
   for(const p of MERMI){{const L=Math.hypot(p.vx,p.vy)||1;for(let i=3;i>=1;i--)topCiz(p.x-p.vx/L*i*100,p.y-p.vy/L*i*100,p.r*(1-0.18*i),S.t+i,0.35/i*1.5,false)}topCiz(p.x,p.y,p.r,S.t,1)}
 }
 function dusmanKur(){
