@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.05</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.06</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -96,7 +96,7 @@ const KARAKTER_BOY=1020;
 const HIZ=1100, G=5600, ZIP1=2700, ZIP2=2400;
 const D=Math.PI/180;
 // [başlangıç x, yükseklik]; sol baştaki ve sağ sondaki yüksek duvar bölümün sınırı
-const ZEMIN=[[-1e9,3000],[-700,0],[22800,3000]];      // şimdilik düz zemin
+const ZEMIN=[[-1e9,0]];      // şimdilik düz zemin
 const BOSS_X=21000;
 
 // ---------- Durum ----------
@@ -628,10 +628,11 @@ const KARI=[];for(let i=1;i<=6;i++){const im=new Image();im.src='fx/kar'+i+'.png
 const KX0=-1500,KS=20,KN=1300,KD=90,KMIN=26;      // KD: taze kar kalınlığı, KMIN: ezilmiş kar
 const KAR=new Float32Array(KN).fill(KD);
 S.karP=[];S.leke=[];
+const YOLI=new Image();YOLI.src='fx/yol.png?v=1';
 const KZI=new Image();KZI.src='fx/zemin.jpg?v=1';let KZP=null;      // zemin dokusu (tekrarlanan desen)
 function karI(x){return kisit(Math.round((x-KX0)/KS),0,KN-1)}
 function karH(x){const f=(x-KX0)/KS,i=Math.floor(f);if(i<0||i>=KN-1)return KD;const u=f-i;return KAR[i]*(1-u)+KAR[i+1]*u}
-function karY(x){return zemin(x)+karH(x)}
+function karY(x){return zemin(x)}
 const karR=i=>{const v=Math.sin(i*12.9898)*43758.5453;return v-Math.floor(v)};
 function karBas(x,w,d,puf,dir){      // x civarındaki karı d kalınlığına ezer; puf: kenarlardan topçuk saçılır
   const a=karI(x-w/2),b=karI(x+w/2);let at=0;
@@ -1885,12 +1886,10 @@ function arkaPlan(camX,zeminY){
   ctx.fillStyle='#6b5233';
   const aralik=260;
   for(let i=-1;i<W/aralik+2;i++){const x=((i*aralik-camX*0.6)%(W+aralik*2)+W+aralik*2)%(W+aralik*2)-aralik;ctx.fillRect(x,zeminY-H*0.16,10,H*0.16)}
-  // zemin ve merdivenler (dünya yüksekliğine göre): yol bir kez hesaplanır, dolgu ve üst çizgi aynı yolu kullanır
-  const ys=x=>zeminY-(zemin(camX+(x-W/2)/SC)-S.camY)*SC;
-  const yol=new Path2D();yol.moveTo(0,ys(0));
-  for(let x=4;x<=W+4;x+=4)yol.lineTo(x,ys(x));
-  const dolgu=new Path2D(yol);dolgu.lineTo(W+4,H);dolgu.lineTo(0,H);dolgu.closePath();
-  ctx.fillStyle='#34495f';ctx.fill(dolgu);      // eski tahta zemin yok: altı kar
+  if(YOLI.complete&&YOLI.naturalWidth){      // yol: aynı şerit peş peşe, altında başka zemin yok
+    const tw=2400*SC,th=tw*YOLI.naturalHeight/YOLI.naturalWidth,y0=zeminY-(0-S.camY)*SC-th*0.38;
+    for(let x=((W/2-camX*SC)%tw+tw)%tw-tw;x<W;x+=tw)ctx.drawImage(YOLI,Math.floor(x),y0,Math.ceil(tw)+1,th);
+  }
 }
 function ciz(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
@@ -1898,7 +1897,6 @@ function ciz(){
   S.shx=S.sars>0.3?(Math.random()-.5)*S.sars:0;S.shy=S.sars>0.3?(Math.random()-.5)*S.sars:0;
   ctx.translate(S.shx,S.shy);
   arkaPlan(S.x,zeminY);
-  karCiz(true);
   dusmanCiz();
   kanCiz(false);
   ctx.save();
@@ -1906,7 +1904,6 @@ function ciz(){
   ctx.scale(SC*S.yon,SC);
   karakter();
   ctx.restore();
-  karCiz(false);
   kanCiz(true);
   ctx.globalAlpha=1;
   efektCiz();
