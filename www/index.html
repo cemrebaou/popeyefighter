@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.83</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.84</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -606,7 +606,7 @@ let TITRE_SON=0;
 function titre(ms){const n=performance.now();if(n-TITRE_SON<60)return;TITRE_SON=n;try{if(navigator.vibrate)navigator.vibrate(ms)}catch(_){}}
 function vur(e,dmg,vx,vy,f,hy){
   let krit=false;
-  if(e.boss){f*=0.25;if(hy!==undefined&&hy>e.y+(e.t==='dev'?700:650)){dmg*=3;krit=true}}      // dev zombi: zayıf noktası kafası (yüksek vuruş)
+  if(e.boss){f*=0.25;dmg*=0.5;if(hy!==undefined&&hy>e.y+(e.t==='dev'?700:650)){dmg*=3;krit=true}}      // dev zombi: zayıf noktası kafası (yüksek vuruş)
   dmg=Math.round(dmg);titre(12+Math.round(70*f));
   const hp0=e.hp;e.hp-=dmg;e.fl=0.15;if(e.t!=='dev')e.st=S.t+0.45+0.5*f;      // dev zombi sersemlemez (sadece parry)
   const L=Math.hypot(vx,vy)||1;let dx=vx/L,dy=vy/L;dx+=(e.x>=S.x?1:-1)*0.35;
@@ -847,6 +847,10 @@ function dusmanGuncelle(dt){
     }
   }
 }
+function itme(yn,v){      // boss vuruşu oyuncuyu geri fırlatır; tutma hareketindeyken (el uzatılmış) 2 kat
+  const tut=!S.blok&&((KOL.N.ak&&KOL.N.e>=0.25)||(KOL.F.ak&&KOL.F.e>=0.25)),k=tut?2:1;
+  S.g0=S.t;S.gT=S.t+0.4;S.gv=yn*v*k;S.yer=false;S.vy=-1500*(tut?1.5:1);S.donuyor=false;
+}
 function oyuncuHasar(){
   if(S.durum!=='oyun'){return}
   if(S.t>=S.inv&&!(S.shoryu>0)&&!(S.tats>0)&&!S.sman&&!S.alk){
@@ -860,9 +864,9 @@ function oyuncuHasar(){
           if(S.t-S.blokT<0.3){                                   // tam zamanında blok = parry: düşman sersemler
             e.st=S.t+(e.boss?0.8:1.5);e.vx=-yn*(e.boss?250:1200);e.vy=500;S.inv=S.t+0.5;
             S.pops.push({x:S.x,y:S.y+950,t:0,txt:'PARRY!',f:1});ses('parry',0);titre(50);S.sars=Math.max(S.sars,8);
-          }else{S.hp-=Math.max(1,Math.round(dm*0.25));S.inv=S.t+1.0;ses('hasar',0);titre(30)}   // normal blok: hasarın çoğu engellenir
+          }else{S.hp-=Math.max(1,Math.round(dm*0.25));S.inv=S.t+1.0;ses('hasar',0);titre(30);if(e.t==='dev')itme(yn,900)}   // normal blok: hasarın çoğu engellenir
         }else{
-          ses('hasar',0);S.hp-=dm;S.inv=S.t+1.0;
+          ses('hasar',0);S.hp-=dm;S.inv=S.t+1.0;if(e.t==='dev')itme(yn,2200);
           {const rel=kisit((e.y+e.cy-S.y)/800,0,1.1);S.hitR={t0:S.t,z:rel<0.4?'bacak':rel<0.78?'govde':'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}   // vurulan yer ve yön: tepki buna göre
         }
         break;
@@ -1750,6 +1754,7 @@ function dongu(ms){
   S.en=Math.min(5,S.en+dt*0.05);
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
   if(S.dkick)S.vx=S.dkick.vx;
+  if(S.t<S.gT){const u=(S.t-S.g0)/(S.gT-S.g0);S.vx=S.gv*(1-u)}      // boss vuruşu geri fırlatması
   if(S.sup&&S.t<S.sup.t0+S.sup.T)S.vx=0;      // kayarak yumruk: kısa süre öne atılır
   {const nx=S.x+S.vx*dt;                                        // yüksek basamak/kutu duvar gibidir: üstüne zıplamak gerekir
     if(zemin(nx)>S.y+(S.yer?75:30)){S.vx=0;S.lungeT=-1}else S.x=nx}
