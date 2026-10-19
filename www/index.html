@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.80</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.81</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -805,19 +805,19 @@ function dusmanGuncelle(dt){
         if(e.t==='zombi'){             // yavaş zombi yürüyüşü; yaklaşınca yukarıdan aşağı tırmalar
           const su=typeof e.sk==='number'?S.t-e.sk:9;
           if(su<0.95)yuru=false;
-          else if(Math.abs(dx)<520){                    // kolları değecek mesafede yürümeyi bırakır, sadece tırmalar (aralarda bekler)
+          else if(Math.abs(dx)<260){                    // kolları değecek mesafede yürümeyi bırakır, sadece tırmalar (aralarda bekler)
             yuru=false;
             if(S.durum==='oyun'&&S.t>=(e.skN||0)&&!(e.kopuk&&e.kopuk.kolN&&e.kopuk.kolF)){e.sk=S.t;e.skN=S.t+1.7}
           }
         }else if(e.t==='emek'){        // emekler; yaklaşınca alttan tırmalar ya da öne uzanıp ısırır
           const a=e.ea,ad=Math.abs(dx);
           if(a){if(S.t>=a.t0+a.d){e.ea=null;if(a.k==='zip'){e.vy=3600;e.vx=kisit((S.x-e.x)/1.25,-2200,2200);e.ej=true;ses('atla',0)}else e.acd=S.t+1.0+Math.random()*0.9}else yuru=false}
-          else if(ad<1275&&S.durum==='oyun'&&S.t>=(e.acd||0)){e.ea=(ad>705||Math.random()<0.35)?{k:'isir',t0:S.t,d:1.4}:{k:'kes',t0:S.t,d:1.7};yuru=false}
-          else if(ad<760)yuru=false;      // vuruş mesafesinde yürümeye devam edip arkaya geçmez, bekler
+          else if(ad<620&&S.durum==='oyun'&&S.t>=(e.acd||0)){e.ea=(ad>400||Math.random()<0.35)?{k:'isir',t0:S.t,d:1.4}:{k:'kes',t0:S.t,d:1.7};yuru=false}
+          else if(ad<380)yuru=false;      // vuruş mesafesinde yürümeye devam edip arkaya geçmez, bekler
         }
         if(yuru){
-        e.moving=e.t==='zombi'||e.t==='emek';if(e.t==='emek')e.wf=(e.wf||0)+dt*9;
-        const nx=e.x+e.yon*(e.boss?170:(e.t==='zombi'?125:e.t==='emek'?420:300))*dt;
+        e.moving=e.t==='zombi'||e.t==='emek';if(e.t==='emek')e.wf=(e.wf||0)+dt*17;
+        const nx=e.x+e.yon*(e.boss?170:(e.t==='zombi'?125:e.t==='emek'?760:300))*dt;
         if(zemin(nx)-e.y<=70){e.x=nx;e.y=Math.max(e.y,zemin(nx))}else{e.vy=e.t==='zombi'?1800:e.t==='emek'?3600:2150;e.vx=e.yon*380}   // basamak yüksekse zıpla
         }
         if(e.boss&&S.t>e.nj&&S.durum==='oyun'){e.vy=3200;e.vx=e.yon*500;e.nj=S.t+5;e.stomp=true}   // boss: ezme zıplaması
@@ -994,7 +994,7 @@ function devGuncelle(e,dt,stun,dx){
   e.yon=dx>=0?1:-1;
   if(S.durum!=='oyun')return;
   if(ad>1100&&ad<3200&&S.t>=e.lcd){e.mod2='cokme';e.mt=S.t;return}
-  if(ad<450&&S.t>=e.acd){                                   // kombo: 2-4 tek kol vuruşu + iki elle yere bitiş
+  if(ad<260&&S.t>=e.acd){                                   // kombo: 2-4 tek kol vuruşu + iki elle yere bitiş
     const n=3+Math.floor(Math.random()*3);let k=Math.random()<0.5?'N':'F',t=S.t;e.sv=[];
     for(let i=0;i<n;i++){
       const iki=i===n-1,d=iki?2.0:(i?0.75:0.95);
@@ -1002,7 +1002,7 @@ function devGuncelle(e,dt,stun,dx){
     }
     e.si=0;e.mod2='saldiri';return;
   }
-  if(ad>=400){                                              // ağır insan yürüyüşü: her adımda hafif deprem
+  if(ad>=230){                                              // ağır insan yürüyüşü: her adımda hafif deprem
     e.moving=true;const w0=e.wf||0;e.wf=w0+dt*(Math.PI*2/1.4);
     const nx=e.x+e.yon*95*dt;if(zemin(nx)-e.y<=70){e.x=nx;e.y=zemin(nx)}
     if(Math.floor((e.wf+Math.PI/2)/Math.PI)!==Math.floor((w0+Math.PI/2)/Math.PI)&&ad<3200)S.sars=Math.max(S.sars,3.2*(1-ad/3600));
@@ -1030,7 +1030,7 @@ function eKey(keys,u){
 const EB=[[0,{lean:0,lx:0,st:1,head:0,jaw:0}],[.35,{lean:-26,lx:-40,st:1,head:-18,jaw:0}],[.46,{lean:-26,lx:-40,st:1,head:-18,jaw:0}],[.54,{lean:16,lx:170,st:1.22,head:18,jaw:1}],[.68,{lean:16,lx:170,st:1.22,head:18,jaw:1}],[.74,{lean:12,lx:150,st:1.18,head:14,jaw:0}],[1,{lean:0,lx:0,st:1,head:0,jaw:0}]];
 function emekPoz(e){
   const o={lean:76,head:-4,jaw:0,st:1,lx:0,thN:75,thF:75,fkN:0,fkF:0,uN:0,fN:0,uF:0,fF:0,w:null,tor:0};
-  if(e.moving){const sn=Math.sin(e.wf||0);o.thN+=22*sn;o.thF-=22*sn;o.w=e.wf||0}
+  if(e.moving){const w=e.wf||0;o.thN+=30*Math.sin(w);o.thF+=30*Math.sin(w-0.6);o.w=w;o.lean+=3*Math.sin(w*2);o.bob=22*Math.abs(Math.sin(w))}
   else{const b=Math.sin((e.anim||0)*1.7);o.lean+=1.5*b;o.head+=2*b}
   if(e.ej){o.lean=58;o.lx=70;o.thN=40;o.thF=58;o.fkN=o.fkF=1;o.uN=-125;o.fN=-135;o.uF=-140;o.fF=-150;o.head=10;o.jaw=1;return o}
   const a=e.ea;if(!a)return o;
@@ -1058,18 +1058,18 @@ function emekYakin(e){      // vuruş penceresinde ve eli/kafası gerçekten de�
 }
 function ciziEmek(e){
   const P=emekPoz(e),fl=e.fl>0;
-  const ftN=-P.thN,ftF=-P.thF;
+  const fw=P.w!==null,ftN=-P.thN+(fw?28*Math.cos(P.w):0),ftF=-P.thF+(fw?28*Math.cos(P.w-0.6):0);
   const alt=(th,ft,S0)=>{const a=eRot(ELEG[0],ELEG[1],th);let m=-1e9;for(const p of S0){const q=eRot(p[0],p[1],th+ft);m=Math.max(m,a[1]+q[1])}return m};
   const L=Math.max(alt(P.thN,ftN,SOLA),alt(P.thF,ftF,SOLB)),HX=P.lx*0.6,WX=16+P.lx*0.4,WY=-34;
   const tw=(x,y)=>{const r=eRot(x-100,(y-235)*P.st,P.lean);return [WX+r[0],WY+r[1]]};
   const sN=tw(64,97),sF=tw(86,88);
   // eller: yürürken/beklerken yere basar (IK), saldırıda hazır açılar
   const lf=P.lx/170*45;let tN=[290-HX,L-62-lf],tF=[350-HX,L-62-lf];
-  if(P.w!==null){const pN=P.w+Math.PI,pF=P.w;tN=[290+70*Math.sin(pN)-HX,L-62-Math.max(0,Math.cos(pN))*70];tF=[350+70*Math.sin(pF)-HX,L-62-Math.max(0,Math.cos(pF))*70]}
+  if(P.w!==null){const pN=P.w,pF=P.w+0.5;tN=[290+70*Math.sin(pN)-HX,L-62-Math.max(0,Math.cos(pN))*70];tF=[350+70*Math.sin(pF)-HX,L-62-Math.max(0,Math.cos(pF))*70]}
   const v1N=[-24,169],v2N=[41,156],v1F=[19,157],v2F=[89,110];
   const ikN=eIK(sN[0],sN[1],tN[0],tN[1],v1N,v2N),ikF=eIK(sF[0],sF[1],tF[0],tF[1],v1F,v2F);
   const uN=ikN[0]+(P.uN-ikN[0])*P.fkN,fN=ikN[1]+(P.fN-ikN[1])*P.fkN,uF=ikF[0]+(P.uF-ikF[0])*P.fkF,fF=ikF[1]+(P.fF-ikF[1])*P.fkF;
-  ctx.save();ctx.scale((e.yon||1)*EU,EU);ctx.translate(HX,-L);
+  ctx.save();ctx.scale((e.yon||1)*EU,EU);ctx.translate(HX,-L-(P.bob||0));
   const kol=(sh,u,f,US,UE,OF,ui,oi,ix,tp)=>{ctx.save();ctx.translate(sh[0],sh[1]);ctx.rotate(u*D);ep(ui,US,fl);ctx.translate(UE[0],UE[1]);ctx.rotate(f*D);ep(oi,OF,fl);uc(e,ix,0,0);uc(e,ix+1,tp[0]/2,tp[1]/2);uc(e,ix+2,tp[0],tp[1]);ctx.restore()};
   const bacak=(th,ft,k,foot,fa)=>{ctx.save();ctx.rotate(th*D);ep(R['e_bacak'+k],[63,31],fl);ctx.translate(ELEG[0],ELEG[1]);ctx.rotate(ft*D);ep(foot,fa,fl);ctx.restore()};
   kol(sF,uF,fF,[38,39],v1F,[35,22],R.e_ustB_k,R.e_onB_k,3,[115,213]);
