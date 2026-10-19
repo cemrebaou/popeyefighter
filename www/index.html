@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.89</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.90</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -591,11 +591,20 @@ function ton(tip,f0,f1,sure,ses){
   o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+sure+0.02);
 }
 const SES_SON={};
-let PB=[],PBAG=[],PYUK=false,PPAR=null;      // yumruk sesleri: hepsi bir kez çalınana kadar sırayla rastgele (torba), sonra yeniden dolar
+let PB=[],PBAG=[],PYUK=false,PPAR=null,AD=[],ADBAG=[],AD_SON=0;      // yumruk sesleri: hepsi bir kez çalınana kadar sırayla rastgele (torba), sonra yeniden dolar
 function yumrukYukle(){
   if(PYUK||!AC)return;PYUK=true;
+  for(let i=1;i<=6;i++)fetch('ses/stepsnow_'+i+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>AD.push(buf)).catch(()=>{});
   fetch('ses/parcalanma.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>{PPAR=buf}).catch(()=>{});
   for(let i=1;i<=7;i++)fetch('ses/punch_'+i+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>PB.push(buf)).catch(()=>{});
+}
+function adimCal(x,v){            // ayak basış sesi: 6 örnek sırayla rastgele; uzaktakiler daha kısık
+  if(!AC||AC.state!=='running'||!AD.length)return;
+  const n=AC.currentTime;if(n-AD_SON<0.05)return;
+  const d=Math.abs(x-S.x),g0=(v===undefined?1:v)*kisit(1-d/4500,0,1);if(g0<0.04)return;AD_SON=n;
+  if(!ADBAG.length)ADBAG=AD.map((_,i)=>i);
+  const i=ADBAG.splice(Math.floor(Math.random()*ADBAG.length),1)[0];
+  const src=AC.createBufferSource(),g=AC.createGain();src.buffer=AD[i];g.gain.value=0.8*g0;src.connect(g);g.connect(AC.destination);src.start();
 }
 function yumrukCal(){
   if(!PB.length)return false;
@@ -832,6 +841,7 @@ function dusmanGuncelle(dt){
         }
         if(yuru){
         e.moving=e.t==='zombi'||e.t==='emek';if(e.t==='emek')e.wf=(e.wf||0)+dt*17;
+        if(!e.boss){const k=Math.floor((e.t==='emek'?e.wf:e.anim*3.2)/Math.PI);if(e.adk!==undefined&&k!==e.adk)adimCal(e.x);e.adk=k}   // ayak basınca ses (boss hariç)
         const nx=e.x+e.yon*(e.boss?170:(e.t==='zombi'?125:e.t==='emek'?760:300))*dt;
         if(zemin(nx)-e.y<=70){e.x=nx;e.y=Math.max(e.y,zemin(nx))}else{e.vy=e.t==='zombi'?1800:e.t==='emek'?3600:2150;e.vx=e.yon*380}   // basamak yüksekse zıpla
         }
@@ -1813,6 +1823,7 @@ function dongu(ms){
   }
   S.camY+=(S.y-S.camY)*(1-Math.exp(-dt*5));
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
+  {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer)adimCal(S.x);S.adk=k}
   pozGuncelle(dt);
   ciz();
   elHiz(dt);vurusKontrol();grabKontrol(dt);ikiElKontrol(dt);elDurum(dt);mermiGuncelle(dt);dusmanGuncelle(dt);carpisma();blokGuncelle(dt);zitKontrol();ciftKontrol();yereKontrol();alkisKontrol();inisGuncelle();oyuncuHasar();
