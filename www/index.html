@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.30</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.31</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -63,7 +63,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 (function(){
 'use strict';
 // ---------- Parçalar ----------
-const ADLAR=['kafa','govde','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','z_kafa','z_govde','z_kalca','z_ust','z_onA','z_onB','z_ayak','z_bacak','d_kafa','d_govde','d_kalca','d_ustA','d_onA','d_ustB','d_onB','d_uyluk','d_ayak','e_kafa','e_isir','e_govde','e_kalca','e_ustA','e_onA','e_ustB','e_onB','e_bacak','e_ayakA','e_ayakB','k_kafa','k_govde','k_kalca','k_ust','k_on','k_elN','k_elF','k_uyN','k_uyF','k_bacak','k_bot','b_kafa','b_govde','b_kalca','b_ust','b_on','b_elN','b_elF','b_uyN','b_uyF','b_bacak','b_bot','p_kafa','p_govde','p_kalca','p_ust','p_on','p_elN','p_elF','p_uyN','p_uyF','p_bacak','p_bot','p_mermi','p_ates'];
+const ADLAR=['kafa','govde','govde0','govde1','govde2','govde3','govde4','govde5','govde6','govde7','govde8','govde9','govde10','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','z_kafa','z_govde','z_kalca','z_ust','z_onA','z_onB','z_ayak','z_bacak','d_kafa','d_govde','d_kalca','d_ustA','d_onA','d_ustB','d_onB','d_uyluk','d_ayak','e_kafa','e_isir','e_govde','e_kalca','e_ustA','e_onA','e_ustB','e_onB','e_bacak','e_ayakA','e_ayakB','k_kafa','k_govde','k_kalca','k_ust','k_on','k_elN','k_elF','k_uyN','k_uyF','k_bacak','k_bot','b_kafa','b_govde','b_kalca','b_ust','b_on','b_elN','b_elF','b_uyN','b_uyF','b_bacak','b_bot','p_kafa','p_govde','p_kalca','p_ust','p_on','p_elN','p_elF','p_uyN','p_uyF','p_bacak','p_bot','p_mermi','p_ates'];
 const RES=2;                       // yeni parça görselleri oyun biriminin 2 katı çözünürlükte
 const R={};
 function koyult(img,al=.28){            // arka taraftaki uzuvlar için hafif koyu kopya
@@ -2048,7 +2048,7 @@ function karakter(){
   ctx.restore();
   ctx.save();ctx.translate(P.hx+BON,-P.hy);ctx.rotate(P.pelv*D);resim(R.kalca,73.5,118.8);ctx.restore();   // kalça (şort) bacakların önünde, gövdenin arkasında
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak kalçanın önünde
-  govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R.govde,97.7,246.4); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner
+  govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R['govde'+yuzNo(S.hp)]||R.govde,97.7,246.4); });      // gövde de canla yüzle aynı anda değişir (11 hasar kademesi)      // gövde (%10 büyük) karnıyla kalçanın üstüne biner
   govdeUzayi(()=>{
     ctx.save();ctx.translate(-1,-257);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);const ag=ph>=0&&ph<0.6&&YUZA[S.agLv],fy=ag?YUZA[S.agLv]:YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?(ag?ctx.drawImage(fy,-112.5,-226.6,240.1,269.4):ctx.drawImage(fy,-106.8,-213.8,228.7,256.6)):ctx.drawImage(R.kafa,-85,-170,182,204)}ctx.restore();
     kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
