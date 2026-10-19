@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.64</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.65</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -1374,7 +1374,7 @@ function karakter(){
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak kalçanın önünde
   govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R.govde,97.7,246.4); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(-8,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S.hp<(S._lh==null?S.hp:S._lh))S.agT0=S.t;S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0),lv=Math.min(9,Math.floor((100-Math.max(S.hp,1))/10));const fy=ph>=0&&ph<0.35?YUZH[lv]:ph>=0&&ph<0.8?YUZA[S.hp<=0?10:lv]:YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-106.8,-213.8,228.7,256.6):ctx.drawImage(R.kafa,-85,-170,182,204)}ctx.restore();
+    ctx.save();ctx.translate(-8,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S.hp<(S._lh==null?S.hp:S._lh))S.agT0=S.t;S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0),lv=Math.min(9,Math.floor((100-Math.max(S.hp,1))/10));const fy=ph>=0&&ph<0.6?YUZA[S.hp<=0?10:lv]:YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-106.8,-213.8,228.7,256.6):ctx.drawImage(R.kafa,-85,-170,182,204)}ctx.restore();
     kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
   });
   ctx.restore();
