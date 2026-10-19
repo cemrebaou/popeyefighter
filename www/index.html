@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.15</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.16</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -82,7 +82,7 @@ ADLAR.forEach(a=>{
     R.z_ust_k=koyult(R.z_ust,.3);R.z_onA_k=koyult(R.z_onA,.3);R.z_bacak_k=koyult(R.z_bacak,.36);R.z_ayak_k=koyult(R.z_ayak,.36);      // zombinin arkadaki kolu/bacağı daha koyu   // arkadaki kol: bacaktan daha açık ton
     basla();}};
   im.onerror=()=>{document.getElementById('yuk').textContent='Parça yüklenemedi: '+a};
-  im.src='parca/'+a+'.png?v=42';          // ?v= : görsel değişince tarayıcı eski önbelleği kullanmasın
+  im.src='parca/'+a+'.png?v=43';          // ?v= : görsel değişince tarayıcı eski önbelleği kullanmasın
 });
 const YUZ=[];                      // ana yüz: 0 = tam can ... 9 = çok az can, 10 = ölü
 for(let i=0;i<11;i++){const im=new Image();im.src='yuz/yuz'+i+'.png?v=41';YUZ.push(im)}
@@ -1325,11 +1325,11 @@ function ciziZombi(e,mask){
 }
 // ---------- Korsan (insan dövüşçü): oyuncunun iskeleti gibi omuz → dirsek → bilek, kalça → diz; parça halkaları eklem noktası ----------
 // iki görünüm aynı iskelet ve hareketlerle: k = yumruklu korsan, b = bıçaklı korsan (eski emekleyen zombinin yerine)
-const KSK={
-  k:{p:'k_',sc:0.95,us:1,as:1,A:{ust:[83,64.4],on:[139,52.2],elN:[91.1,43.3],elF:[95.8,44.1],uyN:[86.1,47.8],uyF:[86.1,47.8],bacak:[107.3,70.2],govde:[150,351],kalca:[105.3,75.3],kafa:[129,216]},
-     ust:183.8,on:172.7,uy:209.8,tb:[0,276],bel:566,kN:[15,96],kF:[-18,96],omN:[-100.8,-227.4],omF:[90,-246],boyun:[10.8,-308]},
-  b:{p:'b_',sc:0.98,us:1,as:1,A:{ust:[58.8,54.5],on:[128.4,47.2],elN:[64.9,32.8],elF:[94.5,43.8],uyN:[72.7,42.4],uyF:[112.4,53.2],bacak:[88.8,31.2],govde:[138,351],kalca:[123,27],kafa:[123,231]},
-     ust:138.9,on:166.4,uy:208.5,tb:[1.2,249.6],bel:551,kN:[12,93],kF:[-18,90],omN:[-85.2,-228],omF:[114,-249],boyun:[-9,-307]}
+const KSK={      // iki korsan da kendi görsel setinden, tüm parçalar aynı ölçekte (eklem noktaları = parçalardaki halkalar)
+  k:{p:'k_',sc:0.95,us:1,as:1,A:{ust:[79.1,60.4],on:[134.9,48.3],elN:[87.2,38.2],elF:[92.7,41.0],uyN:[111.2,54.2],uyF:[111.2,54.2],bacak:[97.1,44.4],govde:[148.6,345.0],kalca:[92.4,46.8],kafa:[173.6,208.1]},
+     ust:185.6,on:172.3,uy:248.8,tb:[59.1,308.6],bel:666.6,kN:[0.0,109.2],kF:[-36.0,109.2],omN:[-103.0,-220.2],omF:[50.6,-229.2],boyun:[-2.4,-300.7]},
+  b:{p:'b_',sc:0.98,us:1,as:1,A:{ust:[55.3,52.2],on:[125.2,45.5],elN:[65.9,32.1],elF:[91.8,40.6],uyN:[87.9,39.7],uyF:[87.9,39.7],bacak:[86.4,30.8],govde:[118.0,297.0],kalca:[98.4,49.7],kafa:[180.9,236.6]},
+     ust:137.0,on:165.6,uy:191.3,tb:[38.6,352.2],bel:659.4,kN:[0.0,115.9],kF:[-36.0,115.9],omN:[-53.2,-195.0],omF:[58.4,-204.0],boyun:[7.8,-258.5]}
 };
 const KDUR={F:0.5,N:0.62,B:0.66};      // F = öndeki kol (jab), N = arkadaki kol (kroşe), B = bıçak savurma (yakın el)
 const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:-10,kN:14,lF:12,kF:10}};
@@ -1369,7 +1369,7 @@ function kKol(K,om,u,r,w,far,fl,e,ix){
   krp(R[P+(far?'ust_k':'ust')],A.ust,fl);
   ctx.translate(0,K.ust);ctx.rotate(r*D);
   ctx.save();ctx.translate(0,K.on);ctx.rotate(w*D);krp(R[P+(far?'elF_k':'elN')],far?A.elF:A.elN,fl);
-  if(e){uc(e,ix,0,75);if(!far&&P==='b_'){uc(e,2,180,55);uc(e,3,325,-6)}}      // yumruğun / bıçağın dünya konumu: vuruş = gerçekten değince
+  if(e){uc(e,ix,0,75);if(!far&&P==='b_'){uc(e,2,188.7,6.5);uc(e,3,343.1,11.9)}}      // yumruğun / bıçağın dünya konumu: vuruş = gerçekten değince
   ctx.restore();
   krp(R[P+(far?'on_k':'on')],A.on,fl);      // ön kol halkası dirseği örter
   ctx.restore();
