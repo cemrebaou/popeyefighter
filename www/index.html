@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.18</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.19</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -694,7 +694,6 @@ function kanFiskir(x,y,yon,g){      // büyük fışkırma: 4 numaralı bulut + 
   for(let i=0;i<n;i++)kanDamla(x,y,yon*(300+Math.random()*1400)*g,(400+Math.random()*1500)*g,0.7+Math.random()*0.7);
 }
 function kanVurus(x,y,f,yon,yum){      // vuruşta: yumruksa düşmanın üstünde 2 numaralı darbe; az fışkırma
-  if(yum)kanEkle({k:2,x,y,vx:0,vy:0,s:0.7+0.6*f,r:(Math.random()-0.5)*0.8});
   const n=yum?2+Math.round(3*f):1+Math.round(2*f);
   for(let i=0;i<n;i++)kanDamla(x,y,yon*(300+Math.random()*900),300+Math.random()*1100,0.6+Math.random()*0.6);
   if(f>0.5)kanEkle({k:3,x,y,vx:yon*(1400+Math.random()*900),vy:500+Math.random()*700,s:0.6+0.4*f});
@@ -717,7 +716,7 @@ function kanGuncelle(dt){
     if(p.k===3||p.k===6){
       p.vy-=G*(p.k===6?0.75:0.55)*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
       const zy=karY(p.x);
-      if(p.y<=zy&&p.vy<0){S.kan.splice(i,1);kanEkle({k:1,x:p.x,y:zy,vx:0,vy:0,s:(p.k===3?0.7:0.4)*p.s});if(S.leke.length<50)S.leke.push({x:p.x,w:(p.k===3?45:22)*p.s,t0:S.t});continue}      // yere değdi: 1 numaralı sıçrama
+      if(p.y<=zy&&p.vy<0){S.kan.splice(i,1);if(S.leke.length<50)S.leke.push({x:p.x,w:(p.k===3?45:22)*p.s,t0:S.t});continue}      // yere değdi: 1 numaralı sıçrama
       if(u>3)S.kan.splice(i,1);
     }else if(p.k===4){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=Math.pow(0.05,dt);p.vy*=Math.pow(0.05,dt);if(u>0.5)S.kan.splice(i,1)}
     else if(p.k===2){if(u>0.3)S.kan.splice(i,1)}
