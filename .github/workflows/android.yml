@@ -1,12 +1,10 @@
-# Android derlemesi: her push'ta (veya Actions > "Android Build" > Run workflow ile elle)
+# Android derlemesi: SADECE elle (Actions > "Android Build" > Run workflow); push'ta çalışmaz
 # - Secrets varsa: imzalı AAB (Google Play'e yüklenecek) + imzalı APK
 # - Secrets yoksa: imzasız AAB + debug APK (telefona kurup test için)
 # versionCode = çalıştırma numarası, her derlemede otomatik artar.
 name: Android Build
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
