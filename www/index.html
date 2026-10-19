@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.67</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.68</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -265,16 +265,31 @@ function daireKontrol(){         // iki parmakla bir daire = aduket hazır (tam 
     if(S.en>=1&&!S.sman&&!S.yy&&!S.alk&&!(S.tats>0)){S.sarj=1;S.sarjP=null;ses('ates',0.3)}else S.noEn=S.t;
   }
 }
+// Tekme bölgesi: orta çizginin iki yanında, karakterin altındaki çatı biçimli alan (dışı ve üstü yumruk bölgesi). Sağ yarı = sağ bacak (N), sol yarı = sol bacak (F)
+const kizler=new Map();
+function tekmeBolgesi(x,y){
+  const dx=Math.abs(x-W/2), gen=0.26*W;
+  return dx<gen&&y>H*(0.57+0.155*dx/gen);
+}
+function tekmeAt(t){
+  if(S.durum!=='oyun'||S.sarj>0||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam)return;
+  if(DUS.some(z=>z.tut))return;
+  if(S.atk&&S.kuyruk.length>=5)return;
+  S.kb.n=KB;S.kb.d=0;S.kb.t=S.t;S.kSon=null;           // tekme yumruk zincirini böler
+  atkIstek('#'+(t==='N'?'kick1':'kick1F'));
+}
 cv.addEventListener('pointerdown',e=>{
   e.preventDefault();
   if(S.durum!=='oyun'){if(S.t>S.durumT+0.8)yeniOyun();return}
   const t=e.clientX<W/2?'F':'N';
+  if(tekmeBolgesi(e.clientX,e.clientY)){try{cv.setPointerCapture(e.pointerId)}catch(_){}kizler.set(e.pointerId,{t,t0:performance.now(),x0:e.clientX,y0:e.clientY,maxd:0});return}
   if(KOL[t].ak)return;
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
   izler.set(e.pointerId,{t,x0:e.clientX,y0:e.clientY,yon:S.yon,hist:[{t:performance.now()/1000,x:e.clientX,y:e.clientY}],lx:e.clientX,ly:e.clientY,pv:null,turn:0,sho:false,atil:false,sla:false,sup:false,t0:performance.now(),maxd:0,tm:DUS.some(e=>e.tut&&e.tut!==t&&!e.iki),joined:false});
   KOL[t].ak=true;KOL[t].e=0;
 });
 cv.addEventListener('pointermove',e=>{
+  const kz=kizler.get(e.pointerId);if(kz){kz.maxd=Math.max(kz.maxd,Math.hypot(e.clientX-kz.x0,e.clientY-kz.y0));return}
   const iz=izler.get(e.pointerId);if(!iz)return;
   const now=performance.now()/1000;
   iz.hist.push({t:now,x:e.clientX,y:e.clientY});while(iz.hist.length>1&&now-iz.hist[0].t>0.5)iz.hist.shift();
@@ -288,6 +303,7 @@ cv.addEventListener('pointermove',e=>{
   daireKontrol();
 });
 const kolBit=e=>{
+  const kz=kizler.get(e.pointerId);if(kz){kizler.delete(e.pointerId);if(e.type==='pointerup'&&kz.maxd<30&&performance.now()-kz.t0<400)tekmeAt(kz.t);return}
   const iz=izler.get(e.pointerId);if(!iz)return;izler.delete(e.pointerId);
   const tap=!iz.tm&&e.type==='pointerup'&&!DUS.some(z=>z.tut===iz.t)&&S.sarj<=0&&!iz.joined&&iz.maxd<22&&performance.now()-iz.t0<320&&!iz.sho&&!iz.atil&&!iz.sla&&!iz.sup;   // kısa dokunuş = kombo vuruşu
   if(iz.tm&&!iz.joined&&e.type==='pointerup'&&performance.now()-iz.t0<350)tutKombo(iz.t);      // bir elle tutmuşken diğer tarafa kısa bas/çek: parmak kalkınca boştaki kol tutulana vurur (basılı kalırsa ikinci el tutuşa katılır)
