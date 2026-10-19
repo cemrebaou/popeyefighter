@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.26</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.27</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -1346,10 +1346,10 @@ const KSK={      // iki korsan da kendi görsel setinden, tüm parçalar aynı �
   k:{p:'k_',sc:0.855,us:1,as:1,A:{ust:[79.1,60.4],on:[134.9,48.3],elN:[87.2,38.2],elF:[92.7,41.0],uyN:[111.2,54.2],uyF:[111.2,54.2],bacak:[97.1,44.4],govde:[148.6,345.0],kalca:[112.4,26.8],kafa:[173.6,208.1]},
      ust:185.6,on:172.3,uy:248.8,tb:[59.1,308.6],bel:641.6,kN:[20.0,84.2],kF:[-16.0,84.2],omN:[-103.0,-220.2],omF:[50.6,-229.2],boyun:[12.6,-330.7]},
   b:{p:'b_',sc:0.882,us:1,as:1,A:{ust:[55.3,52.2],on:[125.2,45.5],elN:[65.9,32.1],elF:[91.8,40.6],uyN:[87.9,39.7],uyF:[87.9,39.7],bacak:[86.4,30.8],govde:[118.0,297.0],kalca:[98.4,49.7],kafa:[180.9,236.6]},
-     ust:137.0,on:165.6,uy:191.3,tb:[38.6,352.2],bel:639.4,kN:[15.0,95.9],kF:[-21.0,95.9],omN:[-53.2,-195.0],omF:[58.4,-204.0],boyun:[37.8,-283.5]}
+     ust:137.0,on:165.6,uy:191.3,tb:[38.6,352.2],bs:1.15,bel:639.4,kN:[15.0,90.9],kF:[-21.0,90.9],omN:[-53.2,-195.0],omF:[58.4,-204.0],boyun:[37.8,-283.5]}
 };
 const KDUR={F:0.5,N:0.62,B:0.66},KBDUR=0.7;      // KBDUR: tutulurken kafa atma süresi      // F = öndeki kol (jab), N = arkadaki kol (kroşe), B = bıçak savurma (yakın el)
-const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:-10,kN:14,lF:12,kF:10}};
+const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:12,kN:14,lF:-10,kF:10}};
 KPZ.hazF=Object.assign({},KPZ.dur,{uF:-28,rF:-128,torso:2,hx:-15});
 KPZ.vurF=Object.assign({},KPZ.dur,{uF:-90,rF:-4,wF:-6,torso:13,bas:2,hx:40,lN:-18,kN:16,lF:16,kF:8});
 KPZ.hazN=Object.assign({},KPZ.dur,{uN:-22,rN:-132,torso:-4,hx:-25,uF:-60,rF:-110});
@@ -1399,8 +1399,8 @@ function kKol(K,om,u,r,w,far,fl,e,ix){
 function kBacak(K,h,l,k,far,fl){
   const P=K.p,A=K.A;
   ctx.save();ctx.translate(h[0],h[1]);if(far)ctx.scale(KFS,KFS);ctx.rotate(l*D);
-  ctx.save();ctx.translate(0,K.uy);ctx.rotate(k*D);krp(R[P+(far?'bacak_k':'bacak')],A.bacak,fl);ctx.restore();
-  krp(R[P+(far?'uyF_k':'uyN')],far?A.uyF:A.uyN,fl);
+  ctx.save();ctx.translate(0,K.uy);ctx.rotate(k*D);ctx.scale(K.bs||1,K.bs||1);krp(R[P+(far?'bacak_k':'bacak')],A.bacak,fl);ctx.restore();
+  ctx.save();ctx.scale(K.bs||1,K.bs||1);krp(R[P+(far?'uyF_k':'uyN')],far?A.uyF:A.uyN,fl);ctx.restore();
   ctx.restore();
 }
 function korsanYakin(e){      // sadece vuruş anındayken ve yumruk / bıçak oyuncuya gerçekten değiyorsa
@@ -1412,7 +1412,7 @@ function korsanYakin(e){      // sadece vuruş anındayken ve yumruk / bıçak o
 }
 function ciziKorsan(e,mask){
   const K=KSK[e.kc||'k'],fl=e.fl>0,p=korsanPoz(e),up=mask!=='alt',lo=mask!=='ust',ek=e.t?e:null;
-  const kfy=K.kF[1]+0.05*(K.uy+K.tb[1]),ay=(h,l,k,sc=1)=>h[1]+sc*(K.uy*Math.cos(l*D)+K.tb[0]*Math.sin((l+k)*D)+K.tb[1]*Math.cos((l+k)*D));      // uzak bacak biraz aşağıdan başlar (kısaldığı için)      // belden ayak tabanına dikey mesafe
+  const kfy=K.kF[1]+0.05*(K.uy+(K.bs||1)*K.tb[1]),ay=(h,l,k,sc=1)=>h[1]+sc*(K.uy*Math.cos(l*D)+(K.bs||1)*(K.tb[0]*Math.sin((l+k)*D)+K.tb[1]*Math.cos((l+k)*D)));      // uzak bacak biraz aşağıdan başlar (kısaldığı için)      // belden ayak tabanına dikey mesafe
   const bel=mask?0:K.as*(e.y>zemin(e.x)+5?K.bel:Math.max(ay(K.kN,p.lN,p.kN),ay([K.kF[0],kfy],p.lF,p.kF,KFS)));      // yerdeyse alttaki ayak zemine basar
   ctx.save();ctx.scale(K.sc*(e.yon||1),K.sc);ctx.translate(mask?0:p.hx,-bel);
   if(up){ctx.save();ctx.rotate(p.torso*D);ctx.scale(K.us,K.us);kKol(K,K.omF,p.uF,p.rF,p.wF,true,fl,ek,1);ctx.restore()}      // uzak kol en arkada   // us: belden üstü ölçeği, as: belden altı
