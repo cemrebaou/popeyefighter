@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.90</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.91</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -626,7 +626,7 @@ function vur(e,dmg,vx,vy,f,hy){
   dmg=Math.round(dmg);titre(12+Math.round(70*f));
   const hp0=e.hp;e.hp-=dmg;e.fl=0.15;if(e.t!=='dev')e.st=S.t+0.45+0.5*f;      // dev zombi sersemlemez (sadece parry)
   const L=Math.hypot(vx,vy)||1;let dx=vx/L,dy=vy/L;dx+=(e.x>=S.x?1:-1)*0.35;
-  const kb=(250+2450*kisit(dmg/50,0,1))*(e.t==='dev'?0.25:1);      // itme hasarla orantılı
+  const kb=0.5*(250+2450*kisit(dmg/50,0,1))*(e.t==='dev'?0.25:1);      // itme hasarla orantılı
   if(!e.tut){e.vx=dx*kb;e.vy=e.t==='dev'?0:dy*kb+250}
   if(e.t==='zombi'&&!e.olu&&dmg<9999){const kay=h=>Math.floor((e.max-Math.max(0,h))/(e.max*0.25)+1e-6);if(kay(e.hp)>kay(hp0))zombiKopar(e,hy)}
   if(e.t==='emek'&&!e.olu&&dmg<9999){const kay=h=>Math.floor((e.max-Math.max(0,h))/(e.max*0.25)+1e-6);if(kay(e.hp)>kay(hp0))emekKopar(e,hy)}      // her %25 can kaybında vurulan uzuv kopar (75, 50, 25, 0)
