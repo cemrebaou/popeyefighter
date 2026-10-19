@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.00</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.01</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -947,7 +947,7 @@ function dusmanGuncelle(dt){
           if(su<0.95)yuru=false;
           else if(Math.abs(dx)<320){                    // kolları değecek mesafede yürümeyi bırakır, sadece tırmalar (aralarda bekler)
             yuru=false;
-            if(S.durum==='oyun'&&S.t>=(e.skN||0)&&!(e.kopuk&&e.kopuk.kolN&&e.kopuk.kolF)){e.sk=S.t;e.skN=S.t+1.7}
+            if(S.durum==='oyun'&&S.t>=(e.skN||0)){e.sk=S.t;e.skN=S.t+1.7}      // kolsuz zombi: gövdeyi eğip kafayla ısırır
           }
         }else if(e.t==='emek'){        // emekler; yaklaşınca alttan tırmalar ya da öne uzanıp ısırır
           const a=e.ea,ad=Math.abs(dx);
@@ -998,7 +998,7 @@ function oyuncuHasar(){
     for(const e of DUS){
       if(e.olu||S.t<e.st)continue;
       const cy=e.y+e.cy;
-      const yakin=e.t==='dev'?devYakin(e):e.t==='emek'?emekYakin(e):e.t==='zombi'?(typeof e.sk==='number'&&S.t-e.sk>=0.42&&S.t-e.sk<0.62&&ucDeger(e,55,0,5)):(Math.abs(e.x-S.x)<e.r+80&&cy+e.r*0.7>S.y&&cy-e.r*0.7<S.y+800);      // zombi sadece tırmalarken hasar verir
+      const yakin=e.t==='dev'?devYakin(e):e.t==='emek'?emekYakin(e):e.t==='zombi'?(typeof e.sk==='number'&&(e.kopuk&&e.kopuk.kolN&&e.kopuk.kolF?(S.t-e.sk>=0.38&&S.t-e.sk<0.62&&ucDeger(e,80,6,7)):(S.t-e.sk>=0.42&&S.t-e.sk<0.62&&ucDeger(e,55,0,5)))):(Math.abs(e.x-S.x)<e.r+80&&cy+e.r*0.7>S.y&&cy-e.r*0.7<S.y+800);      // zombi sadece tırmalarken hasar verir
       if(yakin){
         const dm=e.t==='dev'?e.hs.dm:e.boss?15:e.t==='yengec'?8:e.t==='zombi'?10:e.t==='emek'?(e.ea&&e.ea.k==='isir'?12:8):6, yn=S.x>=e.x?1:-1;
         if(S.blok){
@@ -1026,6 +1026,14 @@ function zp(img,a,fl){
   const x=-a[0]*ZU,y=-a[1]*ZU,w=img.width*2*ZU,h=img.height*2*ZU;
   ctx.drawImage(img,x,y,w,h);
   if(fl){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.55;ctx.drawImage(img,x,y,w,h);ctx.restore()}
+}
+function zIsir(e){      // kolsuz zombi: öne eğilip kafayı uzatır (0=normal, 1=tam uzanmış); ısırma anında yüz bize bakar
+  if(typeof e.sk!=='number')return 0;const u=S.t-e.sk,ez=x=>x*x*(3-2*x);
+  if(u<0||u>0.95)return 0;
+  if(u<0.3)return -0.18*ez(u/0.3);
+  if(u<0.45)return -0.18+1.18*ez((u-0.3)/0.15);
+  if(u<0.65)return 1;
+  return ez(1-(u-0.65)/0.3);
 }
 function zKolAci(e,far){
   const base=-90+Math.sin(e.anim*2+(far?1.7:0))*4, u=typeof e.sk==='number'?S.t-e.sk-(far?0.05:0):-9, ez=x=>x*x*(3-2*x);
@@ -1288,13 +1296,14 @@ function ciziZombi(e,mask){
     if(mask==='alt')yaraCiz(e,0,HY-150*NZ+12,150);
   }
   if(up){
-    ctx.save();ctx.translate(2*NZ,HY-150*NZ);ctx.rotate((7+Math.sin(t*1.6)*2)*D);      // gövde: belden öne eğik
+    const bz=kp.kolN&&kp.kolF?zIsir(e):0;
+    ctx.save();ctx.translate(2*NZ,HY-150*NZ);ctx.rotate((7+Math.sin(t*1.6)*2+bz*38)*D);      // gövde: belden öne eğik
     if(!kp.kolF){ctx.save();ctx.translate(40*NZ,-189*NZ);zKolCiz(true,zKolAci(e,true),fl,e,3);ctx.restore()}
     else yaraCiz(e,40*NZ,-189*NZ,70);      // arka kolun yarası gövdenin arkasında
     nz(R.z_govde,[100,289],fl);
     if(mask==='ust')yaraCiz(e,0,-8,150);
     if(kp.kafa)yaraCiz(e,35*NZ,-244*NZ,75);
-    if(!kp.kafa){ctx.save();ctx.translate(35*NZ,-244*NZ);ctx.rotate((4+Math.sin(t*1.2)*3)*D);nz(R.z_kafa,[115,195],fl);ctx.restore()}
+    if(!kp.kafa){ctx.save();ctx.translate(35*NZ,-244*NZ);ctx.rotate((4+Math.sin(t*1.2)*3+bz*22)*D);ctx.translate(bz*30,bz*6);nz(R.z_kafa,[115,195],fl);uc(e,6,40,-20);uc(e,7,60,10);ctx.restore()}
     if(!kp.kolN){ctx.save();ctx.translate(-38*NZ,-197*NZ);zKolCiz(false,zKolAci(e,false),fl,e,0);ctx.restore()}
     else yaraCiz(e,-38*NZ,-197*NZ,70);
     ctx.restore();
