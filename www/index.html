@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.77</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.78</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -63,7 +63,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 (function(){
 'use strict';
 // ---------- Parçalar ----------
-const ADLAR=['kafa','govde','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_tut_n','el_tut_f','z_kafa','z_govde','z_kalca','z_kol','z_bacak','d_kafa','d_govde','d_kalca','d_ustA','d_onA','d_ustB','d_onB','d_uyluk','d_ayak','e_kafa','e_isir','e_govde','e_kalca','e_ustA','e_onA','e_ustB','e_onB','e_bacak','e_ayakA','e_ayakB'];
+const ADLAR=['kafa','govde','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_tut_n','el_tut_f','z_kafa','z_govde','z_kalca','z_ust','z_onA','z_onB','z_ayak','z_bacak','d_kafa','d_govde','d_kalca','d_ustA','d_onA','d_ustB','d_onB','d_uyluk','d_ayak','e_kafa','e_isir','e_govde','e_kalca','e_ustA','e_onA','e_ustB','e_onB','e_bacak','e_ayakA','e_ayakB'];
 const RES=2;                       // yeni parça görselleri oyun biriminin 2 katı çözünürlükte
 const R={};
 function koyult(img,al=.28){            // arka taraftaki uzuvlar için hafif koyu kopya
@@ -78,7 +78,7 @@ ADLAR.forEach(a=>{
   im.onload=()=>{R[a]=im;if(--kalan===0){['ustkol','onkol2','uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));
     ['ustkol','onkol2','el_ac_n','el_tut_n'].forEach(n=>R[n+'_a']=koyult(R[n],.13));
     R.e_ustB_k=koyult(R.e_ustB,.3);R.e_onB_k=koyult(R.e_onB,.3);R.e_bacak_k=koyult(R.e_bacak,.36);R.e_ayakB_k=koyult(R.e_ayakB,.36);R.d_ustA_k=koyult(R.d_ustA,.3);R.d_onA_k=koyult(R.d_onA,.3);R.d_uyluk_k=koyult(R.d_uyluk,.38);R.d_ayak_k=koyult(R.d_ayak,.38);
-    R.z_kol_k=koyult(R.z_kol,.38);R.z_bacak_k=koyult(R.z_bacak,.38);      // zombinin arkadaki kolu/bacağı daha koyu   // arkadaki kol: bacaktan daha açık ton
+    R.z_ust_k=koyult(R.z_ust,.3);R.z_onA_k=koyult(R.z_onA,.3);R.z_bacak_k=koyult(R.z_bacak,.36);R.z_ayak_k=koyult(R.z_ayak,.36);      // zombinin arkadaki kolu/bacağı daha koyu   // arkadaki kol: bacaktan daha açık ton
     basla();}};
   im.onerror=()=>{document.getElementById('yuk').textContent='Parça yüklenemedi: '+a};
   im.src='parca/'+a+'.png?v=37';          // ?v= : görsel değişince tarayıcı eski önbelleği kullanmasın
@@ -96,10 +96,7 @@ const KARAKTER_BOY=1020;
 const HIZ=1100, G=5600, ZIP1=2700, ZIP2=2400;
 const D=Math.PI/180;
 // [başlangıç x, yükseklik]; sol baştaki ve sağ sondaki yüksek duvar bölümün sınırı
-const ZEMIN=[[-1e9,3000],[-700,0],[1400,60],[1700,120],[2000,180],[2900,120],[3200,60],[3500,0],
-  [4400,260],[5200,0],[6000,70],[6300,140],[6600,210],[6900,280],[8200,210],[8500,140],[8800,70],[9100,0],
-  [9900,300],[10300,0],[10700,300],[11100,0],[12000,70],[12300,140],[12600,210],[13800,140],[14100,70],[14400,0],
-  [15200,250],[16400,0],[17200,70],[17500,140],[17800,70],[18100,0],[22800,3000]];
+const ZEMIN=[[-1e9,3000],[-700,0],[22800,3000]];      // şimdilik düz zemin
 const BOSS_X=21000;
 
 // ---------- Durum ----------
@@ -564,12 +561,11 @@ function dusmanKur(){
   DUS=[];
   const ekle=(t,x)=>DUS.push(t==='yengec'
     ?{t,x,y:zemin(x),vx:0,vy:0,hp:70,max:70,cy:300,r:250,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0}}
-    :t==='emek'?{t,x,y:zemin(x),vx:0,vy:0,hp:70,max:70,cy:170,r:260,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:0}
+    :t==='emek'?{t,x,y:zemin(x),vx:0,vy:0,hp:70,max:70,cy:375,r:570,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:0}
     :t==='zombi'?{t,x,y:zemin(x),vx:0,vy:0,hp:100,max:100,cy:500,r:235,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},kopuk:{}}
     :{t,x,y:zemin(x)+650,hy:zemin(x)+650,vx:0,vy:0,hp:45,max:45,cy:0,r:105,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},mod:'bekle',mt:0,sogut:0});
   [1900,2600,4800,5600,7400,8000,9600,10500,11500,12900,13500,15800,16700,17600].forEach(x=>ekle('zombi',x));   // yol boyunca yerleşik (yengeçlerin yerine zombiler)
   [2250,3700,5200,6800,8400,10100,11000,12300,14500,16100,17200].forEach(x=>ekle('emek',x));   // emekleyen zombiler
-  [3300,6400,8900,11200,14200,16200,18600].forEach(x=>ekle('kus',x));
 }
 function yeniOyun(){MERMI=[];S.hitR=null;S.sarjP=null;S.en=5;S.noEn=-9;S.yy=null;S.alk=null;S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.halka=null;S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;S.parcalar=[];S.parcaHold=0;dusmanKur()}
 // ---- basit sesler (dosya yok, tarayıcıda üretiliyor) ----
@@ -797,7 +793,7 @@ function dusmanGuncelle(dt){
         e.vy-=G*dt;let nx=e.x+e.vx*dt;
         if(zemin(nx)>e.y+30){e.vx*=-0.2;nx=e.x}
         e.x=nx;e.y+=e.vy*dt;e.vx*=Math.pow(yer?0.02:0.5,dt);
-        const z=zemin(e.x);if(e.y<=z){e.y=z;e.vy=e.vy<-1500?-e.vy*0.25:0}
+        const z=zemin(e.x);if(e.y<=z){e.y=z;e.vy=e.vy<-1500?-e.vy*0.25:0;if(e.ej){e.ej=false;e.acd=S.t+0.7;S.sars=Math.max(S.sars,e.t==='emek'?10:4)}}
         if(e.stomp&&e.y<=z&&e.vy<=0){
           e.stomp=false;S.sars=Math.max(S.sars,16);ses('yer',1);titre(80);S.halka={x:e.x,y:z,t:S.t,r:900};
           if(S.durum==='oyun'&&S.t>=S.inv&&!(S.shoryu>0)&&!(S.tats>0)&&Math.abs(e.x-S.x)<900&&S.y<e.y+250){S.hp-=12;S.inv=S.t+1.0}
@@ -812,15 +808,18 @@ function dusmanGuncelle(dt){
           else if(Math.abs(dx)<520){                    // kolları değecek mesafede yürümeyi bırakır, sadece tırmalar (aralarda bekler)
             yuru=false;
             if(S.durum==='oyun'&&S.t>=(e.skN||0)&&!(e.kopuk&&e.kopuk.kolN&&e.kopuk.kolF)){e.sk=S.t;e.skN=S.t+1.7}
+          }else if(S.durum==='oyun'&&Math.abs(dx)>900&&Math.abs(dx)<1800&&S.t>=(e.jcd||0)){      // zıplayarak atılır
+            yuru=false;e.vy=1800;e.vx=kisit(dx/0.64,-1700,1700);e.ej=true;e.jcd=S.t+4+Math.random()*3;ses('atla',0);
           }
         }else if(e.t==='emek'){        // emekler; yaklaşınca alttan tırmalar ya da öne uzanıp ısırır
           const a=e.ea,ad=Math.abs(dx);
-          if(a){if(S.t>=a.t0+a.d){e.ea=null;e.acd=S.t+1.0+Math.random()*0.9}else yuru=false}
-          else if(ad<780&&S.durum==='oyun'&&S.t>=(e.acd||0)){e.ea=(ad>430||Math.random()<0.35)?{k:'isir',t0:S.t,d:1.4}:{k:'kes',t0:S.t,d:1.7};yuru=false}
+          if(a){if(S.t>=a.t0+a.d){e.ea=null;if(a.k==='zip'){e.vy=3600;e.vx=kisit((S.x-e.x)/1.25,-2200,2200);e.ej=true;ses('atla',0)}else e.acd=S.t+1.0+Math.random()*0.9}else yuru=false}
+          else if(S.durum==='oyun'&&ad>1100&&ad<2600&&S.t>=(e.jcd||0)){e.ea={k:'zip',t0:S.t,d:0.5};e.jcd=S.t+3+Math.random()*2;yuru=false}
+          else if(ad<1700&&S.durum==='oyun'&&S.t>=(e.acd||0)){e.ea=(ad>940||Math.random()<0.35)?{k:'isir',t0:S.t,d:1.4}:{k:'kes',t0:S.t,d:1.7};yuru=false}
         }
         if(yuru){
         e.moving=e.t==='zombi'||e.t==='emek';if(e.t==='emek')e.wf=(e.wf||0)+dt*9;
-        const nx=e.x+e.yon*(e.boss?170:(e.t==='zombi'?125:e.t==='emek'?230:300))*dt;
+        const nx=e.x+e.yon*(e.boss?170:(e.t==='zombi'?125:e.t==='emek'?420:300))*dt;
         if(zemin(nx)-e.y<=70){e.x=nx;e.y=Math.max(e.y,zemin(nx))}else{e.vy=e.t==='zombi'?1800:2150;e.vx=e.yon*380}   // basamak yüksekse zıpla
         }
         if(e.boss&&S.t>e.nj&&S.durum==='oyun'){e.vy=3200;e.vx=e.yon*500;e.nj=S.t+5;e.stomp=true}   // boss: ezme zıplaması
@@ -894,7 +893,7 @@ function zKolAci(e,far){
   return -20+(base+20)*ez((u-0.75)/0.2);
 }
 // ---- DEV ZOMBİ (boss): ağır yürür, kombo vurur (3-5 vuruş + iki elle yere bitiş), uzaktaysa çömelip oyuncunun olduğu yere zıplar ----
-const DU=0.78, DAN={kafa:[150,335],gW:[340,660],gNeck:[400,70],gSN:[540,110],gSF:[236,228],kW:[285,30],kHN:[334,190],kHF:[152,190],uHip:[116,96],uAnk:[122,338],ayak:[118,210],uA:[178,106],uAe:[130,372],oA:[82,138],uB:[150,132],uBe:[392,368],oB:[182,36]};
+const DU=0.78, DAN={kafa:[150,335],gW:[340,660],gNeck:[400,70],gSN:[236,228],gSF:[470,160],kW:[285,30],kHN:[334,190],kHF:[262,190],uHip:[116,96],uAnk:[122,338],ayak:[118,210],uA:[178,106],uAe:[130,372],oA:[82,138],uB:[150,132],uBe:[392,368],oB:[182,36]};
 function dp(img,a,fl){
   const x=-a[0]*DU,y=-a[1]*DU,w=img.width*2*DU,h=img.height*2*DU;
   ctx.drawImage(img,x,y,w,h);
@@ -930,7 +929,7 @@ function devPoz(e){
 function ciziDev(e){
   const P=devPoz(e),fl=e.fl>0,wx=33,wy=-432+P.drop;
   ctx.save();ctx.scale(e.yon||1,1);ctx.translate(P.lx,0);
-  const bacak=(hx,hy,th,ft,k)=>{ctx.save();ctx.translate(hx,hy);ctx.rotate(th*D);dp(R['d_uyluk'+k],DAN.uHip,fl);ctx.translate((DAN.uAnk[0]-DAN.uHip[0])*DU,(DAN.uAnk[1]-DAN.uHip[1])*DU);ctx.rotate(ft*D);dp(R['d_ayak'+k],DAN.ayak,fl);ctx.restore()};
+  const bacak=(hx,hy,th,ft,k)=>{ctx.save();ctx.translate(hx,hy);ctx.scale(0.9,0.9);ctx.rotate(th*D);dp(R['d_uyluk'+k],DAN.uHip,fl);ctx.translate((DAN.uAnk[0]-DAN.uHip[0])*DU,(DAN.uAnk[1]-DAN.uHip[1])*DU);ctx.rotate(ft*D);dp(R['d_ayak'+k],DAN.ayak,fl);ctx.restore()};
   bacak(wx+(DAN.kHF[0]-DAN.kW[0])*DU,wy+(DAN.kHF[1]-DAN.kW[1])*DU,P.thF,P.ftF,'_k');
   bacak(wx+(DAN.kHN[0]-DAN.kW[0])*DU,wy+(DAN.kHN[1]-DAN.kW[1])*DU,P.thN,P.ftN,'');
   ctx.save();ctx.translate(wx,wy);dp(R.d_kalca,DAN.kW,fl);ctx.restore();
@@ -1000,7 +999,7 @@ function devGuncelle(e,dt,stun,dx){
   }
 }
 // ---- EMEKLEYEN ZOMBİ: dört ayak yürür, doğrulmadan alttan tırmalar, gövdesini uzatıp ısırır ----
-const EU=0.62,SOLA=[[-32,115],[38,120],[123,117]],SOLB=[[-30,78],[30,80],[85,76]],ELEG=[82,254];
+const EU=1.36,SOLA=[[-32,115],[38,120],[123,117]],SOLB=[[-30,78],[30,80],[85,76]],ELEG=[82,254];
 function ep(img,a,fl){
   ctx.drawImage(img,-a[0],-a[1]);
   if(fl){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.55;ctx.drawImage(img,-a[0],-a[1]);ctx.restore()}
@@ -1023,8 +1022,10 @@ function emekPoz(e){
   const o={lean:76,head:-4,jaw:0,st:1,lx:0,thN:75,thF:75,fkN:0,fkF:0,uN:0,fN:0,uF:0,fF:0,w:null,tor:0};
   if(e.moving){const sn=Math.sin(e.wf||0);o.thN+=22*sn;o.thF-=22*sn;o.w=e.wf||0}
   else{const b=Math.sin((e.anim||0)*1.7);o.lean+=1.5*b;o.head+=2*b}
+  if(e.ej){o.lean=58;o.lx=70;o.thN=40;o.thF=58;o.fkN=o.fkF=1;o.uN=-125;o.fN=-135;o.uF=-140;o.fF=-150;o.head=10;o.jaw=1;return o}
   const a=e.ea;if(!a)return o;
   const u=Math.max(0,Math.min(1,(S.t-a.t0)/a.d));
+  if(a.k==='zip'){const k=u*u*(3-2*u);o.lean=76+14*k;o.thN=75+20*k;o.thF=75+20*k;o.head=-4-10*k;o.lx=-40*k;o.fkN=o.fkF=k;o.uN=55;o.fN=40;o.uF=65;o.fF=50;return o}
   if(a.k==='isir'){const k=eKey(EB,u);o.lean+=k.lean;o.lx=k.lx;o.st=k.st;o.head+=k.head;o.jaw=k.jaw>0.5?1:0}
   else{
     const i=u<0.5?0:1,s=(u-i*0.5)/0.5,es=x=>x*x*(3-2*x);
@@ -1039,10 +1040,12 @@ function emekPoz(e){
   return o;
 }
 function emekYakin(e){      // vuruş penceresinde ve menzilde mi
-  const a=e.ea;if(!a)return false;
-  const u=(S.t-a.t0)/a.d,f=(S.x-e.x)*(e.yon||1);
-  if(a.k==='isir')return u>=0.50&&u<=0.66&&f>-100&&f<860&&S.y<e.y+430;
-  return ((u>=0.31&&u<=0.40)||(u>=0.81&&u<=0.90))&&f>-100&&f<640&&S.y<e.y+560;
+  const a=e.ea,u=a?(S.t-a.t0)/a.d:0,f=(S.x-e.x)*(e.yon||1);
+  if(e.ej&&e.y>zemin(e.x)+80)return Math.abs(S.x-e.x)<650&&S.y<e.y+900;      // havadaki zıplayan gövde de çarpar
+  if(!a)return false;
+  if(a.k==='isir')return u>=0.50&&u<=0.66&&f>-200&&f<1900&&S.y<e.y+950;
+  if(a.k==='zip')return false;
+  return ((u>=0.31&&u<=0.40)||(u>=0.81&&u<=0.90))&&f>-200&&f<1400&&S.y<e.y+1230;
 }
 function ciziEmek(e){
   const P=emekPoz(e),fl=e.fl>0;
@@ -1070,24 +1073,41 @@ function ciziEmek(e){
   kol(sN,uN,fN,[76,39],v1N,[41,17],R.e_ustA,R.e_onA);
   ctx.restore();
 }
+const NZ=0.72;      // zombi parçaları (yarım çözünürlük) → oyun birimi
+function nz(img,a,fl){
+  const x=-a[0]*NZ,y=-a[1]*NZ,w=img.width*NZ,h=img.height*NZ;
+  ctx.drawImage(img,x,y,w,h);
+  if(fl){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.55;ctx.drawImage(img,x,y,w,h);ctx.restore()}
+}
+function zKolCiz(far,ang,fl){      // üst kol (iki kolda ortak) + ön kol; omuz noktasında çizilir
+  ctx.save();ctx.rotate(ang*D);nz(far?R.z_ust_k:R.z_ust,[40,40],fl);
+  ctx.translate(2*NZ,105*NZ);ctx.rotate(-10*D);
+  if(far)nz(R.z_onA_k,[43,65],fl);else nz(R.z_onB,[46,46],fl);
+  ctx.restore();
+}
+function zBacakCiz(far,rot,fl){      // kalça noktasında çizilir: uyluk+baldır, ayak ayrı parça
+  ctx.save();ctx.rotate(rot*D);nz(far?R.z_bacak_k:R.z_bacak,[35,40],fl);
+  ctx.translate(45*NZ,215*NZ);ctx.rotate(-rot*0.6*D);nz(far?R.z_ayak_k:R.z_ayak,[65,25],fl);
+  ctx.restore();
+}
 function ciziZombi(e,mask){
   const fl=e.fl>0,kp=e.kopuk||{};
   ctx.save();ctx.scale(1.25*(e.yon||1),1.25);      // zombi oyuncuyla orantılı
-  if(mask==='kafa'){zp(R.z_kafa,ZA.kafa,fl);ctx.restore();return}
-  if(mask==='kolN'||mask==='kolF'){zp(mask==='kolF'?R.z_kol_k:R.z_kol,ZA.kol,fl);ctx.restore();return}
-  if(mask==='bacakN'||mask==='bacakF'){zp(mask==='bacakF'?R.z_bacak_k:R.z_bacak,ZA.bacak,fl);ctx.restore();return}
-  const t=e.anim,mv=e.moving?1:0,sw=Math.sin(t*3.2)*mv,up=mask!=='alt',lo=mask!=='ust';
+  if(mask==='kafa'){nz(R.z_kafa,[115,195],fl);ctx.restore();return}
+  if(mask==='kolN'||mask==='kolF'){zKolCiz(mask==='kolF',0,fl);ctx.restore();return}
+  if(mask==='bacakN'||mask==='bacakF'){zBacakCiz(mask==='bacakF',0,fl);ctx.restore();return}
+  const t=e.anim,mv=e.moving?1:0,sw=Math.sin(t*3.2)*mv,up=mask!=='alt',lo=mask!=='ust',HY=-317;
   if(lo){
-    if(!kp.bacakF){ctx.save();ctx.translate(-6,ZHY);ctx.rotate(-sw*16*D);zp(R.z_bacak_k,ZA.bacak,fl);ctx.restore()}
-    if(!kp.bacakN){ctx.save();ctx.translate(6,ZHY);ctx.rotate(sw*16*D);zp(R.z_bacak,ZA.bacak,fl);ctx.restore()}
-    ctx.save();ctx.translate(0,ZHY-10);zp(R.z_kalca,ZA.kalca,fl);ctx.restore();
+    if(!kp.bacakF){ctx.save();ctx.translate(-5,HY);zBacakCiz(true,-sw*16,fl);ctx.restore()}
+    if(!kp.bacakN){ctx.save();ctx.translate(5,HY);zBacakCiz(false,sw*16,fl);ctx.restore()}
+    ctx.save();ctx.translate(0,HY);nz(R.z_kalca,[78,177],fl);ctx.restore();
   }
   if(up){
-    ctx.save();ctx.translate(-4,ZHY-142);ctx.rotate((7+Math.sin(t*1.6)*2)*D);      // gövde: belden öne eğik
-    if(!kp.kolF){ctx.save();ctx.translate(34,-189);ctx.rotate(zKolAci(e,true)*D);zp(R.z_kol_k,ZA.kol,fl);ctx.restore()}
-    zp(R.z_govde,ZA.govde,fl);
-    if(!kp.kafa){ctx.save();ctx.translate(2.5,-195);ctx.rotate((4+Math.sin(t*1.2)*3)*D);zp(R.z_kafa,ZA.kafa,fl);ctx.restore()}
-    if(!kp.kolN){ctx.save();ctx.translate(-52,-176);ctx.rotate(zKolAci(e,false)*D);zp(R.z_kol,ZA.kol,fl);ctx.restore()}
+    ctx.save();ctx.translate(2*NZ,HY-150*NZ);ctx.rotate((7+Math.sin(t*1.6)*2)*D);      // gövde: belden öne eğik
+    if(!kp.kolF){ctx.save();ctx.translate(40*NZ,-189*NZ);zKolCiz(true,zKolAci(e,true),fl);ctx.restore()}
+    nz(R.z_govde,[100,289],fl);
+    if(!kp.kafa){ctx.save();ctx.translate(35*NZ,-244*NZ);ctx.rotate((4+Math.sin(t*1.2)*3)*D);nz(R.z_kafa,[115,195],fl);ctx.restore()}
+    if(!kp.kolN){ctx.save();ctx.translate(-38*NZ,-197*NZ);zKolCiz(false,zKolAci(e,false),fl);ctx.restore()}
     ctx.restore();
   }
   ctx.restore();
@@ -1160,7 +1180,7 @@ function parcaCiz(){
       let ang=p.at?p.rot:0;
       if(p.kind==='ust'||p.kind==='alt'){if(!p.at)p.phi=zEksen().phi;ang+=p.phi||0}
       ctx.rotate(ang);
-      if(p.kind==='ust')ctx.translate(0,725);else if(p.kind==='alt')ctx.translate(0,238);
+      if(p.kind==='ust')ctx.translate(0,720);else if(p.kind==='alt')ctx.translate(0,270);
       ciziZombi(p.z,p.kind);
       ctx.restore();continue;
     }
