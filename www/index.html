@@ -16,18 +16,29 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 .etiket b{font-family:var(--font);font-size:20px;letter-spacing:.06em;font-weight:400;margin-right:8px}
 .ipucu{position:fixed;bottom:calc(12px + env(safe-area-inset-bottom,0px));left:max(16px,env(safe-area-inset-left,0px));
   background:var(--panel);border:2px solid var(--cizgi);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:700}
-.tus{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:72px;height:72px;border-radius:50%;
-  border:3px solid var(--cizgi);background:var(--panel);font-size:28px;font-weight:800;color:var(--yazi);display:none;
-  align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;touch-action:none}
+.tus{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:80px;height:80px;border:0;background:transparent center/contain no-repeat;font-size:0;display:none;
+  user-select:none;-webkit-user-select:none;touch-action:none;transition:transform .05s,filter .05s}
+#sol{background-image:url(ui/btn_sol.png?v=43)}#sag{background-image:url(ui/btn_sag.png?v=43)}#zipla{background-image:url(ui/btn_yuk.png?v=43)}#asa{background-image:url(ui/btn_asa.png?v=43)}
+#kombolB{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));width:64px;height:64px;background:url(ui/btn_liste.png?v=43) center/contain no-repeat;cursor:pointer;touch-action:manipulation;transition:transform .05s,filter .05s}
+#kombolB:active{transform:scale(.92);filter:brightness(.8)}
+#liste{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(31,42,51,.6)}#liste[hidden]{display:none}
+.kagit{position:relative;width:min(96vw,calc(94vh*0.558));aspect-ratio:1536/2752;background:url(ui/kagit.png?v=43) center/100% 100% no-repeat;container-type:inline-size}
+#liste_ic{position:absolute;left:15%;right:13%;top:22%;bottom:21%;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#liste_ic::-webkit-scrollbar{display:none}
+.sat{display:flex;align-items:center;gap:2.2cqw;padding:1.6cqw 0;border-bottom:.5cqw dashed rgba(70,45,20,.4)}
+.sat.yeni{border-top:.9cqw solid rgba(70,45,20,.55)}
+.sat b{font-family:var(--font);font-weight:400;font-size:7cqw;width:9cqw;text-align:center;color:#4a2f18}
+.sat img{height:7cqw;width:auto}
+#lkapat{position:absolute;top:3%;right:3%;width:9cqw;height:9cqw;border-radius:50%;border:.7cqw solid #2b1b10;background:#f3dfb8;color:#2b1b10;font:400 6cqw var(--font);display:flex;align-items:center;justify-content:center;cursor:pointer}
 canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 .mini{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));
   background:var(--panel);border:2px solid var(--cizgi);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:800;color:var(--yazi);user-select:none;-webkit-user-select:none;cursor:pointer}
 #kapat{display:none;padding:2px 10px;font-size:18px;line-height:1.3;opacity:.7}
 .sensor #kapat{display:block}
-.sensor .tus,.sensor #sens,.sensor #sifir,.sensor #tam,.sensor .ipucu,.sensor .etiket{display:none!important}
+.sensor .tus,.sensor #kombolB,.sensor #sens,.sensor #sifir,.sensor #tam,.sensor .ipucu,.sensor .etiket{display:none!important}
 #tam{top:calc(54px + env(safe-area-inset-top,0px));right:calc(max(12px,env(safe-area-inset-right,0px)) + 118px);padding:6px 10px}
 #sifir{top:calc(54px + env(safe-area-inset-top,0px))}
-.tus:active,.tus.bas{background:#ffd36b}
+.tus:active,.tus.bas{transform:scale(.92);filter:brightness(.8)}
 @media (pointer:coarse){ .tus{display:flex} .ipucu{display:none} }
 #sol{left:max(16px,env(safe-area-inset-left,0px))} #sag{left:calc(max(16px,env(safe-area-inset-left,0px)) + 88px)}
 #zipla{right:max(16px,env(safe-area-inset-right,0px))}
@@ -38,9 +49,11 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.70</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.71</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
-<div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
+<div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
+<div id="kombolB" aria-label="kombo listesi"></div>
+<div id="liste" hidden><div class="kagit"><div id="liste_ic"></div><div id="lkapat">✕</div></div></div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
 <div class="mini" id="tam">⛶ Tam ekran</div>
 <div class="mini" id="kapat">✕</div>
@@ -1179,8 +1192,26 @@ const KAGAC={   // y/t dizisi -> o adımın hareket türü, 30 kombo (yumruk: j 
 };
 Object.keys(KAGAC).forEach(k=>{if(k.length>1&&!KAGAC[k.slice(0,-1)])throw new Error('kombo öneki eksik: '+k)});
 const KB={ch:{}};
-Object.keys(KAGAC).sort((x,y)=>x.length-y.length).forEach((k,qi)=>{let n=KB;[...k].forEach((c,i)=>{n=n.ch[c]||(n.ch[c]={m:KAGAC[k.slice(0,i+1)],ch:{}})});n.no=qi+1});   // her kombonun numarası (sıra no)
+const KOMBO_SIRA=Object.keys(KAGAC).sort((a,b)=>{const f=k=>k.replace(/y/g,'0').replace(/t/g,'1');return a.length-b.length||(f(a)<f(b)?-1:1)});   // vuruş sayısına göre, benzerler yan yana
+KOMBO_SIRA.forEach((k,qi)=>{let n=KB;[...k].forEach((c,i)=>{n=n.ch[c]||(n.ch[c]={m:KAGAC[k.slice(0,i+1)],ch:{}})});n.no=qi+1});   // her kombonun numarası (sıra no)
 S.kb={n:KB,t:-9};
+// ---- Kombo listesi penceresi (kağıt): her kombo yumruk/tekme resimleriyle ----
+let listeAcik=false;
+{
+  const ic=document.getElementById('liste_ic');let onceki=0;
+  KOMBO_SIRA.forEach((k,i)=>{
+    const sat=document.createElement('div');sat.className='sat'+(k.length!==onceki&&i?' yeni':'');onceki=k.length;
+    const no=document.createElement('b');no.textContent=i+1;sat.appendChild(no);
+    for(const c of k){const im=document.createElement('img');im.src='ui/ic_'+(c==='y'?'yumruk':'tekme')+'.png?v=43';im.alt=c;sat.appendChild(im)}
+    ic.appendChild(sat);
+  });
+  const el=document.getElementById('liste');
+  window.listeAc=a=>{listeAcik=a;el.hidden=!a;if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;ic.scrollTop=0}};
+  document.getElementById('kombolB').addEventListener('click',()=>listeAc(true));
+  document.getElementById('lkapat').addEventListener('click',()=>listeAc(false));
+  el.addEventListener('click',e=>{if(e.target===el)listeAc(false)});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&listeAcik)listeAc(false)});
+}
 S.parcalar=[];S.parcaHold=0;
 const TUT_DESEN=['jjchuo','bbhhuc','huhuoc','jcbhuo','buchbo'];   // tutulana vuruş desenleri (6'şar): j jab, c düz, h kanca, u aparkat, o üstten, b gövde
 S.tk={i:0,p:0,t:-9};
@@ -1472,6 +1503,7 @@ function ciz(){
 // ---------- Döngü ----------
 let son=0;
 function dongu(ms){
+  if(listeAcik){son=ms;requestAnimationFrame(dongu);return}      // kombo listesi açıkken oyun durur
   let dt=Math.min(0.033,(ms-son)/1000||0.016);son=ms;S.dtG=dt;
   if(S.dur>0){S.dur-=dt;dt*=0.08}
   S.sars*=Math.pow(0.002,dt);S.t+=dt;
