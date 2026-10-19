@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.66</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.67</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -540,7 +540,7 @@ function dusmanKur(){
   [1900,2600,4800,5600,7400,8000,9600,10500,11500,12900,13500,15800,16700,17600].forEach(x=>ekle('zombi',x));   // yol boyunca yerleşik (yengeçlerin yerine zombiler)
   [3300,6400,8900,11200,14200,16200,18600].forEach(x=>ekle('kus',x));
 }
-function yeniOyun(){MERMI=[];S.sarjP=null;S.en=5;S.noEn=-9;S.yy=null;S.alk=null;S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.halka=null;S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;S.parcalar=[];S.parcaHold=0;dusmanKur()}
+function yeniOyun(){MERMI=[];S.hitR=null;S.sarjP=null;S.en=5;S.noEn=-9;S.yy=null;S.alk=null;S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.halka=null;S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;S.parcalar=[];S.parcaHold=0;dusmanKur()}
 // ---- basit sesler (dosya yok, tarayıcıda üretiliyor) ----
 let AC=null,GURULTU=null;
 function sesAc(){
@@ -822,6 +822,7 @@ function oyuncuHasar(){
           }else{S.hp-=Math.max(1,Math.round(dm*0.25));S.inv=S.t+1.0;ses('hasar',0);titre(30)}   // normal blok: hasarın çoğu engellenir
         }else{
           ses('hasar',0);S.hp-=dm;S.inv=S.t+1.0;
+          {const rel=kisit((e.y+e.cy-S.y)/800,0,1.1);S.hitR={t0:S.t,z:rel<0.4?'bacak':rel<0.78?'govde':'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}   // vurulan yer ve yön: tepki buna göre
         }
         break;
       }
@@ -1259,6 +1260,15 @@ function hedefPoz(){
     else Object.assign(o,{lN:4,bN:0,lF:-4,bF:0,kN:0,kF:0,pelv:0,hy:0,hb:0,torso:-4,bas:4,aNu:-100,aNr:0,aFu:100,aFr:0});
   }
   if(S.sarj>0)o.torso+=4;                                                // şarjda kollar parmakları izler, top iki yumruğun ortasında büyür
+  if(S.hitR){                       // darbe tepkisi: vurulan yer geriye (vuranın ters yönüne) savrulur
+    const u=(S.t-S.hitR.t0)/0.55;
+    if(u<1){
+      const en=u<0.18?u/0.18:Math.pow(1-(u-0.18)/0.82,1.6), b=S.hitR.bk, ad=(k,v)=>{if(o[k]!==undefined)o[k]+=v};
+      if(S.hitR.z==='kafa'){ad('bas',-b*40*en);ad('torso',-b*12*en);ad('hb',-b*6*en)}
+      else if(S.hitR.z==='govde'){ad('torso',-b*32*en);ad('bas',-b*14*en);ad('hb',-b*14*en);ad('aNu',b*18*en);ad('aFu',b*18*en)}
+      else{ad('lN',b*42*en);ad('bN',Math.max(0,b)*60*en);ad('lF',b*24*en);ad('bF',Math.max(0,b)*32*en);ad('torso',b*10*en);ad('bas',b*4*en)}
+    }
+  }
   if(S.t<S.firT){const el=S.firEl||0;o.aNu=-90-el;o.aNr=90;o.aFu=-90-el;o.aFr=90;o.torso+=10}       // ateş: iki kol öne
   return o;
 }
@@ -1348,7 +1358,7 @@ function karakter(){
   const yukN=S.yer?Math.max(nN.cy,nF.cy):BACAK_BOY;
   const yuk=S.yer?yukN+(CR_H-yukN)*P.cr:BACAK_BOY;      // çömelmede kalça alçalır; her iki ayak da yere basar (aşağıda ters kinematik)
   const celme=S.kay&&S.t<S.kay.t0+S.kay.T;
-  const ikAcik=S.yer&&!celme&&!S.sman&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
+  const ikAcik=S.yer&&!celme&&!S.sman&&!(S.hitR&&S.hitR.z==='bacak'&&S.t<S.hitR.t0+0.5)&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
   if(ikAcik){
     [[N,nN,P.cw],[F,nF,1-P.cw]].forEach(([B,n,wf])=>{
       const dunyaX=S.x+S.yon*(P.ofs+BON+n.cx), gH=zemin(dunyaX);
@@ -1372,7 +1382,7 @@ function karakter(){
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak kalçanın önünde
   govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R.govde,97.7,246.4); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(-8,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);const fy=ph>=0&&ph<0.6&&YUZA[S.agLv]?YUZA[S.agLv]:YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?ctx.drawImage(fy,-106.8,-213.8,228.7,256.6):ctx.drawImage(R.kafa,-85,-170,182,204)}ctx.restore();
+    ctx.save();ctx.translate(-8,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);const ag=ph>=0&&ph<0.6&&YUZA[S.agLv],fy=ag?YUZA[S.agLv]:YUZ[yuzNo(S.hp)];fy&&fy.complete&&fy.naturalWidth?(ag?ctx.drawImage(fy,-112.5,-226.6,240.1,269.4):ctx.drawImage(fy,-106.8,-213.8,228.7,256.6)):ctx.drawImage(R.kafa,-85,-170,182,204)}ctx.restore();
     kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
   });
   ctx.restore();
