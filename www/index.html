@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.68</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.69</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -275,8 +275,7 @@ function tekmeAt(t){
   if(S.durum!=='oyun'||S.sarj>0||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam)return;
   if(DUS.some(z=>z.tut))return;
   if(S.atk&&S.kuyruk.length>=5)return;
-  S.kb.n=KB;S.kb.d=0;S.kb.t=S.t;S.kSon=null;           // tekme yumruk zincirini böler
-  atkIstek('#'+(t==='N'?'kick1':'kick1F'));
+  komboTap('t',t);
 }
 cv.addEventListener('pointerdown',e=>{
   e.preventDefault();
@@ -309,7 +308,7 @@ const kolBit=e=>{
   if(iz.tm&&!iz.joined&&e.type==='pointerup'&&performance.now()-iz.t0<350)tutKombo(iz.t);      // bir elle tutmuşken diğer tarafa kısa bas/çek: parmak kalkınca boştaki kol tutulana vurur (basılı kalırsa ikinci el tutuşa katılır)
   tutBirak(iz.t);
   const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t;
-  if(tap)komboTap(iz.t==='N'?'R':'L');
+  if(tap)komboTap('y',iz.t);
   if(S.sarj>0){const m=S.sarjP;S.sarjP=null;if(m)ates(m.dx,m.dy,1,m.bx,m.by);else S.sarj=0;for(const z of izler.values())z.turn=0}   // parmak kalkınca aduket kol yönüne gider
 };
 cv.addEventListener('pointerup',kolBit);cv.addEventListener('pointercancel',kolBit);
@@ -1144,20 +1143,19 @@ function ph(arm,dur,fr){
   for(const n of ['kick1','kick2','kick3','kickLo','kickSl'])HAREKET[n+'F']={dur:HAREKET[n].dur,keys:HAREKET[n].keys.map(([t,v])=>[t,sw(v)])};
   HAREKET.kick4N={dur:HAREKET.kick4.dur,keys:HAREKET.kick4.keys.map(([t,v])=>[t,sw(v)])};
 }
-const AYNA_HAR={kick1:'kick1F',kick2:'kick2F',kick3:'kick3F',kick1F:'kick1',kick2F:'kick2',kick3F:'kick3',kick4:'kick4N',kick4N:'kick4',dizF:'dizN',dizN:'dizF',kickDA:'kickDB',kickDB:'kickDA',kickDC:'kickDD',kickDD:'kickDC',kickDE:'kickDF',kickDF:'kickDE',kickLo:'kickLoF',kickLoF:'kickLo',kickSl:'kickSlF',kickSlF:'kickSl'};
-const aynaAdim=st=>{const [d,m]=st.split(':');return (d==='R'?'L':'R')+':'+(AYNA_HAR[m]||(/[NF]$/.test(m)?m.slice(0,-1)+(m.slice(-1)==='N'?'F':'N'):m))};
-const KAGAC={   // tuş dizisi (r=sağ yarı, l=sol yarı) -> o adımdaki hareket; kombolar bu ağaçtan çıkar, ters yönlüleri otomatik eklenir
-  r:'jN', rr:'cN', rl:'hF',
-  rrl:'kickLo', rlr:'kick1', rll:'wF',
-  rrr:'uN', rrrl:'dizF', rrrll:'kick2', rrrlr:'sN', rrrlrl:'kick3', rrrr:'bN', rrrrr:'oN', rrrrrl:'kick4', rrrrl:'zF',
-  rrll:'oF', rrlll:'kF', rrllr:'sN', rrlr:'bN', rrlrl:'uF', rrlrr:'kN', rrlrlr:'kickSl',
-  rlrl:'uF', rlrlr:'dizN', rlrlrl:'kickDC', rlrll:'kickDE', rlrr:'oN', rlrrr:'sN', rlrrl:'bF', rlrrll:'kickDA',
-  rlll:'kF', rllr:'zN', rlllr:'kickSl'
+// ---- Kombo sistemi: sadece Y (yumruk bölgesi) ve T (tekme bölgesi) dizisine bakılır; sağ/sol sadece hangi kol/bacağın oynayacağını belirler ----
+const KICK_AD={kLo:['kickLo','kickLoF'],k1:['kick1','kick1F'],k2:['kick2','kick2F'],k3:['kick3','kick3F'],k4:['kick4N','kick4'],kSl:['kickSl','kickSlF'],diz:['dizN','dizF'],kDA:['kickDA','kickDB'],kDC:['kickDC','kickDD'],kDE:['kickDE','kickDF']};   // [sağ(N), sol(F)]
+const KAGAC={   // y/t dizisi -> o adımın hareket türü (yumruk: j jab, c düz, h kanca, u aparkat, o üstten, b gövde, w çift jab, s süpermen, z dönerek, k haymaker; tekme: KICK_AD)
+  y:'j', yy:'c', yt:'kLo',
+  yyy:'h', yyt:'k1', ytt:'kSl', yty:'b',
+  yyyy:'u', yyyt:'diz', yyty:'w', yytt:'kDA', yttt:'kDE', ytyy:'z', ytyt:'k2',
+  yyyyy:'o', yyyyt:'k3', yyyty:'s', yyytt:'kDC', yytyy:'k', yytyt:'kSl', ytyyy:'o', ytyyt:'kDA',
+  yyyyyy:'z', yyyyyt:'k4', yyyytt:'kDC', yyytyy:'u', yyytyt:'k2',
+  t:'k1', ty:'j', tt:'diz', tyy:'c', tyt:'k2', tty:'o', ttt:'kDC', tyyy:'u', tyyt:'kDA', ttyy:'h', ttyt:'kLo'
 };
-const KOMBO=Object.keys(KAGAC).map(k=>[...k].map((c,i)=>(c==='r'?'R':'L')+':'+KAGAC[k.slice(0,i+1)]).join(' '));
-KOMBO.push(...KOMBO.map(k=>k.split(' ').map(aynaAdim).join(' ')));   // hepsinin ters yönlüsü (kollar/bacaklar yer değiştirir)
+Object.keys(KAGAC).forEach(k=>{if(k.length>1&&!KAGAC[k.slice(0,-1)])throw new Error('kombo öneki eksik: '+k)});
 const KB={ch:{}};
-KOMBO.forEach((sq,qi)=>{let n=KB;for(const st of sq.split(' ')){const [d,m]=st.split(':');n=n.ch[d]||(n.ch[d]={m,ch:{}})}if(!n.no)n.no=qi+1});   // her kombonun numarası (sıra no)
+Object.keys(KAGAC).sort((x,y)=>x.length-y.length).forEach((k,qi)=>{let n=KB;[...k].forEach((c,i)=>{n=n.ch[c]||(n.ch[c]={m:KAGAC[k.slice(0,i+1)],ch:{}})});n.no=qi+1});   // her kombonun numarası (sıra no)
 S.kb={n:KB,t:-9};
 S.parcalar=[];S.parcaHold=0;
 const TUT_DESEN=['jjchuo','bbhhuc','huhuoc','jcbhuo','buchbo'];   // tutulana vuruş desenleri (6'şar): j jab, c düz, h kanca, u aparkat, o üstten, b gövde
@@ -1172,7 +1170,7 @@ function tutKombo(arm){
   if(S.tk.i>=pat.length){S.tk.i=0;S.tk.p++}
   atkIstek('#!'+m);
 }
-function komboTap(d){
+function komboTap(d,side){
   if(S.durum!=='oyun'||S.sarj>0||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam)return;
   if(S.atk&&S.kuyruk.length>=5)return;
   let n=S.t-S.kb.t>0.65?KB:S.kb.n, c=n.ch[d], dp=(S.kb.d||0)+1;
@@ -1181,7 +1179,8 @@ function komboTap(d){
   const son=!Object.keys(c.ch).length;
   S.kb.n=son?KB:c;S.kb.t=S.t;S.kb.d=son?0:dp;          // zincir bittiyse sıfırla
   if(son&&dp>=2&&c.no){S.kSon=null}else if(dp>=2&&c.no)S.kSon={no:c.no,t:S.t};else S.kSon=null;     // zincir devam edebiliyorsa: durursa o an biten kombo sayılır
-  atkIstek('#'+c.m+(son&&dp>=2&&c.no?'~'+c.no:'')+(son&&dp>=3?'*':(dp>=2?'+':'')));
+  const ad=d==='t'?KICK_AD[c.m][side==='N'?0:1]:c.m+side;           // yumruk: tür + basılan taraf; tekme: türün o taraftaki bacağı
+  atkIstek('#'+ad+(son&&dp>=2&&c.no?'~'+c.no:'')+(son&&dp>=3?'*':(dp>=2?'+':'')));
 }
 
 function ziplaBas(guc=1){
