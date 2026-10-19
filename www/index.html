@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.96</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.97</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -667,12 +667,12 @@ function karCiz(arka){      // arka: karakterlerin arkasındaki sabit kar şerid
   for(let i=i0;i<=i1;i++){      // üst kenarda topçuklar (ezilmiş yerde küçülür / kaybolur)
     const r=karR(i),h=arka?KD+12:KAR[i],f=kisit((h-KMIN-6)/(KD-KMIN-6),0,1);
     let im,w;
-    if(i%3===0){im=KARI[r<0.5?1:2];w=(95+60*r)*(arka?0.8:1)}
+    if(i%3===0){im=KARI[r<0.5?1:2];w=(80+75*r)*(arka?0.8:1)}
     else if(i%3===1&&r>0.55){im=KARI[3+Math.floor(r*40)%4];w=28+18*r}
     else continue;
     if(f<0.12||!im.complete||!im.naturalWidth)continue;
-    const x=KX0+i*KS+(r-0.5)*20,hh=w*im.naturalHeight/im.naturalWidth*(0.45+0.55*f);
-    ctx.drawImage(im,W/2+(x-S.x)*SC-w*SC/2,sy(zemin(x)+h)-hh*SC*0.55,w*SC,hh*SC);
+    const r2=karR(i+777),x=KX0+i*KS+(r-0.5)*24,hh=w*im.naturalHeight/im.naturalWidth*(0.45+0.55*f)*(0.8+0.35*r2);
+    ctx.drawImage(im,W/2+(x-S.x)*SC-w*SC/2,sy(zemin(x)+h+(r2-0.5)*14*f)-hh*SC*0.55,w*SC,hh*SC);
   }
   ctx.globalAlpha=1;
   if(!arka)for(const p of S.karP){const im=KARI[p.im];if(!im.complete)continue;const w=34*p.s*SC,h=w*im.naturalHeight/im.naturalWidth;
