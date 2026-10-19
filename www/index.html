@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.06</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.07</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -238,7 +238,7 @@ function kolHesap(iz,x,y){
     if(!iz.sup&&asagi&&k.e>=0.6&&hz>1400){iz.sup=true;suplex(iz.t)}
     return;
   }
-  if(k.e<0.9)return;
+  if(k.e<0.9||tutmaVar())return;
   const o2=izBul(iz.t==='N'?'F':'N');      // iki parmak öncelikli: diğer parmak da hareket ediyorsa tek parmak hareketleri yerine çift parmak hareketleri çalışır
   const ikili=!!(o2&&KOL[o2.t].ak&&(KOL[o2.t].e>0.25||izHiz(o2,0.2)>300));
   if(!iz.sho&&yukari&&hz>1600){iz.sho=true;shoryu(iz)}                              // çok hızlı yukarı = shoryuken
@@ -255,7 +255,7 @@ function kolHesap(iz,x,y){
   }
 }
 function daireKontrol(){         // iki parmakla bir daire = aduket hazır (tam dolu); sonrası parmaklar sadece yön verir, kalkınca top o yöne gider
-  if(DUS.some(e=>e.tut)||ikiYakin())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
+  if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   if(S.durum!=='oyun')return;
   const a=izBul('N'),b=izBul('F');
   if(!a||!b)return;
@@ -361,10 +361,11 @@ function ciftAtil(yon){           // tek parmak kayması: sadece koşarken (en a
   donDon(yon);
   S.lungeS=S.t;S.lungeT=S.t+0.30;S.lungeV=yon*3400*(0.5+r);S.kay={t0:S.t,T:0.30};S.kayCif=S.t;ses('atla',0);S.sars=Math.max(S.sars,6);
 }
+function tutmaVar(){return DUS.some(e=>e.tut)||ikiYakin()||HS.N!=='yum'||HS.F!=='yum'||S.parcalar.some(p=>!p.at)}      // tutuyorken ya da tutmaya çalışırken (el açık) özel hareketler tetiklenmez
 function ciftKontrol(){
   const a=izBul('N'),b=izBul('F');
   if(!a||!b||S.sarj>0||S.tats>0||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
-  if(DUS.some(e=>e.tut)||ikiYakin())return;
+  if(tutmaVar())return;
   const ka=kayma(a,0.15),kb=kayma(b,0.15);
   if(!ka||!kb||izHiz(a,0.12)<800||izHiz(b,0.12)<800)return;
   const ok=k=>k.d>80&&Math.abs(k.dy)<0.9*Math.abs(k.dx)&&k.d/k.yol>0.7;
@@ -420,10 +421,10 @@ function supermenKay(dir){        // iki parmak yatay kaydırma: süpermen gibi 
   ses('ates',0.5);S.sars=Math.max(S.sars,12);
 }
 function yereKontrol(){           // yerdeyken iki parmak birlikte hızlı aşağı = yer yumruğu (bakılan yöne çatlak)
-  if(DUS.some(e=>e.tut)||ikiYakin())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
+  if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   const a=izBul('N'),b=izBul('F');
   if(!a||!b||!S.yer||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
-  if(DUS.some(e=>e.tut)||ikiYakin())return;
+  if(tutmaVar())return;
   const ka=kayma(a,0.15),kb=kayma(b,0.15);
   if(!ka||!kb||izHiz(a,0.12)<800||izHiz(b,0.12)<800)return;
   const ok=k=>k.dy>70&&Math.abs(k.dx)<0.8*k.dy;
@@ -449,10 +450,10 @@ function catlakGuncelle(){
   }
 }
 function alkisKontrol(){          // iki parmak ortaya doğru birleşir = alkış şok dalgası
-  if(DUS.some(e=>e.tut)||ikiYakin())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
+  if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   const a=izBul('N'),b=izBul('F');
   if(!a||!b||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
-  if(DUS.some(e=>e.tut)||ikiYakin())return;
+  if(tutmaVar())return;
   const ka=kayma(a,0.2),kb=kayma(b,0.2);
   if(!ka||!kb||izHiz(a,0.15)<500||izHiz(b,0.15)<500)return;
   const sol=a.lx<b.lx?ka:kb, sag=a.lx<b.lx?kb:ka;
@@ -472,7 +473,7 @@ function alkisVur(){
   }
 }
 function zitKontrol(){            // iki parmak zıt yöne yatay kayar = kasırga tekmesi
-  if(DUS.some(e=>e.tut)||ikiYakin())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
+  if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   const a=izBul('N'),b=izBul('F');
   if(!a||!b||S.sarj>0||S.tats>0||S.durum!=='oyun'||Math.abs(a.turn)>1||Math.abs(b.turn)>1)return;
   const ka=kayma(a,0.2),kb=kayma(b,0.2);
