@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.87</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.88</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -591,9 +591,10 @@ function ton(tip,f0,f1,sure,ses){
   o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+sure+0.02);
 }
 const SES_SON={};
-let PB=[],PBAG=[],PYUK=false;      // yumruk sesleri: hepsi bir kez çalınana kadar sırayla rastgele (torba), sonra yeniden dolar
+let PB=[],PBAG=[],PYUK=false,PPAR=null;      // yumruk sesleri: hepsi bir kez çalınana kadar sırayla rastgele (torba), sonra yeniden dolar
 function yumrukYukle(){
   if(PYUK||!AC)return;PYUK=true;
+  fetch('ses/parcalanma.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>{PPAR=buf}).catch(()=>{});
   for(let i=1;i<=7;i++)fetch('ses/punch_'+i+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(buf=>PB.push(buf)).catch(()=>{});
 }
 function yumrukCal(){
@@ -605,7 +606,8 @@ function yumrukCal(){
 function ses(tip,f){
   if(!AC||AC.state!=='running')return;
   const n=AC.currentTime;if(n-(SES_SON[tip]||-1)<0.045)return;SES_SON[tip]=n;   // aynı anda çok vuruş: tek ses (ses düğümü yığılmasın)
-  if(tip==='yumruk')yumrukCal();   // tek ses kaynağı: yumruk örnekleri
+  if(tip==='parca'){if(PPAR){const src=AC.createBufferSource(),g=AC.createGain();src.buffer=PPAR;g.gain.value=1;src.connect(g);g.connect(AC.destination);src.start()}}
+  else if(tip==='yumruk')yumrukCal();   // tek ses kaynağı: yumruk örnekleri
 }
 let TITRE_SON=0;
 function titre(ms){const n=performance.now();if(n-TITRE_SON<60)return;TITRE_SON=n;try{if(navigator.vibrate)navigator.vibrate(ms)}catch(_){}}
@@ -696,7 +698,7 @@ function vurusKontrol(){
   }
 }
 // ---- tutma: ekrana basılı tut, eli yavaş götür, düşmanı yakala; bırakınca fırlat ----
-function yirt(e,hiz){             // iki elle tutulan yengeci tam ortasından sağ/sol ikiye ayır: yarılar ellerde kalır, hızlı çekişte fırlar
+function yirt(e,hiz){ses('parca',0);             // iki elle tutulan yengeci tam ortasından sağ/sol ikiye ayır: yarılar ellerde kalır, hızlı çekişte fırlar
   const sol=EL.N.wx<=EL.F.wx?'N':'F',sag=sol==='N'?'F':'N',hizli=hiz>1000,v=kisit(hiz*0.9,1200,4200);
   if(e.t==='emek'){             // belden ikiye (parça tabanlı): üst gövde (kafa, kollar) N elinde, alt gövde (kalça, bacaklar) F elinde
     const z={yon:e.yon,anim:e.anim,kopuk:Object.assign({},e.kopuk),fl:0,moving:false};
@@ -1109,7 +1111,7 @@ function ciziEmek(e,mask){
   }
   ctx.restore();
 }
-function emekKopar(e,hy){       // her %25 can kaybında uzuv kopar (kafa kopmaz): kollar = devam eder, bacak = ölür
+function emekKopar(e,hy){ses('parca',0);       // her %25 can kaybında uzuv kopar (kafa kopmaz): kollar = devam eder, bacak = ölür
   const kp=e.kopuk||(e.kopuk={}),rel=hy===undefined?0.5:(hy-e.y)/520;let kind=null;
   const kol=()=>!kp.kolN?'kolN':(!kp.kolF?'kolF':null),bac=()=>!kp.bacakN?'bacakN':(!kp.bacakF?'bacakF':null);
   kind=rel>0.45?(kol()||bac()):(bac()||kol());
@@ -1167,7 +1169,7 @@ function zEksen(){               // iki elle tutulan zombi: N eli boyunda, F eli
   if(Math.hypot(dx,dy)<80){dx=(dx>=0?1:-1)*80;dy=0}
   const L=Math.hypot(dx,dy);return {ux:dx/L,uy:dy/L,phi:Math.atan2(dx,dy)};
 }
-function zombiKopar(e,hy){       // %25'lik can eşiği geçilince: vurulan uzuv kopup gider (kafa/bacak = ölür, kol = tek kolla devam)
+function zombiKopar(e,hy){ses('parca',0);       // %25'lik can eşiği geçilince: vurulan uzuv kopup gider (kafa/bacak = ölür, kol = tek kolla devam)
   const kp=e.kopuk||(e.kopuk={}),rel=hy===undefined?0.5:(hy-e.y)/1000;let kind=null;
   if(rel>0.72){if(!kp.kafa)kind='kafa'}
   else if(rel>=0.33){kind=!kp.kolN?'kolN':(!kp.kolF?'kolF':null)}
