@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.97</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.98</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -652,28 +652,17 @@ function karGuncelle(dt){
 }
 function karCiz(arka){      // arka: karakterlerin arkasındaki sabit kar şeridi; ön: ezilen, karakterlerin ayağını örten katman
   const x0=S.x-(W/2+40)/SC,x1=S.x+(W/2+40)/SC,i0=karI(x0)-2,i1=karI(x1)+2,sy=y=>ZY()-(y-S.camY)*SC;
-  const top=[];for(let i=i0;i<=i1;i++){const x=KX0+i*KS;top.push([W/2+(x-S.x)*SC,sy(zemin(x)+(arka?KD+12:KAR[i])),sy(zemin(x))+4])}
+  const top=[];for(let i=i0;i<=i1;i++){const x=KX0+i*KS;top.push([W/2+(x-S.x)*SC,sy(zemin(x)+(arka?KD+12:KAR[i])),arka?sy(zemin(x))+4:H+20])}
   if(!top.length)return;
   ctx.beginPath();ctx.moveTo(top[0][0],top[0][1]);for(const p of top)ctx.lineTo(p[0],p[1]);
   for(let j=top.length-1;j>=0;j--)ctx.lineTo(top[j][0],top[j][2]);ctx.closePath();
-  const g=ctx.createLinearGradient(0,sy(zemin(S.x)+KD+20),0,sy(zemin(S.x)));
-  if(arka){g.addColorStop(0,'#cfe6f1');g.addColorStop(1,'#a9cde0')}else{g.addColorStop(0,'#e6f6fa');g.addColorStop(1,'#bcdcec')}
+  const g=ctx.createLinearGradient(0,sy(zemin(S.x)+KD+20),0,arka?sy(zemin(S.x)):H);
+  if(arka){g.addColorStop(0,'#cfe6f1');g.addColorStop(1,'#a9cde0')}else{g.addColorStop(0,'#e6f6fa');g.addColorStop(0.35,'#cfe8f3');g.addColorStop(1,'#a7cbe0')}
   ctx.fillStyle=g;ctx.fill();
   ctx.beginPath();ctx.moveTo(top[0][0],top[0][1]);for(const p of top)ctx.lineTo(p[0],p[1]);
   ctx.strokeStyle='rgba(15,52,111,.85)';ctx.lineWidth=2.2;ctx.lineJoin='round';ctx.stroke();
   if(!arka)for(const l of S.leke){const u=S.t-l.t0,sx=W/2+(l.x-S.x)*SC;if(sx<-100||sx>W+100)continue;      // karda kan lekesi
     ctx.globalAlpha=0.55*Math.min(1,(25-u)/6);ctx.fillStyle='#8e0d12';ctx.beginPath();ctx.ellipse(sx,sy(karY(l.x))+3*SC,l.w*SC,l.w*0.22*SC,0,0,7);ctx.fill()}
-  ctx.globalAlpha=arka?0.75:1;
-  for(let i=i0;i<=i1;i++){      // üst kenarda topçuklar (ezilmiş yerde küçülür / kaybolur)
-    const r=karR(i),h=arka?KD+12:KAR[i],f=kisit((h-KMIN-6)/(KD-KMIN-6),0,1);
-    let im,w;
-    if(i%3===0){im=KARI[r<0.5?1:2];w=(80+75*r)*(arka?0.8:1)}
-    else if(i%3===1&&r>0.55){im=KARI[3+Math.floor(r*40)%4];w=28+18*r}
-    else continue;
-    if(f<0.12||!im.complete||!im.naturalWidth)continue;
-    const r2=karR(i+777),x=KX0+i*KS+(r-0.5)*24,hh=w*im.naturalHeight/im.naturalWidth*(0.45+0.55*f)*(0.8+0.35*r2);
-    ctx.drawImage(im,W/2+(x-S.x)*SC-w*SC/2,sy(zemin(x)+h+(r2-0.5)*14*f)-hh*SC*0.55,w*SC,hh*SC);
-  }
   ctx.globalAlpha=1;
   if(!arka)for(const p of S.karP){const im=KARI[p.im];if(!im.complete)continue;const w=34*p.s*SC,h=w*im.naturalHeight/im.naturalWidth;
     ctx.save();ctx.translate(W/2+(p.x-S.x)*SC,sy(p.y));ctx.rotate(p.rot);ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore()}
@@ -1886,11 +1875,7 @@ function arkaPlan(camX,zeminY){
   const yol=new Path2D();yol.moveTo(0,ys(0));
   for(let x=4;x<=W+4;x+=4)yol.lineTo(x,ys(x));
   const dolgu=new Path2D(yol);dolgu.lineTo(W+4,H);dolgu.lineTo(0,H);dolgu.closePath();
-  ctx.fillStyle='#8b6a45';ctx.fill(dolgu);
-  ctx.strokeStyle='#a98557';ctx.lineWidth=6;ctx.stroke(yol);
-  ctx.fillStyle='rgba(31,42,51,.30)';
-  const tahta=120*SC*2.2;
-  for(let x=-((camX*SC)%tahta);x<W;x+=tahta){const y=ys(x);ctx.fillRect(x,y+8,3,H-y)}
+  ctx.fillStyle='#b4d6e8';ctx.fill(dolgu);      // eski tahta zemin yok: altı kar
 }
 function ciz(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
