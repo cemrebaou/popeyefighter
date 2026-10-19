@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.39</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.40</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -68,7 +68,7 @@ const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];    
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','p_mermi','p_ates']
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_'].map(q=>KP.map(n=>q+n)));
 const RES=2;                       // oyuncu parçaları oyun biriminin 2 katı çözünürlükte
-const R={},YUZ=[],YUZA=[],KARI=[],KANI=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
+const R={},YUZ=[],YUZA=[],KARI=[],KANI=[],AGAC=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
 function koyult(img,al=.28){            // arka taraftaki uzuvlar için hafif koyu kopya
   const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
   const x=c.getContext('2d');x.drawImage(img,0,0);
@@ -87,6 +87,7 @@ for(let i=0;i<11;i++)yukle('yuz/yuz'+i+'.png',im=>YUZ[i]=im);
 for(let i=0;i<10;i++)yukle('yuz/yuzA'+i+'.png',im=>YUZA[i]=im);
 for(let i=3;i<=6;i++){yukle('fx/kar'+i+'.png',im=>KARI[i]=im);yukle('fx/kan'+i+'.png',im=>KANI[i]=im)}
 yukle('fx/yol.png',im=>R.yol=im);
+for(let i=0;i<5;i++)yukle('fx/agac'+i+'.png',im=>AGAC[i]=im);      // arka plan ağaçları
 function gorselHazir(){
   ['uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));                 // oyuncunun arka bacağı
   ['ustkol','onkol2','el_yum_f','el_ac_n'].forEach(n=>R[n+'_a']=koyult(R[n],.13));    // oyuncunun arka kolu ve eli
@@ -1627,10 +1628,12 @@ function arkaPlan(camX,zeminY){
   ctx.fillStyle='#9db8a3';ctx.beginPath();ctx.moveTo(0,zeminY-H*0.10);
   for(let x=0;x<=W;x+=20){ctx.lineTo(x,zeminY-H*0.10-(Math.sin((x+camX*0.2)/170)*0.5+0.5)*H*0.11-H*0.02)}
   ctx.lineTo(W,zeminY-H*0.10);ctx.fill();
-  // iskele direkleri
-  ctx.fillStyle='#6b5233';
-  const aralik=260;
-  for(let i=-1;i<W/aralik+2;i++){const x=((i*aralik-camX*0.6)%(W+aralik*2)+W+aralik*2)%(W+aralik*2)-aralik;ctx.fillRect(x,zeminY-H*0.16,10,H*0.16)}
+  // arka plan ağaçları: her aralık için sabit rastgele seçim (tür, boy, kayma, boşluk); kamerayla 0.6 hızında kayar
+  {const AR=330,par=camX*0.6,i0=Math.floor((par-300)/AR),i1=Math.ceil((par+W+300)/AR);
+   for(let i=i0;i<=i1;i++){
+     const h=Math.imul(i^0x9e3779b9,2654435761)>>>0;if((h>>>9)%4===0)continue;
+     const im=AGAC[(h>>>4)%5],hh=H*0.27*(0.85+((h>>>12)&255)/255*0.35),ww=hh*im.width/im.height,x=i*AR+(((h>>>20)&255)/255-0.5)*140-par;
+     ctx.drawImage(im,x-ww/2,zeminY-hh+H*0.012,ww,hh)}}
   {      // yol: aynı şerit peş peşe, altında başka zemin yok
     const Y=R.yol,tw=2400*SC,th=tw*Y.height/Y.width,y0=zeminY-(0-S.camY)*SC-th*0.38;
     for(let x=((W/2-camX*SC)%tw+tw)%tw-tw;x<W;x+=tw)ctx.drawImage(Y,Math.floor(x),y0,Math.ceil(tw)+1,th);
