@@ -29,7 +29,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 .sat.yeni{border-top:.9cqw solid rgba(70,45,20,.55)}
 .sat b{font-family:var(--font);font-weight:400;font-size:7cqw;width:9cqw;text-align:center;color:#4a2f18}
 .sat img{height:7cqw;width:auto}
-#lkapat{position:absolute;top:3%;right:3%;width:9cqw;height:9cqw;border-radius:50%;border:.7cqw solid #2b1b10;background:#f3dfb8;color:#2b1b10;font:400 6cqw var(--font);display:flex;align-items:center;justify-content:center;cursor:pointer}
+
 canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 .mini{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));
   background:var(--panel);border:2px solid var(--cizgi);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:800;color:var(--yazi);user-select:none;-webkit-user-select:none;cursor:pointer}
@@ -49,11 +49,11 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.71</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.72</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
-<div id="liste" hidden><div class="kagit"><div id="liste_ic"></div><div id="lkapat">✕</div></div></div>
+<div id="liste" hidden><div class="kagit"><div id="liste_ic"></div></div></div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
 <div class="mini" id="tam">⛶ Tam ekran</div>
 <div class="mini" id="kapat">✕</div>
@@ -1146,10 +1146,10 @@ function ph(arm,dur,fr){
     const KS=(t,v)=>[t,Object.assign({torso:-4,bas:-2,ofs:0,lift:0},G0,v)];
     HAREKET.kickSl={dur:.62,win:[[.3,.72]],keys:[
       KS(0,{lN:-30,bN:75,lF:-9,bF:6}),
-      KS(.2,{lN:-68,bN:15,lF:70,bF:60,torso:-24,bas:-4,ofs:80,lift:-60}),
-      KS(.4,{lN:-74,bN:-6.5,lF:80,bF:55,torso:-28,bas:-5,ofs:200,lift:-70}),
-      KS(.72,{lN:-74,bN:-6.5,lF:80,bF:55,torso:-28,bas:-5,ofs:230,lift:-70}),
-      KS(.9,{lN:-30,bN:60,lF:10,bF:60,torso:-8,ofs:70,lift:-40}),
+      KS(.2,{lN:-68,bN:15,lF:70,bF:60,torso:-24,bas:-4,ofs:80,lift:-44}),
+      KS(.4,{lN:-74,bN:-6.5,lF:80,bF:55,torso:-28,bas:-5,ofs:200,lift:-48}),
+      KS(.72,{lN:-74,bN:-6.5,lF:80,bF:55,torso:-28,bas:-5,ofs:230,lift:-48}),
+      KS(.9,{lN:-30,bN:60,lF:10,bF:60,torso:-8,ofs:70,lift:-28}),
       KS(1,{lN:7,bN:3,lF:-9,bF:6,torso:6,bas:0})]};
   }
 }
@@ -1208,7 +1208,6 @@ let listeAcik=false;
   const el=document.getElementById('liste');
   window.listeAc=a=>{listeAcik=a;el.hidden=!a;if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;ic.scrollTop=0}};
   document.getElementById('kombolB').addEventListener('click',()=>listeAc(true));
-  document.getElementById('lkapat').addEventListener('click',()=>listeAc(false));
   el.addEventListener('click',e=>{if(e.target===el)listeAc(false)});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&listeAcik)listeAc(false)});
 }
