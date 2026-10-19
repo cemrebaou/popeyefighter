@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.99</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.00</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -760,7 +760,7 @@ function vurusKontrol(){
       if(Math.hypot(h.wx-e.x,h.wy-(e.y+e.cy))>e.r+60)continue;
       const f=kisit((h.v-1500)/6000,0,1);
       const kd=kDmg(S.atk);if(kd!==null&&!S.atk.tv)S.cE=e;
-      S.pSes=true;S.pHx=h.wx;vur(e,kd!==null&&!S.atk.tv?kd:Math.round(5+45*f),h.vx,h.vy,f,h.wy);S.pSes=false;S.pHx=undefined;e.hitT[k]=S.t+0.4;
+      S.pSes=true;S.pHx=h.wx;vur(e,kd!==null&&!S.atk.tv?kd:5,h.vx,h.vy,f,h.wy);S.pSes=false;S.pHx=undefined;e.hitT[k]=S.t+0.4;
     }
   }
   if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){      // Sub-Zero kayması: alçak çelme, havaya fırlatır
@@ -1785,7 +1785,7 @@ function govdeUzayi(fn){ctx.save();ctx.translate(P.hx,-P.hy);ctx.rotate(P.pelv*D
 // Kol: üst kol -> dirsek -> ön kol (el, ön kolun altında; ön kol dirsek halkasında döner). Omuz noktaları bel noktasına göre.
 // el görselleri [anahtar, bilek x, bilek y]: yakın elde sırt görünür (yumruk, el_ac_f, el_tut_f); uzak elde avuç/parmaklar bize bakar (el_yum_f, el_ac_n, el_tut_n; sonuncular koyulaştırılmış)
 const KOL_EL={N:{yum:['el_yum',28.2,91.2],ac:['el_ac_f',21.9,96.3],tut:['el_tut_f',17.5,67.5]},
-              F:{yum:['el_yum_f',31.9,93.4],ac:['el_ac_n_a',24.7,104.9],tut:['el_tut_n_a',20.9,73.8]}};
+              F:{yum:['el_yum_f',31.9,93.4],ac:['el_ac_n',24.7,104.9],tut:['el_tut_n',20.9,73.8]}};
 const HS={N:'yum',F:'yum'}, ACT={N:0,F:0};     // el durumu: yum = yumruk, ac = tutmaya hazır açık el, tut = düşmanı tutuyor
 function elDurum(dt){
   for(const k of ['N','F']){
