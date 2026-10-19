@@ -38,7 +38,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v1.61</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v1.62</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa">▼</div><div class="tus" id="sol">◀</div><div class="tus" id="sag">▶</div><div class="tus" id="zipla">▲</div>
 <div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
@@ -69,9 +69,9 @@ ADLAR.forEach(a=>{
   im.onerror=()=>{document.getElementById('yuk').textContent='Parça yüklenemedi: '+a};
   im.src='parca/'+a+'.png?v=37';          // ?v= : görsel değişince tarayıcı eski önbelleği kullanmasın
 });
-const YUZ=[];                      // can göstergesi: 0 = tam can ... 9 = çok az can, 10 = ölü
-for(let i=0;i<11;i++){const im=new Image();im.src='yuz/yuz'+i+'.png?v=35';YUZ.push(im)}
-function yuzNo(hp){return hp<=0?10:Math.min(9,Math.floor((100-hp)/10))}   // 100-91→0, 90-81→1 ... 10-1→9, 0→10
+const YUZ=[];                      // can göstergesi: 0 = tam can ... 9 = en kötü (ölünce de 9)
+for(let i=0;i<10;i++){const im=new Image();im.src='yuz/yuz'+i+'.png?v=40';YUZ.push(im)}
+function yuzNo(hp){return hp<=0?9:Math.min(9,Math.floor((100-hp)/10))}   // 100→0, 90-81→1 ... 10-1→9, 0→9
 
 // ---------- Ayarlar (parça birimi) ----------
 const CR_H=320;                 // çömelmede kalça yüksekliği
@@ -819,7 +819,7 @@ function oyuncuHasar(){
             S.pops.push({x:S.x,y:S.y+950,t:0,txt:'PARRY!',f:1});ses('parry',0);titre(50);S.sars=Math.max(S.sars,8);
           }else{S.hp-=Math.max(1,Math.round(dm*0.25));S.inv=S.t+1.0;ses('hasar',0);titre(30)}   // normal blok: hasarın çoğu engellenir
         }else{
-          ses('hasar',0);titre(60);S.hp-=dm;S.inv=S.t+1.0;S.vx+=yn*900;S.sars=Math.max(S.sars,10);
+          ses('hasar',0);S.hp-=dm;S.inv=S.t+1.0;
         }
         break;
       }
@@ -1408,7 +1408,6 @@ function ciz(){
   ctx.translate(S.shx,S.shy);
   arkaPlan(S.x,zeminY);
   dusmanCiz();
-  if(S.t<S.inv&&Math.floor(S.t*20)%2)ctx.globalAlpha=0.45;
   ctx.save();
   ctx.translate(W/2,zeminY-(S.y-S.camY)*SC);
   ctx.scale(SC*S.yon,SC);
