@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.48</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.49</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -711,7 +711,7 @@ function karGuncelle(dt){
   if(S.yer&&!S.karYer){karBas(S.x,230,KMIN-4,true);for(let i=0;i<12;i++){const sg=Math.random()<0.5?-1:1;karAt(S.x+sg*Math.random()*130,zemin(S.x)+10,sg*(200+Math.random()*750),600+Math.random()*1000)}}      // zıplamadan iniş: geniş çökme, yerden bol kar kalkar
   S.karYer=S.yer;
   if(S.yer&&Math.abs(S.vx)<40)karBas(S.x,110,KMIN+4,false);      // dururken ayaklar karın içinde
-  if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){karBas(S.x+S.yon*170,150,10,true,S.yon);if(S.t-(S.spT||-9)>0.09){S.spT=S.t;fxEkle(R.sprey,S.x-S.yon*170,300,0.32,true,S.yon<0,-S.yon*900);const y0=zemin(S.x)+10;for(let i=0;i<3;i++)karAt(S.x-S.yon*(40+Math.random()*80),y0,-S.yon*(300+Math.random()*800),500+Math.random()*900,i===0)}}      // kayma: büyük kar sıçraması ve küçük kar + taş kaydığın yönün tersine fırlar
+  if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){karBas(S.x+S.yon*170,150,10,true,S.yon);if(S.t-(S.spT||-9)>0.09){S.spT=S.t;fxEkle(R.sprey,S.x+S.yon*330,300,0.32,true,S.yon<0,-S.yon*900);const y0=zemin(S.x)+10;for(let i=0;i<3;i++)karAt(S.x+S.yon*(230+Math.random()*80),y0,-S.yon*(300+Math.random()*800),500+Math.random()*900,i===0)}}      // kayma: büyük kar sıçraması ve küçük kar + taş kaydığın yönün tersine fırlar
   for(let i=S.karP.length-1;i>=0;i--){const p=S.karP[i];p.vy-=G*0.6*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
     if(p.vy<0&&p.y<=zemin(p.x)){if(!p.tas){const k=karI(p.x);KAR[k]=Math.min(KD+20,KAR[k]+3*p.s)}S.karP.splice(i,1)}}
   for(let i=S.fxs.length-1;i>=0;i--)if(S.t-S.fxs[i].t0>S.fxs[i].T)S.fxs.splice(i,1);
