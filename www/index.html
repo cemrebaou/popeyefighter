@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.61</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.62</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -64,7 +64,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 (function(){
 'use strict';
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const SURUM='?v=52';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=53';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','p_mermi','p_ates','h_elB','h_kanca','h_zincir']
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
@@ -127,7 +127,7 @@ function boyut(){
 window.addEventListener('resize',boyut);boyut();
 
 const key={sol:false,sag:false,zipla:false,asagi:false};
-const S={camY:0,atk:null,kuyruk:[],sonAtk:-9,x:0,y:0,vx:0,vy:0,yer:true,yon:1,ziplaTut:false,ekstra:1,spin:0,donuyor:false,faz:0,t:0,bicak:false,bicakHedef:0,bicakAci:0};
+const S={camY:0,atk:null,kuyruk:[],sonAtk:-9,x:0,y:0,vx:0,vy:0,yer:true,yon:1,ziplaTut:false,ekstra:1,spin:0,donuyor:false,faz:0,t:0,bicak:false,bicakHedef:0,bicakAci:0,bicakPozT:-9};
 const ROLL_SURE=0.55;
 const P={}; // yumuşatılmış açılar
 function tus(e,d){
@@ -377,7 +377,7 @@ function bicakSesCal(){if(!bicakSes)return;try{bicakSes.currentTime=0;bicakSes.p
 function bicakAcKapa(){
   if(S.durum!=='oyun'||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.slam)return;
   if(!S.bicakHedef&&S.en<0.04){S.noEn=S.t;return}
-  S.bicakHedef=S.bicakHedef?0:1;S.bicak=!!S.bicakHedef;S.blok=false;S.blokDw=0;S.parcalar=[];S.kuyruk=[];bicakSesCal();
+  S.bicakHedef=S.bicakHedef?0:1;S.bicak=!!S.bicakHedef;S.bicakPozT=S.t;S.blok=false;S.blokDw=0;S.parcalar=[];S.kuyruk=[];bicakSesCal();
 }
 function bicakGuncelle(dt){
   const hedef=S.bicakHedef?1:0;S.bicakAci+=(hedef-S.bicakAci)*(1-Math.exp(-dt*11));
@@ -1588,7 +1588,8 @@ function hedefPoz(){
     o.cr=1; o.cw=w; o.pelv=32; o.hy=14; o.hb=50+(hiz>0.05?6*sn:0); o.torso=13+(hiz>0.05?4*sn:0); o.bas=-26; o.aNu=-38; o.aNr=40; o.aFu=-26; o.aFr=45;
   }
   if(S.bicakAci>0.01&&S.yer&&!S.atk&&!S.sman&&!S.yy&&!S.alk&&!S.tats){
-    const q=S.bicakAci;Object.assign(o,{lN:o.lN+(-52-o.lN)*q,bN:o.bN+(92-o.bN)*q,lF:o.lF+(-42-o.lF)*q,bF:o.bF+(86-o.bF)*q,torso:o.torso+(22-o.torso)*q,bas:o.bas+(0-o.bas)*q,aNu:o.aNu+(-28-o.aNu)*q,aNr:o.aNr+(72-o.aNr)*q,aFu:o.aFu+(28-o.aFu)*q,aFr:o.aFr+(72-o.aFr)*q});
+    const u=(S.t-S.bicakPozT)/0.38,q=u>=0&&u<1?Math.sin(Math.PI*u)*S.bicakAci:0;
+    if(q>0.001)Object.assign(o,{lN:o.lN+(-52-o.lN)*q,bN:o.bN+(92-o.bN)*q,lF:o.lF+(-42-o.lF)*q,bF:o.bF+(86-o.bF)*q,torso:o.torso+(22-o.torso)*q,bas:o.bas+(0-o.bas)*q,aNu:o.aNu+(-28-o.aNu)*q,aNr:o.aNr+(72-o.aNr)*q,aFu:o.aFu+(28-o.aFu)*q,aFr:o.aFr+(72-o.aFr)*q});
   }
   if(S.atk||S.t-S.sonAtk<0.9||kolVar()){   // vuruş sürerken guard; bırakınca kollar iner
     o.aNu=-26;o.aNr=-44;o.aFu=-10;o.aFr=-52;
@@ -1696,7 +1697,9 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);
   {const bicak=S.bicakAci>0.04,d=bicak?(ad==='N'?['el_bicak_n',260,115]:['el_bicak_f',243,115]):KOL_EL[ad][HS[ad]||'yum'];
-   ctx.save();ctx.translate(140.4,0);resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI);ctx.restore();}   // el bilekte
+   ctx.save();ctx.translate(140.4,0);
+   if(bicak){const z=.36;ctx.scale(z,z);resim(R[d[0]],d[1]/z,d[2]/z)}else{resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI)}
+   ctx.restore();}   // el bilekte
   resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);
   if(bI>0)ekParla(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6,bI);
   else if(S.atk&&S.atk.fl==='+'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad))parilti(248,0,95,efSiddet(),'+');   // yumruk çerçevesi parlar
