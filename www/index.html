@@ -377,13 +377,16 @@ function bicakSesCal(){if(!bicakSes)return;try{bicakSes.currentTime=0;bicakSes.p
 function bicakAcKapa(){
   if(S.durum!=='oyun'||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.slam)return;
   if(!S.bicakHedef&&S.en<0.04){S.noEn=S.t;return}
-  S.bicakHedef=S.bicakHedef?0:1;S.bicak=!!S.bicakHedef;S.bicakPozT=S.t;S.blok=false;S.blokDw=0;S.parcalar=[];S.kuyruk=[];bicakSesCal();
+  S.bicakHedef=S.bicakHedef?0:1;S.bicak=!!S.bicakHedef;S.bicakPozT=S.t;S.blok=false;S.blokDw=0;S.parcalar=[];S.kuyruk=[];if(S.bicakHedef){S.bicakCikisAnim=0.5}else{S.bicakKapanisAnim=0.3}bicakSesCal();
 }
 function bicakGuncelle(dt){
   const hedef=S.bicakHedef?1:0;S.bicakAci+=(hedef-S.bicakAci)*(1-Math.exp(-dt*11));
+  // bıçak çıkış/kapanış animasyon zamanlayıcıları
+  if(S.bicakCikisAnim>0){S.bicakCikisAnim=Math.max(0,S.bicakCikisAnim-dt*2)}
+  if(S.bicakKapanisAnim>0){S.bicakKapanisAnim=Math.max(0,S.bicakKapanisAnim-dt*3)}
   if(!S.bicakHedef)return;
   S.en=Math.max(0,S.en-dt*0.15);       // normal enerji dolumunun üç katı hızla boşalır
-  if(S.en<=0.001){S.bicak=false;S.bicakHedef=0;bicakSesCal()}
+  if(S.en<=0.001){S.bicak=false;S.bicakHedef=0;S.bicakKapanisAnim=0.3;bicakSesCal()}
 }
 function enerji(n){if(S.en>=n-1e-6){S.en-=n;return true}S.noEn=S.t;return false}
 function donDon(d){S.yon=d;for(const z of izler.values())z.yon=d}
@@ -655,7 +658,7 @@ function dusmanKur(){      // yol boyunca yerleşik korsanlar: k = yumruklu, b =
   [4500,7400,10400,13600,16800,20200,22000,24600,29000,32200,34400].forEach(x=>ekle(x,'b'));
   [8600,15800,23600,30400,37200].forEach(x=>{ekle(x,'h');const e=DUS[DUS.length-1];e.hp=e.max=120;e.cy=620;e.r=288});      // kancacılar
 }
-function yeniOyun(){MERMI=[];EMER=[];EFL=[];S.hitR=null;S.sarjP=null;S.en=5;S.noEn=-9;S.yy=null;S.alk=null;yarikSesDur(S.catlak,0.1);S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;S.parcalar=[];S.kan=[];S.karP=[];S.leke=[];KAR.fill(KD);dusmanKur()}
+function yeniOyun(){MERMI=[];EMER=[];EFL=[];S.hitR=null;S.sarjP=null;S.en=5;S.noEn=-9;S.yy=null;S.alk=null;S.bicakCikisAnim=0;S.bicakKapanisAnim=0;yarikSesDur(S.catlak,0.1);S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.hp=100;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;S.parcalar=[];S.kan=[];S.karP=[];S.leke=[];KAR.fill(KD);dusmanKur()}
 // ---- sesler: kayıtlı ses dosyaları (WebAudio) ----
 let AC=null;
 function sesAc(){
@@ -674,7 +677,7 @@ function sesYukle(){
   const y=(ad,al)=>fetch('ses/'+ad+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(al).catch(()=>{});
   for(let i=2;i<=6;i++)y('stepsnow_'+i,b=>AD.push(b));
   for(let i=1;i<=6;i++)y('kick_'+i,b=>TK.push(b));
-  for(let i=1;i<=7;i++)y('punch_'+i,b=>PB.push(b));
+  [1,5,6,7].forEach(i=>y('punch_'+i,b=>PB.push(b)));      // punch_2,3,4 kaldırıldı
   for(let i=1;i<=3;i++)y('kilic_'+i,b=>KLC.push(b));
   for(let i=1;i<=5;i++)y('whoosh_'+i,b=>WH.push(b));
   for(let i=1;i<=3;i++)y('jump_'+i,b=>JP.push(b));      // sallama (boşta da dolu da): yumruk, tekme, bıçak
@@ -1591,6 +1594,31 @@ function hedefPoz(){
     const u=(S.t-S.bicakPozT)/0.38,q=u>=0&&u<1?Math.sin(Math.PI*u)*S.bicakAci:0;
     if(q>0.001)Object.assign(o,{lN:o.lN+(-52-o.lN)*q,bN:o.bN+(92-o.bN)*q,lF:o.lF+(-42-o.lF)*q,bF:o.bF+(86-o.bF)*q,torso:o.torso+(22-o.torso)*q,bas:o.bas+(0-o.bas)*q,aNu:o.aNu+(-28-o.aNu)*q,aNr:o.aNr+(72-o.aNr)*q,aFu:o.aFu+(28-o.aFu)*q,aFr:o.aFr+(72-o.aFr)*q});
   }
+  // ---- havalı bıçak çekiş animasyonu ----
+  if((S.bicakCikisAnim||0)>0.01&&S.yer&&!S.atk&&!S.sman){
+    const p=S.bicakCikisAnim/0.5;   // 1→0 gider, p büyükken animasyon güçlü
+    const w=Math.sin(p*Math.PI);     // 0→1→0 kavis (ortada en güçlü)
+    o.pelv=(o.pelv||0)+18*w;         // çömelmek: kalça aşağı iner
+    o.hy=(o.hy||0)+12*w;             // bel eğilir
+    o.torso=(o.torso||0)+8*w;        // gövde öne eğilir
+    o.bas=(o.bas||0)-6*w;            // kafa ileri bakar
+    o.aNu=(o.aNu||0)+35*w;           // kollar aşağı süpürür
+    o.aNr=(o.aNr||0)+30*w;
+    o.aFu=(o.aFu||0)+30*w;
+    o.aFr=(o.aFr||0)+25*w;
+    o.lN=(o.lN||0)-15*w;o.bN=(o.bN||0)+20*w;   // dizler hafif bükülür
+    o.lF=(o.lF||0)-15*w;o.bF=(o.bF||0)+20*w;
+  }
+  if((S.bicakKapanisAnim||0)>0.01&&S.yer&&!S.atk&&!S.sman){
+    const p=S.bicakKapanisAnim/0.3;
+    const w=Math.sin(p*Math.PI)*0.5;  // kapanış daha hafif
+    o.pelv=(o.pelv||0)+10*w;
+    o.hy=(o.hy||0)+6*w;
+    o.aNu=(o.aNu||0)-20*w;            // kollar yukarı döner (ters hareket)
+    o.aNr=(o.aNr||0)-15*w;
+    o.aFu=(o.aFu||0)-18*w;
+    o.aFr=(o.aFr||0)-12*w;
+  }
   if(S.atk||S.t-S.sonAtk<0.9||kolVar()){   // vuruş sürerken guard; bırakınca kollar iner
     o.aNu=-26;o.aNr=-44;o.aFu=-10;o.aFr=-52;
   }
@@ -1696,9 +1724,9 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);
   ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);
-  {const bicak=S.bicakAci>0.04,d=bicak?(ad==='N'?['el_bicak_n',260,115]:['el_bicak_f',243,115]):KOL_EL[ad][HS[ad]||'yum'];
+  {const bicak=S.bicakAci>0.04,d=bicak?(ad==='N'?['el_bicak_f',243,115]:['el_bicak_n',260,115]):KOL_EL[ad][HS[ad]||'yum'];      // ters bağlama: N→far, F→near (normal eller ile aynı düzen)
    ctx.save();ctx.translate(140.4,0);
-   if(bicak){const z=.36;ctx.scale(z,z);resim(R[d[0]],d[1]/z,d[2]/z)}else{resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI)}
+   if(bicak){const z=.52;ctx.scale(z,z);resim(R[d[0]],d[1]/z,d[2]/z)}else{resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI)}
    ctx.restore();}   // el bilekte
   resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);
   if(bI>0)ekParla(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6,bI);
@@ -1855,4 +1883,5 @@ function dongu(ms){
 })();
 </script>
 
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","spa":2}' crossorigin="anonymous"></script>
 </html>
