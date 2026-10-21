@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.69</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.71</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -238,7 +238,6 @@ function kayma(iz,pen){          // son 'pen' saniyede: yer değiştirme ve izle
   let yol=0,pr=a;for(const q of h){if(q.t<=a.t)continue;yol+=Math.hypot(q.x-pr.x,q.y-pr.y);pr=q}
   return {dx:son.x-a.x,dy:son.y-a.y,d:Math.hypot(son.x-a.x,son.y-a.y),yol};
 }
-   if(bicak){ctx.translate(BICAK_OFS[0],BICAK_OFS[1]);ctx.scale(0.75,0.75);ctx.rotate(-70*D);}
 function kolHesap(iz,x,y){
   let yn=iz.yon;
   if(tutan(iz.t)){                       // tutan kol: karakter dönünce kol sıçramaz, parmak hareketi ekranda aynı yöne çalışır
@@ -1717,6 +1716,7 @@ function elDurum(dt){
     HS[k]=ACT[k]>0.08?'ac':'yum';
   }
 }
+   const BICAK_OFS=[15,25];   // bıçak elinin kaydırması: [sağa, aşağı]
 function kol(omuzX,omuzY,u,r,ad,far,sc){
   const sf=far?'_a':'';
   ctx.save();ctx.translate(omuzX,omuzY);{const q=dunyaNok(0,0);EL[ad].sx=q[0];EL[ad].sy=q[1]}ctx.scale(sc,sc);ctx.rotate(u*D);
