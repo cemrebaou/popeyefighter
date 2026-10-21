@@ -49,7 +49,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.67</div>
+<div class="etiket"><b>POPEYE FIGHTER</b>v2.68</div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; G süpermen &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -1724,9 +1724,9 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);
   ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);
-  {const bicak=S.bicakAci>0.04,d=bicak?(ad==='N'?['el_bicak_n',260,135]:['el_bicak_f',243,135]):KOL_EL[ad][HS[ad]||'yum'];
+  {const bicak=S.bicakAci>0.04,d=bicak?(ad==='N'?['el_bicak_n',260,165]:['el_bicak_f',243,165]):KOL_EL[ad][HS[ad]||'yum'];
    ctx.save();ctx.translate(140.4,0);
-   if(bicak)ctx.scale(0.8,0.8);
+   if(bicak){ctx.scale(0.75,0.75);ctx.rotate(-35*D);}
    resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI)
    ctx.restore();}   // el bilekte
   resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);
