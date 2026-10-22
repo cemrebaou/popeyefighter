@@ -127,8 +127,8 @@ const KSK={      // her korsan kendi görsel setinden, tüm parçalar aynı öl�
      ust:137.0,on:165.6,uy:191.3,ak:[0,103.2],bh:249.2,bs:1.15,bel:624.4,kN:[15.0,75.9],kF:[-21.0,75.9],omN:[-53.2,-195.0],omF:[58.4,-204.0],boyun:[37.8,-283.5]},
   p:{p:'p_',sc:0.86,bf:1,A:{ust:[57.7,47.7],on:[104.6,39.0],elN:[133.9,38.5],elF:[85.1,40.1],uy:[74.3,45.2],bacak:[70.9,42.3],bot:[57.6,43.8],govde:[126.8,268.8],kalca:[85.8,50.2],kafa:[181.3,224.3],vur:[179.3,230.3],ahh:[179.3,246.3],ates:[3.0,45.9]},
   ust:137.0,on:130.3,uy:196.8,ak:[0,141.7],bh:131.2,bs:1.1,mz:[-0.0,352.4],bel:592.0,kN:[0.0,95.0],kF:[-36.0,95.0],omN:[-96.2,-151.8],omF:[47.8,-181.8],boyun:[-5.0,-231.6]},      // kaptan: belden aşağısı %10 büyük (bs, uyluk, bel yüksekliği), kafa 10 birim ileride
-  h:{p:'h_',sc:1.035,us:1.25,A:{ust:[65.4,43.8],on:[107.1,37.5],elN:[105.8,47.3],elB:[78.9,36.2],elF:[100.3,36.8],uy:[90.5,40.4],bacak:[75.6,36.1],bot:[68.2,25.7],govde:[187.1,309.6],kalca:[116.5,35.6],kafa:[69.1,128.1],vur:[67.1,127.1],ahh:[67.1,128.1],kanca:[15.8,49.6]},
-  ust:145.0,on:134.6,uy:184.1,ak:[0.0,151.2],bh:145.3,bel:558.4,kN:[0.0,77.8],kF:[-40.0,77.8],omN:[-123.2,-184.1],omF:[18.1,-222.8],boyun:[-38.1,-256.5],goz:[-69.6,62.2],zt:[39.3,95.0],sp:[-158.7,-221.8],zl:[61,28]}      // kancacı: yürümez, kanca fırlatır (goz: kancanın zincir halkası, zt: zincirli elin zincir çıkışı, sp: sırttaki makara)
+  h:{p:'h_',sc:1.035,us:1.25,A:{ust:[65.4,43.8],on:[107.1,37.5],elN:[105.8,47.3],elB:[78.9,36.2],elF:[100.3,36.8],uy:[90.5,40.4],bacak:[75.6,36.1],bot:[68.2,25.7],govde:[176.8,326.0],alt:[182.8,47.4],kalca:[116.5,35.6],kafa:[69.1,128.1],vur:[67.1,127.1],ahh:[67.1,128.1],kanca:[15.8,49.6]},
+  ust:145.0,on:134.6,uy:184.1,ak:[0.0,151.2],bh:145.3,bel:662.0,tek:1,kN:[0.0,77.8],kF:[-40.0,77.8],omN:[-112.1,-219.9],omF:[64.7,-258.7],boyun:[-8.6,-306.1],goz:[-69.6,62.2],zt:[39.3,95.0],sp:[-116.4,-293.2],zl:[61,28]}      // kancacı: yürümez, kanca fırlatır (goz: kancanın zincir halkası, zt: zincirli elin zincir çıkışı, sp: sırttaki makara)
 };
 const KDUR={F:0.5,N:0.62,B:0.66},KBDUR=0.7;      // vuruş süreleri: F = uzak kol yumruğu, N = yakın kol yumruğu, B = yakın elle bıçak / dipçik savurma; KBDUR: tutulurken kafa atma
 const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:3,kN:6,lF:-14,kF:12}};
@@ -221,10 +221,11 @@ function korsanYakin(e){      // sadece vuruş anındayken ve yumruk / bıçak o
 function ciziKorsan(e,mask){
   const K=KSK[e.kc||'k'],fl=e.fl>0,p=korsanPoz(e),up=mask!=='alt',lo=mask!=='ust',ek=e.t?e:null;
   const kfy=K.kF[1]+0.05*(K.uy+(K.bs||1)*(K.ak[1]+K.bh)),ay=(h,l,k,sc=1)=>h[1]+sc*(K.uy*Math.cos(l*D)+(K.bs||1)*(K.ak[0]*Math.sin((l+k)*D)+K.ak[1]*Math.cos((l+k)*D)+K.bh));      // uzak bacak biraz aşağıdan başlar (kısaldığı için)      // belden ayak tabanına dikey mesafe
-  const bel=mask?0:(e.y>zemin(e.x)+5?K.bel:Math.max(ay(K.kN,p.lN,p.kN),ay([K.kF[0],kfy],p.lF,p.kF,KFS)));      // yerdeyse alttaki ayak zemine basar
+  const bel=mask?0:(K.tek||e.y>zemin(e.x)+5?K.bel:Math.max(ay(K.kN,p.lN,p.kN),ay([K.kF[0],kfy],p.lF,p.kF,KFS)));      // yerdeyse alttaki ayak zemine basar
   ctx.save();ctx.scale(K.sc*(e.bs||1)*(e.yon||1),K.sc*(e.bs||1));ctx.translate(mask?0:p.hx,-bel);
   if(up){ctx.save();ctx.rotate(p.torso*D);if(K.us)ctx.scale(K.us,K.us);kKol(K,K.omF,p.uF,p.rF,p.wF,true,fl,ek,1);ctx.restore()}      // uzak kol en arkada
-  if(lo){
+  if(lo&&K.tek){ctx.save();if(K.us)ctx.scale(K.us,K.us);krp(R[K.p+'alt'],K.A.alt,fl);ctx.restore();if(mask==='alt')yaraCiz(e,0,-10,170)}      // kancacı: belden aşağısı tek parça (yürümez)
+  else if(lo){
     kBacak(K,[K.kF[0],kfy],p.lF,p.kF,true,fl);
     krp(R[K.p+'kalca'],K.A.kalca,fl);
     kBacak(K,K.kN,p.lN,p.kN,false,fl);

@@ -13,7 +13,7 @@ function vur(e,dmg,vx,vy,f,hy){
   const L=Math.hypot(vx,vy)||1,dx=vx/L+(e.x>=S.x?1:-1)*0.35,dy=vy/L;
   const kb=0.5*(250+2450*kisit(dmg/50,0,1))*(e.boss?0.25:1);      // itme hasarla orantılı
   if(!e.tut){e.vx=dx*kb;e.vy=e.boss?0:dy*kb+250}
-  if(!e.boss&&!e.tut&&e.hp>0&&dmg>=25&&dmg<9999){      // ağır vuruş (25+): biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
+  if(!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>=25&&dmg<9999){      // ağır vuruş (25+): biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
     const yn=e.x>=S.x?1:-1,sr=kisit(0.8+(dmg-25)*0.06,0.8,4);e.cy0=e.cy0||e.cy;
     if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+0.5);else e.dus={t0:S.t,son:S.t+0.35+sr+0.5,yn};
     e.vx=yn*Math.min(Math.abs(e.vx),700);e.vy=Math.min(e.vy,450)}
