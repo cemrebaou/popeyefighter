@@ -12,8 +12,8 @@ function dusDeg(e,x,y,pad){
 }
 const nk=a=>a&&{x:a[0],y:a[1]};
 function oyuncuDeg(x,y,pad){      // nokta oyuncunun vücuduna değiyor mu (eğilince/yatınca poza uyar)
-  if(!PB.kal||S.t-PB.t>0.2)return Math.abs(x-S.x)<120+pad&&y>S.y-pad&&y<S.y+850+pad;
-  const K=[[PB.kal,PB.boyun,115],[PB.boyun,PB.kafa,105],[PB.kal,AY.N.d,70],[AY.N.d,AY.N.a,62],[PB.kal,AY.F.d,70],[AY.F.d,AY.F.a,62]];
+  if(!OGV.kal||S.t-OGV.t>0.2)return Math.abs(x-S.x)<120+pad&&y>S.y-pad&&y<S.y+850+pad;
+  const K=[[OGV.kal,OGV.boyun,115],[OGV.boyun,OGV.kafa,105],[OGV.kal,AY.N.d,70],[AY.N.d,AY.N.a,62],[OGV.kal,AY.F.d,70],[AY.F.d,AY.F.a,62]];
   for(const [a,b,r] of K){if(a&&b&&segUz(x,y,nk(a),nk(b))<r+pad)return true}
   return false;
 }
