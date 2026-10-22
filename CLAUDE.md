@@ -5,7 +5,9 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 ## Çalışma kuralları (her değişiklikte)
 - Cevaplar kısa, Türkçe; istenmeyeni anlatma. Kopyalanacak şey kod bloğunda. İndirme isteniyorsa link ver.
 - Kod değişikliği: Edit ile küçük düzenleme yap; dosyanın tamamını okuma, Grep ile ilgili yere git.
-- Her değişiklikte ekrandaki sürümü artır: `OYUN_SURUM` (`js/ayar.js`) ve `index.html`deki tüm `?v=` (js/css) değerlerini aynı sürüme getir. Görsel/ses değişirse `SURUM='?v=..'` de artır.
+- Her değişiklikte ekrandaki sürümü artır: `OYUN_SURUM` (`js/ayar.js`) ve `index.html`deki tüm `?v=` (js/css) değerlerini aynı sürüme getir. Biçim `v0.XXX` (v0.264 → v0.265 …). Görsel/ses değişirse `SURUM='?v=..'` de artır.
+- Değişiklikleri görsele bakmadan (ekran görüntüsü/görsel inceleme yok) yap; hata olursa kullanıcı söyler.
+- Kullanıcının verdiği tüm görseller: ortalanmış, sağa bakan, düz duran çizimler. Buna göre hizala/kullan.
 - `node --check` ile söz dizimi kontrolü yap. Oyunu açıp test etme, ekran görüntüsü alma (özel görsel durum hariç). APK/AAB/Actions build yok.
 - Her değişiklikten sonra `main`e push et. Önce GitHub'da yerelden yeni sürüm var mı bak, varsa çek.
 - Commit yazarı `Claude <noreply@anthropic.com>`; commit sonuna sistemin verdiği Co-Authored-By ve Claude-Session satırlarını ekle.

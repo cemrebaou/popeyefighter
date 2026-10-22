@@ -1,5 +1,6 @@
 'use strict';
 // Vuruş, isabet kontrolü, tutma, yırtma, düşman güncelleme
+const DUS_DUS=0.45,DUS_KALK=1.0;      // yere düşüş ve kalkış süreleri
 function vur(e,dmg,vx,vy,f,hy){
   let krit=false;e.sonV=S.t;e.vurT=S.t;      // vurT: 0.6 sn acı yüzü
         // son vuruş zamanı (tutulu korsan 1 sn vurulmazsa kafa atar)
@@ -15,7 +16,7 @@ function vur(e,dmg,vx,vy,f,hy){
   if(!e.tut){e.vx=dx*kb;e.vy=e.boss?0:dy*kb+250}
   if(!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>=25&&dmg<9999){      // ağır vuruş (25+): biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
     const yn=e.x>=S.x?1:-1,sr=kisit(0.8+(dmg-25)*0.06,0.8,4);e.cy0=e.cy0||e.cy;
-    if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+0.5);else e.dus={t0:S.t,son:S.t+0.35+sr+0.5,yn};
+    if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+sr+DUS_KALK,yn};
     e.vx=yn*Math.min(Math.abs(e.vx),700);e.vy=Math.min(e.vy,450)}
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
   if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;if(!olu0)ispDus(e.x,e.y+e.cy)}      // %25 ıspanak düşer
@@ -201,7 +202,10 @@ function dusmanGuncelle(dt){
     if(e.olu){e.ol+=dt;e.vy-=G*0.5*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;e.rot+=dt*9*(e.vx<0?-1:1);if(e.ol>0.9)DUS.splice(i,1);continue}
     if(e.dus){const d=e.dus;      // yerde: 0.35 sn'de düşer, yatar, son 0.5 sn'de kalkar; tutulursa hemen kalkar (elle kaldırma)
       if(e.tut||S.t>=d.son){e.dus=null;e.cy=e.cy0;e.dusA=0}
-      else{const hd=S.t>d.son-0.5?(w=>1-w*w*(3-2*w))(kisit((S.t-(d.son-0.5))/0.5,0,1)):kisit((S.t-d.t0)/0.35,0,1);e.dusA=(e.dusA||0)+(hd-(e.dusA||0))*Math.min(1,dt*14);e.cy=e.cy0+(110-e.cy0)*e.dusA;e.st=Math.max(e.st,d.son)}}
+      else{const gs=d.son-DUS_KALK,ez=w=>w*w*(3-2*w);let hd;
+        if(S.t>=gs){const g=(S.t-gs)/DUS_KALK;hd=g<0.35?1-0.55*ez(g/0.35):g<0.65?0.45-0.37*ez((g-0.35)/0.3):0.08*(1-ez((g-0.65)/0.35))}      // oturur → tek diz → ayağa kalkar
+        else{const u=(S.t-d.t0)/DUS_DUS;hd=u<1?u*u:1-0.07*Math.sin(Math.PI*kisit((u-1)/0.35,0,1))}      // hızlanarak düşer, sırtı yere çarpınca hafif seker
+        e.dusA=(e.dusA||0)+(hd-(e.dusA||0))*Math.min(1,dt*20);e.cy=e.cy0+(110-e.cy0)*e.dusA;e.st=Math.max(e.st,d.son)}}
     const stun=S.t<e.st,dx=S.x-e.x,zH=zemin(e.x),yer=e.y<=zH+1;
     if(!e.akt&&(Math.abs(dx)<1500||stun))e.akt=true;               // oyuncu yaklaşınca uyanır (dalga gibi gelmez)
     if(stun||!yer||e.vy>0){                                         // savrulma / havada

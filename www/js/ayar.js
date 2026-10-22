@@ -1,14 +1,14 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v2.63';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.264';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=57';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=58';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir']
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
 const RES=2;                       // oyuncu parçaları oyun biriminin 2 katı çözünürlükte
-const R={},YUZ=[],YUZA=[],KARI=[],KANI=[],AGAC=[],TASI=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
+const R={},YUZY=[],YUZ=[],YUZA=[],KARI=[],KANI=[],AGAC=[],TASI=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
 function koyult(img,al=.28){            // arka taraftaki uzuvlar için hafif koyu kopya
   const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
   const x=c.getContext('2d');x.drawImage(img,0,0);
@@ -28,6 +28,7 @@ yukle('parca/spinach.png',im=>R.isp=im);yukle('parca/spinach-empty.png',im=>R.is
 ['k_','b_','p_','h_'].forEach(q=>['vur','ahh'].forEach(n=>yukle('parca/'+q+n+'.webp',im=>R[q+n]=im)));      // korsanların vurulunca acı yüzü (vur), yerde bayılmış yüzü (ahh)
 for(let i=0;i<11;i++)yukle('yuz/yuz'+i+'.webp',im=>YUZ[i]=im);
 for(let i=0;i<10;i++)yukle('yuz/yuzA'+i+'.webp',im=>YUZA[i]=im);
+for(let i=0;i<11;i++)yukle('yuz/yuzY'+i+'.webp',im=>YUZY[i]=im);      // ıspanak yerken ağzı açık yüzler (can kademesine göre)
 for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.webp',im=>KANI[i]=im);
 for(let i=0;i<3;i++)yukle('fx/kar'+i+'.webp',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
 for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)

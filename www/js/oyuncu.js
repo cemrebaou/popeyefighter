@@ -225,7 +225,7 @@ function karakter(){
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak kalçanın önünde
   govdeUzayi(()=>{ ctx.scale(1.1,1.1);const [i,f]=hasarKat(S.hp);hasarCiz(n=>resim(R['govde'+n],97.7,246.4),i,f); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp);hasarCiz(n=>ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // vurulunca 0.6 sn acı yüzü
+    ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=S.yeme&&S.t-S.yeme.t0>0.7&&S.t-S.yeme.t0<1.85;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-106.8,-213.8,228.7,331.3):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü
     ctx.restore();
     kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
   });
