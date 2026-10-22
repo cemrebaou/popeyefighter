@@ -32,7 +32,7 @@ function emerGuncelle(dt){
     if(oyuncuDeg(p.x,p.y,15)){
       EMER.splice(i,1);
       if(dokunulmaz()){
-        S.inv=S.t+1.0;titre(40);
+        titre(40);
         if(S.blok){S.hp-=4}else{S.hp-=(p.dm||14);S.hitR={t0:S.t,z:'kafa',bk:p.vx*S.yon<0?1:-1}}
       }
     }

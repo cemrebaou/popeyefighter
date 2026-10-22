@@ -2,7 +2,8 @@
 // Ekran bilgisi (can/enerji barı, kalp, kombo no, yazılar)
 const BAR={en:250,hp:100};      // ekranda görünen enerji/can (yumuşak)
 // Can + enerji barı (sol üst): boş görselin üstüne dolu görseller, eğik uca paralel çizgiyle maskelenir. Kalp: can dolarken atar (küçük kalp görseli + kalp sesi)
-const BARG=547,BARY=192,BEG=0.42;      // görsel boyutu, dolum ucunun eğimi
+const BARG=600,BARY=285;      // görsel boyutu
+const barGen=()=>Math.min(340,W*0.28,H*0.5);      // ekrandaki genişlik: telefonda küçük, büyük ekranda en çok 340
 const KALP={on:false,t0:0,n:-1,src:null};
 function kalpSesDur(){if(KALP.src){try{KALP.src.stop()}catch(_){}KALP.src=null}}
 function kalpGuncelle(){
@@ -14,7 +15,7 @@ function kalpGuncelle(){
   if(n!==KALP.n){KALP.n=n;kalpSesDur();if(AC&&AC.state==='running'&&KALPS){const src=AC.createBufferSource();src.buffer=KALPS;src.connect(AC.destination);src.start();KALP.src=src}}      // her atış: ses çalar
   return u%1.5<0.5;      // sesle kalp küçülür, yarım sn sonra büyür, 1 sn sonra tekrar
 }
-function barDol(im,f,y0,u0,u1){
+function barDol(im,f,y0,u0,u1,BEG){
   if(!im||f<=0.002)return;
   const uf=u0+(u1-u0)*Math.min(1,f);
   ctx.save();ctx.beginPath();ctx.moveTo(-2,-2);ctx.lineTo(uf+BEG*(y0+2),-2);ctx.lineTo(uf-BEG*(BARY+2-y0),BARY+2);ctx.lineTo(-2,BARY+2);ctx.closePath();ctx.clip();
@@ -25,14 +26,14 @@ function barCiz(dt){
   if(S.hp<BAR.hp||S.hp-BAR.hp>40)BAR.hp=Math.max(0,S.hp);else BAR.hp+=(S.hp-BAR.hp)*Math.min(1,dt*6);      // azalınca direkt, dolarken yumuşak
   const kk=kalpGuncelle();
   if(!R.bar_bos)return;
-  const bw=Math.min(360,W*0.42),s=bw/BARG;
+  const bw=barGen(),s=bw/BARG;
   ctx.save();ctx.translate(10,8);ctx.scale(s,s);
   ctx.drawImage(R.bar_bos,0,0,BARG,BARY);
-  barDol(R.bar_kir,BAR.hp/100,33,158.9,531.1);      // kırmızı can
+  barDol(R.bar_can,BAR.hp/100,66.4,261.3,582.0,0.39);      // can
   if(S.t<(S.ispEnT||0)){ctx.shadowColor='#ffd23f';ctx.shadowBlur=(8+4*Math.sin(S.t*8))*s*DPR}      // ıspanak sonrası enerji parlar
-  barDol(R.bar_tur,BAR.en/250,92.5,174.6,485.6);      // ince enerji
+  barDol(R.bar_en,BAR.en/250,145.0,262.7,534.6,0.4);      // ince enerji
   ctx.shadowBlur=0;
-  if(kk&&R.bar_kalp)ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);      // küçük kalp
+  if(kk&&R.bar_kalp)ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);      // küçük kalp (yuvarlak maskeli, büyük kalbin üstüne)
   ctx.restore();
 }
 function hud(dt){
@@ -41,7 +42,7 @@ function hud(dt){
   ctx.fillStyle='#fff';ctx.font='700 13px Nunito,sans-serif';ctx.textBaseline='middle';
   ctx.lineWidth=3;ctx.strokeStyle='rgba(31,42,51,.9)';ctx.textAlign='left';
   {const t='düşman: '+DUS.filter(e=>!e.olu).length,tx=bx+bw+10,ty=by+4;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
-  if(S.kNo&&S.t-S.kNo.t<1.2){const a=Math.min(1,(1.2-(S.t-S.kNo.t))*3);ctx.save();ctx.globalAlpha=a;ctx.font='900 30px Nunito,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';ctx.lineWidth=5;ctx.strokeStyle='rgba(31,42,51,.95)';ctx.fillStyle='#ffd23f';const nx=Math.max(bx-12,Math.min(360,W*0.42)+60);ctx.strokeText(S.kNo.no,nx,by+6);ctx.fillText(S.kNo.no,nx,by+6);ctx.restore();ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.textBaseline='middle'}
+  if(S.kNo&&S.t-S.kNo.t<1.2){const a=Math.min(1,(1.2-(S.t-S.kNo.t))*3);ctx.save();ctx.globalAlpha=a;ctx.font='900 30px Nunito,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';ctx.lineWidth=5;ctx.strokeStyle='rgba(31,42,51,.95)';ctx.fillStyle='#ffd23f';const nx=Math.max(bx-12,barGen()+60);ctx.strokeText(S.kNo.no,nx,by+6);ctx.fillText(S.kNo.no,nx,by+6);ctx.restore();ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.textBaseline='middle'}
   barCiz(dt);
   if(S.t-S.noEn<1.0&&Math.floor((S.t-S.noEn)*8)%2===0){ctx.fillStyle='#ff5a4a';ctx.font='900 14px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('NO ENERGY',W/2,by+24)}
   const bs=DUS.find(e=>e.boss&&!e.olu);

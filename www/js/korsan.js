@@ -10,13 +10,14 @@ function kancaGuncelle(e,dt){      // kanca: hazırlık → atıldığı anki oy
     if(dur){h.ph='don';return}
     h.x+=h.vx*dt;h.y+=h.vy*dt;if(h.y<zemin(h.x)+30){h.y=zemin(h.x)+30;if(h.vy<0)h.vy=0}
     if(S.durum==='oyun'&&oyuncuDeg(h.x,h.y,40)){      // vücudun neresine değerse hemen takılır
-      if(dokunulmaz()){S.hp-=10;S.inv=S.t+0.7;S.hitR={t0:S.t,z:'kafa',bk:(e.x-S.x)*S.yon>0?-1:1}}
-      titre(40);ses('yumruk');h.ox=h.x-S.x;h.oy=h.y-S.y;h.ph='cek';return}
+      if(dokunulmaz()){S.hp-=10;S.hitR={t0:S.t,z:'kafa',bk:(e.x-S.x)*S.yon>0?-1:1}}
+      titre(40);torbaCal(BLD,BLDBAG,1);kanFiskir(h.x,h.y,(e.x-S.x)>=0?1:-1,0.3);h.ox=h.x-S.x;h.oy=h.y-S.y;h.ph='cek';h.kT=S.t;return}      // saplanınca bıçak sesi ve az kan
     if(Math.abs(h.x-S.x)>W/2/SC+250||h.y>S.y+2600)h.ph='don';      // ekrandan çıktı: geri döner
     return}
   if(h.ph==='cek'){      // takıldı: oyuncuyu kendine çeker
     if(dur||S.durum!=='oyun'){h.ph='don';return}
     h.x=S.x+(h.ox||0);h.y=S.y+(h.oy===undefined?480:h.oy);const d=e.x-S.x;
+    if(S.t-(h.kT||0)>0.3){h.kT=S.t;kanFiskir(h.x,h.y,d>=0?1:-1,0.22)}if(Math.random()<dt*10)kanDamla(h.x+(Math.random()-0.5)*30,h.y,(Math.random()-0.5)*160,-80,0.5+Math.random()*0.4);      // çekilirken takıldığı yerden küçük kan ve damlalar
     if(Math.abs(d)<330*(e.bs||1)){h.ph='don';e.mcd=0;return}
     S.x+=Math.sign(d)*1500*dt;S.vx=0;return}
   if(h.ph==='don'){const m=u[2]||u[0]||{x:e.x,y:e.y+500},dx=m.x-h.x,dy=m.y-h.y,L=Math.hypot(dx,dy),st=2600*dt;
@@ -103,13 +104,12 @@ function oyuncuHasar(){
       if(S.t-S.blokT<0.3){                                   // tam zamanında blok = parry: düşman sersemler
         e.st=S.t+(e.boss?0.8:1.5);e.vx=-yn*(e.boss?250:1200);e.vy=500;S.inv=S.t+0.5;
         S.pops.push({x:S.x,y:S.y+950,t:0,txt:'PARRY!',f:1});titre(50);S.sars=Math.max(S.sars,8);
-      }else{S.hp-=Math.max(1,Math.round(dm*0.25));S.inv=S.t+1.0;titre(30)}   // normal blok: hasarın çoğu engellenir
+      }else{S.hp-=Math.max(1,Math.round(dm*0.25));titre(30)}   // normal blok: hasarın çoğu engellenir
     }else{
-      if(e.kc==='b')bufCal(SAPLA,1);S.hp-=dm;S.inv=S.t+1.0;
+      if(e.kc==='b')bufCal(SAPLA,1);S.hp-=dm;
       const rel=kisit((e.y+e.cy-S.y)/800,0,1.1);S.hitR={t0:S.t,z:rel<0.4?'bacak':rel<0.78?'govde':'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1};   // vurulan yer ve yön: tepki buna göre
     }
-    break;
-  }
+  }      // korunma süresi yok: her düşmanın her vuruşu ayrı sayılır (aynı vuruş bir kez)
   if(S.hp<=0){S.hp=0;S.durum='yenildi';S.durumT=S.t}
   else if(!S.bossGeldi){if(S.x>BOSS_X-2400)bossKur()}            // boss ancak yolun sonuna gelince
   else if(!DUS.some(e=>e.boss&&!(e.olm&&e.olm.yat&&S.t-e.olm.yat>1))){S.durum='tamam';S.durumT=S.t}
@@ -180,12 +180,18 @@ function kKar(a,b,f){const o={};for(const n in a)o[n]=a[n]+(b[n]-a[n])*f;return 
 KPZ.dizler=Object.assign({},KPZ.dur,{torso:12,bas:-16,hx:0,uN:-25,rN:-25,wN:0,uF:-12,rF:-30,wF:0,lN:-2,kN:96,lF:4,kF:96});      // iki diz üstüne çökmüş
 KPZ.olUc=Object.assign({},KPZ.dur,{torso:-32,bas:-24,hx:-45,uN:-82,rN:-22,wN:0,uF:-96,rF:-18,wF:0,lN:-48,kN:35,lF:-28,kF:45});      // uçarak ölüm: kollar öne (vurana doğru), kalça önde, gövde geride
 KPZ.olOtur=Object.assign({},KPZ.dur,{torso:-10,bas:-12,hx:-10,uN:-30,rN:-30,wN:0,uF:-20,rF:-25,wF:0,lN:-88,kN:8,lF:-84,kF:14});      // kıç üstü oturmuş, bacaklar önde
+KPZ.olUcT=Object.assign({},KPZ.dur,{torso:30,bas:18,hx:40,uN:45,rN:-20,wN:0,uF:60,rF:-25,wF:0,lN:28,kN:35,lF:42,kF:45});      // arkası dönükken uçarak ölüm: karnı ve kafası önde, kollar ve bacaklar arkada
+KPZ.olYuz=Object.assign({},KPZ.dur,{torso:34,bas:6,hx:20,uN:-70,rN:-20,wN:0,uF:-45,rF:-20,wF:0,lN:-6,kN:75,lF:4,kF:85});      // yüzüstü yere sekme
+KPZ.yatYuz=Object.assign({},KPZ.dur,{torso:0,bas:10,hx:0,uN:-110,rN:-8,wN:0,uF:-70,rF:-8,wF:0,lN:4,kN:8,lF:-4,kF:12});      // yüzüstü yere yapışmış: kollar açık
 function olmPoz(e,p){
   const o=e.olm,ez=x=>x*x*(3-2*x);
   if(o.tip==='diz'){const u=S.t-o.t0;return u<0.45?kKar(p,KPZ.dizler,ez(u/0.45)):kKar(KPZ.dizler,KPZ.yat,e.dusA||0)}
-  if(o.f==='hava')return kKar(p,KPZ.olUc,ez(kisit((S.t-o.t0)/0.15,0,1)));
-  if(o.f==='sek')return kKar(KPZ.olUc,KPZ.olOtur,0.6);
-  const a=e.dusA||0,y=kKar(KPZ.olOtur,KPZ.yat,a),O=KPZ.olOtur;if(o.kol===undefined)o.kol=Math.random()<0.6?0:1;      // kollar havada kalmaz: gövdenin yanına (ya da şansa göre başın arkasına) yere düşer
+  const U=o.ters?KPZ.olUcT:KPZ.olUc,O=o.ters?KPZ.olYuz:KPZ.olOtur;
+  if(o.f==='hava')return kKar(p,U,ez(kisit((S.t-o.t0)/0.15,0,1)));
+  if(o.f==='sek')return kKar(U,O,0.6);
+  const a=e.dusA||0,y=kKar(O,o.ters?KPZ.yatYuz:KPZ.yat,a);
+  if(o.ters)return y;      // yüzüstü: kollar açık yere yapışır
+  if(o.kol===undefined)o.kol=Math.random()<0.6?0:1;      // kollar havada kalmaz: gövdenin yanına (ya da şansa göre başın arkasına) yere düşer
   const tN=o.kol?-178:6,tF=o.kol?-170:-4;y.uN=O.uN+(tN-O.uN)*a;y.uF=O.uF+(tF-O.uF)*a;y.rN=O.rN*(1-a)-8*a;y.rF=O.rF*(1-a)-6*a;return y;
 }
 function korsanPoz(e){
@@ -303,7 +309,12 @@ function parcaCiz(){
       else{p.at=true;p.tT=S.t;const h=EL[p.el];p.vx=h.sv.x+S.vx+p.yan*250;p.vy=h.sv.y}     // parmak kalktı: yarım elin hızıyla bırakılır, yere düşer
     }else{
       const dt=Math.min(0.05,S.t-(p.pt||S.t));p.vy-=G*0.5*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.yan*dt*6;
-      if(p.y<zemin(p.x)+160){if(p.vy<-500){karBas(p.x,170,KMIN-6,true);tasSac(p.x,2,0.7)}p.y=zemin(p.x)+160;p.vy=Math.abs(p.vy)*0.3;p.vx*=0.85}
+      {const sp=Math.hypot(p.vx,p.vy);if(sp>900)for(const o of DUS){      // atılan yarım: adam atılmış gibi çarpar
+        if(o.olu||o.tut||(p.vr||(p.vr=new Set())).has(o))continue;
+        if(Math.hypot(p.x-o.x,p.y-(o.y+o.cy))<o.r*0.8+110){p.vr.add(o);const f=kisit((sp-1500)/3500,0,1),vx=p.vx,vy=p.vy;
+          vur(o,10+25*f,vx,vy,f,p.y);bufCal(DEVS||DSS,1);p.vx*=-0.25;p.vy*=0.3;
+          if(!o.olu&&!o.boss&&!o.tut){const yn=Math.sign(vx)||1;o.cy0=o.cy0||o.cy;if(o.dus)o.dus.son=Math.max(o.dus.son,S.t+DUS_DUS+1.8+DUS_KALK);else o.dus={t0:S.t,son:S.t+DUS_DUS+1.8+DUS_KALK,yn};o.vx=yn*700;o.vy=350}}}}
+      if(p.y<zemin(p.x)+160){if(p.vy<-500){karBas(p.x,170,KMIN-6,true);tasSac(p.x,2,0.7);bufCal(DSS,0.8)}p.y=zemin(p.x)+160;p.vy=Math.abs(p.vy)*0.3;p.vx*=0.85}
       p.pt=S.t;
     }
     const sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC;

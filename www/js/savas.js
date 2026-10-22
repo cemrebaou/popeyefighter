@@ -39,7 +39,7 @@ function vur(e,dmg,vx,vy,f,hy){
     e.vx=yn*Math.max(500,Math.min(Math.abs(e.vx),1000));e.vy=Math.min(e.vy,550)}      // biraz daha uzağa düşer
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
   if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;if(e.dus){e.yerOl=true;e.dus.son=S.t+999;e.vx=e.vy=0}else if(dmg<9999){const uc=dmg>=25||e.y>zemin(e.x)+5||Math.abs(e.vx)>1100;e.cy0=e.cy0||e.cy;e.dusA=0;      // ölüm: sert darbe = uçarak kıç üstü düşüp geri yatar, değilse dizler üstüne çöküp yüzüstü düşer
-    if(uc){const yn=Math.sign(e.vx)||(e.x>=S.x?1:-1);e.vx=yn*Math.max(900,Math.abs(e.vx)*1.2);e.vy=Math.max(e.vy,0)+900;e.olm={tip:'uc',f:'hava',t0:S.t,yn}}
+    if(uc){const yn=Math.sign(e.vx)||(e.x>=S.x?1:-1);e.vx=yn*Math.max(900,Math.abs(e.vx)*1.2);e.vy=Math.max(e.vy,0)+900;e.olm={tip:'uc',f:'hava',t0:S.t,yn,ters:(S.x-e.x)*(e.yon||1)<0}}
     else{e.vx*=0.3;e.vy=0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1}}}else{e.vx*=1.4;e.vy+=700}if(!olu0){ispDus(e.x,e.y+e.cy);bufCal(OLS[e.kc||'k'],1)}}      // yerdeyken ölürse olduğu yerde ölür (dönmez); ölüm sesi      // %25 ıspanak düşer
   if(S.pSes){if(S.pence&&S.pSes===true)torbaCal(BLD,BLDBAG,1);else ses(S.pSes==='tekme'?'tekme':'yumruk')}      // bıçak modunda bıçak sesleri
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
@@ -228,7 +228,7 @@ function dusmanGuncelle(dt){
         const u=(S.t-e.kb.t0)/KBDUR;
         if(!e.kb.hit&&u>=0.45){
           e.kb.hit=true;ses('yumruk');
-          if(dokunulmaz()&&Math.abs(e.x-S.x)<900){S.hp-=S.blok?3:10;S.inv=S.t+1.0;titre(40);S.hitR={t0:S.t,z:'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}
+          if(dokunulmaz()&&Math.abs(e.x-S.x)<900){S.hp-=S.blok?3:10;titre(40);S.hitR={t0:S.t,z:'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}
         }
         if(u>=1){e.kb=null;e.sonV=S.t}
       }
