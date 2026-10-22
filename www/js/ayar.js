@@ -1,0 +1,70 @@
+'use strict';
+// Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
+// ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
+const OYUN_SURUM='v2.58';      // ekrandaki sürüm (her değişiklikte artar)
+document.getElementById('surum').textContent=OYUN_SURUM;
+const SURUM='?v=53';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
+const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir']
+  .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
+const RES=2;                       // oyuncu parçaları oyun biriminin 2 katı çözünürlükte
+const R={},YUZ=[],YUZA=[],KARI=[],KANI=[],AGAC=[],TASI=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
+function koyult(img,al=.28){            // arka taraftaki uzuvlar için hafif koyu kopya
+  const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
+  const x=c.getContext('2d');x.drawImage(img,0,0);
+  x.globalCompositeOperation='source-atop';x.fillStyle='rgba(40,35,60,'+al+')';x.fillRect(0,0,c.width,c.height);
+  return c;
+}
+let kalan=0;
+function yukle(src,al){
+  kalan++;const im=new Image();
+  im.onload=()=>{al(im);if(--kalan===0)gorselHazir()};
+  im.onerror=()=>{document.getElementById('yuk').textContent='Görsel yüklenemedi: '+src};
+  im.src=src+SURUM;
+}
+ADLAR.forEach(a=>yukle('parca/'+a+'.webp',im=>R[a]=im));
+for(let i=0;i<11;i++)yukle('yuz/yuz'+i+'.webp',im=>YUZ[i]=im);
+for(let i=0;i<10;i++)yukle('yuz/yuzA'+i+'.webp',im=>YUZA[i]=im);
+for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.webp',im=>KANI[i]=im);
+for(let i=0;i<3;i++)yukle('fx/kar'+i+'.webp',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
+for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)
+['patla','sprey','yarik'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
+yukle('fx/yol.webp',im=>R.yol=im);yukle('fx/dag.webp',im=>R.dag=im);
+for(let i=0;i<8;i++)yukle('fx/agac'+i+'.webp',im=>AGAC[i]=im);      // 0,1,2,4,6 yapraklı çam; 3,5,7 yapraksız      // arka plan ağaçları
+function gorselHazir(){
+  ['uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));                 // oyuncunun arka bacağı
+  ['ustkol','onkol2','el_yum_f','el_ac_n','el_pF'].forEach(n=>R[n+'_a']=koyult(R[n],.13));    // oyuncunun arka kolu ve eli
+  for(const q of ['k_','b_','p_','h_']){for(const n of ['ust','on','elF'])R[q+n+'_k']=koyult(R[q+n],.13);for(const n of ['uy','bacak','bot'])R[q+n+'_k']=koyult(R[q+n],.3)}      // korsanın arkadaki kolu/bacağı
+  R.p_elN_k=koyult(R.p_elN,.13);R.h_elN_k=koyult(R.h_elN,.13);R.h_elB_k=koyult(R.h_elB,.13);      // kancacının arkadaki kolunda kancalı / boş el
+  document.getElementById('yuk').hidden=true;
+  requestAnimationFrame(dongu);
+}
+function hasarKat(hp){const g=Math.max(0,Math.min(10,(100-hp)/10)),i=Math.min(9,Math.floor(g));return [i,g-i]}   // 11 hasar modeli arasında sürekli geçiş: i = alttaki model, f = üstteki sonraki modelin saydamsızlığı (can 100→90: model 0→1, ... 10→0: model 9→10)
+function hasarCiz(ciz,i,f){ciz(i);if(f>0.004){const a=ctx.globalAlpha;ctx.globalAlpha=a*f;ciz(i+1);ctx.globalAlpha=a}}
+
+// ---------- Ayarlar (parça birimi) ----------
+const CR_H=320;                 // çömelmede kalça yüksekliği
+const BACAK_BOY=477;            // eklemden zemine (kalça-diz 206 + diz-bilek 172 + bilek-taban 99)
+const KARAKTER_BOY=1020;
+const HIZ=1100, G=5600, ZIP1=2700, ZIP2=2400;
+const D=Math.PI/180;
+// [başlangıç x, yükseklik]; sol baştaki ve sağ sondaki yüksek duvar bölümün sınırı
+const ZEMIN=[[-1e9,0]];      // şimdilik düz zemin
+const BOSS_X=42000;
+const kafaY=()=>S.y+((S.yer&&asagiMi())?620:790);      // oyuncunun kafa yüksekliği (eğilince alçalır): kaptan buraya nişan alır
+
+// ---------- Durum ----------
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1,SC=1,GOK=null;
+function boyut(){
+  DPR=Math.min(window.devicePixelRatio||1,2);GOK=null;   // 3x çözünürlük telefonda çok pahalı: en fazla 2x
+  W=window.innerWidth;H=window.innerHeight;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+  SC=Math.min(H*0.58/KARAKTER_BOY, W*0.45/KARAKTER_BOY);
+}
+window.addEventListener('resize',boyut);boyut();
+
+const key={sol:false,sag:false,zipla:false,asagi:false};
+const S={camY:0,atk:null,kuyruk:[],sonAtk:-9,x:0,y:0,vx:0,vy:0,yer:true,yon:1,ziplaTut:false,ekstra:1,spin:0,donuyor:false,faz:0,t:0};
+const ROLL_SURE=0.55;
+const P={}; // yumuşatılmış açılar
