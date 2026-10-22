@@ -230,12 +230,14 @@ function blokGuncelle(dt){        // iki parmak ekranda hareketsiz = blok
 function carpisma(){              // fırlayan düşman başka düşmana çarpınca ikisi de hasar alır (bowling)
   for(const e of DUS){
     if(e.olu||e.tut||S.t>=e.st)continue;
-    const sp=Math.hypot(e.vx,e.vy);if(sp<1500||e.bwT>S.t)continue;
+    const sp=Math.hypot(e.vx,e.vy);if(sp<(e.atil?900:1500)||e.bwT>S.t)continue;      // fırlatılan korsan daha düşük hızda da çarpar
     for(const o of DUS){
       if(o===e||o.olu||o.tut)continue;
       if(Math.hypot(e.x-o.x,(e.y+e.cy)-(o.y+o.cy))<(e.r+o.r)*0.8){
         const f=kisit((sp-1500)/3500,0,1),vx=e.vx,vy=e.vy;
-        e.bwT=S.t+0.4;vur(o,10+25*f,vx,vy,f,e.y+e.cy);vur(e,6,-vx*0.3,0.2,0.2);break;
+        e.bwT=S.t+0.4;vur(o,10+25*f,vx,vy,f,e.y+e.cy);vur(e,6,-vx*0.3,0.2,0.2);bufCal(DEVS||DSS,1);
+        if(!o.olu&&!o.boss&&!o.tut){const yn=Math.sign(vx)||1;o.cy0=o.cy0||o.cy;if(o.dus)o.dus.son=Math.max(o.dus.son,S.t+DUS_DUS+1.8+DUS_KALK);else o.dus={t0:S.t,son:S.t+DUS_DUS+1.8+DUS_KALK,yn};o.vx=yn*700;o.vy=350}      // çarpılan yıkılır
+        break;
       }
     }
   }

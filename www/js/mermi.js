@@ -55,7 +55,7 @@ function mermiGuncelle(dt){
     if(p.y<zemin(p.x)){S.sars=Math.max(S.sars,6);MERMI.splice(i,1);continue}
     for(const e of DUS){
       if(e.olu||p.hit.has(e))continue;
-      if(Math.hypot(p.x-e.x,p.y-(e.y+e.cy))<e.r+p.r*0.8){p.hit.add(e);e.tut=null;vur(e,50,Math.sign(p.vx)||S.yon,0.25,0.5+0.5*p.ch,p.y)}
+      if(Math.hypot(p.x-e.x,p.y-(e.y+e.cy))<e.r+p.r*0.8*ADK_O){p.hit.add(e);e.tut=null;vur(e,50,Math.sign(p.vx)||S.yon,0.25,0.5+0.5*p.ch,p.y)}
     }
     if(p.t>1.6||Math.abs(p.x-S.x)>4500||Math.abs(p.y-S.y)>3500)MERMI.splice(i,1);
   }
@@ -89,19 +89,20 @@ function adkHazir(n){      // görselin etrafı mavi + krem parlamalı, hafif bu
   return R[k]={c,p};
 }
 function adkIsik(sx,sy,G,a){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=a;ctx.drawImage(ADK_ISIK,sx-G,sy-G,G*2,G*2);ctx.restore()}
-function adkTop(wx,wy,r,t,a){      // elde büyüyen top: dönen görsel, nabız gibi atan ışık
-  const sx=W/2+(wx-S.x)*SC,sy=ZY()-(wy-S.camY)*SC,Rr=r*SC*1.1,g=adkHazir('aduket_top');
+const ADK_O=0.7;      // aduket görsel boyutu
+function adkTop(wx,wy,r,t,a){      // elde büyüyen top (kürestart görseli): dönen görsel, nabız gibi atan ışık
+  const sx=W/2+(wx-S.x)*SC,sy=ZY()-(wy-S.camY)*SC,Rr=r*SC*1.1*ADK_O,g=adkHazir('aduket_start');
   if(!g){topCiz(wx,wy,r,t,a);return}
   adkIsik(sx,sy,Rr*(2.2+0.2*Math.sin(t*13)),a*0.6);
-  const s=2*Rr/R.aduket_top.width;
+  const s=2*Rr/R.aduket_start.width;
   ctx.save();ctx.translate(sx,sy);ctx.rotate(t*5);ctx.scale(s,s);ctx.globalAlpha=a*0.92;ctx.drawImage(g.c,-g.c.width/2,-g.c.height/2);ctx.restore();
   adkIsik(sx,sy,Rr*0.9,a*(0.35+0.15*Math.sin(t*21)));      // ortadaki parlak çekirdek
   ctx.globalAlpha=1;
 }
 function adkMermi(p){      // atılan top: izli görsel topa yapışık, gidiş yönüne döner; arkada ekstra ışık izi
-  const g=adkHazir('aduket_iz'),sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC,Rr=p.r*SC*1.1;
+  const g=adkHazir('aduket_iz'),sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC,Rr=p.r*SC*1.1*ADK_O;
   if(!g){const L=Math.hypot(p.vx,p.vy)||1;for(let i=3;i>=1;i--)topCiz(p.x-p.vx/L*i*100,p.y-p.vy/L*i*100,p.r*(1-0.18*i),S.t+i,0.35/i*1.5,false);topCiz(p.x,p.y,p.r,S.t,1);return}
-  const L=Math.hypot(p.vx,p.vy)||1,ux=p.vx/L,uy=-p.vy/L,u=Math.min(1,p.t/0.12);
+  const L=Math.hypot(p.vx,p.vy)||1,ux=p.vx/L,uy=-p.vy/L,u=kisit((p.t-0.06)/0.14,0,1);      // başta kürestart görseli, giderken izli hâle geçer
   for(let i=4;i>=1;i--)adkIsik(sx-ux*i*Rr*0.95,sy-uy*i*Rr*0.95,Rr*(1.7-0.22*i),0.32*u/i);      // ışık izi
   adkIsik(sx,sy,Rr*(2.3+0.2*Math.sin(S.t*15)),0.55);
   const yn=ux<0?-1:1,s=Rr/ADK_IZ.r;
