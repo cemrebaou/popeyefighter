@@ -61,6 +61,9 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
     if(ad<2100&&S.durum==='oyun'&&S.t>=(e.acd||0))e.kh={ph:'haz',t0:S.t};
     return;
   }
+  const MZ=e.kc==='b'?425:e.kc==='p'?430*bs:470,V=(e.boss?170:e.kc==='p'?210:260)*2;      // vurma menzili, yürüme hızı (eskinin 2 katı)
+  if(!e.boss&&e.hp<e.max*0.25){kYuru(e,dt,dx>=0?-1:1,V/2,true);return}      // canı azalınca topallayarak uzaklaşır
+  if(!e.ks&&(e.geri||ad<MZ*0.55)){e.geri=ad<MZ*0.95;if(e.geri){kYuru(e,dt,dx>=0?-1:1,V*0.55,false);return}}      // içine girilince geri geri menzilin ucuna
   if(e.kc==='p'&&(e.ks||(ad>=430*bs&&ad<1900))){      // nişan al (hazırlık sesi), 0.6 sn sonra ateş; ateşler arası 1-2 sn rastgele
     const ks=e.ks;
     if(ks){
@@ -78,10 +81,14 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
     }
     return;
   }
-  e.moving=true;e.wf=(e.wf||0)+dt*4.6;      // yürüyüş: her adımda ses ve karda iz
+  kYuru(e,dt,e.yon,V,false);
+}
+function kYuru(e,dt,dir,v,topal){      // yürüyüş: her adımda ses ve karda iz; dir bakılan yönün tersiyse geri geri yürür; topal: aksayarak (yüz uzaklaşma yönüne)
+  if(topal)e.yon=dir;
+  e.moving=true;const geri=dir!==e.yon;e.wf=(e.wf||0)+(geri?-1:1)*dt*4.6*v/(e.boss?340:e.kc==='p'?420:520)*2;
   const k=Math.floor(e.wf/Math.PI);if(e.adk!==undefined&&k!==e.adk){adimCal(e.x,e.boss?2.2:1);karBas(e.x+(e.yon||1)*(k%2?60:-40),80,KMIN)}e.adk=k;
-  const nx=e.x+e.yon*(e.boss?170:e.kc==='p'?210:260)*dt;
-  if(zemin(nx)-e.y<=70){e.x=nx;e.y=Math.max(e.y,zemin(nx))}else{e.vy=1800;e.vx=e.yon*380}   // basamak yüksekse zıpla
+  const nx=e.x+dir*v*dt*(topal?0.35+0.65*Math.abs(Math.sin(e.wf)):1);
+  if(zemin(nx)-e.y<=70){e.x=nx;e.y=Math.max(e.y,zemin(nx))}else{e.vy=1800;e.vx=dir*380}   // basamak yüksekse zıpla
 }
 const dokunulmaz=()=>S.durum==='oyun'&&S.t>=S.inv&&!(S.shoryu>0)&&!(S.tats>0)&&!S.sman&&!S.alk;      // oyuncu şu an hasar alabilir mi
 function oyuncuHasar(){
@@ -126,7 +133,7 @@ const KSK={      // her korsan kendi görsel setinden, tüm parçalar aynı öl�
   p:{p:'p_',sc:0.86,bf:1,A:{ust:[57.7,47.7],on:[104.6,39.0],elN:[133.9,38.5],elF:[85.1,40.1],uy:[74.3,45.2],bacak:[70.9,42.3],bot:[57.6,43.8],govde:[126.8,268.8],kalca:[85.8,50.2],kafa:[181.3,224.3],vur:[179.3,230.3],ahh:[179.3,246.3],ates:[3.0,45.9]},
   ust:137.0,on:130.3,uy:196.8,ak:[0,141.7],bh:131.2,bs:1.1,mz:[-0.0,352.4],bel:592.0,kN:[0.0,95.0],kF:[-36.0,95.0],omN:[-96.2,-151.8],omF:[47.8,-181.8],boyun:[-5.0,-231.6]},      // kaptan: belden aşağısı %10 büyük (bs, uyluk, bel yüksekliği), kafa 10 birim ileride
   h:{p:'h_',sc:0.9315,us:1.375,A:{ust:[65.4,43.8],on:[107.1,37.5],elN:[105.8,47.3],elB:[78.9,36.2],elF:[100.3,36.8],uy:[90.5,40.4],bacak:[75.6,36.1],bot:[68.2,25.7],govde:[176.8,326.0],alt:[182.8,47.4],kalca:[116.5,35.6],kafa:[69.1,128.1],vur:[67.1,127.1],ahh:[67.1,128.1],kanca:[15.8,49.6]},
-  ust:145.0,on:134.6,uy:184.1,ak:[0.0,151.2],bh:145.3,bel:662.0,tek:1,kN:[0.0,77.8],kF:[-40.0,77.8],omN:[-112.1,-219.9],omF:[49.7,-258.7],boyun:[-8.6,-286.1],goz:[-69.6,62.2],zt:[39.3,95.0],sp:[-104.7,-289.3],zl:[61,28],ud:80.5,kd:15.6,ks:1.05}      // ud: belden üstü aşağı kayma, kd: kafa aşağı kayma, ks: kafa ek ölçeği      // kancacı: yürümez, kanca fırlatır (goz: kancanın zincir halkası, zt: zincirli elin zincir çıkışı, sp: sırttaki makara)
+  ust:145.0,on:134.6,uy:184.1,ak:[0.0,151.2],bh:145.3,bel:662.0,tek:1,kN:[0.0,77.8],kF:[-40.0,77.8],omN:[-112.1,-219.9],omF:[49.7,-258.7],boyun:[-8.6,-286.1],goz:[-69.6,62.2],zt:[39.3,95.0],sp:[-104.7,-289.3],zl:[61,28],ud:80.5,kd:27.3,ks:1.05}      // ud: belden üstü aşağı kayma, kd: kafa aşağı kayma, ks: kafa ek ölçeği      // kancacı: yürümez, kanca fırlatır (goz: kancanın zincir halkası, zt: zincirli elin zincir çıkışı, sp: sırttaki makara)
 };
 const KDUR={F:0.5,N:0.62,B:0.66},KBDUR=0.7;      // vuruş süreleri: F = uzak kol yumruğu, N = yakın kol yumruğu, B = yakın elle bıçak / dipçik savurma; KBDUR: tutulurken kafa atma
 const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:3,kN:6,lF:-14,kF:12}};
@@ -198,6 +205,7 @@ function korsanPoz(e){
   else{
     if(e.y>zemin(e.x)+5)p=kKar(p,KPZ.hava,0.8);
     if(S.t<(e.st||0)){p=kKar(p,KPZ.sars,ez(kisit((e.st-S.t)/0.45,0,1)))}      // darbe tepkisi: geri savrulur
+    if(!e.dus&&S.t-(e.hafT||-9)<0.25){const k=1-(S.t-e.hafT)/0.25;p.torso-=7*k;p.bas-=6*k}      // hafif vuruş: çok az geri eğilir
     if(e.dus){p=dusPoz(e,p);if(e.yk){p.uN+=e.yk[0];p.uF+=e.yk[1]}}
   }
   return p;
@@ -297,7 +305,7 @@ function dusmanCiz(){
     if(sx<-m||sx>W+m){if(e.kh)kancaCiz(e,true);continue}                                   // ekran dışındaki düşman çizilmez
     const zc=e.kc==='h'&&!e.tut&&!e.iki;
     ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);
-    if(e.olu){ctx.globalAlpha=Math.max(0,1-e.ol/0.9);ctx.translate(0,-e.cy);ctx.rotate(e.rot);ctx.translate(0,e.cy)}
+    if(e.olu){ctx.globalAlpha=Math.max(0,1-e.ol/0.9);if(!e.yerOl){ctx.translate(0,-e.cy);ctx.rotate(e.rot);ctx.translate(0,e.cy)}}
     if(e.dus){ctx.translate(0,-e.cy);ctx.rotate(e.dus.yn*(e.dusA||0)*Math.PI/2);ctx.translate(0,e.cy0)}      // yere düşmüş: gövde ortası yere yakın, sırtüstü yatar
     if(e.tut){ctx.translate(0,-e.cy);ctx.rotate(Math.sin(e.anim*14)*0.12);ctx.translate(0,e.cy)}   // tutulunca çırpınır
     if(e.iki){ctx.translate(0,-e.cy);ctx.rotate(e.phi||0);ctx.translate(0,e.cy)}   // iki elle tutulunca iki elin eksenine yatar (kafa N elinin tarafında)

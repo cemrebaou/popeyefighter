@@ -85,8 +85,8 @@ function ph(arm,dur,fr){
 });
 ['N','F'].forEach(arm=>{      // bıçak modu saplamaları (normal yumrukların 2 katı hızlı)
   const rn=arm==='N'?{u:-26,a:-70}:{u:-10,a:-62},rec=[1,{u:rn.u,a:rn.a,tor:6}],geri={u:20,a:20,tor:-10,bas:-4};      // geri: aparkatın başı (kol aşağı-geri çekili)
-  HAREKET['pd'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-88,a:-2,tor:24,bas:5,ofs:95}],[.6,{u:-88,a:-2,tor:24,bas:5,ofs:100}],rec]);      // düz karşıya
-  HAREKET['pa'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-50,a:55,tor:32,bas:8,ofs:85}],[.6,{u:-50,a:55,tor:32,bas:8,ofs:90}],rec]);      // aşağı doğru
+  HAREKET['pd'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-90,a:0,tor:6,bas:2,ofs:70}],[.6,{u:-90,a:0,tor:6,bas:2,ofs:75}],rec]);      // yumruk: omuz hizasında dümdüz karşıya, kol yere paralel, gövde az yatar
+  HAREKET['pa'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-88,a:-2,tor:24,bas:5,ofs:95}],[.6,{u:-88,a:-2,tor:24,bas:5,ofs:100}],rec]);      // tekme: öne eğilip biraz aşağı (yere doğru) saplar
   HAREKET['pu'+arm]=ph(arm,.24,[[0,Object.assign({lg:'c'},geri)],[.35,{u:-125,a:-70,tor:14,bas:5,ofs:80,lift:30,lg:'t'}],[.6,{u:-125,a:-70,tor:14,bas:5,ofs:85,lift:34,lg:'t'}],[1,{u:rn.u,a:rn.a,tor:6,lg:'n'}]]);      // aparkat gibi yukarı
   HAREKET['py'+arm]=ph(arm,.22,[[0,{u:-150,a:-100,tor:-6,bas:-4}],[.4,{u:-28,a:80,tor:34,bas:10,ofs:40}],[.62,{u:-28,a:80,tor:34,bas:10,ofs:40}],[1,{u:-70,a:-40,tor:12}]]);      // yerdekine saplama
 });

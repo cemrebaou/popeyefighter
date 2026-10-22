@@ -88,7 +88,7 @@ function dongu(ms){
     if(S.tats>0){const u=S.t-S.tats;if(u>0.8){S.tats=0;S.spin=0}else{S.vy=-250;S.spin+=dt*Math.PI*2*2/0.8}}   // kasırga: havada asılı döner
     if(!ziplaTut()&&S.vy<0&&!S.donuyor&&!S.ust)S.vy*=Math.pow(0.0005,dt);   // kısa zıplama
     if(S.donuyor){S.spin+=dt*Math.PI*2/ROLL_SURE;if(S.spin>=Math.PI*2){S.spin=0;S.donuyor=false}}
-    if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;S.donuyor=false;S.spin=0;S.shoryu=0;S.tats=0;
+    if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;torbaCal(INS,INSBAG,0.9);S.donuyor=false;S.spin=0;S.shoryu=0;S.tats=0;
       if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};patlat(S.x-70,1);patlat(S.x+100,1);karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
       if(S.dkick){S.dkick=null;zeminVur(0.5);patlat(S.x+S.yon*120,0.8);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
   }

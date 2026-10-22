@@ -129,7 +129,9 @@ function kolHesap(iz,x,y){
   const o2=izBul(iz.t==='N'?'F':'N');      // iki parmak öncelikli: diğer parmak da hareket ediyorsa tek parmak hareketleri yerine çift parmak hareketleri çalışır
   const ikili=!!(o2&&KOL[o2.t].ak&&(KOL[o2.t].e>0.25||izHiz(o2,0.2)>300));
   if(!iz.sho&&yukari&&hz>(S.pence?1000:1600)){iz.sho=true;if(S.ust)ustKalk();else if(S.pence)penceVur('u',iz.t);else shoryu(iz)}      // bıçak modunda yukarı çekme: aparkat gibi saplama; üstündeyken kalkar
-  if(S.ust)return;                              // çok hızlı yukarı = shoryuken
+  if(S.ust)return;
+  if(S.pence&&!iz.atil&&hz>1000&&Math.abs(dy)>=0.7*Math.abs(dx)&&Math.abs(dx)>=0.8*Math.abs(dy)){iz.atil=true;yerdekineAtla();return}      // bıçak modunda çapraz kaydırma: yerdekinin üstüne sıçra
+                               // çok hızlı yukarı = shoryuken
   else if(!iz.sla&&asagiG&&hz>1500&&!S.yer&&(!S.pend||S.pend.iz!==iz)){iz.sla=true;if(S.pend){S.pend.t=S.t;S.pend.ikinci=true}else S.pend={t:S.t+(o2&&KOL[o2.t].ak?0.28:0.15),iz,dx,dy}}   // havada hızlı aşağı: ikinci parmağı kısa süre bekle; ikinci parmak da aşağı çekerse hemen süper kahraman   // havada hızlı aşağı: ikinci parmağa kısa süre bak, sonra karar ver
   else if(!iz.atil&&Math.abs(dy)<0.7*Math.abs(dx)&&hz>1100){      // yatay hızlı sürükleme (her iki yön): karakter o yöne döner ve kayar
     const o=izBul(iz.t==='N'?'F':'N'), ko=o?kayma(o,0.2):null;
@@ -203,13 +205,13 @@ cv.addEventListener('pointermove',e=>{
   daireKontrol();
 });
 const kolBit=e=>{
-  const kz=kizler.get(e.pointerId);if(kz){kizler.delete(e.pointerId);if(e.type==='pointerup'&&kz.maxd<30&&performance.now()-kz.t0<400&&!yerdekineAtla(e.clientX,e.clientY))tekmeAt(kz.t);return}
+  const kz=kizler.get(e.pointerId);if(kz){kizler.delete(e.pointerId);if(e.type==='pointerup'&&kz.maxd<30&&performance.now()-kz.t0<400)tekmeAt(kz.t);return}
   const iz=izler.get(e.pointerId);if(!iz)return;izler.delete(e.pointerId);
   const tap=!iz.tm&&e.type==='pointerup'&&!DUS.some(z=>z.tut===iz.t)&&S.sarj<=0&&!iz.joined&&iz.maxd<22&&performance.now()-iz.t0<320&&!iz.sho&&!iz.atil&&!iz.sla&&!iz.sup;   // kısa dokunuş = kombo vuruşu
   if(iz.tm&&!iz.joined&&e.type==='pointerup'&&performance.now()-iz.t0<350)tutKombo(iz.t);      // bir elle tutmuşken diğer tarafa kısa bas/çek: parmak kalkınca boştaki kol tutulana vurur (basılı kalırsa ikinci el tutuşa katılır)
   tutBirak(iz.t);
   const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t;
-  if(tap&&!yerdekineAtla(e.clientX,e.clientY))komboTap('y',iz.t);
+  if(tap)komboTap('y',iz.t);
   if(S.sarj>0){const m=S.sarjP;S.sarjP=null;if(m)ates(m.dx,m.dy,1,m.bx,m.by);else S.sarj=0;for(const z of izler.values())z.turn=0}   // parmak kalkınca aduket kol yönüne gider
 };
 cv.addEventListener('pointerup',kolBit);cv.addEventListener('pointercancel',kolBit);

@@ -55,7 +55,7 @@ function hedefPoz(){
     const ON_={l:-90,b:135}, ARKA={l:20,b:37};   // ön bacak derin çömelme; arka bacak: üst bacak aşağı, alt bacak geride, ayak ucu yere değer
     o.lN=ARKA.l+(ON_.l-ARKA.l)*w; o.bN=ARKA.b+(ON_.b-ARKA.b)*w; o.kN=1-w;
     o.lF=ARKA.l+(ON_.l-ARKA.l)*(1-w); o.bF=ARKA.b+(ON_.b-ARKA.b)*(1-w); o.kF=w;
-    o.cr=1; o.cw=w; o.pelv=0; o.hy=14; o.hb=50+(hiz>0.05?6*sn:0); o.torso=2; o.bas=-2; o.aNu=5; o.aNr=40; o.aFu=17; o.aFr=45;      // bel eğilmez: gövde ayaktaki eğiklikte kalır, sadece çömelir
+    o.cr=1; o.cw=w; o.pelv=32; o.hy=14; o.hb=50+(hiz>0.05?6*sn:0); o.torso=13+(hiz>0.05?4*sn:0); o.bas=-26; o.aNu=-38; o.aNr=40; o.aFu=-26; o.aFr=45;
   }
   if(S.atk||S.t-S.sonAtk<0.9||kolVar()){   // vuruş sürerken guard; bırakınca kollar iner
     o.aNu=-26;o.aNr=-44;o.aFu=-10;o.aFr=-52;
@@ -66,7 +66,7 @@ function hedefPoz(){
     let ileri=0;
     if(kolAktif(KOL.N)&&!(S.atk&&KOL.N.e<0.3&&!tutan('N')))ileri+=kolUygula(o,KOL.N,'aNu','aNr',-26,-70);
     if(kolAktif(KOL.F)&&!(S.atk&&KOL.F.e<0.3&&!tutan('F')))ileri+=kolUygula(o,KOL.F,'aFu','aFr',-10,-62);
-    o.torso+=12*ileri;o.bas+=2*ileri;
+    if(!(S.yer&&asagiMi())){o.torso+=12*ileri;o.bas+=2*ileri}      // çömelirken kol hareketi gövdeyi oynatmaz
   }
   if(S.shoryu>0&&!S.yer){          // yükselen yumruk kolu
     if(S.shArm==='N'||S.shBoth){o.aNu=-165;o.aNr=75}
@@ -234,5 +234,6 @@ function karakter(){
     ctx.restore();
     kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
   });
+  ispOnCiz();
   ctx.restore();
 }

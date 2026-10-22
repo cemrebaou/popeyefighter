@@ -86,12 +86,11 @@ function penceVur(tip,side){
   if(S.ust){if(S.ust.f!=='diz')return;tip='y'}
   atkIstek('#p'+tip+side);
 }
-function yerdekineAtla(sx,sy){      // bıçak modunda yerde yatan düşmana dokunulursa üstüne atlar
+function yerdekineAtla(){      // bıçak modunda çapraz kaydırma: en yakın yerdeki düşmana sıçrar, üstüne diz çökerek iner
   if(!S.pence||S.ust||!S.yer||S.durum!=='oyun')return false;
-  const wx=S.x+(sx-W/2)/SC,wy=S.camY+(ZY()-sy)/SC;
-  const e=DUS.find(z=>z.dus&&!z.olu&&!z.tut&&!z.iki&&Math.abs(wx-z.x)<z.r*2.6&&wy-z.y<z.r*3);
+  let e=null;for(const z of DUS)if(z.dus&&!z.olu&&!z.tut&&!z.iki&&Math.abs(z.x-S.x)<2600&&(!e||Math.abs(z.x-S.x)<Math.abs(e.x-S.x)))e=z;
   if(!e)return false;
-  const yn=e.x>=S.x?1:-1,tx=e.x-yn*120,T=kisit(0.3+Math.abs(tx-S.x)/3000,0.35,0.7);
+  const yn=e.x>=S.x?1:-1,tx=e.x-yn*120,T=kisit(0.45+Math.abs(tx-S.x)/3000,0.5,0.8);      // yüksekçe güzel sıçrama
   e.dus.son=Math.max(e.dus.son,S.t+DUS_KALK+T+0.3);      // kalkıyorsa geri yatar
   S.ust={e,f:'atla',vx:(tx-S.x)/T,yn};S.yon=yn;S.yer=false;S.vy=-0.5*G*T;S.atk=null;S.kuyruk.length=0;S.kay=null;S.lungeT=-1;ziplaCal();
   return true;
@@ -101,7 +100,7 @@ function ustGuncelle(){      // atlarken düşmanın yanına iner, sonra dizleri
   if(!S.pence||e.olu||!e.dus||e.tut||S.durum!=='oyun'){S.ust=null;return}
   e.dus.son=Math.max(e.dus.son,S.t+DUS_KALK+0.15);
   S.yon=u.yn;
-  if(u.f==='atla'){S.vx=u.vx;if(S.yer){u.f='diz';u.t0=S.t;S.vx=0;titre(40);karBas(S.x,220,KMIN-4,false)}}
+  if(u.f==='atla'){S.vx=u.vx;if(S.yer){u.f='diz';u.t0=S.t;S.vx=0;titre(40);bufCal(USTS,1);karBas(S.x,220,KMIN-4,false)}}
   else S.vx=0;
 }
 function ustKalk(){S.ust=null;S.sonAtk=S.t}      // yukarı çekince kalkar
