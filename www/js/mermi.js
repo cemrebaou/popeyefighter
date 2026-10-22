@@ -6,7 +6,7 @@ function bossKur(){
   DUS.push({t:'korsan',kc:'p',boss:true,bs:1.25,x,y:zemin(x),vx:0,vy:0,hp:500,max:500,cy:560,r:265,yon:-1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:S.t+1.5,ka:null});      // boss: tabancalı korsan, %25 büyük
 }
 function ates(dx,dy,ch,bx,by){    // aduket: topun ele göre yönüne (yukarı/aşağı dahil) gider
-  if(!enerji(1)){S.sarj=0;return}
+  if(!enerji(50)){S.sarj=0;return}
   const L=Math.hypot(dx,dy);let ux=dx/L,uy=dy/L;
   if(!(L>30)){ux=S.yon;uy=0}
   if(Math.abs(ux)>0.15&&Math.sign(ux)!==S.yon)donDon(Math.sign(ux));

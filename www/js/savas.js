@@ -151,7 +151,7 @@ function ikiElKontrol(dt){
   e.sph=e.sph||[];e.sph.push({t:now,sp});while(e.sph.length>1&&now-e.sph[0].t>0.2)e.sph.shift();
   const rate=(sp-e.sph[0].sp)/Math.max(0.05,now-e.sph[0].t);     // parmakların ayrılma hızı (px/sn) = çekişin gücü
   if(sp-e.sp0>Math.max(90,W*0.1)&&S.t>=e.ripT){          // güçlü çekiş: enerji harca, korsanı belden ikiye ayır; yavaş çekişte tutmaya devam eder
-    const ger=Math.max(1,Math.ceil(e.hp/50-1e-9));      // her 50 can = 1 enerji
+    const ger=Math.max(1,Math.ceil(e.hp-1e-9));      // düşmanın o anki canı kadar enerji
     if(enerji(ger))yirt(e,rate);else tutReddet(e);
   }
 }

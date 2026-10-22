@@ -1,6 +1,6 @@
 'use strict';
 // Ekran bilgisi (can/enerji barı, kalp, kombo no, yazılar)
-const BAR={en:5,hp:100};      // ekranda görünen enerji/can (yumuşak)
+const BAR={en:250,hp:100};      // ekranda görünen enerji/can (yumuşak)
 // Can + enerji barı (sol üst): boş görselin üstüne dolu görseller, eğik uca paralel çizgiyle maskelenir. Kalp: can dolarken atar (küçük kalp görseli + kalp sesi)
 const BARG=547,BARY=192,BEG=0.42;      // görsel boyutu, dolum ucunun eğimi
 const KALP={on:false,t0:0,n:-1,src:null};
@@ -30,7 +30,7 @@ function barCiz(dt){
   ctx.drawImage(R.bar_bos,0,0,BARG,BARY);
   barDol(R.bar_kir,BAR.hp/100,33,158.9,531.1);      // kırmızı can
   if(S.t<(S.ispEnT||0)){ctx.shadowColor='#ffd23f';ctx.shadowBlur=(8+4*Math.sin(S.t*8))*s*DPR}      // ıspanak sonrası enerji parlar
-  barDol(R.bar_tur,BAR.en/5,92.5,174.6,485.6);      // ince enerji
+  barDol(R.bar_tur,BAR.en/250,92.5,174.6,485.6);      // ince enerji
   ctx.shadowBlur=0;
   if(kk&&R.bar_kalp)ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);      // küçük kalp
   ctx.restore();

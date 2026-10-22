@@ -165,7 +165,7 @@ function daireKontrol(){         // iki parmakla bir daire = aduket hazır (tam 
   const t=Math.min(Math.abs(a.turn),Math.abs(b.turn));
   if(t>1.6*Math.PI){
     a.turn=0;b.turn=0;
-    if(S.en>=1&&!S.sman&&!S.yy&&!S.alk&&!(S.tats>0)){S.sarj=1;S.sarjP=null;}else S.noEn=S.t;
+    if(S.en>=50&&!S.sman&&!S.yy&&!S.alk&&!(S.tats>0)){S.sarj=1;S.sarjP=null;}else S.noEn=S.t;
   }
 }
 // Tekme bölgesi: orta çizginin iki yanında, karakterin altındaki çatı biçimli alan (dışı ve üstü yumruk bölgesi). Sağ yarı = sağ bacak (N), sol yarı = sol bacak (F)
