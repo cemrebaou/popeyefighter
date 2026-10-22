@@ -1,7 +1,8 @@
 'use strict';
 // Vuruş, isabet kontrolü, tutma, yırtma, düşman güncelleme
 function vur(e,dmg,vx,vy,f,hy){
-  let krit=false;e.sonV=S.t;      // son vuruş zamanı (tutulu korsan 1 sn vurulmazsa kafa atar)
+  let krit=false;e.sonV=S.t;e.vurT=S.t;      // vurT: 0.6 sn acı yüzü
+        // son vuruş zamanı (tutulu korsan 1 sn vurulmazsa kafa atar)
   if(e.boss){f*=0.25;dmg*=0.5;if(hy!==undefined&&hy>e.y+900){dmg*=3;krit=true}}      // kaptan: kafasına vuruş 3 kat
   dmg=Math.round(dmg);titre(12+Math.round(70*f));
   const olu0=e.olu;e.hp-=dmg;e.fl=0.15;

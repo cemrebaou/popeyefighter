@@ -121,13 +121,13 @@ function ucDeger(e,r,ilk,son){      // kaydedilen uzuv noktalarından biri oyunc
 // ---------- Korsan (insan dövüşçü): oyuncunun iskeleti gibi omuz → dirsek → bilek, kalça → diz; parça halkaları eklem noktası ----------
 // üç görünüm aynı iskelet ve hareketlerle: k = yumruklu, b = bıçaklı, p = tabancalı kaptan (boss)
 const KSK={      // her korsan kendi görsel setinden, tüm parçalar aynı ölçekte (eklem noktaları = parçalardaki halkalar)
-  k:{p:'k_',sc:0.855,A:{ust:[79.1,60.4],on:[134.9,48.3],elN:[87.2,38.2],elF:[92.7,41.0],uy:[111.2,54.2],bacak:[97.1,44.4],bot:[75.0,36.0],govde:[148.6,345.0],kalca:[112.4,26.8],kafa:[173.6,208.1]},
+  k:{p:'k_',sc:0.855,A:{ust:[79.1,60.4],on:[134.9,48.3],elN:[87.2,38.2],elF:[92.7,41.0],uy:[111.2,54.2],bacak:[97.1,44.4],bot:[75.0,36.0],govde:[148.6,345.0],kalca:[112.4,26.8],kafa:[173.6,208.1],vur:[173.6,219.1]},
      ust:185.6,on:172.3,uy:248.8,ak:[0,197.5],bh:111.0,bel:641.6,kN:[20.0,84.2],kF:[-16.0,84.2],omN:[-103.0,-220.2],omF:[50.6,-229.2],boyun:[12.6,-330.7]},
-  b:{p:'b_',sc:0.794,A:{ust:[55.3,52.2],on:[125.2,45.5],elN:[65.9,32.1],elF:[91.8,40.6],uy:[87.9,39.7],bacak:[60.5,30.8],bot:[86.4,28.8],govde:[118.0,297.0],kalca:[98.4,49.7],kafa:[180.9,236.6]},
+  b:{p:'b_',sc:0.794,A:{ust:[55.3,52.2],on:[125.2,45.5],elN:[65.9,32.1],elF:[91.8,40.6],uy:[87.9,39.7],bacak:[60.5,30.8],bot:[86.4,28.8],govde:[118.0,297.0],kalca:[98.4,49.7],kafa:[180.9,236.6],vur:[180.9,241.6]},
      ust:137.0,on:165.6,uy:191.3,ak:[0,103.2],bh:249.2,bs:1.15,bel:624.4,kN:[15.0,75.9],kF:[-21.0,75.9],omN:[-53.2,-195.0],omF:[58.4,-204.0],boyun:[37.8,-283.5]},
-  p:{p:'p_',sc:0.86,bf:1,A:{ust:[57.7,47.7],on:[104.6,39.0],elN:[133.9,38.5],elF:[85.1,40.1],uy:[74.3,45.2],bacak:[70.9,42.3],bot:[57.6,43.8],govde:[126.8,268.8],kalca:[85.8,50.2],kafa:[181.3,224.3],ates:[3.0,45.9]},
+  p:{p:'p_',sc:0.86,bf:1,A:{ust:[57.7,47.7],on:[104.6,39.0],elN:[133.9,38.5],elF:[85.1,40.1],uy:[74.3,45.2],bacak:[70.9,42.3],bot:[57.6,43.8],govde:[126.8,268.8],kalca:[85.8,50.2],kafa:[181.3,224.3],vur:[179.3,230.3],ates:[3.0,45.9]},
   ust:137.0,on:130.3,uy:196.8,ak:[0,141.7],bh:131.2,bs:1.1,mz:[-0.0,352.4],bel:592.0,kN:[0.0,95.0],kF:[-36.0,95.0],omN:[-96.2,-151.8],omF:[47.8,-181.8],boyun:[-5.0,-231.6]},      // kaptan: belden aşağısı %10 büyük (bs, uyluk, bel yüksekliği), kafa 10 birim ileride
-  h:{p:'h_',sc:1.035,us:1.25,A:{ust:[65.4,43.8],on:[107.1,37.5],elN:[105.8,47.3],elB:[78.9,36.2],elF:[100.3,36.8],uy:[90.5,40.4],bacak:[75.6,36.1],bot:[68.2,25.7],govde:[187.1,309.6],kalca:[116.5,35.6],kafa:[69.1,128.1],kanca:[15.8,49.6]},
+  h:{p:'h_',sc:1.035,us:1.25,A:{ust:[65.4,43.8],on:[107.1,37.5],elN:[105.8,47.3],elB:[78.9,36.2],elF:[100.3,36.8],uy:[90.5,40.4],bacak:[75.6,36.1],bot:[68.2,25.7],govde:[187.1,309.6],kalca:[116.5,35.6],kafa:[69.1,128.1],vur:[67.1,127.1],kanca:[15.8,49.6]},
   ust:145.0,on:134.6,uy:184.1,ak:[0.0,151.2],bh:145.3,bel:558.4,kN:[0.0,77.8],kF:[-40.0,77.8],omN:[-123.2,-184.1],omF:[18.1,-222.8],boyun:[-38.1,-256.5],goz:[-69.6,62.2],zt:[39.3,95.0],sp:[-158.7,-221.8],zl:[61,28]}      // kancacı: yürümez, kanca fırlatır (goz: kancanın zincir halkası, zt: zincirli elin zincir çıkışı, sp: sırttaki makara)
 };
 const KDUR={F:0.5,N:0.62,B:0.66},KBDUR=0.7;      // vuruş süreleri: F = uzak kol yumruğu, N = yakın kol yumruğu, B = yakın elle bıçak / dipçik savurma; KBDUR: tutulurken kafa atma
@@ -234,7 +234,7 @@ function ciziKorsan(e,mask){
     ctx.save();ctx.rotate(p.torso*D);if(K.us)ctx.scale(K.us,K.us);      // us: belden yukarısının ölçeği
     krp(R[K.p+'govde'],K.A.govde,fl);if(ek&&K.sp)uc(ek,3,K.sp[0],K.sp[1]);      // kancacı: sırttaki zincir makarası
     if(mask==='ust')yaraCiz(e,0,0,170,true);
-    ctx.save();ctx.translate(K.boyun[0]+(p.hb||0)*70,K.boyun[1]+(p.hb||0)*28);ctx.rotate(p.bas*D);krp(R[K.p+'kafa'],K.A.kafa,fl);ctx.restore();
+    ctx.save();ctx.translate(K.boyun[0]+(p.hb||0)*70,K.boyun[1]+(p.hb||0)*28);ctx.rotate(p.bas*D);{const vy=e.vurT!=null&&S.t-e.vurT<0.6&&R[K.p+'vur'];krp(vy||R[K.p+'kafa'],vy?K.A.vur:K.A.kafa,fl)};ctx.restore();
     kKol(K,K.omN,p.uN,p.rN,p.wN,false,fl,ek,0);      // yakın kol en önde
     ctx.restore();
   }
