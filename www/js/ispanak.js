@@ -70,7 +70,7 @@ function ispGuncelle(dt){
   if(S.yeme){
     const m=S.yeme,t=S.t-m.t0;S.vx=0;
     if(!m.ses&&t>=0.85){m.ses=true;bufCal(YEMS,1)}      // yeme sesi: ağza dökmeye başlayınca
-    if(!m.bos&&t>=1.45){m.bos=true;S.hp=Math.min(100,S.hp+10);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+10',f:0.3})}      // max canın %10'u
+    if(!m.bos&&t>=1.45){m.bos=true;S.hp=Math.min(100,S.hp+10);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+10',f:0.3})}      // max canın %10'u
     if(!m.atildi&&t>=2.25){m.atildi=true;ispAt(m.k)}
     if(t>=2.8)S.yeme=null;
   }

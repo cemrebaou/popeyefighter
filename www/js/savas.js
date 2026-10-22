@@ -17,7 +17,7 @@ function vur(e,dmg,vx,vy,f,hy){
   if(!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>10&&dmg<9999&&Math.random()<0.25){      // 10 üstü vuruş: %25 ihtimalle: biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
     const yn=e.x>=S.x?1:-1,sr=kisit(0.8+(dmg-25)*0.06,0.8,4);e.cy0=e.cy0||e.cy;
     if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+sr+DUS_KALK,yn};
-    e.vx=yn*Math.min(Math.abs(e.vx),700);e.vy=Math.min(e.vy,450)}
+    e.vx=yn*Math.max(500,Math.min(Math.abs(e.vx),1000));e.vy=Math.min(e.vy,550)}      // biraz daha uzağa düşer
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
   if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;if(!olu0)ispDus(e.x,e.y+e.cy)}      // %25 ıspanak düşer
   if(S.pSes)ses(S.pSes==='tekme'?'tekme':'yumruk');

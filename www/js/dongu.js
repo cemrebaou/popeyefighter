@@ -66,7 +66,7 @@ function dongu(ms){
   if(S.alk){const m=S.alk,u=(S.t-m.t0)/m.T;if(u>=1)S.alk=null;else{if(u<0.4)S.vx*=0.8;if(!m.hit&&u>=0.4)alkisVur()}}
   catlakGuncelle();kanGuncelle(dt);karGuncelle(dt);
   if(S.pence){S.en-=dt*0.15;if(S.en<=0){S.en=0;penceKapa()}else if(S.blok&&S.t-S.pence.t0>0.5)penceKapa()}      // pençe: enerji dolma hızının 3 katı hızla biter; guard alınca bıçaklar girer
-  else S.en=Math.min(5,S.en+dt*0.05);
+  else S.en=Math.min(5,S.en+dt*0.05*(S.t<(S.ispEnT||0)?2:1));      // ıspanaktan sonra 10 sn 2 kat dolum
   if(S._rh!==undefined&&S.hp<S._rh-0.001){S.hasT=S.t;S.regB=3+Math.random()}      // son hasar zamanı
   if(S.durum==='oyun'&&S.hp>0&&S.hp<100&&S.t-(S.hasT||-9)>=(S.regB||3))S.hp=Math.min(100,S.hp+5*dt);      // hasardan 3-4 sn (rastgele) sonra iyileşir: 2 sn'de 10 can
   S._rh=S.hp;

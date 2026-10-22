@@ -12,6 +12,7 @@ function hud(dt){
       const x0=bx+i*(sw+gap),f=Math.max(0,Math.min(1,S.en-i));
       ctx.fillStyle='rgba(31,42,51,.8)';ctx.fillRect(x0-1,ey-1,sw+2,10);
       ctx.fillStyle=f>=1?'#ffd23f':'#b8932a';ctx.fillRect(x0,ey,sw*f,8);
+      if(S.t<(S.ispEnT||0)){ctx.save();ctx.shadowColor='#ffd23f';ctx.shadowBlur=8+5*Math.sin(S.t*8);ctx.strokeStyle='#fff3a8';ctx.lineWidth=2;ctx.strokeRect(x0-1,ey-1,sw+2,10);ctx.restore()}      // ıspanak etkisi: kenarlar parlar
     }
     if(S.t-S.noEn<1.0&&Math.floor((S.t-S.noEn)*8)%2===0){ctx.fillStyle='#ff5a4a';ctx.font='900 14px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('NO ENERGY',W/2,ey+24)}
   }

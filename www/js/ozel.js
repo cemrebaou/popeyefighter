@@ -89,15 +89,17 @@ function penceVur(tip,side){
 function yerdekineAtla(sx,sy){      // bıçak modunda yerde yatan düşmana dokunulursa üstüne atlar
   if(!S.pence||S.ust||!S.yer||S.durum!=='oyun')return false;
   const wx=S.x+(sx-W/2)/SC,wy=S.camY+(ZY()-sy)/SC;
-  const e=DUS.find(z=>z.dus&&!z.olu&&!z.tut&&!z.iki&&(z.dusA||0)>0.6&&Math.abs(wx-z.x)<z.r*2.4&&wy-z.y<z.r*1.8);
+  const e=DUS.find(z=>z.dus&&!z.olu&&!z.tut&&!z.iki&&Math.abs(wx-z.x)<z.r*2.6&&wy-z.y<z.r*3);
   if(!e)return false;
   const yn=e.x>=S.x?1:-1,tx=e.x-yn*120,T=kisit(0.3+Math.abs(tx-S.x)/3000,0.35,0.7);
+  e.dus.son=Math.max(e.dus.son,S.t+DUS_KALK+T+0.3);      // kalkıyorsa geri yatar
   S.ust={e,f:'atla',vx:(tx-S.x)/T,yn};S.yon=yn;S.yer=false;S.vy=-0.5*G*T;S.atk=null;S.kuyruk.length=0;S.kay=null;S.lungeT=-1;ziplaCal();
   return true;
 }
 function ustGuncelle(){      // atlarken düşmanın yanına iner, sonra dizlerinin üstünde kalır; düşman yerde kalır
   const u=S.ust,e=u.e;
   if(!S.pence||e.olu||!e.dus||e.tut||S.durum!=='oyun'){S.ust=null;return}
+  e.dus.son=Math.max(e.dus.son,S.t+DUS_KALK+0.15);
   S.yon=u.yn;
   if(u.f==='atla'){S.vx=u.vx;if(S.yer){u.f='diz';u.t0=S.t;S.vx=0;titre(40);karBas(S.x,220,KMIN-4,false)}}
   else S.vx=0;
