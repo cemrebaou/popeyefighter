@@ -29,7 +29,7 @@ dokunTus('zipla',d=>{if(d&&!key.zipla)ziplaBas();key.zipla=d});
 // ekranı kendine doğru yatır = çömel
 const GYRO={egilKal:false,egilHazir:true,hazir:true,ak:false,steer:0,egil:false,zipBit:-9,u0z:0,kalT:0,oz:null,rate:0,sonT:0,sonZip:-9};
 const ACI_OLU=3.5, ACI_TAM=20, ZIP_ESIK=2.2;
-const asagiMi=()=>key.asagi||GYRO.egilKal;
+const asagiMi=()=>key.asagi||GYRO.egilKal||!!S.uzan;      // S.uzan: kol aşağıda, yere uzanma
 const ziplaTut=()=>key.zipla||S.t<GYRO.zipBit;
 function ekranAci(){const a=(screen.orientation&&typeof screen.orientation.angle==='number')?screen.orientation.angle:(window.orientation||0);return((a%360)+360)%360}
 function gyroAx(){

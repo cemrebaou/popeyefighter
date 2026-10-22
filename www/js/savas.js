@@ -18,7 +18,7 @@ function vur(e,dmg,vx,vy,f,hy){
     if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+0.5);else e.dus={t0:S.t,son:S.t+0.35+sr+0.5,yn};
     e.vx=yn*Math.min(Math.abs(e.vx),700);e.vy=Math.min(e.vy,450)}
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
-  if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700}
+  if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;e.vx*=1.4;e.vy+=700;if(!olu0)ispDus(e.x,e.y+e.cy)}      // %25 ıspanak düşer
   if(S.pSes)ses(S.pSes==='tekme'?'tekme':'yumruk');
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
   S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:(krit?'KRİTİK -':'-')+dmg,f:krit?1:f});

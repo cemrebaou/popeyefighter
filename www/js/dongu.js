@@ -27,6 +27,7 @@ function ciz(){
   arkaPlan(S.x,zeminY);
   catlakCiz();
   dusmanCiz();
+  ispCiz();
   kanCiz();
   fxCiz(false);
   ctx.save();
@@ -71,6 +72,7 @@ function dongu(ms){
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
   if(S.dkick)S.vx=S.dkick.vx;
   if(S.sup&&S.t<S.sup.t0+S.sup.T)S.vx=0;      // kayarak yumruk: kısa süre öne atılır
+  ispGuncelle(dt);
   {const nx=S.x+S.vx*dt;                                        // yüksek basamak/kutu duvar gibidir: üstüne zıplamak gerekir
     if(zemin(nx)>S.y+(S.yer?75:30)){S.vx=0;S.lungeT=-1}else S.x=nx}
   atkGuncelle(dt);
