@@ -195,6 +195,7 @@ cv.addEventListener('pointermove',e=>{
   const iz=izler.get(e.pointerId);if(!iz)return;
   const now=performance.now()/1000;
   iz.hist.push({t:now,x:e.clientX,y:e.clientY});while(iz.hist.length>1&&now-iz.hist[0].t>0.5)iz.hist.shift();
+  (iz.yol||(iz.yol=[{x:iz.x0,y:iz.y0}])).length<300&&iz.yol.push({x:e.clientX,y:e.clientY});      // tüm parmak yolu (dağ hareketi için)
   iz.maxd=Math.max(iz.maxd,Math.hypot(e.clientX-iz.x0,e.clientY-iz.y0));
   const vx=e.clientX-iz.lx,vy=e.clientY-iz.ly;
   if(Math.hypot(vx,vy)>6){                                   // dönme açısı biriktir: daire = sürekli aynı yöne dönüş
@@ -212,6 +213,7 @@ const kolBit=e=>{
   tutBirak(iz.t);
   const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t;
   if(tap)komboTap('y',iz.t);
+  else if(e.type==='pointerup'&&S.pence){const dr=dagMi(iz.yol);if(dr)dagAtla(dr)}      // bıçak modunda dağ çizme
   if(S.sarj>0){const m=S.sarjP;S.sarjP=null;if(m)ates(m.dx,m.dy,1,m.bx,m.by);else S.sarj=0;for(const z of izler.values())z.turn=0}   // parmak kalkınca aduket kol yönüne gider
 };
 cv.addEventListener('pointerup',kolBit);cv.addEventListener('pointercancel',kolBit);

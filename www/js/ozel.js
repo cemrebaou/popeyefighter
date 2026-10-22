@@ -75,9 +75,9 @@ function ozelTus(k){            // PC denemesi: H süpermen, G pençe aç/kapa, 
 }
 function penceAc(){      // bıçaklar çıkar: eller aşağı savrulur, yarı çömelir, kılıç sesi; enerji 3 kat hızla azalır
   if(S.pence||S.durum!=='oyun')return;if(S.en<0.3){S.noEn=S.t;return}
-  S.pence={t0:S.t};bufCal(SWD,1);titre(40);S.sars=Math.max(S.sars,6);
+  S.pence={t0:S.t};bufCal(BOPEN||SWD,1);titre(40);S.sars=Math.max(S.sars,6);
 }
-function penceKapa(){if(!S.pence)return;S.pence=null;S.ust=null;bufCal(SWD,0.8)}      // bıçaklar geri girer: eski tutabilen yumruklar
+function penceKapa(){if(!S.pence)return;S.pence=null;S.ust=null;S.dag=null;bufCal(SWD,0.8)}      // bıçaklar geri girer: eski tutabilen yumruklar
 const PK=()=>S.pence?2:1;      // pençede yumrukla yapılan vuruşlar 2 kat
 // ---- Bıçak modu vuruşları: kol aparkat başı gibi aşağı-geri çekilir, dirsekten ileri saplar (2 kat hızlı) ----
 // yumruk = düz karşıya (pd), tekme = aşağı (pa), yukarı çekme = aparkat gibi yukarı (pu); yerdekinin üstündeyken her basış yere saplama (py)
@@ -102,6 +102,33 @@ function ustGuncelle(){      // atlarken düşmanın yanına iner, sonra dizleri
   S.yon=u.yn;
   if(u.f==='atla'){S.vx=u.vx;if(S.yer){u.f='diz';u.t0=S.t;S.vx=0;titre(40);bufCal(USTS,1);karBas(S.x,220,KMIN-4,false)}}
   else S.vx=0;
+}
+function dagMi(P){      // parmak yolu dağ gibi mi: bir yanın altından başlar, tepe yapar, diğer yanın altına iner → yön (1 sağ, -1 sol), değilse 0
+  if(!P||P.length<6)return 0;
+  const s=P[0],e=P[P.length-1],dx=e.x-s.x;if(Math.abs(dx)<0.22*W)return 0;
+  let ti=0;for(let i=1;i<P.length;i++)if(P[i].y<P[ti].y)ti=i;
+  const t=P[ti],f=(t.x-s.x)/dx;if(f<0.2||f>0.8)return 0;
+  if(s.y-t.y<0.1*H||e.y-t.y<0.1*H)return 0;
+  let geri=0;for(let i=1;i<P.length;i++)geri+=Math.max(0,-(P[i].x-P[i-1].x)*Math.sign(dx));if(geri>0.25*Math.abs(dx))return 0;      // yatayda çok geri dönmemeli
+  return Math.sign(dx);
+}
+function dagAtla(dir){      // o yöne sıçrar; havada çarptığı düşmanlara bıçak saplar, onları da yere düşürür
+  if(!S.pence||S.ust||S.dag||S.durum!=='oyun')return;
+  S.dag={dir,vur:[]};S.yon=dir;S.yer=false;S.vy=-2600;S.vx=dir*1600;S.atk=null;S.kuyruk.length=0;S.kay=null;S.lungeT=-1;ziplaCal();
+}
+function dagGuncelle(){
+  const d=S.dag;S.vx=d.dir*1600;S.yon=d.dir;
+  for(const e of DUS){
+    if(e.olu||e.boss||e.tut||d.vur.includes(e))continue;
+    if(Math.abs(e.x-S.x)<e.r+140&&Math.abs(e.y+e.cy-(S.y+480))<650){
+      d.vur.push(e);S.pSes=true;vur(e,10*PK(),d.dir,0.3,0.9,e.y+e.cy);S.pSes=false;if(S.hp>0)S.hp=Math.min(100,S.hp+1);
+      if(!e.olu){e.cy0=e.cy0||e.cy;e.dus={t0:S.t,son:S.t+DUS_DUS+2.5+DUS_KALK,yn:d.dir};e.vx=d.dir*700;e.vy=300}      // birlikte yere düşer
+    }
+  }
+  if(S.yer){S.dag=null;      // indi: en yakın düşürdüğünün üstünde diz çöker
+    let e=null;for(const z of d.vur)if(!z.olu&&z.dus&&(!e||Math.abs(z.x-S.x)<Math.abs(e.x-S.x)))e=z;
+    if(e){const yn=e.x>=S.x?1:-1;S.x=e.x-yn*120;S.ust={e,f:'diz',yn,t0:S.t};S.yon=yn;S.vx=0;titre(40);bufCal(USTS,1);karBas(S.x,220,KMIN-4,false)}
+  }
 }
 function ustKalk(){S.ust=null;S.sonAtk=S.t}      // yukarı çekince kalkar
 function supermenKay(dir){        // iki parmak yatay kaydırma: süpermen gibi yatay uçarak ileri yumruk (Sub-Zero kaymasının ~2 katı mesafe)

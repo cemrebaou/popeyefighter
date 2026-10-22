@@ -62,8 +62,11 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
     return;
   }
   const MZ=e.kc==='b'?425:e.kc==='p'?430*bs:470,V=(e.boss?170:e.kc==='p'?210:260)*2;      // vurma menzili, yürüme hızı (eskinin 2 katı)
-  if(!e.boss&&e.hp<e.max*0.25){kYuru(e,dt,dx>=0?-1:1,V/2,true);return}      // canı azalınca topallayarak uzaklaşır
-  if(!e.ks&&(e.geri||ad<MZ*0.55)){e.geri=ad<MZ*0.95;if(e.geri){kYuru(e,dt,dx>=0?-1:1,V*0.55,false);return}}      // içine girilince geri geri menzilin ucuna
+  if(!e.boss&&!e.kacti&&e.hp>0&&e.hp<e.max*0.25){e.kacti=true;e.kac={t0:S.t,hp0:e.hp,v:0};e.geri=false}      // canı ilk kez %25 altına düşünce bir kez kaçar
+  if(e.kac){const k=e.kac;
+    if(S.t-k.t0>=10||k.v>=4)e.kac=null;      // 10 sn dolunca ya da 4 kez vurulunca savaşa döner
+    else{e.hp=Math.min(e.max*0.5,e.hp+(e.max*0.5-k.hp0)/10*dt);kYuru(e,dt,dx>=0?-1:1,V/2,true);return}}      // topallayarak uzaklaşır, canı %50'ye doğru dolar
+  if(!e.ks&&(e.geri||ad<MZ*0.55)){e.geri=ad<MZ*0.95;if(e.geri){kYuru(e,dt,dx>=0?-1:1,V*0.825,false);return}}      // içine girilince geri geri menzilin ucuna
   if(e.kc==='p'&&(e.ks||(ad>=430*bs&&ad<1900))){      // nişan al (hazırlık sesi), 0.6 sn sonra ateş; ateşler arası 1-2 sn rastgele
     const ks=e.ks;
     if(ks){
@@ -266,7 +269,7 @@ function ciziKorsan(e,mask){
     ctx.save();ctx.translate(0,K.ud||0);ctx.rotate(p.torso*D);if(K.us)ctx.scale(K.us,K.us);      // us: belden yukarısının ölçeği; ud: belden üstü aşağı kayma
     krp(R[K.p+'govde'],K.A.govde,fl);if(ek&&K.sp)uc(ek,3,K.sp[0],K.sp[1]);      // kancacı: sırttaki zincir makarası
     if(mask==='ust')yaraCiz(e,0,0,170,true);
-    ctx.save();ctx.translate(K.boyun[0]+(p.hb||0)*70,K.boyun[1]+(K.kd||0)+(p.hb||0)*28);ctx.rotate(p.bas*D);if(K.ks)ctx.scale(K.ks,K.ks);{const vy=e.vurT!=null&&S.t-e.vurT<0.6&&R[K.p+'vur'],ah=!vy&&e.dus&&(e.dusA||0)>0.5&&R[K.p+'ahh'];krp(vy||ah||R[K.p+'kafa'],vy?K.A.vur:ah?K.A.ahh:K.A.kafa,fl)};ctx.restore();
+    ctx.save();ctx.translate(K.boyun[0]+(p.hb||0)*70,K.boyun[1]+(K.kd||0)+(p.hb||0)*28);ctx.rotate(p.bas*D);if(K.ks)ctx.scale(K.ks,K.ks);{const vy=e.vurT!=null&&S.t-e.vurT<0.6&&R[K.p+'vur'],ah=!vy&&e.dus&&(e.dusA||0)>0.5&&R[K.p+'ahh'];const ac=!vy&&!ah&&e.kac&&R[K.p+'aci'];krp(vy||ah||ac||R[K.p+'kafa'],vy?K.A.vur:ah?K.A.ahh:ac?K.A.vur:K.A.kafa,fl)};ctx.restore();
     kKol(K,K.omN,p.uN,p.rN,p.wN,false,fl,ek,0);      // yakın kol en önde
     ctx.restore();
   }

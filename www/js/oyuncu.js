@@ -96,6 +96,7 @@ function hedefPoz(){
     Object.assign(o,{lN:-4,bN:96,lF:6,bF:92,kN:1,kF:1,pelv:0,hx:0,hy:0,hb:0,cr:0,lift:0});o.ofs*=0.3;
     if(!S.atk){o.torso=8;o.bas=-6;if(!kolVar()){o.aNu=-40;o.aNr=70;o.aFu=-30;o.aFr=75}}
   }
+  if(S.dag&&!S.yer)Object.assign(o,{aNu:-92,aNr:4,aFu:-80,aFr:-8,torso:22,bas:6});      // dağ sıçraması: bıçaklar önde
   if(S.sarj>0)o.torso+=4;                                                // şarjda kollar parmakları izler, top iki yumruğun ortasında büyür
   if(S.hitR){                       // darbe tepkisi: vurulan yer geriye (vuranın ters yönüne) savrulur
     const u=(S.t-S.hitR.t0)/0.55;

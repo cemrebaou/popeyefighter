@@ -60,7 +60,7 @@ function ispOnCiz(){              // arka eldeki kutu: yüzün önünde
 }
 function ispGuncelle(dt){
   if(!S.yeme&&!S.uzan&&S.yer&&S.durum==='oyun'&&!S.pence&&!S.atk&&S.sarj<=0){      // kol 0.5 sn'den uzun aşağı: eğil
-    for(const k of ['N','F']){const K=KOL[k],ok=K.ak&&K.e>0.7&&Math.abs(K.th-90)<35&&!tutan(k);S.uzT[k]=ok?S.uzT[k]+dt:0;if(S.uzT[k]>0.5){S.uzan={k,B:0};break}}
+    for(const k of ['N','F']){const K=KOL[k],ok=K.ak&&K.e>0.7&&Math.abs(K.th-90)<60&&!tutan(k);S.uzT[k]=ok?S.uzT[k]+dt:0;if(S.uzT[k]>0.5){S.uzan={k,B:0};break}}
   }else{S.uzT.N=S.uzT.F=0}
   if(S.uzan){
     const u=S.uzan;
