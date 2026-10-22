@@ -21,7 +21,7 @@ function atkYarat(tur){      // '#ad@dp[L]~no[*+]': ad = hareket, dp = zincirdek
 }
 function atkIstek(tur){
   if(!S.atk)S.atk=atkYarat(tur);
-  else if(S.kuyruk.length<2)S.kuyruk.push(tur);
+  else if(S.kuyruk.length<3)S.kuyruk.push(tur);
 }
 function atkGuncelle(dt){
   if(!S.atk)return;
@@ -61,7 +61,7 @@ function atkPozu(o){
 }
 
 // ---------- Dokunma kombo sistemi ----------
-// Ekranın sağ yarısına dokun = R (ön kol), sol yarısına dokun = L (arka kol). Peş peşe dokunuşlar kombo zincirini ilerletir (en çok 6 dokunuş).
+// Ekranın sağ yarısına dokun = R (ön kol), sol yarısına dokun = L (arka kol). Peş peşe dokunuşlar kombo zincirini ilerletir (en çok 6 dokunuş; oynayan + sırada en çok 3).
 // Harf: j=jab, c=düz (cross), h=kanca (hook), u=aparkat, o=üstten (overhand), b=gövde yumruğu; N=ön kol, F=arka kol.
 const GK={N:['aNu','aNa','aFu','aFa',[-10,-62]],F:['aFu','aFa','aNu','aNa',[-26,-70]]};
 const LG={n:{lN:7,bN:3,lF:-9,bF:6},c:{lN:-18,bN:30,lF:-24,bF:36},t:{lN:-60,bN:90,lF:-40,bF:80},s:{lN:22,bN:30,lF:28,bF:40}};   // bacak pozları: n duruş, c çömel, t zıplarken topla, s süpermen (arkaya uzat)
@@ -86,7 +86,7 @@ function ph(arm,dur,fr){
 ['N','F'].forEach(arm=>{      // bıçak modu saplamaları (normal yumrukların 2 katı hızlı)
   const rn=arm==='N'?{u:-26,a:-70}:{u:-10,a:-62},rec=[1,{u:rn.u,a:rn.a,tor:6}],geri={u:20,a:20,tor:-10,bas:-4};      // geri: aparkatın başı (kol aşağı-geri çekili)
   HAREKET['pd'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-90,a:0,tor:6,bas:2,ofs:70}],[.6,{u:-90,a:0,tor:6,bas:2,ofs:75}],rec]);      // yumruk: omuz hizasında dümdüz karşıya, kol yere paralel, gövde az yatar
-  HAREKET['pa'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-88,a:-2,tor:24,bas:5,ofs:95}],[.6,{u:-88,a:-2,tor:24,bas:5,ofs:100}],rec]);      // tekme: öne eğilip biraz aşağı (yere doğru) saplar
+  HAREKET['pa'+arm]=ph(arm,.24,[[0,Object.assign({lg:'n'},geri)],[.35,{u:-52,a:42,tor:42,bas:10,ofs:115,lift:-70,lg:'c'}],[.62,{u:-50,a:46,tor:44,bas:10,ofs:120,lift:-72,lg:'c'}],[1,{u:rn.u,a:rn.a,tor:6,lg:'n'}]]);      // tekme: dizler kırılır, kalça alçalır, gövde öne eğilir, kol önde yere doğru uzanıp saplar
   HAREKET['pu'+arm]=ph(arm,.24,[[0,Object.assign({lg:'c'},geri)],[.35,{u:-125,a:-70,tor:14,bas:5,ofs:80,lift:30,lg:'t'}],[.6,{u:-125,a:-70,tor:14,bas:5,ofs:85,lift:34,lg:'t'}],[1,{u:rn.u,a:rn.a,tor:6,lg:'n'}]]);      // aparkat gibi yukarı
   HAREKET['py'+arm]=ph(arm,.22,[[0,{u:-150,a:-100,tor:-6,bas:-4}],[.4,{u:-28,a:80,tor:34,bas:10,ofs:40}],[.62,{u:-28,a:80,tor:34,bas:10,ofs:40}],[1,{u:-70,a:-40,tor:12}]]);      // yerdekine saplama
 });
@@ -189,7 +189,7 @@ const TUT_DESEN=['jjchuo','bbhhuc','huhuoc','jcbhuo','buchbo'];   // tutulana vu
 S.tk={i:0,p:0,t:-9};
 function tutKombo(arm){
   if(S.durum!=='oyun'||S.sarj>0)return;
-  if(S.atk&&S.kuyruk.length>=2)return;
+  if(S.atk&&S.kuyruk.length>=3)return;
   if(S.t-S.tk.t>0.9)S.tk.i=0;
   const pat=TUT_DESEN[S.tk.p%TUT_DESEN.length];
   const m=pat[S.tk.i]+arm;
@@ -203,7 +203,7 @@ function kBonus(){const k=S.kSon;S.kSon=null;if(k&&S.cE&&!S.cE.olu&&(S.cEt||-9)>
 function komboTap(d,side){
   if(S.durum!=='oyun'||S.sarj>0||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam)return;
   if(S.pence){penceVur(d==='t'?'a':'d',side);return}      // bıçak modu: yumruk = düz saplama, tekme = aşağı saplama
-  if(S.atk&&S.kuyruk.length>=2)return;
+  if(S.atk&&S.kuyruk.length>=3)return;
   let n=S.t-S.kb.t>0.65?KB:S.kb.n, c=n.ch[d], dp=(S.kb.d||0)+1;
   if(n===KB)dp=1;
   if(!c){c=KB.ch[d];dp=1}                              // zincirde devamı yoksa yeni zincir başlar

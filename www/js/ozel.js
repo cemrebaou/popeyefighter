@@ -82,7 +82,7 @@ const PK=()=>S.pence?2:1;      // pençede yumrukla yapılan vuruşlar 2 kat
 // ---- Bıçak modu vuruşları: kol aparkat başı gibi aşağı-geri çekilir, dirsekten ileri saplar (2 kat hızlı) ----
 // yumruk = düz karşıya (pd), tekme = aşağı (pa), yukarı çekme = aparkat gibi yukarı (pu); yerdekinin üstündeyken her basış yere saplama (py)
 function penceVur(tip,side){
-  if(S.atk&&S.kuyruk.length>=2)return;
+  if(S.atk&&S.kuyruk.length>=3)return;
   if(S.ust){if(S.ust.f!=='diz')return;tip='y'}
   atkIstek('#p'+tip+side);
 }
@@ -122,8 +122,8 @@ function dagGuncelle(dt){
   const d=S.dag;S.vx=d.dir*DAG_VX;S.yon=d.dir;S.vy+=G*DAG_G*dt;
   for(const e of DUS){
     if(e.olu||e.boss||e.tut)continue;
-    if(Math.abs(e.x-S.x)<e.r+140&&Math.abs(e.y+e.cy-(S.y+480))<650){      // ilk çarptığı düşman: uçuş biter
-      S.dag=null;S.pSes=true;vur(e,50,d.dir,0.3,0.9,e.y+e.cy);S.pSes=false;if(S.hp>0)S.hp=Math.min(100,S.hp+1);
+    if(elDeg(e,'N',70)||elDeg(e,'F',70)){      // ilk çarptığı düşman: uçuş biter
+      S.dag=null;S.pSes=true;vur(e,30,d.dir,0.3,0.9,e.y+e.cy);S.pSes=false;if(S.hp>0)S.hp=Math.min(100,S.hp+1);
       if(e.olu){S.vx=d.dir*400;return}
       e.cy0=e.cy0||e.cy;if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+DUS_DUS+2.5+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+2.5+DUS_KALK,yn:d.dir};e.vx=d.dir*200;e.vy=0;      // hemen yere serilir
       const tx=e.x-d.dir*120,T=0.16;      // baktığı yönü bozmadan hemen üstüne iner
@@ -224,7 +224,10 @@ function zitKontrol(){            // iki parmak zıt yöne yatay kayar = kasırg
 function blokGuncelle(dt){        // iki parmak ekranda hareketsiz = blok
   const a=izBul('N'),b=izBul('F');
   const ok=!!(a&&b&&S.durum==='oyun'&&S.sarj<=0&&!(S.tats>0)&&Math.abs(a.turn)<1&&Math.abs(b.turn)<1&&KOL.N.e<0.5&&KOL.F.e<0.5&&izHiz(a,0.25)<150&&izHiz(b,0.25)<150&&!DUS.some(e=>e.tut)&&!ikiYakin());
-  if(ok){S.blokDw+=dt;if(S.blokDw>0.2&&!S.blok){S.blok=true;S.blokT=S.t}}else{S.blokDw=0;S.blok=false}
+  if(ok){S.blokDw+=dt;const ilk=(performance.now()-Math.min(a.t0,b.t0))/1000;      // parmaklar tam aynı anda basılmasa da olur: ilk parmak 0.2 sn önce bastıysa ikinci parmakla hemen blok
+    if(!S.blok&&(S.blokDw>0.2||(S.blokDw>0.08&&ilk>0.2))){S.blok=true;S.blokT=S.t}
+    if(S.blok){a.blk=b.blk=true;S.blokBos=S.t}}
+  else{S.blokDw=0;if(S.blok&&S.t-(S.blokBos||-9)>0.12)S.blok=false}      // parmaklar az farkla kalkarsa blok hemen bozulmaz
   if(S.blok)S.blokSonT=S.t;
 }
 function carpisma(){              // fırlayan düşman başka düşmana çarpınca ikisi de hasar alır (bowling)

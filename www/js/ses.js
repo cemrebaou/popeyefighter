@@ -10,7 +10,7 @@ function sesAc(){
 const SES_SON={};
 let ENPOS=[],SWD=null,YAR=null,YARS=null,HAZ=null,PAT=null,PPAR=null,SAPLA=null,SYUK=false,AD_SON=0,EMER=[],EFL=[];      // HAZ/PAT: kaptanın nişan ve ateş sesi, PPAR: yırtma, SAPLA: bıçak saplanma; EMER: düşman mermileri, EFL: namlu ateşi
 const PB=[],PBAG=[],AD=[],ADBAG=[],TK=[],TKBAG=[],KLC=[],WH=[],WHBAG=[],JP=[];let JPBAG=[],JPSON=-1;      // yumruk, adım, tekme, bıçak sesleri (torba: hepsi bir kez çalınmadan aynısı tekrar gelmez)
-const BLD=[],BLDBAG=[],INS=[],INSBAG=[],OLS={};let BOPEN=null,USTS=null,GRS=null,DSS=null,DEVS=null,ARK=null,ARKSRC=null;      // bıçak vuruşu, yere iniş, ölüm (k/b/p/h), üstüne atlama, tutma, düşman düşmesi, arka plan müziği
+const BLD=[],BLDBAG=[],INS=[],INSBAG=[],OLS={};let KALPS=null,BOPEN=null,USTS=null,GRS=null,DSS=null,DEVS=null,ARK=null,ARKSRC=null;      // bıçak vuruşu, yere iniş, ölüm (k/b/p/h), üstüne atlama, tutma, düşman düşmesi, arka plan müziği
 function arkaCal(){if(!AC||!ARK||ARKSRC)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ARK;src.loop=true;g.gain.value=0.35;src.connect(g);g.connect(AC.destination);src.start();ARKSRC=src}      // oyun boyunca döngüde
 function bufCal(buf,v){if(!AC||!buf)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=buf;g.gain.value=v||1;src.connect(g);g.connect(AC.destination);src.start()}
 function torbaCal(L,B,v){if(!L.length)return;if(!B.length)B.push(...L.keys());bufCal(L[B.splice(Math.floor(Math.random()*B.length),1)[0]],v)}
@@ -26,7 +26,7 @@ function sesYukle(){
   for(let i=1;i<=3;i++)y('jump_'+i,b=>JP.push(b));      // sallama (boşta da dolu da): yumruk, tekme, bıçak
   for(const n of ['blade','blade_1','blade_2'])y(n,b=>BLD.push(b));for(const i of [1,2])y('inis_'+i,b=>INS.push(b));for(const k of ['k','b','p','h'])y('olum_'+k,b=>OLS[k]=b);
   y('ust_atla',b=>USTS=b);y('grap',b=>GRS=b);y('bladeopen',b=>BOPEN=b);y('dusme',b=>DSS=b);y('devrilses',b=>DEVS=b);y('arkaplansoguk2',b=>{ARK=b;arkaCal()});
-  y('spinach-drop',b=>ISPS=b);y('yemeses',b=>YEMS=b);
+  y('spinach-drop',b=>ISPS=b);y('kalpsesi',b=>KALPS=b);y('yemeses',b=>YEMS=b);
   y('parcalanma',b=>PPAR=b);y('yarildi',b=>YAR=b);y('yarildi_sonra',b=>YARS=b);y('sapla',b=>SAPLA=b);y('mermi_haz',b=>HAZ=b);y('mermi_patla',b=>PAT=b);
 }
 function ziplaCal(){            // zıplama sesi: torba sırası, peş peşe iki zıplama (ilk ve ikinci) asla aynı ses olmaz

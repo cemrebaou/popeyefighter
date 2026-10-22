@@ -29,7 +29,7 @@ function emerGuncelle(dt){
     if(p.y<zemin(p.x)||p.t>4||Math.abs(p.x-S.x)>4500){EMER.splice(i,1);continue}
     if(S.durum!=='oyun')continue;
     const ust=(S.yer&&asagiMi())?690:900;      // eğilince kafa hizası mermiden aşağıda kalır
-    if(Math.abs(p.x-S.x)<80&&p.y>S.y+60&&p.y<S.y+ust){
+    if(oyuncuDeg(p.x,p.y,15)){
       EMER.splice(i,1);
       if(dokunulmaz()){
         S.inv=S.t+1.0;titre(40);
@@ -55,7 +55,7 @@ function mermiGuncelle(dt){
     if(p.y<zemin(p.x)){S.sars=Math.max(S.sars,6);MERMI.splice(i,1);continue}
     for(const e of DUS){
       if(e.olu||p.hit.has(e))continue;
-      if(Math.hypot(p.x-e.x,p.y-(e.y+e.cy))<e.r+p.r*0.8*ADK_O){p.hit.add(e);e.tut=null;vur(e,50,Math.sign(p.vx)||S.yon,0.25,0.5+0.5*p.ch,p.y)}
+      if(dusDeg(e,p.x,p.y,p.r*0.8*ADK_O)){p.hit.add(e);e.tut=null;vur(e,50,Math.sign(p.vx)||S.yon,0.25,0.5+0.5*p.ch,p.y)}
     }
     if(p.t>1.6||Math.abs(p.x-S.x)>4500||Math.abs(p.y-S.y)>3500)MERMI.splice(i,1);
   }

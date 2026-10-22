@@ -176,7 +176,7 @@ function tekmeBolgesi(x,y){
 }
 function tekmeAt(t){
   if(S.durum!=='oyun'||S.sarj>0||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam)return;
-  if(S.atk&&S.kuyruk.length>=2)return;
+  if(S.atk&&S.kuyruk.length>=3)return;
   const te=DUS.find(z=>z.tut&&!z.olu);
   if(te){atkIstek('#'+((te.x-S.x)*S.yon<-20?'kickBk':'kick1')+(t==='N'?'':'F'));return}      // tutarken: tutulan düşmana tekme; arkadaysa at tekmesi (diz yok)
   komboTap('t',t);
@@ -209,7 +209,7 @@ cv.addEventListener('pointermove',e=>{
 const kolBit=e=>{
   const kz=kizler.get(e.pointerId);if(kz){kizler.delete(e.pointerId);if(e.type==='pointerup'&&kz.maxd<30&&performance.now()-kz.t0<400)tekmeAt(kz.t);return}
   const iz=izler.get(e.pointerId);if(!iz)return;izler.delete(e.pointerId);
-  const tap=!iz.tm&&e.type==='pointerup'&&!DUS.some(z=>z.tut===iz.t)&&S.sarj<=0&&!iz.joined&&iz.maxd<22&&performance.now()-iz.t0<320&&!iz.sho&&!iz.atil&&!iz.sla&&!iz.sup;   // kısa dokunuş = kombo vuruşu
+  const tap=!iz.tm&&e.type==='pointerup'&&!DUS.some(z=>z.tut===iz.t)&&S.sarj<=0&&!iz.joined&&iz.maxd<22&&performance.now()-iz.t0<320&&!iz.sho&&!iz.atil&&!iz.sla&&!iz.sup&&!iz.blk;   // kısa dokunuş = kombo vuruşu
   if(iz.tm&&!iz.joined&&e.type==='pointerup'&&performance.now()-iz.t0<350)tutKombo(iz.t);      // bir elle tutmuşken diğer tarafa kısa bas/çek: parmak kalkınca boştaki kol tutulana vurur (basılı kalırsa ikinci el tutuşa katılır)
   tutBirak(iz.t);
   const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t;

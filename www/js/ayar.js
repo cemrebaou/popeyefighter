@@ -1,9 +1,9 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.275';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.276';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=64';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=65';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir']
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
@@ -34,6 +34,7 @@ for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.webp',im=>KANI[i]=im);
 for(let i=0;i<3;i++)yukle('fx/kar'+i+'.webp',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
 for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)
 ['patla','sprey','yarik','aduket_start','aduket_iz'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
+['bos','kir','tur','kalp'].forEach(n=>yukle('ui/bar_'+n+'.webp',im=>R['bar_'+n]=im));      // can/enerji barı: boş, kırmızı can dolgusu, enerji dolgusu, küçük kalp
 yukle('fx/yol.webp',im=>R.yol=im);yukle('fx/dag.webp',im=>R.dag=im);
 for(let i=0;i<8;i++)yukle('fx/agac'+i+'.webp',im=>AGAC[i]=im);      // 0,1,2,4,6 yapraklı çam; 3,5,7 yapraksız      // arka plan ağaçları
 function gorselHazir(){
@@ -51,7 +52,7 @@ function hasarCiz(ciz,i,f){ciz(i);if(f>0.004){const a=ctx.globalAlpha;ctx.global
 const CR_H=320;                 // çömelmede kalça yüksekliği
 const BACAK_BOY=477;            // eklemden zemine (kalça-diz 206 + diz-bilek 172 + bilek-taban 99)
 const KARAKTER_BOY=1020;
-const HIZ=1100, G=5600, ZIP1=2700, ZIP2=2400;
+const HIZ=1100, G=5600, ZIP1=3818, ZIP2=2400;
 const D=Math.PI/180;
 // [başlangıç x, yükseklik]; sol baştaki ve sağ sondaki yüksek duvar bölümün sınırı
 const ZEMIN=[[-1e9,0]];      // şimdilik düz zemin

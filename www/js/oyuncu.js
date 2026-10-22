@@ -140,8 +140,9 @@ function bacak(l,k,ank,koyu){
   const sfx=koyu?'_k':'';
   const lb=S.atk&&S.atk.fl&&efLeg(S.atk.ad).indexOf(koyu?'F':'N')>=0, lI=lb?efSiddet():0, lf=lb&&S.atk.fl==='*'&&lI>0;   // tekme/diz bitişinde bacağın tamamı parlar
   ctx.save();if(koyu)ctx.scale(KFS,KFS);ctx.rotate(l*D);      // arkadaki (sol) bacak perspektif için %90
-  ctx.save();ctx.translate(T_X,T_Y);ctx.rotate(k*D);
-  ctx.save();ctx.translate(S_X,S_Y);ctx.rotate(ank*D);resim(R['bacak_bot'+sfx],55,22);   // bot en arkada
+  const ay=AY[koyu?'F':'N'];
+  ctx.save();ctx.translate(T_X,T_Y);ay.d=dunyaNok(0,0);ctx.rotate(k*D);
+  ctx.save();ctx.translate(S_X,S_Y);ctx.rotate(ank*D);ay.a=dunyaNok(36,40);ay.u=dunyaNok(110,80);resim(R['bacak_bot'+sfx],55,22);   // bot en arkada
   if(lf)ekParla(R['bacak_bot'+sfx],55,22,lI);else if(lb)parilti(70,80,80,lI,'+');
   ctx.restore();
   resim(R['altpan'+sfx],61.6,32.1);
@@ -175,7 +176,7 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   const bitis=S.atk&&S.atk.fl==='*'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad), bI=bitis?efSiddet():0;      // kombo bitiş vuruşu: kolun tamamı parlar
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);
   ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
-  elKaydet(ad);
+  elKaydet(ad);if(S.pence){EL[ad].b1=dunyaNok(330,0);EL[ad].b2=dunyaNok(420,0)}else EL[ad].b1=EL[ad].b2=null;      // bıçak ağzı / ucu
   {const d=S.pence?PENCE_EL[ad]:KOL_EL[ad][HS[ad]||'yum'];
    ctx.save();ctx.translate(140.4,0);if(ad==='N')ispElCiz(ad);resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI);if(ad==='F')ispElCiz(ad);ctx.restore();}   // el bilekte
   resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);
@@ -227,11 +228,11 @@ function karakter(){
   ctx.save();ctx.translate(BON,0);
   bacak(F.l,F.k,F.a,true);
   ctx.restore();
-  ctx.save();ctx.translate(P.hx+BON,-P.hy);ctx.rotate(P.pelv*D);resim(R.kalca,73.5,118.8);ctx.restore();   // kalça (şort) bacakların önünde, gövdenin arkasında
+  ctx.save();ctx.translate(P.hx+BON,-P.hy);ctx.rotate(P.pelv*D);PB.kal=dunyaNok(0,-20);resim(R.kalca,73.5,118.8);ctx.restore();   // kalça (şort) bacakların önünde, gövdenin arkasında
   govdeUzayi(()=>{ ctx.scale(1.1,1.1);const [i,f]=hasarKat(S.hp);hasarCiz(n=>resim(R['govde'+n],97.7,246.4),i,f); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak gövdenin önünde
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=S.yeme&&S.t-S.yeme.t0>0.7&&S.t-S.yeme.t0<1.85;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-95.4,-192.4,205.8,298.2):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü
+    ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);PB.boyun=dunyaNok(0,60);PB.kafa=dunyaNok(7.5,-85.5);PB.t=S.t;{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=S.yeme&&S.t-S.yeme.t0>0.7&&S.t-S.yeme.t0<1.85;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-95.4,-192.4,205.8,298.2):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü
     ctx.restore();
     kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
   });

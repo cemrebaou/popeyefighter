@@ -7,6 +7,7 @@ Object.assign(S,{hp:100,inv:0,dur:0,sars:0,shx:0,shy:0,durum:'oyun',durumT:0,pop
 const ZY=()=>H*0.80, kisit=(v,a,b)=>Math.max(a,Math.min(b,v));
 const EL={N:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}},F:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}}}, DW={N:0,F:0};
 let sonYon=1, DUS=[], MERMI=[];
+const PB={t:-9}, AY={N:{},F:{}};      // oyuncunun gövde noktaları (kalça, boyun, kafa) ve bacak noktaları (d diz, a bot ortası, u bot ucu): vuruşlar gerçek temasla
 function dunyaNok(lx,ly){const m=ctx.getTransform(),sx=(m.a*lx+m.c*ly+m.e)/DPR-S.shx,sy=(m.b*lx+m.d*ly+m.f)/DPR-S.shy;return [S.x+(sx-W/2)/SC,S.camY+(ZY()-sy)/SC]}
 function elKaydet(ad){            // ön kol uzayında yumruk noktasının dünya konumu
   const m=ctx.getTransform(), lx=248, ly=0, h=EL[ad];

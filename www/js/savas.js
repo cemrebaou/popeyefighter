@@ -1,6 +1,25 @@
 'use strict';
 // Vuruş, isabet kontrolü, tutma, yırtma, düşman güncelleme
 const DUS_DUS=0.45,DUS_KALK=1.0;      // yere düşüş ve kalkış süreleri
+// ---- Temas: vuruş sadece vuran parça (yumruk / bıçak / diz / bot) vücudun o anki pozuna gerçekten değince ----
+function segUz(px,py,a,b){const vx=b.x-a.x,vy=b.y-a.y,L=vx*vx+vy*vy;let t=L?((px-a.x)*vx+(py-a.y)*vy)/L:0;t=t<0?0:t>1?1:t;return Math.hypot(px-a.x-vx*t,py-a.y-vy*t)}
+const GKAP=[['kal','boy',0.52],['boy','kafa',0.48],['kal','dN',0.3],['dN','aN',0.27],['kal','dF',0.3],['dF','aF',0.27]];      // düşman vücudu: kapsüller (yarıçap e.r ile orantılı); yerde yatarken de pozla birlikte yatar
+function dusDeg(e,x,y,pad){
+  const b=e._b;
+  if(!b||S.t-b.t>0.2)return Math.hypot(x-e.x,y-(e.y+e.cy))<e.r*0.8+pad;      // çizilmemişse (ekran dışı) eski daire
+  for(const [p,q,r] of GKAP){const A=b[p],C=b[q];if(A&&C&&segUz(x,y,A,C)<e.r*r+pad)return true}
+  return false;
+}
+const nk=a=>a&&{x:a[0],y:a[1]};
+function oyuncuDeg(x,y,pad){      // nokta oyuncunun vücuduna değiyor mu (eğilince/yatınca poza uyar)
+  if(!PB.kal||S.t-PB.t>0.2)return Math.abs(x-S.x)<120+pad&&y>S.y-pad&&y<S.y+850+pad;
+  const K=[[PB.kal,PB.boyun,115],[PB.boyun,PB.kafa,105],[PB.kal,AY.N.d,70],[AY.N.d,AY.N.a,62],[PB.kal,AY.F.d,70],[AY.F.d,AY.F.a,62]];
+  for(const [a,b,r] of K){if(a&&b&&segUz(x,y,nk(a),nk(b))<r+pad)return true}
+  return false;
+}
+function elDeg(e,k,pad){const h=EL[k];if(dusDeg(e,h.wx,h.wy,pad))return true;return !!(S.pence&&h.b1&&(dusDeg(e,h.b1[0],h.b1[1],pad*0.7)||dusDeg(e,h.b2[0],h.b2[1],pad*0.6)))}      // yumruk ya da bıçak
+function ayakDeg(e,L,pad){const a=AY[L];return !!(a&&a.d&&(dusDeg(e,a.d[0],a.d[1],pad)||dusDeg(e,a.a[0],a.a[1],pad)||dusDeg(e,a.u[0],a.u[1],pad)))}      // diz ya da bot
+function yereDeg(e){const b=e._b;if(!b||S.t-b.t>0.25)return true;let lo=1e9;for(const n of ['kafa','boy','kal'])if(b[n])lo=Math.min(lo,b[n].y);return lo-zemin(e.x)<e.r*0.75}      // ölünün kafası/gövdesi yerde mi
 function vur(e,dmg,vx,vy,f,hy){
   let krit=false;e.sonV=S.t;e.vurT=S.t;if(e.kac)e.kac.v++;      // vurT: 0.6 sn acı yüzü
         // son vuruş zamanı (tutulu korsan 1 sn vurulmazsa kafa atar)
@@ -33,19 +52,19 @@ function vurusKontrol(){
     if(S.sarj>0||!(dugme||kolAktif(KOL[k]))||h.v<1500)continue;
     for(const e of DUS){
       if(e.olu||e.hitT[k]>S.t||e.tut===k||e.iki)continue;      // kendi tuttuğuna vurmaz, diğer elle vurabilir
-      if(Math.hypot(h.wx-e.x,h.wy-(e.y+e.cy))>e.r+60)continue;
+      if(!elDeg(e,k,45))continue;
       if(dugme&&(e.x-S.x)*S.yon<-40)continue;      // kombo vuruşu arkadakine işlemez
       const f=kisit((h.v-1500)/6000,0,1);
       const kd=kDmg(S.atk);if(kd!==null&&!S.atk.tv){S.cE=e;S.cEt=S.t}
-      S.pSes=true;S.pHx=h.wx;vur(e,(kd!==null&&!S.atk.tv?kd:5)*PK(),h.vx,h.vy,f,h.wy);S.pSes=false;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);if(S.pence&&S.hp>0)S.hp=Math.min(100,S.hp+1);      // bıçak vuruşu +1 can
+      S.pSes=true;S.pHx=h.wx;vur(e,kd!==null&&!S.atk.tv?kd*PK():(S.atk&&/^pa[NF]$/.test(S.atk.ad)?15:15*PK()),h.vx,h.vy,f,h.wy);S.pSes=false;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);if(S.pence&&S.hp>0)S.hp=Math.min(100,S.hp+1);      // bıçak vuruşu +1 can
     }
   }
   if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){      // Sub-Zero kayması: alçak çelme, havaya fırlatır
     for(const e of DUS){
       if(e.olu||e.kyT===S.kay.t0)continue;
       const dx=(e.x-S.x)*S.yon;
-      if(dx<-100||dx>520+e.r*0.7||e.y>S.y+300)continue;
-      e.kyT=S.kay.t0;const d0=e.dus;S.pSes='tekme';vur(e,18,S.yon*0.5,1,0.6,S.y+50);S.pSes=false;if(!e.tut){e.vy=1900;e.vx=S.yon*300}
+      if(!(ayakDeg(e,'N',60)||ayakDeg(e,'F',60)))continue;
+      e.kyT=S.kay.t0;const d0=e.dus;S.pSes='tekme';vur(e,15,S.yon*0.5,1,0.6,S.y+50);S.pSes=false;if(!e.tut){e.vy=1900;e.vx=S.yon*300}
       if(!e.olu&&!e.tut&&!e.boss){if(Math.random()<0.5){e.cy0=e.cy0||e.cy;if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+DUS_DUS+1.8+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+1.8+DUS_KALK,yn:S.yon}}else if(!d0&&e.dus)e.dus=null}      // %50 yere serer      // kayan tekme: yarım zıplama kadar yukarı, çok az ileri
     }
   }
@@ -54,28 +73,28 @@ function vurusKontrol(){
     for(const e of DUS){
       if(e.olu||e.smT===m.t0)continue;
       const dx=(e.x-S.x)*m.dir,ey=e.y+e.cy-S.y;
-      if(dx>-150&&dx<650+e.r&&ey>-e.r&&ey<1000){e.smT=m.t0;vur(e,50*PK(),m.dir,0.15,0.7+0.3*m.ch,S.y+400)}
+      if(elDeg(e,'N',60)||elDeg(e,'F',60)){e.smT=m.t0;vur(e,50*PK(),m.dir,0.15,0.7+0.3*m.ch,S.y+400)}
     }
   }
   if(S.dkick){                      // uçan tekme: ayak ucu çarptığına sert vurur
     const al=S.dkick.al*D,fx=S.x+S.dkick.dir*Math.sin(al)*430,fy=S.y+398-Math.cos(al)*430;
     for(const e of DUS){
       if(e.olu||e.dkT===S.dkick.t0)continue;
-      if(Math.hypot(fx-e.x,fy-(e.y+e.cy))<e.r+130){e.dkT=S.dkick.t0;S.pSes='tekme';vur(e,30,S.dkick.dir,-0.5,0.8,fy);S.pSes=false}
+      if(ayakDeg(e,'N',70)||ayakDeg(e,'F',70)){e.dkT=S.dkick.t0;S.pSes='tekme';vur(e,15,S.dkick.dir,-0.5,0.8,fy);S.pSes=false}
     }
   }
   if(S.tats>0){                     // kasırga: etrafındaki herkese vurur
     for(const e of DUS){
       if(e.olu||e.tsT>S.t)continue;
       const dx=e.x-S.x,ey=e.y+e.cy-S.y;
-      if(Math.abs(dx)<480+e.r*0.6&&ey>-e.r&&ey<900){e.tsT=S.t+1.0;vur(e,50,dx>=0?1:-1,0.4,0.5,S.y+400)}
+      if(ayakDeg(e,'N',70)||ayakDeg(e,'F',70)){e.tsT=S.t+1.0;vur(e,50,dx>=0?1:-1,0.4,0.5,S.y+400)}
     }
   }
   if(S.shoryu>0&&S.vy<0){           // shoryuken: yükselirken önündeki ve üstündeki düşmanlara sert vurur
     for(const e of DUS){
       if(e.olu||e.shT===S.shId)continue;
       const dx=(e.x-S.x)*S.yon,ey=e.y+e.cy-S.y;
-      if(dx>-150&&dx<500+e.r&&ey>-100&&ey<1300){e.shT=S.shId;vur(e,32*PK(),S.yon*0.3,1,0.85,S.y+900)}
+      if(elDeg(e,S.shArm,60)||(S.shBoth&&elDeg(e,S.shArm==='N'?'F':'N',60))||ayakDeg(e,S.shDiz,50)){e.shT=S.shId;vur(e,32*PK(),S.yon*0.3,1,0.85,S.y+900)}
     }
   }
   const a=S.atk;
@@ -93,7 +112,8 @@ function vurusKontrol(){
       for(const e of DUS){
         if(e.olu)continue;
         const arkaT=a.ad.indexOf('kickBk')===0,dx=(e.x-S.x)*S.yon*(arkaT?-1:1), ey=e.y+e.cy-S.y;
-        if(dx<0||dx>menzil+e.r||ey<-e.r||ey>(tekme?1000:700))continue;
+        let dg=false;for(const L of (efLeg(a.ad)||'NF'))if(ayakDeg(e,L,55))dg=true;
+        if(!dg)continue;
         const kd=kDmg(a);if(kd!==null){S.cE=e;S.cEt=S.t}
         S.pSes=tekme?'tekme':true;vur(e,kd!==null?Math.max(1,Math.round(kd/PEN.length)):(tekme?24:16),S.yon*(arkaT?-1:1),0.3,tekme?0.7:0.5,S.y+kickH(a.ad,wi));S.pSes=false;a.vw[wi]=true;
       }
@@ -185,13 +205,15 @@ function tutBirak(k){
 function olmGuncelle(e,dt){      // ölüm hareketi; yere yattıktan 5 sn sonra söner (true = sil)
   const o=e.olm,z=zemin(e.x),ez=w=>w*w;e.vurT=S.t;      // yüzünde darbe ifadesi
   const yat=a=>{e.dusA=ez(a);e.cy=e.cy0+(110-e.cy0)*e.dusA;if(a>=1){if(!o.ses){o.ses=true;bufCal(DSS,0.9);karBas(e.x,200,KMIN-4,false)}o.yat=o.yat||S.t}};
-  if(o.tip==='diz'){e.vx*=Math.pow(0.02,dt);e.x+=e.vx*dt;e.y=z;yat(kisit((S.t-o.t0-0.45)/0.45,0,1))}      // 0.45 sn dizler üstüne çöker, sonra yüzüstü öne düşer
+  if(o.tip==='diz'){e.vx*=Math.pow(0.02,dt);e.x+=e.vx*dt;if(e.y>z){e.vy=(e.vy||0)-G*dt;e.y=Math.max(z,e.y+e.vy*dt)}else{e.y=z;e.vy=0}yat(kisit((S.t-o.t0-0.45)/0.45,0,1))}      // 0.45 sn dizler üstüne çöker, sonra yüzüstü öne düşer
   else if(o.f==='hava'||o.f==='sek'){
     e.vy-=G*dt;let nx=e.x+e.vx*dt;if(zemin(nx)>e.y+30){e.vx*=-0.2;nx=e.x}e.x=nx;e.y+=e.vy*dt;
     if(e.y<=z){e.y=z;
       if(o.f==='hava'){o.f='sek';bufCal(DEVS||DSS,1);tasSac(e.x,2,0.8);titre(30);e.vy=Math.max(450,Math.abs(e.vy)*0.3);e.vx*=0.5}      // kıçının üstüne düşer, seker
       else{o.f='otur';o.t1=S.t;e.vy=0}}
   }else{e.vx*=Math.pow(0.01,dt);e.x+=e.vx*dt;e.y=z;yat(kisit((S.t-o.t1-0.15)/0.45,0,1))}      // oturduğu yerden gövde geri yere düşer
+  kolYere(e,dt);      // yatınca kollar havada kalmaz, yere değene kadar iner
+  if(o.yat&&!o.tk2&&S.t-o.yat>0.6&&!yereDeg(e)){e.dusA=0;e.cy=e.cy0||e.cy;e.olm={tip:'diz',t0:S.t,yn:e.yon||1,tk2:1};return false}      // ölmüş ama kafası/gövdesi yere değmiyor: dizler üstüne çöküp yere düşer (ölüm ancak yere değince biter)
   if(o.yat&&S.t-o.yat>5){e.ol=(S.t-o.yat-5)/0.6;return e.ol>1}
   return false;
 }
@@ -216,7 +238,12 @@ function dusmanGuncelle(dt){
       e.st=S.t+0.3;e.vx=e.vy=0;continue;
     }
     e._tg=undefined;e.kb=null;
-    if(e.olu&&e.yerOl){e.olY=(e.olY||0)+dt;e.ol=Math.max(0,(e.olY-5)/0.6);if(e.ol>1)DUS.splice(i,1);continue}      // yerde ölen: 5 sn yatar, sonra söner
+    if(e.olu&&e.yerOl){      // yerde ölen: havadaysa düşmeye devam eder, yatışı tamamlanır; 5 sn yatar, sonra söner
+      const z=zemin(e.x);if(e.y>z){e.vy=(e.vy||0)-G*dt;e.y=Math.max(z,e.y+e.vy*dt)}else{e.y=z;e.vy=0}
+      e.cy0=e.cy0||e.cy;e.dusA=(e.dusA||0)+(1-(e.dusA||0))*Math.min(1,dt*8);e.cy=e.cy0+(110-e.cy0)*e.dusA;
+      e.olY=(e.olY||0)+dt;kolYere(e,dt);
+      if(e.olY>0.8&&!yereDeg(e)){e.yerOl=false;e.dus=null;e.dusA=0;e.cy=e.cy0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1,tk2:1};continue}      // kafası/gövdesi yere değmiyor: dizler üstüne çöküp düşer
+      e.ol=Math.max(0,(e.olY-5)/0.6);if(e.ol>1)DUS.splice(i,1);continue}      // yerde ölen: 5 sn yatar, sonra söner
     if(e.olu&&e.olm){if(olmGuncelle(e,dt))DUS.splice(i,1);continue}
     if(e.olu){e.ol+=dt;e.vy-=G*0.5*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;e.rot+=dt*9*(e.vx<0?-1:1);if(e.ol>0.9)DUS.splice(i,1);continue}
     if(e.dus){const d=e.dus;      // yerde: 0.35 sn'de düşer, yatar, son 0.5 sn'de kalkar; tutulursa hemen kalkar (elle kaldırma)
