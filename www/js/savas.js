@@ -15,7 +15,7 @@ function vur(e,dmg,vx,vy,f,hy){
   const kb=0.5*(250+2450*kisit(dmg/50,0,1))*(e.boss?0.25:1);      // itme hasarla orantılı
   if(!e.tut&&!(S.ust&&S.ust.e===e)){e.vx=dx*kb;e.vy=e.boss?0:dy*kb+250}      // üstündeyken yerdekini itmez
   if(!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>10&&dmg<9999&&Math.random()<0.25){      // 10 üstü vuruş: %25 ihtimalle: biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
-    const yn=e.x>=S.x?1:-1,sr=kisit(0.8+(dmg-25)*0.06,0.8,4);e.cy0=e.cy0||e.cy;
+    const yn=e.x>=S.x?1:-1,sr=kisit(1.8+(dmg-10)*0.06,1.8,5);      // yerde yatma süresi (eskisinin ~2 katı)e.cy0=e.cy0||e.cy;
     if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+sr+DUS_KALK,yn};
     e.vx=yn*Math.max(500,Math.min(Math.abs(e.vx),1000));e.vy=Math.min(e.vy,550)}      // biraz daha uzağa düşer
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
