@@ -1,6 +1,7 @@
 'use strict';
 // Zıplama, zemin, oyuncu pozu, oyuncu çizimi (kol, bacak, karakter)
 function ziplaBas(guc=1){
+  if(S.ust)return;
   if(S.yer){S.vy=-ZIP1*guc;S.yer=false;S.ekstra=1;S.donuyor=false;ziplaCal()}
   else if(S.ekstra>0){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;ziplaCal()}
 }
@@ -90,6 +91,10 @@ function hedefPoz(){
     const u=(S.t-S.alk.t0)/S.alk.T;
     if(u<0.4)Object.assign(o,{lN:-85,bN:130,lF:-55,bF:120,kN:0,kF:0,pelv:30,hy:18,hb:45,torso:34,bas:-26,aNu:-62,aNr:-34,aFu:-58,aFr:-38});
     else Object.assign(o,{lN:4,bN:0,lF:-4,bF:0,kN:0,kF:0,pelv:0,hy:0,hb:0,torso:-4,bas:4,aNu:-100,aNr:0,aFu:100,aFr:0});
+  }
+  if(S.ust&&S.ust.f==='diz'&&S.yer){      // yerdekinin üstünde: iki diz ve alt bacaklar yerde, belden yukarısı vurur
+    Object.assign(o,{lN:-4,bN:96,lF:6,bF:92,kN:1,kF:1,pelv:0,hx:0,hy:0,hb:0,cr:0,lift:0});o.ofs*=0.3;
+    if(!S.atk){o.torso=8;o.bas=-6;if(!kolVar()){o.aNu=-40;o.aNr=70;o.aFu=-30;o.aFr=75}}
   }
   if(S.sarj>0)o.torso+=4;                                                // şarjda kollar parmakları izler, top iki yumruğun ortasında büyür
   if(S.hitR){                       // darbe tepkisi: vurulan yer geriye (vuranın ters yönüne) savrulur
@@ -200,7 +205,7 @@ function karakter(){
   const yukN=S.yer?Math.max(nN.cy,nF.cy):BACAK_BOY;
   const yuk=S.yer?yukN+(CR_H-yukN)*P.cr:BACAK_BOY;      // çömelmede kalça alçalır; her iki ayak da yere basar (aşağıda ters kinematik)
   const celme=S.kay&&S.t<S.kay.t0+S.kay.T;
-  const ikAcik=S.yer&&!celme&&!S.sman&&!(S.hitR&&S.hitR.z==='bacak'&&S.t<S.hitR.t0+0.5)&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
+  const ikAcik=S.yer&&!celme&&!(S.ust&&S.ust.f==='diz')&&!S.sman&&!(S.hitR&&S.hitR.z==='bacak'&&S.t<S.hitR.t0+0.5)&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
   if(ikAcik){
     [[N,nN,P.cw],[F,nF,1-P.cw]].forEach(([B,n,wf])=>{
       const dunyaX=S.x+S.yon*(P.ofs+BON+n.cx), gH=zemin(dunyaX);

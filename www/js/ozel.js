@@ -4,7 +4,7 @@
 function enerji(n){if(S.en>=n-1e-6){S.en-=n;return true}S.noEn=S.t;return false}
 function donDon(d){S.yon=d;for(const z of izler.values())z.yon=d}
 function ciftAtil(yon){           // tek parmak kayması: sadece koşarken (en az max hızın yarısı), koşu hızıyla orantılı uzağa kayar
-  if(!S.yer||S.shoryu>0||S.tats>0)return;
+  if(S.ust||!S.yer||S.shoryu>0||S.tats>0)return;
   const r=Math.min(1,S.vx*yon/HIZ);if(r<0.5)return;
   donDon(yon);
   S.lungeS=S.t;S.lungeT=S.t+0.30;S.lungeV=yon*3400*(0.5+r);S.kay={t0:S.t,T:0.30};S.kayCif=S.t;S.sars=Math.max(S.sars,6);
@@ -77,10 +77,34 @@ function penceAc(){      // bıçaklar çıkar: eller aşağı savrulur, yarı �
   if(S.pence||S.durum!=='oyun')return;if(S.en<0.3){S.noEn=S.t;return}
   S.pence={t0:S.t};bufCal(SWD,1);titre(40);S.sars=Math.max(S.sars,6);
 }
-function penceKapa(){if(!S.pence)return;S.pence=null;bufCal(SWD,0.8)}      // bıçaklar geri girer: eski tutabilen yumruklar
+function penceKapa(){if(!S.pence)return;S.pence=null;S.ust=null;bufCal(SWD,0.8)}      // bıçaklar geri girer: eski tutabilen yumruklar
 const PK=()=>S.pence?2:1;      // pençede yumrukla yapılan vuruşlar 2 kat
+// ---- Bıçak modu vuruşları: kol aparkat başı gibi aşağı-geri çekilir, dirsekten ileri saplar (2 kat hızlı) ----
+// yumruk = düz karşıya (pd), tekme = aşağı (pa), yukarı çekme = aparkat gibi yukarı (pu); yerdekinin üstündeyken her basış yere saplama (py)
+function penceVur(tip,side){
+  if(S.atk&&S.kuyruk.length>=2)return;
+  if(S.ust){if(S.ust.f!=='diz')return;tip='y'}
+  atkIstek('#p'+tip+side);
+}
+function yerdekineAtla(sx,sy){      // bıçak modunda yerde yatan düşmana dokunulursa üstüne atlar
+  if(!S.pence||S.ust||!S.yer||S.durum!=='oyun')return false;
+  const wx=S.x+(sx-W/2)/SC,wy=S.camY+(ZY()-sy)/SC;
+  const e=DUS.find(z=>z.dus&&!z.olu&&!z.tut&&!z.iki&&(z.dusA||0)>0.6&&Math.abs(wx-z.x)<z.r*2.4&&wy-z.y<z.r*1.8);
+  if(!e)return false;
+  const yn=e.x>=S.x?1:-1,tx=e.x-yn*120,T=kisit(0.3+Math.abs(tx-S.x)/3000,0.35,0.7);
+  S.ust={e,f:'atla',vx:(tx-S.x)/T,yn};S.yon=yn;S.yer=false;S.vy=-0.5*G*T;S.atk=null;S.kuyruk.length=0;S.kay=null;S.lungeT=-1;ziplaCal();
+  return true;
+}
+function ustGuncelle(){      // atlarken düşmanın yanına iner, sonra dizlerinin üstünde kalır; düşman yerde kalır
+  const u=S.ust,e=u.e;
+  if(!S.pence||e.olu||!e.dus||e.tut||S.durum!=='oyun'){S.ust=null;return}
+  S.yon=u.yn;
+  if(u.f==='atla'){S.vx=u.vx;if(S.yer){u.f='diz';u.t0=S.t;S.vx=0;titre(40);karBas(S.x,220,KMIN-4,false)}}
+  else S.vx=0;
+}
+function ustKalk(){S.ust=null;S.sonAtk=S.t}      // yukarı çekince kalkar
 function supermenKay(dir){        // iki parmak yatay kaydırma: süpermen gibi yatay uçarak ileri yumruk (Sub-Zero kaymasının ~2 katı mesafe)
-  if(!enerji(1))return;
+  if(S.ust||!enerji(1))return;
   donDon(dir);
   S.sman={t0:S.t,T:0.38,dir,ch:0.5};S.lungeT=-1;S.kay=null;S.shoryu=0;S.kayCif=S.t;
   S.sars=Math.max(S.sars,12);
@@ -88,13 +112,13 @@ function supermenKay(dir){        // iki parmak yatay kaydırma: süpermen gibi 
 function yereKontrol(){           // yerdeyken iki parmak birlikte hızlı aşağı = yer yumruğu (bakılan yöne çatlak)
   if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   const a=izBul('N'),b=izBul('F');
-  if(!a||!b||!S.yer||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
+  if(!a||!b||!S.yer||S.ust||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
   const ka=kayma(a,0.15),kb=kayma(b,0.15);
   if(!ka||!kb||izHiz(a,0.12)<800||izHiz(b,0.12)<800)return;
   const ok=k=>k.dy>70&&Math.abs(k.dx)<0.8*k.dy;
   if(ok(ka)&&ok(kb)){
     a.atil=b.atil=a.sla=b.sla=true;
-    if(!S.pence&&S.t-(S.blokSonT||-9)<0.4){penceAc();return}      // guarddayken iki parmak aşağı: bıçaklar çıkar
+    if(S.blok||S.t-(S.blokSonT||-9)<0.6){if(!S.pence)penceAc();return}      // guarddan iki parmak aşağı: bıçaklar çıkar (yer yarma çalışmaz)
     if(!enerji(1))return;
     S.yy={t0:S.t,T:0.55,dir:S.yon,hit:false};S.kay=null;S.lungeT=-1;S.vx=0;
   }
@@ -104,7 +128,7 @@ function yarikSesDur(c,t){if(c&&c.src){try{c.g.gain.cancelScheduledValues(AC.cur
 function yerYumrukVur(m){         // iki yumruk yere iner: vurulan yerde patlama, yarık bakılan yönde açılarak ilerler, yerdeki düşmanları havaya fırlatır
   yarikSesDur(S.catlak,0.2);
   const x=S.x+m.dir*120;
-  S.catlak={x,y:zemin(x),dir:m.dir,t0:S.t,len:CTW*2,T:CTW*2/CV+3.3,spT:0};
+  S.catlak={x,y:zemin(x),dir:m.dir,t0:S.t,len:CTW*4,T:CTW*4/CV+3.3,spT:0};      // 2 kat uzağa yarar
   patlat(x,0.95);bufCal(YAR,1);
   S.sars=Math.max(S.sars,20);titre(100);
 }
@@ -135,7 +159,7 @@ function catlakCiz(){      // yarık görseli: vurulan yerden başlar, maskeyle 
 function alkisKontrol(){          // iki parmak ortaya doğru birleşir = alkış şok dalgası
   if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   const a=izBul('N'),b=izBul('F');
-  if(!a||!b||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
+  if(!a||!b||S.ust||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
   const ka=kayma(a,0.2),kb=kayma(b,0.2);
   if(!ka||!kb||izHiz(a,0.15)<500||izHiz(b,0.15)<500)return;
   const sol=a.lx<b.lx?ka:kb, sag=a.lx<b.lx?kb:ka;

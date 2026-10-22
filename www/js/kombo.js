@@ -83,6 +83,13 @@ function ph(arm,dur,fr){
   HAREKET['z'+arm]=ph(arm,.48,[[0,{u:75,a:-15,tor:-36,bas:-6}],[.36,{u:-92,a:0,tor:42,bas:8,ofs:125}],[.62,{u:-92,a:0,tor:42,bas:8,ofs:135}],rec]);   // dönerek arka yumruk
   HAREKET['k'+arm]=ph(arm,.52,[[0,{u:-178,a:-100,tor:-22,bas:-6}],[.4,{u:-84,a:10,tor:38,bas:8,ofs:135}],[.64,{u:-84,a:10,tor:38,bas:8,ofs:145}],rec]);   // büyük kanca (haymaker)
 });
+['N','F'].forEach(arm=>{      // bıçak modu saplamaları (normal yumrukların 2 katı hızlı)
+  const rn=arm==='N'?{u:-26,a:-70}:{u:-10,a:-62},rec=[1,{u:rn.u,a:rn.a,tor:6}],geri={u:20,a:20,tor:-10,bas:-4};      // geri: aparkatın başı (kol aşağı-geri çekili)
+  HAREKET['pd'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-88,a:-2,tor:24,bas:5,ofs:95}],[.6,{u:-88,a:-2,tor:24,bas:5,ofs:100}],rec]);      // düz karşıya
+  HAREKET['pa'+arm]=ph(arm,.2,[[0,geri],[.35,{u:-50,a:55,tor:32,bas:8,ofs:85}],[.6,{u:-50,a:55,tor:32,bas:8,ofs:90}],rec]);      // aşağı doğru
+  HAREKET['pu'+arm]=ph(arm,.24,[[0,Object.assign({lg:'c'},geri)],[.35,{u:-125,a:-70,tor:14,bas:5,ofs:80,lift:30,lg:'t'}],[.6,{u:-125,a:-70,tor:14,bas:5,ofs:85,lift:34,lg:'t'}],[1,{u:rn.u,a:rn.a,tor:6,lg:'n'}]]);      // aparkat gibi yukarı
+  HAREKET['py'+arm]=ph(arm,.22,[[0,{u:-150,a:-100,tor:-6,bas:-4}],[.4,{u:-28,a:80,tor:34,bas:10,ofs:40}],[.62,{u:-28,a:80,tor:34,bas:10,ofs:40}],[1,{u:-70,a:-40,tor:12}]]);      // yerdekine saplama
+});
 { // çift tekme: ufak sıçrayıp önce bir bacakla, sonra diğeriyle
   const G0={aNu:-26,aNa:-70,aFu:-10,aFa:-62}, GC={aNu:-50,aNa:-60,aFu:-5,aFa:-70}, GA={aNu:-85,aNa:-40,aFu:45,aFa:115}, GB={aNu:45,aNa:115,aFu:-85,aFa:-40};
   const K=(t,v)=>[t,Object.assign({torso:-4,bas:-2,ofs:0,lift:0},v)];
@@ -195,6 +202,7 @@ const kDmg=a=>a&&a.n?(a.son?5*a.n+5:5):null;
 function kBonus(){const k=S.kSon;S.kSon=null;if(k&&S.cE&&!S.cE.olu)vur(S.cE,5*k.n,S.yon*0.3,0.4,0.5,S.cE.y+S.cE.cy);S.cE=null}
 function komboTap(d,side){
   if(S.durum!=='oyun'||S.sarj>0||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam)return;
+  if(S.pence){penceVur(d==='t'?'a':'d',side);return}      // bıçak modu: yumruk = düz saplama, tekme = aşağı saplama
   if(S.atk&&S.kuyruk.length>=2)return;
   let n=S.t-S.kb.t>0.65?KB:S.kb.n, c=n.ch[d], dp=(S.kb.d||0)+1;
   if(n===KB)dp=1;

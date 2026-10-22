@@ -46,7 +46,7 @@ function karCiz(){      // karakterlerin önünde: karda kan lekeleri ve uçuşa
 // ---- Kan efektleri: 3 fışkıran kan çizgisi, 4 büyük fışkırma, 5 kopuk yara, 6 damla (yere değen kan karda leke bırakır) ----
 S.kan=[];
 const KAN_A3=Math.atan2(-105,355),KAN_A6=Math.atan2(-1,1);      // görsellerdeki uç yönleri (3: sağ üst, 6: sağ üst)
-function kanEkle(p){if(S.kan.length<260){p.t0=S.t;S.kan.push(p)}}
+function kanEkle(p){if(S.kan.length<260){p.t0=S.t;p.pc=!!S.pence;S.kan.push(p)}}      // pc: bıçak modunda çıkan kan (yerde 3 kat leke)
 function kanDamla(x,y,vx,vy,s){kanEkle({k:6,x,y,vx,vy,s:s||1})}
 function kanFiskir(x,y,yon,g){      // büyük fışkırma: 4 numaralı bulut + 3 numaralı çizgiler + damlalar; g = güç
   kanEkle({k:4,x,y,vx:yon*500*g,vy:350*g,s:0.8+0.5*g,r:(Math.random()-0.5)*0.6});
@@ -55,7 +55,7 @@ function kanFiskir(x,y,yon,g){      // büyük fışkırma: 4 numaralı bulut + 
   for(let i=0;i<n;i++)kanDamla(x,y,yon*(300+Math.random()*1400)*g,(400+Math.random()*1500)*g,0.7+Math.random()*0.7);
 }
 function kanVurus(x,y,f,yon,yum){      // vuruşta az fışkırma (yumrukta biraz daha çok)
-  const n=yum?2+Math.round(3*f):1+Math.round(2*f);
+  const n=(yum?2+Math.round(3*f):1+Math.round(2*f))*(S.pence?2:1);      // bıçak modunda 2 kat
   for(let i=0;i<n;i++)kanDamla(x,y,yon*(300+Math.random()*900),300+Math.random()*1100,0.6+Math.random()*0.6);
   if(f>0.5)kanEkle({k:3,x,y,vx:yon*(1400+Math.random()*900),vy:500+Math.random()*700,s:0.6+0.4*f});
 }
@@ -73,7 +73,7 @@ function kanGuncelle(dt){
     const p=S.kan[i],u=S.t-p.t0;
     if(p.k===4){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=Math.pow(0.05,dt);p.vy*=Math.pow(0.05,dt);if(u>0.5)S.kan.splice(i,1);continue}
     p.vy-=G*(p.k===6?0.75:0.55)*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
-    if(p.y<=zemin(p.x)&&p.vy<0){S.kan.splice(i,1);if(S.leke.length<50)S.leke.push({x:p.x,w:(p.k===3?45:22)*p.s,t0:S.t})}      // yere değdi: karda leke
+    if(p.y<=zemin(p.x)&&p.vy<0){S.kan.splice(i,1);for(let j=0;j<(p.pc?3:1);j++)if(S.leke.length<150)S.leke.push({x:p.x+(j?(Math.random()-0.5)*90:0),w:(p.k===3?45:22)*p.s*(j?0.8:1),t0:S.t})}      // yere değdi: karda leke
     else if(u>3)S.kan.splice(i,1);
   }
 }
