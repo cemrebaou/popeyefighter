@@ -22,7 +22,7 @@ function sesYukle(){
   for(let i=1;i<=3;i++)y('kilic_'+i,b=>KLC.push(b));
   for(let i=1;i<=5;i++)y('whoosh_'+i,b=>WH.push(b));
   for(let i=1;i<=3;i++)y('jump_'+i,b=>JP.push(b));      // sallama (boşta da dolu da): yumruk, tekme, bıçak
-  y('spinach-drop',b=>ISPS=b);
+  y('spinach-drop',b=>ISPS=b);y('yemeses',b=>YEMS=b);
   y('parcalanma',b=>PPAR=b);y('yarildi',b=>YAR=b);y('yarildi_sonra',b=>YARS=b);y('sapla',b=>SAPLA=b);y('mermi_haz',b=>HAZ=b);y('mermi_patla',b=>PAT=b);
 }
 function ziplaCal(){            // zıplama sesi: torba sırası, peş peşe iki zıplama (ilk ve ikinci) asla aynı ses olmaz

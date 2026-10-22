@@ -1,9 +1,9 @@
 'use strict';
 // Ispanak: düşmandan %25 düşer; kol aşağı 0.5 sn tutulunca çömelip belden eğilir, el kutuya değerse alır, yer (+%10 can), boş kutuyu arkaya atar
-let ISP=[],ISPS=null;            // ISP: yerdeki/uçan kutular, ISPS: düşme sesi
-const ISP_BOY=150;               // görselin (500 px kare) oyun birimi boyu; kutunun kendisi ~133 birim
-const ISP_MRK=67;                // kutu tabanından ortasına
-const ISP_AGIZ=[80,-290];        // gövde uzayında ağız önü (el buraya gelir)
+let ISP=[],ISPS=null,YEMS=null;            // ISP: yerdeki/uçan kutular, ISPS: düşme sesi
+const ISP_BOY=180;               // görselin (500 px kare) oyun birimi boyu; kutunun kendisi ~133 birim
+const ISP_MRK=80;                // kutu tabanından ortasına
+const ISP_AGIZ=[105,-315];        // gövde uzayında ağız önü (el buraya gelir)
 const ISP_G=4200;                // atılan / düşen kutunun yerçekimi
 Object.assign(S,{uzT:{N:0,F:0},uzan:null,yeme:null});
 
@@ -69,6 +69,7 @@ function ispGuncelle(dt){
   }
   if(S.yeme){
     const m=S.yeme,t=S.t-m.t0;S.vx=0;
+    if(!m.ses&&t>=0.85){m.ses=true;bufCal(YEMS,1)}      // yeme sesi: ağza dökmeye başlayınca
     if(!m.bos&&t>=1.45){m.bos=true;S.hp=Math.min(100,S.hp+10);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+10',f:0.3})}      // max canın %10'u
     if(!m.atildi&&t>=2.25){m.atildi=true;ispAt(m.k)}
     if(t>=2.8)S.yeme=null;

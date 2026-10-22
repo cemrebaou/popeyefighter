@@ -14,7 +14,7 @@ function vur(e,dmg,vx,vy,f,hy){
   const L=Math.hypot(vx,vy)||1,dx=vx/L+(e.x>=S.x?1:-1)*0.35,dy=vy/L;
   const kb=0.5*(250+2450*kisit(dmg/50,0,1))*(e.boss?0.25:1);      // itme hasarla orantılı
   if(!e.tut){e.vx=dx*kb;e.vy=e.boss?0:dy*kb+250}
-  if(!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>=25&&dmg<9999){      // ağır vuruş (25+): biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
+  if(!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>10&&dmg<9999&&Math.random()<0.25){      // 10 üstü vuruş: %25 ihtimalle: biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
     const yn=e.x>=S.x?1:-1,sr=kisit(0.8+(dmg-25)*0.06,0.8,4);e.cy0=e.cy0||e.cy;
     if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+sr+DUS_KALK,yn};
     e.vx=yn*Math.min(Math.abs(e.vx),700);e.vy=Math.min(e.vy,450)}
@@ -201,11 +201,11 @@ function dusmanGuncelle(dt){
     e._tg=undefined;e.kb=null;
     if(e.olu){e.ol+=dt;e.vy-=G*0.5*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;e.rot+=dt*9*(e.vx<0?-1:1);if(e.ol>0.9)DUS.splice(i,1);continue}
     if(e.dus){const d=e.dus;      // yerde: 0.35 sn'de düşer, yatar, son 0.5 sn'de kalkar; tutulursa hemen kalkar (elle kaldırma)
-      if(e.tut||S.t>=d.son){e.dus=null;e.cy=e.cy0;e.dusA=0}
+      if(e.tut||S.t>=d.son){e.dus=null;e.cy=e.cy0;e.dusA=0;e.yk=null}
       else{const gs=d.son-DUS_KALK,ez=w=>w*w*(3-2*w);let hd;
         if(S.t>=gs){const g=(S.t-gs)/DUS_KALK;hd=g<0.35?1-0.55*ez(g/0.35):g<0.65?0.45-0.37*ez((g-0.35)/0.3):0.08*(1-ez((g-0.65)/0.35))}      // oturur → tek diz → ayağa kalkar
         else{const u=(S.t-d.t0)/DUS_DUS;hd=u<1?u*u:1-0.07*Math.sin(Math.PI*kisit((u-1)/0.35,0,1))}      // hızlanarak düşer, sırtı yere çarpınca hafif seker
-        e.dusA=(e.dusA||0)+(hd-(e.dusA||0))*Math.min(1,dt*20);e.cy=e.cy0+(110-e.cy0)*e.dusA;e.st=Math.max(e.st,d.son)}}
+        e.dusA=(e.dusA||0)+(hd-(e.dusA||0))*Math.min(1,dt*20);e.cy=e.cy0+(110-e.cy0)*e.dusA;e.st=Math.max(e.st,d.son);kolYere(e,dt)}}
     const stun=S.t<e.st,dx=S.x-e.x,zH=zemin(e.x),yer=e.y<=zH+1;
     if(!e.akt&&(Math.abs(dx)<1500||stun))e.akt=true;               // oyuncu yaklaşınca uyanır (dalga gibi gelmez)
     if(stun||!yer||e.vy>0){                                         // savrulma / havada
