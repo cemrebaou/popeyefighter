@@ -38,4 +38,9 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Aynı karakterin parçaları aynı ölçekte. Kenar boşlukları script ile kesilir, ofset tabloya yazılır.
 
 ## Yapılacaklar
-- (boş)
+1. Zincirli düşmanın arkada kalan kolu: 25 birim geri, 5 birim aşağı.
+2. Tutarken ikinci el tutuşa katılınca (yan yatırıp koparma) da grap2 (yeni `ses/grap.mp3`) çalsın.
+3. Enerji ve can tüpleri: enerji sağda dik ince 3D cam tüp (balık oyunundaki tüp gibi, cam/3D efektli); can en solda aynı tarzda kırmızı şişe, içi kan gibi. Bölmeli bar değil, boydan boya sıvı gibi dolup boşalır. Can dolarken tepeden cam içine kan damlası düşer (her dolan 1 can = 1 damla), azalırken direkt azalır. Ispanak yenince 1 bar enerji dolar.
+4. Fırlatma: tutulan korsan kaydırma yönüne fırlatılır; çarptığı diğer korsanlar yeni düşme mekaniğiyle yıkılır. Fırlatılan birine çarpınca ve yere düşünce `devrilses` sesi (kullanıcı verecek).
+5. Aduket: top ve iz %70 boyut. Başta kullanıcının eklediği `kürestart` görseli, giderken izli hâle geçer; kürestart'a da aynı ışık/parlama/saydamlık (eski görselle aynı piksel ölçüsü).
+6. Ölümler (saydamlaşıp uçma kalkar): ayakta ölüm (uçuran vuruş yoksa) = ah sesi, önce dizlerin üstüne, sonra yüzüstü öne düşer. Uçarak ölüm (sert darbe) = darbe yönüne uçar; kollar öne (bize doğru), kalça önde, gövde geride, yüzde darbe ifadesi; kıçının üstüne düşüp seker (çarpışma sesi `devrilses`), sonra gövde geri yere yatar, kollar yanına düşer (yere yıkılma sesi).
