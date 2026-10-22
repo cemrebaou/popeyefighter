@@ -31,7 +31,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Ses: `savurCal`, `ziplaCal`, `adimCal(x,g)`.
 - Döngü: `dongu`, dt üst sınırı 0.05.
 - Arka plan: dağ `fx/dag`, zemin `fx/yol`, ağaçlar `AGAC[0..7]`.
-- Bıçak modu (`S.pence`): `penceVur` saplamalar (`HAREKET` pd/pa/pu/py), `yerdekineAtla`/`ustGuncelle`/`ustKalk` yerdekinin üstüne atlama (`S.ust`), turuncu parlama `dongu.js` shadow.
+- Bıçak modu (`S.pence`): `penceVur` saplamalar (`HAREKET` pd/pa/pu/py), `yerdekineAtla`/`ustGuncelle`/`ustKalk` yerdekinin üstüne atlama (`S.ust`), `dagAtla`/`dagGuncelle` ileri kaydırınca bıçaklı uçma (1 enerji, 50 hasar, ilk çarptığını serip üstüne çıkar), turuncu parlama `dongu.js` shadow.
 
 ## Görsel parça standardı (yeni karakter)
 - Her parça aynı boyutlu karede (örn. 500x500), arka plan saydam, parça hep sağa bakar, bağlantı noktası karede sabit yerde.

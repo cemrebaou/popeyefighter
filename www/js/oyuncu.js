@@ -96,7 +96,7 @@ function hedefPoz(){
     Object.assign(o,{lN:-4,bN:96,lF:6,bF:92,kN:1,kF:1,pelv:0,hx:0,hy:0,hb:0,cr:0,lift:0});o.ofs*=0.3;
     if(!S.atk){o.torso=8;o.bas=-6;if(!kolVar()){o.aNu=-40;o.aNr=70;o.aFu=-30;o.aFr=75}}
   }
-  if(S.dag&&!S.yer)Object.assign(o,{aNu:-92,aNr:4,aFu:-80,aFr:-8,torso:22,bas:6});      // dağ sıçraması: bıçaklar önde
+  if(S.dag&&!S.yer)Object.assign(o,{lN:22,bN:25,lF:38,bF:35,aNu:-118,aNr:0,aFu:-112,aFr:2,torso:42,bas:-14});      // bıçaklı uçma: gövde öne yatık, iki kol düz ileri saplamaya hazır, bacaklar geride
   if(S.sarj>0)o.torso+=4;                                                // şarjda kollar parmakları izler, top iki yumruğun ortasında büyür
   if(S.hitR){                       // darbe tepkisi: vurulan yer geriye (vuranın ters yönüne) savrulur
     const u=(S.t-S.hitR.t0)/0.55;
@@ -228,8 +228,8 @@ function karakter(){
   bacak(F.l,F.k,F.a,true);
   ctx.restore();
   ctx.save();ctx.translate(P.hx+BON,-P.hy);ctx.rotate(P.pelv*D);resim(R.kalca,73.5,118.8);ctx.restore();   // kalça (şort) bacakların önünde, gövdenin arkasında
-  ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak kalçanın önünde
   govdeUzayi(()=>{ ctx.scale(1.1,1.1);const [i,f]=hasarKat(S.hp);hasarCiz(n=>resim(R['govde'+n],97.7,246.4),i,f); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
+  ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak gövdenin önünde
   govdeUzayi(()=>{
     ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=S.yeme&&S.t-S.yeme.t0>0.7&&S.t-S.yeme.t0<1.85;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-95.4,-192.4,205.8,298.2):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü
     ctx.restore();

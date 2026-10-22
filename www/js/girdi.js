@@ -140,6 +140,7 @@ function kolHesap(iz,x,y){
     if(ikili&&!sup2)return;                               // diğer parmak başka iş yapıyorsa tek parmak kayması tetiklenmez
     iz.atil=true;
     const dirW=Math.sign(x-iz.x0)||iz.yon;
+    if(S.pence){dagAtla(dirW);return}      // bıçak modunda yatay kaydırma (ekranın her yerinde): bıçaklı uçma
     if(sup2){o.atil=true;supermenKay(dirW)}   // iki parmak: süpermen kayması (çelme kaymasının 2 katı)
     else ciftAtil(dirW);   // tek parmak: Sub-Zero kayması
   }
@@ -213,7 +214,6 @@ const kolBit=e=>{
   tutBirak(iz.t);
   const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t;
   if(tap)komboTap('y',iz.t);
-  else if(e.type==='pointerup'&&S.pence){const dr=dagMi(iz.yol);if(dr)dagAtla(dr)}      // bıçak modunda dağ çizme
   if(S.sarj>0){const m=S.sarjP;S.sarjP=null;if(m)ates(m.dx,m.dy,1,m.bx,m.by);else S.sarj=0;for(const z of izler.values())z.turn=0}   // parmak kalkınca aduket kol yönüne gider
 };
 cv.addEventListener('pointerup',kolBit);cv.addEventListener('pointercancel',kolBit);

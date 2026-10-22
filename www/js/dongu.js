@@ -71,9 +71,10 @@ function dongu(ms){
   if(S.durum==='oyun'&&S.hp>0&&S.hp<100&&S.t-(S.hasT||-9)>=(S.regB||3))S.hp=Math.min(100,S.hp+5*dt);      // hasardan 3-4 sn (rastgele) sonra iyileşir: 2 sn'de 10 can
   S._rh=S.hp;
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
+  if(S.kayKilit&&S.t>=S.lungeT&&Math.abs(S.vx)<HIZ*0.5)S.kayKilit=false;      // kayma bitip hız eşiğin altına inince yeni kayma açılır
   if(S.dkick)S.vx=S.dkick.vx;
   if(S.ust)ustGuncelle();
-  if(S.dag)dagGuncelle();
+  if(S.dag)dagGuncelle(dt);
   if(S.sup&&S.t<S.sup.t0+S.sup.T)S.vx=0;      // kayarak yumruk: kısa süre öne atılır
   ispGuncelle(dt);
   {const nx=S.x+S.vx*dt;                                        // yüksek basamak/kutu duvar gibidir: üstüne zıplamak gerekir

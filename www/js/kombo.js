@@ -197,9 +197,9 @@ function tutKombo(arm){
   if(S.tk.i>=pat.length){S.tk.i=0;S.tk.p++}
   atkIstek('#!'+m);
 }
-// Kombo hasarı: ara vuruşlar 5; zincir bitince toplam 10 x vuruş sayısı (6'lı = 60, 5'li = 50, 4'lü = 40...). Bitiş vuruşunda ya da (zincir devam edebiliyorsa) durunca eklenir
+// Kombo hasarı (sadece gerçekten değen vuruşlarla; bitiş bonusu son vuruş değdiyse): ara vuruşlar 5; zincir bitince toplam 10 x vuruş sayısı (6'lı = 60, 5'li = 50, 4'lü = 40...). Bitiş vuruşunda ya da (zincir devam edebiliyorsa) durunca eklenir
 const kDmg=a=>a&&a.n?(a.son?5*a.n+5:5):null;
-function kBonus(){const k=S.kSon;S.kSon=null;if(k&&S.cE&&!S.cE.olu)vur(S.cE,5*k.n,S.yon*0.3,0.4,0.5,S.cE.y+S.cE.cy);S.cE=null}
+function kBonus(){const k=S.kSon;S.kSon=null;if(k&&S.cE&&!S.cE.olu&&(S.cEt||-9)>=k.t)vur(S.cE,5*k.n,S.yon*0.3,0.4,0.5,S.cE.y+S.cE.cy);S.cE=null}
 function komboTap(d,side){
   if(S.durum!=='oyun'||S.sarj>0||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam)return;
   if(S.pence){penceVur(d==='t'?'a':'d',side);return}      // bıçak modu: yumruk = düz saplama, tekme = aşağı saplama
