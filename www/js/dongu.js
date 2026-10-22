@@ -45,7 +45,8 @@ let son=0;
 function dongu(ms){
   requestAnimationFrame(dongu);      // önce sonraki kare istenir: bir karede hata olsa bile oyun donmaz
   if(listeAcik){son=ms;return}      // kombo listesi açıkken oyun durur
-  let dt=Math.min(0.05,(ms-son)/1000||0.016);      // 20 FPS'e kadar gerçek zamanlı (yavaş telefonda ağır çekime girmez)son=ms;S.dtG=dt;
+  let dt=Math.min(0.05,(ms-son)/1000||0.016);      // 20 FPS'e kadar gerçek zamanlı (yavaş telefonda ağır çekime girmez)
+  son=ms;S.dtG=dt;
   if(S.dur>0){S.dur-=dt;dt*=0.08}
   S.sars*=Math.pow(0.002,dt);S.t+=dt;
   const ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gyroAx())), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
