@@ -75,8 +75,44 @@ function topCiz(wx,wy,r,t,a,kivilcim=true){
   for(let i=0;i<5;i++){const an=t*6+i*1.2566,l1=R*0.5,l2=R*(0.8+0.2*Math.sin(t*20+i));ctx.moveTo(sx+Math.cos(an)*l1,sy+Math.sin(an)*l1);ctx.lineTo(sx+Math.cos(an)*l2,sy+Math.sin(an)*l2)}
   ctx.stroke();ctx.globalAlpha=1;
 }
+// ---- Aduket görseli: kullanıcı görselleri (top, izli top) + krem/mavi ışık; parlamalar bir kez hazırlanır (mobil için her karede blur yok) ----
+const ADK_K='253,251,232',ADK_M='115,174,221',ADK_IZ={cx:919,cy:305,r:160};      // izli görselde topun merkezi ve yarıçapı (1100 genişlikte)
+const ADK_ISIK=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);
+  g.addColorStop(0,'rgba('+ADK_K+',.95)');g.addColorStop(.3,'rgba('+ADK_K+',.6)');g.addColorStop(.55,'rgba('+ADK_M+',.45)');g.addColorStop(1,'rgba('+ADK_M+',0)');
+  x.fillStyle=g;x.fillRect(0,0,128,128);return c})();
+function adkHazir(n){      // görselin etrafı mavi + krem parlamalı, hafif bulanık hâlesi olan hazır kopyası
+  const k='_p_'+n;if(R[k])return R[k];const im=R[n];if(!im)return null;
+  const p=Math.round(Math.max(im.width,im.height)*0.08),c=document.createElement('canvas');c.width=im.width+2*p;c.height=im.height+2*p;const x=c.getContext('2d');
+  try{x.filter='blur('+Math.round(p*0.35)+'px)';x.globalAlpha=0.7;x.drawImage(im,p,p);x.filter='none'}catch(_){}      // yumuşak hâle
+  x.globalAlpha=1;x.shadowColor='rgb('+ADK_M+')';x.shadowBlur=p*0.9;x.drawImage(im,p,p);
+  x.shadowColor='rgb('+ADK_K+')';x.shadowBlur=p*0.3;x.globalAlpha=0.85;x.drawImage(im,p,p);
+  return R[k]={c,p};
+}
+function adkIsik(sx,sy,G,a){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=a;ctx.drawImage(ADK_ISIK,sx-G,sy-G,G*2,G*2);ctx.restore()}
+function adkTop(wx,wy,r,t,a){      // elde büyüyen top: dönen görsel, nabız gibi atan ışık
+  const sx=W/2+(wx-S.x)*SC,sy=ZY()-(wy-S.camY)*SC,Rr=r*SC*1.1,g=adkHazir('aduket_top');
+  if(!g){topCiz(wx,wy,r,t,a);return}
+  adkIsik(sx,sy,Rr*(2.2+0.2*Math.sin(t*13)),a*0.6);
+  const s=2*Rr/R.aduket_top.width;
+  ctx.save();ctx.translate(sx,sy);ctx.rotate(t*5);ctx.scale(s,s);ctx.globalAlpha=a*0.92;ctx.drawImage(g.c,-g.c.width/2,-g.c.height/2);ctx.restore();
+  adkIsik(sx,sy,Rr*0.9,a*(0.35+0.15*Math.sin(t*21)));      // ortadaki parlak çekirdek
+  ctx.globalAlpha=1;
+}
+function adkMermi(p){      // atılan top: izli görsel topa yapışık, gidiş yönüne döner; arkada ekstra ışık izi
+  const g=adkHazir('aduket_iz'),sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC,Rr=p.r*SC*1.1;
+  if(!g){const L=Math.hypot(p.vx,p.vy)||1;for(let i=3;i>=1;i--)topCiz(p.x-p.vx/L*i*100,p.y-p.vy/L*i*100,p.r*(1-0.18*i),S.t+i,0.35/i*1.5,false);topCiz(p.x,p.y,p.r,S.t,1);return}
+  const L=Math.hypot(p.vx,p.vy)||1,ux=p.vx/L,uy=-p.vy/L,u=Math.min(1,p.t/0.12);
+  for(let i=4;i>=1;i--)adkIsik(sx-ux*i*Rr*0.95,sy-uy*i*Rr*0.95,Rr*(1.7-0.22*i),0.32*u/i);      // ışık izi
+  adkIsik(sx,sy,Rr*(2.3+0.2*Math.sin(S.t*15)),0.55);
+  const yn=ux<0?-1:1,s=Rr/ADK_IZ.r;
+  ctx.save();ctx.translate(sx,sy);ctx.scale(yn,1);ctx.rotate(Math.atan2(uy,ux*yn));ctx.scale(s,s);ctx.globalAlpha=0.88*u;
+  ctx.drawImage(g.c,-(ADK_IZ.cx+g.p),-(ADK_IZ.cy+g.p));ctx.restore();
+  if(u<1)adkTop(p.x,p.y,p.r,S.t,1-u);      // çıkışta top yavaşça izli görsele döner
+  adkIsik(sx,sy,Rr*0.85,0.3+0.12*Math.sin(S.t*23));
+  ctx.globalAlpha=1;
+}
 function efektCiz(){
-  if(S.sarj>0){const rh=(EL.N.wx*S.yon>=EL.F.wx*S.yon)?EL.N:EL.F;topCiz(rh.wx,rh.wy,40+170*S.sarj,S.t,1)}      // top, bakılan yöndeki elde büyür
-  for(const p of MERMI){{const L=Math.hypot(p.vx,p.vy)||1;for(let i=3;i>=1;i--)topCiz(p.x-p.vx/L*i*100,p.y-p.vy/L*i*100,p.r*(1-0.18*i),S.t+i,0.35/i*1.5,false)}topCiz(p.x,p.y,p.r,S.t,1)}
+  if(S.sarj>0){const rh=(EL.N.wx*S.yon>=EL.F.wx*S.yon)?EL.N:EL.F;adkTop(rh.wx,rh.wy,40+170*S.sarj,S.t,1)}      // top, bakılan yöndeki elde büyür
+  for(const p of MERMI)adkMermi(p);
   emerCiz();
 }
