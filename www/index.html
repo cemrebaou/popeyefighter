@@ -1,7 +1,14 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>Popeye Fighter</title></head><body>
+<title>Popeye Fighter</title>
 <style>
+/* Yerel fontlar (çevrimdışı çalışır): Bangers, Nunito 700/800; latin + latin-ext (Türkçe harfler) */
+@font-face{font-family:'Bangers';font-style:normal;font-display:swap;font-weight:400;src:url(font/bangers-latin-ext-400-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Bangers';font-style:normal;font-display:swap;font-weight:400;src:url(font/bangers-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:700;src:url(font/nunito-latin-ext-700-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:700;src:url(font/nunito-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:800;src:url(font/nunito-latin-ext-800-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:800;src:url(font/nunito-latin-800-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* Düzen: tam ekran tek canvas; üstte küçük etiket, altta tuş ipucu ve dokunmatik düğmeler.
    Tek bir görünüm: liman gündüzü (oyun sahnesi), tema ayrımı yok. */
 :root{
@@ -18,11 +25,11 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
   background:var(--panel);border:2px solid var(--cizgi);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:700}
 .tus{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:80px;height:80px;border:0;background:transparent center/contain no-repeat;font-size:0;display:none;
   user-select:none;-webkit-user-select:none;touch-action:none;transition:transform .05s,filter .05s}
-#sol{background-image:url(ui/btn_sol.png?v=43)}#sag{background-image:url(ui/btn_sag.png?v=43)}#zipla{background-image:url(ui/btn_yuk.png?v=43)}#asa{background-image:url(ui/btn_asa.png?v=43)}
-#kombolB{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));width:64px;height:64px;background:url(ui/btn_liste.png?v=43) center/contain no-repeat;cursor:pointer;touch-action:manipulation;transition:transform .05s,filter .05s}
+#sol{background-image:url(ui/btn_sol.webp?v=43)}#sag{background-image:url(ui/btn_sag.webp?v=43)}#zipla{background-image:url(ui/btn_yuk.webp?v=43)}#asa{background-image:url(ui/btn_asa.webp?v=43)}
+#kombolB{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));width:64px;height:64px;background:url(ui/btn_liste.webp?v=43) center/contain no-repeat;cursor:pointer;touch-action:manipulation;transition:transform .05s,filter .05s}
 #kombolB:active{transform:scale(.92);filter:brightness(.8)}
 #liste{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(31,42,51,.6)}#liste[hidden]{display:none}
-.kagit{position:relative;width:min(96vw,calc(94vh*0.558));aspect-ratio:1536/2752;background:url(ui/kagit.png?v=43) center/100% 100% no-repeat;container-type:inline-size}
+.kagit{position:relative;width:min(96vw,calc(94vh*0.558));aspect-ratio:1536/2752;background:url(ui/kagit.webp?v=43) center/100% 100% no-repeat;container-type:inline-size}
 #liste_ic{position:absolute;left:15%;right:13%;top:22%;bottom:21%;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 #liste_ic::-webkit-scrollbar{display:none}
 .sat{display:flex;align-items:center;gap:2.2cqw;padding:1.6cqw 0;border-bottom:.5cqw dashed rgba(70,45,20,.4)}
@@ -46,10 +53,11 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 #yuk[hidden]{display:none}
 #yuk{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--gok-ust);font-family:var(--font);font-size:28px;letter-spacing:.08em}
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap">
+</head><body>
+
 
 <canvas id="c"></canvas>
-<div class="etiket"><b>POPEYE FIGHTER</b>v2.56</div>
+<div class="etiket"><b>POPEYE FIGHTER</b><span id="surum"></span></div>
 <div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; H süpermen &nbsp; G pençe &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
 <div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
 <div id="kombolB" aria-label="kombo listesi"></div>
@@ -63,7 +71,9 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 (function(){
 'use strict';
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const SURUM='?v=52';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const OYUN_SURUM='v2.57';      // ekrandaki sürüm (her değişiklikte artar)
+document.getElementById('surum').textContent=OYUN_SURUM;
+const SURUM='?v=53';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir']
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
@@ -82,15 +92,15 @@ function yukle(src,al){
   im.onerror=()=>{document.getElementById('yuk').textContent='Görsel yüklenemedi: '+src};
   im.src=src+SURUM;
 }
-ADLAR.forEach(a=>yukle('parca/'+a+'.png',im=>R[a]=im));
-for(let i=0;i<11;i++)yukle('yuz/yuz'+i+'.png',im=>YUZ[i]=im);
-for(let i=0;i<10;i++)yukle('yuz/yuzA'+i+'.png',im=>YUZA[i]=im);
-for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.png',im=>KANI[i]=im);
-for(let i=0;i<3;i++)yukle('fx/kar'+i+'.png',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
-for(let i=0;i<4;i++)yukle('fx/tas'+i+'.png',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)
-['patla','sprey','yarik'].forEach(n=>yukle('fx/'+n+'.png',im=>R[n]=im));      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
-yukle('fx/yol.png',im=>R.yol=im);yukle('fx/dag.png',im=>R.dag=im);
-for(let i=0;i<8;i++)yukle('fx/agac'+i+'.png',im=>AGAC[i]=im);      // 0,1,2,4,6 yapraklı çam; 3,5,7 yapraksız      // arka plan ağaçları
+ADLAR.forEach(a=>yukle('parca/'+a+'.webp',im=>R[a]=im));
+for(let i=0;i<11;i++)yukle('yuz/yuz'+i+'.webp',im=>YUZ[i]=im);
+for(let i=0;i<10;i++)yukle('yuz/yuzA'+i+'.webp',im=>YUZA[i]=im);
+for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.webp',im=>KANI[i]=im);
+for(let i=0;i<3;i++)yukle('fx/kar'+i+'.webp',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
+for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)
+['patla','sprey','yarik'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
+yukle('fx/yol.webp',im=>R.yol=im);yukle('fx/dag.webp',im=>R.dag=im);
+for(let i=0;i<8;i++)yukle('fx/agac'+i+'.webp',im=>AGAC[i]=im);      // 0,1,2,4,6 yapraklı çam; 3,5,7 yapraksız      // arka plan ağaçları
 function gorselHazir(){
   ['uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));                 // oyuncunun arka bacağı
   ['ustkol','onkol2','el_yum_f','el_ac_n','el_pF'].forEach(n=>R[n+'_a']=koyult(R[n],.13));    // oyuncunun arka kolu ve eli
@@ -458,7 +468,6 @@ function yereKontrol(){           // yerdeyken iki parmak birlikte hızlı aşa�
   if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   const a=izBul('N'),b=izBul('F');
   if(!a||!b||!S.yer||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
-  if(tutmaVar())return;
   const ka=kayma(a,0.15),kb=kayma(b,0.15);
   if(!ka||!kb||izHiz(a,0.12)<800||izHiz(b,0.12)<800)return;
   const ok=k=>k.dy>70&&Math.abs(k.dx)<0.8*k.dy;
@@ -506,7 +515,6 @@ function alkisKontrol(){          // iki parmak ortaya doğru birleşir = alkı�
   if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez
   const a=izBul('N'),b=izBul('F');
   if(!a||!b||S.sarj>0||S.tats>0||S.sman||S.yy||S.alk||S.durum!=='oyun'||S.t-S.kayCif<0.6)return;
-  if(tutmaVar())return;
   const ka=kayma(a,0.2),kb=kayma(b,0.2);
   if(!ka||!kb||izHiz(a,0.15)<500||izHiz(b,0.15)<500)return;
   const sol=a.lx<b.lx?ka:kb, sag=a.lx<b.lx?kb:ka;
@@ -659,7 +667,7 @@ function bufCal(buf,v){if(!AC||!buf)return;const src=AC.createBufferSource(),g=A
 function torbaCal(L,B,v){if(!L.length)return;if(!B.length)B.push(...L.keys());bufCal(L[B.splice(Math.floor(Math.random()*B.length),1)[0]],v)}
 function sesYukle(){
   if(SYUK||!AC)return;SYUK=true;
-  const y=(ad,al)=>fetch('ses/'+ad+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(al).catch(()=>{});
+  const y=(ad,al)=>fetch('ses/'+ad+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(al).catch(e=>console.warn('Ses yüklenemedi: ses/'+ad+'.mp3',e));
   for(let i=2;i<=6;i++)y('stepsnow_'+i,b=>AD.push(b));
   for(let i=1;i<=6;i++)y('kick_'+i,b=>TK.push(b));
   for(const i of [1,5,6,7])y('punch_'+i,b=>PB.push(b));
@@ -1481,7 +1489,7 @@ let listeAcik=false;
   KOMBO_SIRA.forEach((k,i)=>{
     const sat=document.createElement('div');sat.className='sat'+(k.length!==onceki&&i?' yeni':'');onceki=k.length;
     const no=document.createElement('b');no.textContent=i+1;sat.appendChild(no);
-    for(const c of k){const im=document.createElement('img');im.src='ui/ic_'+(c==='y'?'yumruk':'tekme')+'.png?v=43';im.alt=c;sat.appendChild(im)}
+    for(const c of k){const im=document.createElement('img');im.src='ui/ic_'+(c==='y'?'yumruk':'tekme')+'.webp?v=43';im.alt=c;sat.appendChild(im)}
     ic.appendChild(sat);
   });
   const el=document.getElementById('liste');
@@ -1526,7 +1534,7 @@ function ziplaBas(guc=1){
   else if(S.ekstra>0){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;ziplaCal()}
 }
 
-// ---------- Zemin: soldan sağa uzun platform yolu (basamaklar yürünür, yüksek kutulara zıplanır) ----------
+// ---------- Zemin: şimdilik düz yol (ZEMIN tablosu ileride basamak/platform eklemeye hazır) ----------
 function zemin(x){
   let lo=0,hi=ZEMIN.length-1;
   while(lo<hi){const m=(lo+hi+1)>>1;if(ZEMIN[m][0]<=x)lo=m;else hi=m-1}
@@ -1795,7 +1803,7 @@ let son=0;
 function dongu(ms){
   requestAnimationFrame(dongu);      // önce sonraki kare istenir: bir karede hata olsa bile oyun donmaz
   if(listeAcik){son=ms;return}      // kombo listesi açıkken oyun durur
-  let dt=Math.min(0.033,(ms-son)/1000||0.016);son=ms;S.dtG=dt;
+  let dt=Math.min(0.05,(ms-son)/1000||0.016);      // 20 FPS'e kadar gerçek zamanlı (yavaş telefonda ağır çekime girmez)son=ms;S.dtG=dt;
   if(S.dur>0){S.dur-=dt;dt*=0.08}
   S.sars*=Math.pow(0.002,dt);S.t+=dt;
   const ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gyroAx())), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
@@ -1847,4 +1855,5 @@ function dongu(ms){
 })();
 </script>
 
+</body>
 </html>
