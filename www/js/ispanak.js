@@ -9,14 +9,14 @@ const ISP_G=4200;                // atılan / düşen kutunun yerçekimi
 Object.assign(S,{uzT:{N:0,F:0},uzan:null,yeme:null});
 
 function ispSes(x,yarim){
-  if(!AC||AC.state!=='running'||!ISPS)return;
+  if(!AC||AC.state!=='running'||!ISPS||DEMO)return;
   const g0=kisit(1-Math.abs(x-S.x)/7000,0.3,1),src=AC.createBufferSource(),g=AC.createGain();
   src.buffer=ISPS;g.gain.value=g0;src.connect(g);g.connect(AC.destination);
   if(yarim){const d=ISPS.duration/2,n=AC.currentTime;g.gain.setValueAtTime(g0,n+d*0.75);g.gain.linearRampToValueAtTime(0,n+d);src.start(n,0,d)}      // sesin ilk yarısı
   else src.start();
 }
-function ispDus(x,y){            // düşman ölünce: kutu havaya fırlar, yere düşer
-  if(ISP.length>=12||Math.random()>=0.25)return;
+function ispDus(x,y,p=0.25){            // düşman ölünce (%25) / varil kırılınca (%50): kutu havaya fırlar, yere düşer
+  if(ISP.length>=12||Math.random()>=p)return;
   ISP.push({x,y,vx:(Math.random()-0.5)*600,vy:1100,rot:(Math.random()-0.5)*0.4,vr:(Math.random()-0.5)*4,d:'dus',bos:false,sek:0});
 }
 function ispAt(k){               // boş kutu arkaya atılır: ilk iniş ekranın içinde, ikinci sekişte ekrandan çıkar

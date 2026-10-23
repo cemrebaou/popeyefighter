@@ -1,8 +1,9 @@
 'use strict';
 // Düşman yerleşimi ve yeni oyun
+function korsanYap(x,kc){const e={t:'korsan',kc,x,y:zemin(x),vx:0,vy:0,hp:100,max:100,cy:450,r:211,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:0,ka:null};if(kc==='h'){e.cy=558;e.r=259}return e}
 function dusmanKur(){      // yol boyunca yerleşik korsanlar: k = yumruklu, b = bıçaklı; yolun sonunda kaptan (boss) gelir
   DUS=[];ENPOS=[BOSS_X];varilKur();
-  const ekle=(x,kc)=>(ENPOS.push(x),DUS.push({t:'korsan',kc,x,y:zemin(x),vx:0,vy:0,hp:100,max:100,cy:450,r:211,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:0,ka:null}));
+  const ekle=(x,kc)=>(ENPOS.push(x),DUS.push(korsanYap(x,kc)));
   [3800,5200,9600,11200,14800,16000,19200,21000,23000,25800,27000,31600,33400,35200].forEach(x=>{ekle(x,'k');DUS[DUS.length-1].hp=DUS[DUS.length-1].max=150});
   [4500,7400,10400,13600,16800,20200,22000,24600,29000,32200,34400].forEach(x=>ekle(x,'b'));
   [8600,15800,23600,30400,37200].forEach(x=>{ekle(x,'h');const e=DUS[DUS.length-1];e.hp=e.max=200;e.cy=558;e.r=259});      // kancacılar

@@ -49,13 +49,14 @@ function ciz(){
 let son=0;
 function dongu(ms){
   requestAnimationFrame(dongu);      // önce sonraki kare istenir: bir karede hata olsa bile oyun donmaz
-  if(listeAcik||agacAcik){son=ms;return}      // kombo listesi açıkken oyun durur
+  if(listeAcik||(agacAcik&&!DEMO)){son=ms;return}      // kombo listesi / ağaç açıkken oyun durur (ağaçta yetenek önizlemesi hariç)
+  if(DEMO)demoAdim();
   let dt=Math.min(0.05,(ms-son)/1000||0.016);      // 20 FPS'e kadar gerçek zamanlı (yavaş telefonda ağır çekime girmez)
   son=ms;S.dtG=dt;
   if(S.dur>0){S.dur-=dt;dt*=0.08}
   S.sars*=Math.pow(0.002,dt);S.t+=dt;
-  const ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gyroAx())), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
-  const gA=gyroAx(), hed=ax*HIZ*(S.atk&&S.yer?0.35:1)*(S.yer&&asagiMi()?0.45:1);
+  const gA=DEMO?0:gyroAx(),ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gA)), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
+  const hed=ax*HIZ*(S.atk&&S.yer?0.35:1)*(S.yer&&asagiMi()?0.45:1);
   const ivme=S.yer?((gA===0&&S.vx*hed>=0&&Math.abs(hed)>Math.abs(S.vx))?2800:9000):6000;      // tuşla koşu yavaş hızlanır (telefon eğimi aynı kalır)
   if(yon){S.yon=yon;S.vx+=Math.sign(hed-S.vx)*Math.min(Math.abs(hed-S.vx),ivme*dt)}
   else{S.vx-=Math.sign(S.vx)*Math.min(Math.abs(S.vx),(S.yer?12000:2500)*dt)}
@@ -70,9 +71,9 @@ function dongu(ms){
   catlakGuncelle();kanGuncelle(dt);karGuncelle(dt);
   if(S.pence){S.en-=dt*7.5;if(S.en<=0){S.en=0;penceKapa()}else if(S.blok&&S.t-S.pence.t0>0.5)penceKapa()}      // pençe: enerji dolma hızının 3 katı hızla biter; guard alınca bıçaklar girer
   else S.en=Math.min(250,S.en+dt*2.5*(S.t<(S.ispEnT||0)?2:1));      // ıspanaktan sonra 10 sn 2 kat dolum
-  if(S._rh!==undefined&&S.hp<S._rh-0.001){S.hasT=S.t;S.regB=3+Math.random()}      // son hasar zamanı
-  if(S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&(S.t-(S.hasT||-9)>=(S.regB||3)||(S.blok&&YV('W'))))S.hp=Math.min(HPMAX,S.hp+HPMAX*0.05*(YV('X')?3:YV('O')?2:1)*dt);      // Can Dolumu x2/x3; Kalkanlı Savunma: blokta vurulsa da hemen dolar
-  ispCepCiz();      // hasardan 3-4 sn (rastgele) sonra iyileşir: 2 sn'de 10 can
+  if(S._rh!==undefined&&S.hp<S._rh-0.001){S.hasT=S.t;S.regB=6+2*Math.random()}      // son hasar zamanı
+  if(S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&(S.t-(S.hasT||-9)>=(S.regB||6)||(S.blok&&YV('W'))))S.hp=Math.min(HPMAX,S.hp+HPMAX*0.025*(YV('X')?3:YV('O')?2:1)*dt);      // Can Dolumu x2/x3; Kalkanlı Savunma: blokta vurulsa da hemen dolar
+  ispCepCiz();      // hasardan 6-8 sn (rastgele) sonra iyileşir
   S._rh=S.hp;
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
   if(S.kayKilit&&S.t>=S.lungeT&&Math.abs(S.vx)<HIZ*0.5)S.kayKilit=false;      // kayma bitip hız eşiğin altına inince yeni kayma açılır

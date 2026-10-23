@@ -162,7 +162,7 @@ const KOL_EL={N:{yum:['el_yum',26.35,58.35],ac:['el_ac_f',25.6,77.45],tut:['el_y
 const PENCE_EL={N:['el_pN',22.42,47.76],F:['el_pF_a',21.49,46.0]};      // pençe modu: bıçaklı eller (yakın el sırtı, uzak el parmakları görünür)
 const HS={N:'yum',F:'yum'}, ACT={N:0,F:0};     // el durumu: yum = yumruk, ac = tutmaya hazır açık el, tut = düşmanı tutuyor
 function elDurum(dt){
-  if(S.pence){HS.N=HS.F='yum';ACT.N=ACT.F=0;return}      // pençede eller açılmaz (tutma kapalı)
+  if(S.pence||(!YV('A')&&!YV('B'))){HS.N=HS.F='yum';ACT.N=ACT.F=0;return}      // pençede ya da tutma yeteneği yokken eller açılmaz
   for(const k of ['N','F']){
     if(S.yeme&&S.yeme.k===k&&!S.yeme.atildi){HS[k]='tut';ACT[k]=0;continue}      // ıspanak tutuyor
     if(tutan(k)||S.parcalar.some(p=>!p.at&&p.el===k)){HS[k]='tut';ACT[k]=0;continue}

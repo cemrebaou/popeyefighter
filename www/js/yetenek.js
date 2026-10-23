@@ -3,27 +3,27 @@
 // Açma: komşusu açık düğüm + yeteneğin puanı (1-3). Puan: XP ile seviye atlayınca (1→2 için 300 XP, sonraki her seviye %25 fazla, her seviye 1 puan).
 // Ağaçta olmayanlar (yumruk kombo, tekme, blok, alkış, uçan tekme) her zaman açık. YV(k): yetenek açık mı.
 const AGW=2690,AGH=1468,AGX=29,AGY=29;      // ağaç görselinin kırpılmış alanı
-const YET={      // [x, y, ikon, ad, puan]
+const YET={      // [x, y, ikon, ad, puan, ikon boyutu (yoksa 1)]
   C:[1373,1399,0,'Yumruk',0],
-  I:[1373,1111,21,'Sersemletme (10 üstü vuruş sersemletir, geri iter)',1],
+  I:[1373,1111,21,'Yere Düşürme (vuruşlar %25 şansla düşmanı yere düşürür)',1],
   O:[1373,821,31,'Can Dolumu x2',1],X:[1576,486,31,'Can Dolumu x3',1],
   W:[1373,486,32,'Kalkanlı Savunma (blokta can hemen dolar)',2],V:[1171,487,26,'Maks. Can +100',1],
   TOP:[1373,125,18,'Ispanak Cebi (30 sn\'de bir ıspanak)',2],
-  B:[779,1397,20,'Varil Tutma',1],A:[126,1399,3,'İnsan Tutma',1],G:[487,1111,4,'Sıkı Tutuş (tutulan kafa atamaz)',1],
+  A:[779,1397,3,'İnsan Tutma',1],B:[126,1399,20,'Varil Tutma (varillerden %50 şansla ıspanak düşer)',1],G:[487,1111,4,'Sıkı Tutuş (tutulan kafa atamaz)',1,0.8],
   F:[143,1055,5,'Yırtma',2],R:[330,628,28,'Can Çalmalı Yırtma (en az 50 can)',3],
   H:[869,1099,19,'Can Çalma %10',1],M:[616,859,19,'Can Çalma %20',1],
   N:[1088,876,8,'Yer Yumruğu',2],S:[915,593,7,'Süpermen Uçuşu',2],Y:[727,279,17,'Aduket',2],
   D:[1968,1397,16,'Çift Zıplama',1],E:[2621,1398,15,'Kayar Tekme',1],L:[2603,1055,29,'Döner Tekme',2],U:[2416,628,9,'Süper Kahraman İnişi',2],
-  K:[2260,1111,35,'Çok Zıplama (+%25)',1],Q:[2158,858,33,'Tekmeyle Can Çalma (x1.5)',1],J:[1883,1098,30,'Ateşli Aparkat',1],
+  K:[2260,1111,33,'Çok Zıplama (+%25)',1,0.9],Q:[2158,858,35,'Tekmeyle Can Çalma (x1.5)',1],J:[1883,1098,30,'Ateşli Aparkat',1],
   P:[1659,876,6,'Bıçak Modu',2],T:[1824,593,34,'Bıçakla Can Çalma (x2)',2],Z:[2009,279,12,'Bıçak Atlama',3]
 };
 const YKOK='C';
-const YBAG='C-B C-D C-I I-O O-N O-P O-V O-W O-X V-TOP W-TOP X-TOP B-A B-G B-H A-F F-G F-R R-M M-H G-H H-N N-S S-Y D-E D-K D-J J-P J-Q J-K K-L L-E L-U U-Q P-T T-Z'.split(' ').map(s=>s.split('-'));
+const YBAG='C-A C-D C-I I-O O-N O-P O-V O-W O-X V-TOP W-TOP X-TOP A-B A-G A-H B-F F-G F-R R-M M-H G-H H-N N-S S-Y D-E D-K D-J J-P J-Q J-K K-L L-E L-U U-Q P-T T-Z'.split(' ').map(s=>s.split('-'));
 const YKOM={};for(const k in YET)YKOM[k]=[];for(const [a,b] of YBAG){YKOM[a].push(b);YKOM[b].push(a)}
 const AG={acik:new Set([YKOK]),p:0,xp:0,lv:1};
 try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);AG.p=d.p|0;AG.xp=d.xp|0;AG.lv=d.lv||1}}catch(_){}
 function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],p:AG.p,xp:AG.xp,lv:AG.lv}))}catch(_){}}
-const YV=k=>AG.acik.has(k);
+const YV=k=>AG.acik.has(k)||!!(DEMO&&DEMO.yv.includes(k));      // önizlemede gösterilen yetenek geçici açık
 const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n));
 const yAlinir=k=>yAcilir(k)&&AG.p>=YET[k][4];
 HPMAX=250+(YV('V')?100:0);S.hp=HPMAX;
@@ -42,6 +42,7 @@ function agBtn(){
 const XP_ILK=300,XP_ART=1.25;      // 1→2 için 300 XP, sonraki her seviye %25 fazla
 const xpGerek=lv=>Math.round(XP_ILK*Math.pow(XP_ART,lv-1));
 function xpKazan(n){
+  if(DEMO)return;      // önizlemede XP yok
   AG.xp+=n;S.pops.push({x:S.x,y:S.y+1150,t:0,txt:'+'+n+' XP',f:0.3});
   while(AG.xp>=xpGerek(AG.lv)){AG.xp-=xpGerek(AG.lv);AG.lv++;AG.p+=1;S.hp=HPMAX;S.en=250;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:'SEVİYE '+AG.lv+'! +1 PUAN',f:1})}      // her seviye 1 puan, can ve enerji dolar
   agKaydet();agBtn();if(window.agacYenile)agacYenile();
@@ -59,12 +60,13 @@ let agacAcik=false;
   const DG={};
   for(const k in YET){
     const [x,y,i]=YET[k],d=document.createElement('div');
-    d.className='yd';d.style.left=((x-AGX)/AGW*100)+'%';d.style.top=((y-AGY)/AGH*100)+'%';d.style.backgroundImage=`url(ui/yt${i}.webp${SURUM})`;
+    d.className='yd';if(YET[k][5])d.style.width=(6.8*YET[k][5])+'%';d.style.left=((x-AGX)/AGW*100)+'%';d.style.top=((y-AGY)/AGH*100)+'%';d.style.backgroundImage=`url(ui/yt${i}.webp${SURUM})`;
     d.addEventListener('click',ev=>{ev.stopPropagation();sec(k)});ic.appendChild(d);DG[k]=d;
   }
   let secili=null;
   function sec(k){
-    if(secili===k&&yAlinir(k)){AG.p-=YET[k][4];AG.acik.add(k);if(k==='V'){HPMAX+=100;S.hp+=100}agKaydet()}      // ikinci dokunuş: aç
+    if(secili===k&&yAlinir(k)){AG.p-=YET[k][4];AG.acik.add(k);if(k==='V'){HPMAX+=100;S.hp+=100;if(DEMO)DEMO.kayit.sb.S.hp+=100}agKaydet()}      // ikinci dokunuş: aç
+    if(secili!==k)demoBasla(k);      // arkadaki karakter yeteneği gösterir
     secili=k;yenile();
   }
   function yenile(){
@@ -74,7 +76,7 @@ let agacAcik=false;
     bil.textContent=t;agBtn();
   }
   window.agacYenile=yenile;
-  window.agacAc=a=>{if(a&&listeAcik)listeAc(false);agacAcik=a;el.hidden=!a;document.getElementById('agacB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};
+  window.agacAc=a=>{if(a&&listeAcik)listeAc(false);if(!a)demoBitir();agacAcik=a;el.hidden=!a;document.getElementById('agacB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};
   document.getElementById('agacB').addEventListener('click',()=>agacAc(!agacAcik));      // ikon açıkken tekrar dokununca kapanır
   document.getElementById('ispB').addEventListener('click',ispCep);
   el.addEventListener('click',e=>{if(e.target===el||e.target.id==='agac_kap')agacAc(false)});

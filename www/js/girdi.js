@@ -1,6 +1,7 @@
 'use strict';
 // Klavye, dokunmatik tuşlar, sensör (gyro), parmakla kol sürükleme
 function tus(e,d){
+  if(agacAcik||listeAcik)return;      // menü açıkken klavye oyunu oynatmaz
   const k=e.key;
   if(k==='ArrowLeft'||k==='a'||k==='A')key.sol=d;
   else if(k==='ArrowRight'||k==='d'||k==='D')key.sag=d;

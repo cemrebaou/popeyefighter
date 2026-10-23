@@ -49,15 +49,16 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 #yuk[hidden]{display:none}
 #yuk{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--gok-ust);font-family:var(--font);font-size:28px;letter-spacing:.08em}
 
-#agacB{position:fixed;top:calc(10px + min(340px,28vw,50vh)*0.475 + 72px);left:10px;width:68px;height:68px;background:url(../ui/seviye.webp?v=70) center/contain no-repeat;cursor:pointer;touch-action:manipulation}
-#agacB.ok{background-image:url(../ui/seviye_ok.webp?v=70)}
+#agacB{position:fixed;top:calc(10px + min(340px,28vw,50vh)*0.475 + 72px);left:10px;width:68px;height:68px;background:url(../ui/seviye.webp?v=71) center/contain no-repeat;cursor:pointer;touch-action:manipulation}
+#agacB.ok{background-image:url(../ui/seviye_ok.webp?v=71)}
 #agacB:active{transform:scale(.92);filter:brightness(.8)}
 #xpY{position:absolute;left:6px;right:6px;bottom:-9px;height:6px;background:#1f2a33;border-radius:3px;overflow:hidden}#xpB{height:100%;width:0;background:#ffd84a}
-#ispB{position:fixed;top:calc(10px + min(340px,28vw,50vh)*0.475 + 156px);left:12px;width:64px;height:64px;border-radius:50%;border:3px solid #1f2a33;box-sizing:border-box;cursor:pointer;touch-action:manipulation;
-  background:url(../ui/yt18.webp?v=70) center/70% no-repeat,conic-gradient(#f3e2c0 var(--p,0%),#6b7680 0);filter:grayscale(.7)}
-#ispB.hazir{filter:none;box-shadow:0 0 12px 3px #7dd34a}#ispB[hidden]{display:none}
+#ispB{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px) + 88px);right:max(16px,env(safe-area-inset-right,0px));width:60px;height:60px;border-radius:50%;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;
+  background:url(../ui/btn_isp.webp?v=71) center/contain no-repeat;filter:grayscale(.7) brightness(.85)}      /* zıplama butonunun üstünde, %75 boyut, sağ kenarları hizalı */
+#ispB::after{content:'';position:absolute;inset:4%;border-radius:50%;background:conic-gradient(transparent var(--p,0%),rgba(20,28,34,.5) 0);pointer-events:none}
+#ispB.hazir{filter:none;box-shadow:0 0 12px 3px #7dd34a}#ispB.hazir::after{display:none}#ispB[hidden]{display:none}
 #ispB:active{transform:scale(.92)}
-#agac{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(31,42,51,.75)}#agac[hidden]{display:none}
+#agac{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(31,42,51,.75);transition:background .2s}#agac.demo{background:rgba(31,42,51,.3)}      /* önizlemede arkadaki oyun daha net */#agac[hidden]{display:none}
 .agac_k{position:relative;width:min(96vw,calc(82vh*1.8325));padding-top:44px}
 #agac_ic{position:relative;width:100%;aspect-ratio:2690/1468;background:url(../ui/agac.webp?v=69) center/100% 100% no-repeat}
 #agac_bil{position:absolute;top:0;left:0;right:48px;height:36px;line-height:36px;padding:0 12px;background:#f3e2c0;border:3px solid #1f2a33;border-radius:8px;font-weight:800;font-size:15px;color:#1f2a33;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}

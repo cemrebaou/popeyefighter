@@ -4,6 +4,7 @@ let VAR=[],VPAR=[],VSES_T=-9;      // VAR: variller (x,y = merkez), VPAR: saçı
 const VDW={N:0,F:0};
 const V_OL=0.378,V_PX=0.756,V_W=323,V_MRK=190;      // V_OL: orijinal çizim px → birim, V_PX: kayıtlı görsel px → birim, V_W: varil eni, V_MRK: tabandan merkeze
 const V_KONUM=[2600,6300,12400,18000,24200,28600,34000];
+const V_MAXV=2600;      // fırlatılan varilin en yüksek hızı (hasar fırlatma gücünden hesaplanır, bu sınırdan etkilenmez)
 const V_HALKA=[-201,241,432];      // halkaların varil merkezine göre yüksekliği (orijinal px, aşağı +)
 function varilKur(){VAR=V_KONUM.map(x=>({x,y:zemin(x)+V_MRK,vx:0,vy:0,rot:0,vr:0,d:'yer',k:null}));VPAR=[]}
 const varilElde=k=>VAR.some(v=>v.d==='tut'&&v.k===k);
@@ -16,7 +17,7 @@ function varilBirak(k){            // parmak kalkınca: hızlıysa fırlatır, y
   const v=VAR.find(z=>z.d==='tut'&&z.k===k);if(!v)return false;
   const h=EL[k],vx=h.sv.x+S.vx,vy=h.sv.y,sp=Math.hypot(vx,vy);
   v.k=null;
-  if(sp>700){v.d='uc';v.vx=vx*1.3;v.vy=vy*1.3;v.vr=(Math.sign(v.vx)||1)*(3+sp/1500)}
+  if(sp>700){v.d='uc';v.f=kisit((sp*1.3-700)/4000,0,1);const s=Math.min(1,V_MAXV/(sp*1.3));v.vx=vx*1.3*s;v.vy=vy*1.3*s;v.vr=(Math.sign(v.vx)||1)*(3+sp/1500)}      // hız sınırlı, hasar gücü aynı
   else{v.d='dus';v.vx=S.vx*0.5;v.vy=0;v.vr=0}
   return true;
 }
@@ -31,6 +32,7 @@ function varilKir(v){              // ilk çarpma: kırılma sesi, parçalar var
   for(let i=0;i<14;i++)ek('v_c'+i,(-427.5+(i+0.5)*61.07)*V_OL,60*V_OL,false);
   V_HALKA.forEach((y,i)=>ek('v_h'+i,(Math.random()-0.5)*40,y*V_OL,true));
   VAR.splice(VAR.indexOf(v),1);
+  ispDus(v.x,v.y-V_MRK,0.5);      // %50 ıspanak düşer
 }
 function varilGuncelle(dt){
   for(const k of ['N','F']){        // tutma
@@ -48,11 +50,12 @@ function varilGuncelle(dt){
       const h=EL[v.k];v.x=h.wx+S.yon*(V_W/2-20);v.y=h.wy;continue;      // el varilin yanından tutar
     }
     if(v.d==='uc'){      // hızlı fırlatmada düşmanın içinden geçmesin: adım başına en çok ~80 birim ilerler, her adımda çarpışma bakılır
-      const n=Math.min(80,Math.max(1,Math.ceil(Math.hypot(v.vx,v.vy)*dt/80))),h=dt/n;
+      const n=Math.min(80,Math.max(1,Math.ceil(Math.hypot(v.vx,v.vy)*dt/40))),h=dt/n;
       for(let s=0;s<n;s++){
         v.vy-=G*h;v.x+=v.vx*h;v.y+=v.vy*h;v.rot+=v.vr*h;
-        const sp=Math.hypot(v.vx,v.vy),f=kisit((sp-700)/4000,0,1);
-        const e=DUS.find(e=>!e.olu&&!e.tut&&Math.hypot(v.x-e.x,v.y-(e.y+e.cy))<e.r+V_W/2-10);
+        const f=v.f!==undefined?v.f:kisit((Math.hypot(v.vx,v.vy)-700)/4000,0,1);
+        const e=DUS.find(e=>{if(e.olu||e.tut)return false;const ust=e.y+(e.dus?e.cy*0.9:e.cy*2);      // düşmanın tüm boyu (kutu): değince çarpar
+          return Math.abs(v.x-e.x)<V_W/2+e.r*0.55&&v.y-V_MRK*0.85<ust&&v.y+V_MRK*0.85>e.y});
         if(e){vur(e,Math.round(15+35*f),v.vx,v.vy,f);varilKir(v);break}      // düşmana çarpınca kırılır
         const zz=zemin(v.x)+V_MRK;if(v.y<=zz){v.y=zz;varilKir(v);break}     // yere çarpınca kırılır
       }

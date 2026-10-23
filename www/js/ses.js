@@ -13,7 +13,7 @@ const PB=[],PBAG=[],AD=[],ADBAG=[],TK=[],TKBAG=[],KLC=[],WH=[],WHBAG=[],JP=[];le
 const TD=[],TDBAG=[],DMR=[],DMRBAG=[];let TCS=null;      // varil: tahta parçası yere düşme, demir halka, ilk kırılma sesi
 const BLD=[],BLDBAG=[],INS=[],INSBAG=[],OLS={};let KALPS=null,BOPEN=null,USTS=null,GRS=null,DSS=null,DEVS=null,ARK=null,ARKSRC=null;      // bıçak vuruşu, yere iniş, ölüm (k/b/p/h), üstüne atlama, tutma, düşman düşmesi, arka plan müziği
 function arkaCal(){if(!AC||!ARK||ARKSRC)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ARK;src.loop=true;g.gain.value=0.35;src.connect(g);g.connect(AC.destination);src.start();ARKSRC=src}      // oyun boyunca döngüde
-function bufCal(buf,v){if(!AC||!buf)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=buf;g.gain.value=v||1;src.connect(g);g.connect(AC.destination);src.start()}
+function bufCal(buf,v){if(!AC||!buf||DEMO)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=buf;g.gain.value=v||1;src.connect(g);g.connect(AC.destination);src.start()}
 function torbaCal(L,B,v){if(!L.length)return;if(!B.length)B.push(...L.keys());bufCal(L[B.splice(Math.floor(Math.random()*B.length),1)[0]],v)}
 function sesYukle(){
   if(SYUK||!AC)return;SYUK=true;
@@ -54,4 +54,4 @@ function ses(tip){              // tip: 'yumruk' | 'tekme' | 'parca'; aynı anda
   if(tip==='parca')bufCal(PPAR,1);else torbaCal(tip==='tekme'?TK:PB,tip==='tekme'?TKBAG:PBAG,0.95);
 }
 let TITRE_SON=0;
-function titre(ms){const n=performance.now();if(n-TITRE_SON<60)return;TITRE_SON=n;try{if(navigator.vibrate)navigator.vibrate(ms)}catch(_){}}
+function titre(ms){if(DEMO)return;const n=performance.now();if(n-TITRE_SON<60)return;TITRE_SON=n;try{if(navigator.vibrate)navigator.vibrate(ms)}catch(_){}}
