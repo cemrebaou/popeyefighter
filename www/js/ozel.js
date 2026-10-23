@@ -151,7 +151,8 @@ function yereKontrol(){           // yerdeyken iki parmak birlikte hızlı aşa�
   const ok=k=>k.dy>70&&Math.abs(k.dx)<0.8*k.dy;
   if(ok(ka)&&ok(kb)){
     a.atil=b.atil=a.sla=b.sla=true;
-    if(S.blok||S.t-(S.blokSonT||-9)<0.6){if(!S.pence)penceAc();return}      // guarddan iki parmak aşağı: bıçaklar çıkar (yer yarma çalışmaz)
+    const gT=S.blok?S.t-S.blokT:(S.blokSonT||-9)>S.t-0.6?S.blokSonT-S.blokT:0;      // guard ne kadar tutuldu
+    if(YV('P')&&!S.pence&&gT>=0.35&&(S.blok||S.t-(S.blokSonT||-9)<0.6)){penceAc();return}      // bilerek tutulan guarddan iki parmak aşağı: bıçaklar çıkar; kısa (istemsiz) guard ya da bıçak modu kilitliyse yer yumruğu çalışır
     if(!YV('N')||!enerji(50))return;
     S.yy={t0:S.t,T:0.55,dir:S.yon,hit:false};S.kay=null;S.lungeT=-1;S.vx=0;
   }
