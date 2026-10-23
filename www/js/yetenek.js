@@ -1,6 +1,6 @@
 'use strict';
 // Yetenek ağacı: düğümler ağaç görselindeki daire merkezlerinde (görsel px), ikon ui/ytN.webp. Kilitli = siyah-beyaz, açık = renkli.
-// Açma: komşusu açık düğüm + yeteneğin puanı (1-3). Puan: XP ile seviye atlayınca (100 XP = 1 seviye, her seviye 1 puan, 5'in katı seviyeler 3 puan).
+// Açma: komşusu açık düğüm + yeteneğin puanı (1-3). Puan: XP ile seviye atlayınca (1→2 için 300 XP, sonraki her seviye %25 fazla, her seviye 1 puan).
 // Ağaçta olmayanlar (yumruk kombo, tekme, blok, alkış, uçan tekme) her zaman açık. YV(k): yetenek açık mı.
 const AGW=2690,AGH=1468,AGX=29,AGY=29;      // ağaç görselinin kırpılmış alanı
 const YET={      // [x, y, ikon, ad, puan]
@@ -36,12 +36,14 @@ function canCal(dmg,tekme){      // can çalma: yumruk %10 / %20; tekme bunun 1.
 function agBtn(){
   const b=document.getElementById('agacB');if(!b)return;
   b.classList.toggle('ok',Object.keys(YET).some(yAlinir));      // sarı oklu çapa: açılacak yetenek var
-  const x=document.getElementById('xpB');if(x)x.style.width=AG.xp+'%';
+  const x=document.getElementById('xpB');if(x)x.style.width=Math.min(100,AG.xp/xpGerek(AG.lv)*100)+'%';
   const ic=document.getElementById('ispB');if(ic)ic.hidden=!YV('TOP');
 }
+const XP_ILK=300,XP_ART=1.25;      // 1→2 için 300 XP, sonraki her seviye %25 fazla
+const xpGerek=lv=>Math.round(XP_ILK*Math.pow(XP_ART,lv-1));
 function xpKazan(n){
   AG.xp+=n;S.pops.push({x:S.x,y:S.y+1150,t:0,txt:'+'+n+' XP',f:0.3});
-  while(AG.xp>=100){AG.xp-=100;AG.lv++;const g=AG.lv%5===0?3:1;AG.p+=g;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:'SEVİYE '+AG.lv+'! +'+g+' PUAN',f:1})}
+  while(AG.xp>=xpGerek(AG.lv)){AG.xp-=xpGerek(AG.lv);AG.lv++;AG.p+=1;S.hp=HPMAX;S.en=250;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:'SEVİYE '+AG.lv+'! +1 PUAN',f:1})}      // her seviye 1 puan, can ve enerji dolar
   agKaydet();agBtn();if(window.agacYenile)agacYenile();
 }
 // Ispanak cebi: 30 sn'de bir cepten ıspanak çıkar, elde belirir, standart yeme animasyonu
@@ -67,13 +69,13 @@ let agacAcik=false;
   }
   function yenile(){
     for(const k in DG)DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(secili===k?' sec':'');
-    let t='SEVİYE '+AG.lv+' · XP '+AG.xp+'/100 · PUAN '+AG.p;
+    let t='SEVİYE '+AG.lv+' · XP '+AG.xp+'/'+xpGerek(AG.lv)+' · PUAN '+AG.p;
     if(secili){const ad=YET[secili][3],c=YET[secili][4];t+=' · '+ad+(AG.acik.has(secili)?' (AÇIK)':' · '+c+' puan'+(yAcilir(secili)?(AG.p>=c?' · açmak için tekrar dokun':' · puan yetmiyor'):' · önce yanındakini aç'))}
     bil.textContent=t;agBtn();
   }
   window.agacYenile=yenile;
-  window.agacAc=a=>{agacAcik=a;el.hidden=!a;if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};
-  document.getElementById('agacB').addEventListener('click',()=>agacAc(true));
+  window.agacAc=a=>{if(a&&listeAcik)listeAc(false);agacAcik=a;el.hidden=!a;document.getElementById('agacB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};
+  document.getElementById('agacB').addEventListener('click',()=>agacAc(!agacAcik));      // ikon açıkken tekrar dokununca kapanır
   document.getElementById('ispB').addEventListener('click',ispCep);
   el.addEventListener('click',e=>{if(e.target===el||e.target.id==='agac_kap')agacAc(false)});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&agacAcik)agacAc(false)});

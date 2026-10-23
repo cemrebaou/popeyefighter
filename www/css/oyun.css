@@ -67,3 +67,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 .yd.ac{opacity:1;filter:drop-shadow(0 0 5px #ffb02e)}
 .yd.sec{transform:translate(-50%,-50%) scale(1.18)}
 @keyframes ydNabiz{50%{filter:grayscale(1) brightness(1.15) drop-shadow(0 0 10px #fff)}}
+/* okuma ikonları (kombo listesi, yetenek ağacı): sönük; tıklanan renklenir, başkası seçilince söner; paneller açıkken de dokunulabilir */
+#kombolB,#agacB{z-index:60;filter:grayscale(1) brightness(.8);transition:transform .05s,filter .15s}
+#agacB.ok:not(.aktif){filter:none}
+#kombolB.aktif,#agacB.aktif{filter:drop-shadow(0 0 8px #ffd84a)}

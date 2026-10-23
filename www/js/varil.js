@@ -47,14 +47,20 @@ function varilGuncelle(dt){
       if(!KOL[v.k].ak||S.durum!=='oyun'){varilBirak(v.k);continue}
       const h=EL[v.k];v.x=h.wx+S.yon*(V_W/2-20);v.y=h.wy;continue;      // el varilin yanından tutar
     }
+    if(v.d==='uc'){      // hızlı fırlatmada düşmanın içinden geçmesin: adım başına en çok ~80 birim ilerler, her adımda çarpışma bakılır
+      const n=Math.min(80,Math.max(1,Math.ceil(Math.hypot(v.vx,v.vy)*dt/80))),h=dt/n;
+      for(let s=0;s<n;s++){
+        v.vy-=G*h;v.x+=v.vx*h;v.y+=v.vy*h;v.rot+=v.vr*h;
+        const sp=Math.hypot(v.vx,v.vy),f=kisit((sp-700)/4000,0,1);
+        const e=DUS.find(e=>!e.olu&&!e.tut&&Math.hypot(v.x-e.x,v.y-(e.y+e.cy))<e.r+V_W/2-10);
+        if(e){vur(e,Math.round(15+35*f),v.vx,v.vy,f);varilKir(v);break}      // düşmana çarpınca kırılır
+        const zz=zemin(v.x)+V_MRK;if(v.y<=zz){v.y=zz;varilKir(v);break}     // yere çarpınca kırılır
+      }
+      continue;
+    }
     v.vy-=G*dt;v.x+=v.vx*dt;v.y+=v.vy*dt;v.rot+=v.vr*dt;
     const z=zemin(v.x)+V_MRK;
-    if(v.d==='uc'){
-      const sp=Math.hypot(v.vx,v.vy),f=kisit((sp-700)/4000,0,1);
-      const e=DUS.find(e=>!e.olu&&!e.tut&&Math.hypot(v.x-e.x,v.y-(e.y+e.cy))<e.r+V_W/2-30);
-      if(e){vur(e,Math.round(15+35*f),v.vx,v.vy,f);varilKir(v);continue}      // düşmana çarpınca kırılır
-      if(v.y<=z){v.y=z;varilKir(v);continue}                                    // yere çarpınca kırılır
-    }else if(v.y<=z){v.y=z;v.d='yer';v.vx=v.vy=v.vr=0;v.rot=0;vSes(null,TD,TDBAG,v.x,0.7)}      // bırakılan varil yere oturur
+    if(v.y<=z){v.y=z;v.d='yer';v.vx=v.vy=v.vr=0;v.rot=0;vSes(null,TD,TDBAG,v.x,0.7)}      // bırakılan varil yere oturur
   }
   for(let i=VPAR.length-1;i>=0;i--){
     const p=VPAR[i];

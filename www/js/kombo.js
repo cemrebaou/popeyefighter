@@ -179,8 +179,8 @@ let listeAcik=false;
     ic.appendChild(sat);
   });
   const el=document.getElementById('liste');
-  window.listeAc=a=>{listeAcik=a;el.hidden=!a;if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;ic.scrollTop=0}};
-  document.getElementById('kombolB').addEventListener('click',()=>listeAc(true));
+  window.listeAc=a=>{if(a&&agacAcik)agacAc(false);listeAcik=a;el.hidden=!a;document.getElementById('kombolB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;ic.scrollTop=0}};
+  document.getElementById('kombolB').addEventListener('click',()=>listeAc(!listeAcik));      // ikon açıkken tekrar dokununca kapanır
   el.addEventListener('click',e=>{if(e.target===el)listeAc(false)});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&listeAcik)listeAc(false)});
 }
