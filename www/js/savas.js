@@ -200,12 +200,13 @@ function grabKontrol(dt){
     }
   }
 }
+const D_CARP=V_CARP*0.71,D_MAXV=V_MAXV*0.71;      // düşman fırlatma: varilin hız çarpanı ve sınırının ~%71'i = yarı mesafe
 function tutBirak(k){
   if(varilBirak(k))return;      // elde varil varsa onu bırakır / fırlatır
   const e=DUS.find(x=>x.tut===k||(x.iki&&x.tut));if(!e)return;
   e.tut=null;e.iki=false;
   const h=EL[k],vx=h.sv.x+S.vx,vy=h.sv.y,v=Math.hypot(vx,vy);
-  if(v>800){e.atil=true;const f=kisit((v-800)/5000,0,1);vur(e,Math.round(4+36*f),vx,vy,f);e.vx*=1.3;e.vy*=1.3}   // fırlatma: hıza göre hasar ve uçuş
+  if(v>800){e.atil=true;const f=kisit((v-800)/5000,0,1);vur(e,Math.round(4+36*f),vx,vy,f);const s=Math.min(1,D_MAXV/(v*D_CARP));e.vx=vx*D_CARP*s;e.vy=vy*D_CARP*s}   // fırlatma: varil gibi el hızıyla uçar (yarı mesafe), hasar hıza göre
   else{e.vx=e.vy=0;e.st=S.t+0.5}
 }
 function olmGuncelle(e,dt){      // ölüm hareketi; yere yattıktan 5 sn sonra söner (true = sil)

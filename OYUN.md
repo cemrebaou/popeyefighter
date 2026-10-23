@@ -31,7 +31,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Tekmeler (kombo): 6–18. Kayar tekme 15 (%50 yere serer). Döner tekme 50. Yere tekme (uçan tekme) 15, inince küçük yer sarsıntısı.
 - Ateşli aparkat 32. Süpermen uçuşu 50. Aduket 50. Yer yarma (yarık) 40. Süper kahraman inişi 50 (yer sarsıntısı).
 - Alkış şok dalgası 30: geri savurur, %50 yere düşürür (kaptan ve kancacı hariç).
-- Tutup fırlatma 4–40 (hıza göre). Varil fırlatma 15–50; varil en yüksek hız 3250. Fırlayan düşman başkasına çarparsa 10–35.
+- Tutup fırlatma 4–40 (hıza göre); düşman varil gibi el hızıyla uçar, varilin yarı mesafesi (en yüksek hız ~2300). Varil fırlatma 15–50; varil en yüksek hız 3250. Fırlayan düşman başkasına çarparsa 10–35.
 - Yırtma: anında öldürür (enerji = düşmanın kalan canı).
 - Yere Düşürme yeteneği: 10 üstü vuruşlar %25 ihtimalle düşmanı yere düşürür.
 
