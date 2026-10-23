@@ -12,6 +12,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Her değişiklikten sonra `main`e push et. Önce GitHub'da yerelden yeni sürüm var mı bak, varsa çek.
 - Commit yazarı `Claude <noreply@anthropic.com>`; commit sonuna sistemin verdiği Co-Authored-By ve Claude-Session satırlarını ekle.
 - İstekleri liste yap: kullanıcı peş peşe iş söylerse sadece sonuncuyu tekrarla; push gerektiren iş veya ses/görsel gelince listeyi birlikte yap.
+- Oyunla ilgili sorular (canlar, hasarlar, XP, yetenekler, kontroller) için önce `OYUN.md`ye bak, koda girme. Bir değer/kural değişince `OYUN.md`yi de güncelle.
 - Test linki: https://raw.githack.com/cemrebaou/popeyefighter/main/www/index.html
 
 ## Dosya yapısı

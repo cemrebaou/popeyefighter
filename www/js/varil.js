@@ -4,7 +4,8 @@ let VAR=[],VPAR=[],VSES_T=-9;      // VAR: variller (x,y = merkez), VPAR: saçı
 const VDW={N:0,F:0};
 const V_OL=0.378,V_PX=0.756,V_W=323,V_MRK=190;      // V_OL: orijinal çizim px → birim, V_PX: kayıtlı görsel px → birim, V_W: varil eni, V_MRK: tabandan merkeze
 const V_KONUM=[2600,6300,12400,18000,24200,28600,34000];
-const V_MAXV=2600;      // fırlatılan varilin en yüksek hızı (hasar fırlatma gücünden hesaplanır, bu sınırdan etkilenmez)
+const V_MAXV=3250;      // (+%25)
+const V_CARP=2.0;      // parmak hızı çarpanı: az parmak hızıyla en yüksek hıza ulaşır (en yüksek hız ~1625 parmak hızında)      // fırlatılan varilin en yüksek hızı (hasar fırlatma gücünden hesaplanır, bu sınırdan etkilenmez)
 const V_HALKA=[-201,241,432];      // halkaların varil merkezine göre yüksekliği (orijinal px, aşağı +)
 function varilKur(){VAR=V_KONUM.map(x=>({x,y:zemin(x)+V_MRK,vx:0,vy:0,rot:0,vr:0,d:'yer',k:null}));VPAR=[]}
 const varilElde=k=>VAR.some(v=>v.d==='tut'&&v.k===k);
@@ -17,7 +18,7 @@ function varilBirak(k){            // parmak kalkınca: hızlıysa fırlatır, y
   const v=VAR.find(z=>z.d==='tut'&&z.k===k);if(!v)return false;
   const h=EL[k],vx=h.sv.x+S.vx,vy=h.sv.y,sp=Math.hypot(vx,vy);
   v.k=null;
-  if(sp>700){v.d='uc';v.f=kisit((sp*1.3-700)/4000,0,1);const s=Math.min(1,V_MAXV/(sp*1.3));v.vx=vx*1.3*s;v.vy=vy*1.3*s;v.vr=(Math.sign(v.vx)||1)*(3+sp/1500)}      // hız sınırlı, hasar gücü aynı
+  if(sp>700){v.d='uc';v.f=kisit((sp*1.3-700)/4000,0,1);const s=Math.min(1,V_MAXV/(sp*V_CARP));v.vx=vx*V_CARP*s;v.vy=vy*V_CARP*s;v.vr=(Math.sign(v.vx)||1)*(3+sp/1500)}      // hız sınırlı, hasar gücü aynı
   else{v.d='dus';v.vx=S.vx*0.5;v.vy=0;v.vr=0}
   return true;
 }

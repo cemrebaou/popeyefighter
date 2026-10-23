@@ -77,6 +77,8 @@ const DEMOLAR={      // T: döngü süresi (sn), kur: sahne, f(t, o): o(an) o an
   J:{T:2.6,kur(D){dmDusman(380,'k')},f(t,o){if(o(0.2))shoryu({t:'N',yon:1})}},
   P:{T:2.8,kur(D){dmDusman(420,'k')},f(t,o){if(o(0.2))penceAc();if(o(0.9))komboTap('y','N');if(o(1.3))komboTap('y','F');if(o(2.3))penceKapa()}},
   Z:{T:3.2,yv:['P'],kur(D){dmDusman(1400,'k')},f(t,o){if(o(0.1))penceAc();if(o(0.6))dagAtla(1)}},
+  AL:{T:2.8,kur(D){dmDusman(500,'k');dmDusman(-500,'k')},f(t,o){if(o(0.2)){S.alk={t0:S.t,T:0.75,hit:false};S.vx=0}}},
+  YT:{T:2.6,kur(D){dmDusman(700,'k')},f(t,o){if(o(0.1)){key.zipla=true;ziplaBas()}if(o(0.4))key.zipla=false;if(o(0.45))S.pend={t:S.t,iz:{t:'N',yon:1},dx:350,dy:450}}},
   TOP:{T:3.6,f(t,o){if(o(0.1)&&!S.yeme)S.yeme={k:'N',t0:S.t,bos:false,atildi:false}}},
 };
 function demoSifirla(){      // her döngüde: karakter başladığı yere ışınlanır, sahne yeniden kurulur

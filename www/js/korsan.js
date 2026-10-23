@@ -19,15 +19,16 @@ function kancaGuncelle(e,dt){      // kanca: hazırlık → atıldığı anki oy
     if(S.t-(h.kT||S.t)>=(h.cn||0.5)){h.cn=(h.cn||0.5)+0.5;if(dokunulmaz()){S.hp-=1;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'-1',f:0.3})}}      // çekerken yarım saniyede 1 can
     h.x=S.x+(h.ox||0);h.y=S.y+(h.oy===undefined?480:h.oy);const d=e.x-S.x;
     if(S.t-(h.kT||0)>0.3){h.kT=S.t;kanFiskir(h.x,h.y,d>=0?1:-1,0.22)}if(Math.random()<dt*10)kanDamla(h.x+(Math.random()-0.5)*30,h.y,(Math.random()-0.5)*160,-80,0.5+Math.random()*0.4);      // çekilirken takıldığı yerden küçük kan ve damlalar
-    if(Math.abs(d)<660*(e.bs||1)){h.ph='don';e.mcd=0;return}      // eskisinin 2 katı uzakta bırakır
+    if(Math.abs(d)<KANCA_BIRAK*(e.bs||1)){h.ph='don';e.mcd=0;return}      // bıraktığı mesafe
     S.x+=Math.sign(d)*1500*dt;S.vx=0;return}
   if(h.ph==='don'){const m=u[2]||u[0]||{x:e.x,y:e.y+500},dx=m.x-h.x,dy=m.y-h.y,L=Math.hypot(dx,dy),st=2600*dt;
     if(L<=st+20){e.kh=null;e.acd=S.t+2.5+Math.random()*1.5;return}
     h.vx=dx/L*2600;h.vy=dy/L*2600;h.x+=dx/L*st;h.y+=dy/L*st}
 }
+const KANCA_BIRAK=528,KANCA_YUM=KANCA_BIRAK*1.05;      // kanca çekip bu mesafede bırakır (eskisinin %80'i); bu mesafenin %5 fazlasına kadar yumruk atar
 const zEkr=(x,y)=>[W/2+(x-S.x)*SC,ZY()-(y-S.camY)*SC];
 function zincirCiz(pts,s0,s1){      // dünya noktaları boyunca zincir halkaları; boyut s0 → s1 (küçülme)
-  const im=R.h_zincir;if(!im||pts.length<2)return;const K=KSK.h,Z=1.2,L0=K.zl[0]*K.sc*0.82*Z;      // Z: halka boyu
+  const im=R.h_zincir;if(!im||pts.length<2)return;const K=KSK.h,Z=1.44,L0=K.zl[0]*K.sc*0.82*Z;      // Z: halka boyu
   const seg=[];let tot=0;for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(l);tot+=l}
   if(tot<2)return;
   const at=d=>{let i=0;while(i<seg.length-1&&d>seg[i]){d-=seg[i];i++}const f=seg[i]?Math.min(1,d/seg[i]):0,a=pts[i],b=pts[i+1];return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,Math.atan2(b[1]-a[1],b[0]-a[0])]};
@@ -60,7 +61,7 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
   }
   if(e.kc==='h'){      // kancacı: hiç yürümez; yakında iki elle vurur, uzakta kanca atar
     if(e.kh)return;
-    if(ad<450*bs){if(S.durum==='oyun'&&S.t>=(e.mcd||0)){const n=2+Math.floor(Math.random()*2),seq=[];for(let i=0;i<n;i++)seq.push(i%2?'F':'N');e.ka={seq,i:0,k:seq[0],t0:S.t,hit:false};e.kSes=false}return}
+    if(ad<KANCA_YUM*bs){if(S.durum==='oyun'&&S.t>=(e.mcd||0)){const n=2+Math.floor(Math.random()*2),seq=[];for(let i=0;i<n;i++)seq.push(i%2?'F':'N');e.ka={seq,i:0,k:seq[0],t0:S.t,hit:false};e.kSes=false}return}
     if(ad<2100&&S.durum==='oyun'&&S.t>=(e.acd||0))e.kh={ph:'haz',t0:S.t};
     return;
   }
@@ -69,7 +70,11 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
   if(e.kac){const k=e.kac;
     if(S.t-k.t0>=10||k.v>=4)e.kac=null;      // 10 sn dolunca ya da 4 kez vurulunca savaşa döner
     else{e.hp=Math.min(e.max*0.5,e.hp+(e.max*0.5-k.hp0)/10*dt);kYuru(e,dt,dx>=0?-1:1,V/2,true);return}}      // topallayarak uzaklaşır, canı %50'ye doğru dolar
-  if(!e.ks&&(e.geri||ad<MZ*0.55)){e.geri=ad<MZ*0.95;if(e.geri){kYuru(e,dt,dx>=0?-1:1,V*0.825,false);return}}      // içine girilince geri geri menzilin ucuna
+  const vurBasla=()=>{if(S.durum!=='oyun'||S.t<((e.kc==='p'?e.mcd:e.acd)||0))return false;
+    const n=1+Math.floor(Math.random()*(e.kc==='k'?3:2)),seq=[];
+    for(let i=0;i<n;i++)seq.push(e.kc==='b'?'B':e.kc==='p'?(i%2?'B':'N'):i%2?'N':'F');
+    e.ka={seq,i:0,k:seq[0],t0:S.t,hit:false};e.kSes=false;return true};
+  if(!e.ks&&(e.geri||ad<MZ*0.55)){e.geri=ad<MZ*0.95;if(e.geri){if(ad<MZ&&vurBasla())return;kYuru(e,dt,dx>=0?-1:1,V*0.825,false);return}}      // içine girilince geri geri menzilin ucuna; geri giderken de vurabildiği an normal vurur
   if(e.kc==='p'&&(e.ks||(ad>=860*bs&&ad<1900))){      // ateş için en az mesafe eskisinin 2 katı      // nişan al (hazırlık sesi), 0.6 sn sonra ateş; ateşler arası 1-2 sn rastgele
     const ks=e.ks;
     if(ks){
@@ -80,11 +85,7 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
     if(S.durum==='oyun'&&S.t>=(e.acd||0)){e.ks={t0:S.t,fired:false};bufCal(HAZ,0.9);return}
   }
   else if(ad<(e.kc==='b'?425:e.kc==='p'?430*bs:470)){
-    if(S.durum==='oyun'&&S.t>=((e.kc==='p'?e.mcd:e.acd)||0)){
-      const n=1+Math.floor(Math.random()*(e.kc==='k'?3:2)),seq=[];
-      for(let i=0;i<n;i++)seq.push(e.kc==='b'?'B':e.kc==='p'?(i%2?'B':'N'):i%2?'N':'F');
-      e.ka={seq,i:0,k:seq[0],t0:S.t,hit:false};e.kSes=false;
-    }
+    vurBasla();
     return;
   }
   kYuru(e,dt,e.yon,V,false);

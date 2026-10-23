@@ -75,7 +75,7 @@ function ispGuncelle(dt){
   if(S.yeme){
     const m=S.yeme,t=(S.t-m.t0)/ISP_YAVAS;      // yerken belden aşağısı serbest: yürünebilir
     if(!m.ses&&t>=0.85){m.ses=true;bufCal(YEMS,1)}      // yeme sesi: ağza dökmeye başlayınca
-    if(!m.bos&&t>=1.45){m.bos=true;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1);S.en=Math.min(250,S.en+50);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1,f:0.3})}      // max canın %10'u
+    if(!m.bos&&t>=1.45){m.bos=true;const ik=YV('TOP')?2:1;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1*ik);S.en=Math.min(250,S.en+50*ik);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1*ik,f:0.3})}      // max canın %10'u, +50 enerji; Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de)
     if(!m.atildi&&t>=2.25){m.atildi=true;ispAt(m.k)}
     if(t>=2.8)S.yeme=null;
   }

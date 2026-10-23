@@ -42,7 +42,8 @@ function inisGuncelle(){          // havada aşağı sürükleme: tek parmak = �
   if(oAsagi||q.ikinci){      // süper kahraman: hızla iner, yumruk yere
     if(!YV('U')||!enerji(50))return;
     S.slam=true;S.vy=Math.max(S.vy,0)+4800;S.donuyor=false;S.shoryu=0;S.vx*=0.3;
-  }else{                                                                 // uçan tekme: swipe yönünde, bacak o yöne uzanır
+  }else{                                                                 // uçan tekme (Yere Tekme yeteneği): swipe yönünde, bacak o yöne uzanır
+    if(!YV('YT'))return;
     const L=Math.hypot(q.dx,q.dy)||1,sd=(Math.sign(q.dx)*q.iz.yon)||S.yon;
     const al=kisit(Math.atan2(Math.abs(q.dx),q.dy)/D,8,80), v=4200;
     S.dkick={dir:sd,al,vx:sd*v*Math.abs(q.dx)/L,t0:S.t};
@@ -176,7 +177,7 @@ function catlakGuncelle(){
   for(const e of DUS){
     if(e.olu||e.catT===c.t0)continue;
     const dx=(e.x-c.x)*c.dir,ey=e.y+e.cy-S.y;
-    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;vur(e,50*PK(),c.dir*0.25,1,0.85,S.y+100)}
+    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100)}
   }
 }
 function catlakCiz(){      // yarık görseli: vurulan yerden başlar, maskeyle yavaşça ilerleyerek görünür; bir süre kalır, söner
@@ -197,7 +198,7 @@ function alkisKontrol(){          // iki parmak ortaya doğru birleşir = alkı�
   const sol=a.lx<b.lx?ka:kb, sag=a.lx<b.lx?kb:ka;
   if(sol.dx>110&&sag.dx<-110&&Math.abs(sol.dy)<0.7*sol.dx&&Math.abs(sag.dy)<0.7*(-sag.dx)){
     a.atil=b.atil=true;a.turn=0;b.turn=0;
-    if(!enerji(50))return;
+    if(!YV('AL')||!enerji(50))return;
     S.alk={t0:S.t,T:0.75,hit:false};S.vx*=0.2;S.kay=null;S.lungeT=-1;
   }
 }
@@ -207,7 +208,11 @@ function alkisVur(){
   for(const e of DUS){
     if(e.olu)continue;
     const dx=e.x-S.x,ey=e.y+e.cy-S.y;
-    if(Math.abs(dx)<1000+e.r*0.5&&ey>-e.r&&ey<900)vur(e,50*PK(),(dx>=0?1:-1)*0.9,0.45,0.9,S.y+300);
+    if(!(Math.abs(dx)<1000+e.r*0.5&&ey>-e.r&&ey<900))continue;
+    vur(e,30*PK(),(dx>=0?1:-1)*0.9,0.45,0.9,S.y+300);
+    if(e.olu||e.tut||e.boss||e.kc==='h')continue;
+    const yn=dx>=0?1:-1;e.vx=yn*1800;e.vy=Math.max(e.vy,650);      // iyi mesafe geri savrulur
+    if(Math.random()<(DEMO?1:0.5)){e.cy0=e.cy0||e.cy;if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+DUS_DUS+1.8+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+1.8+DUS_KALK,yn}}      // %50 yere düşer
   }
 }
 function zitKontrol(){            // iki parmak zıt yöne yatay kayar = kasırga tekmesi
