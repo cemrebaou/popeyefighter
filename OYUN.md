@@ -13,7 +13,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 ## Düşmanlar
 - k yumruklu korsan: 150 can, oyuncuya 10 hasar. b bıçaklı: 100 can, 15 hasar. h kancacı: 200 can, yürümez.
 - Kaptan (boss): 500 can, 15 hasar; vuruşların yarısını alır, kafaya vuruş 3 kat (KRİTİK).
-- Kancacı: kanca takılırsa 15 hasar, çekerken her 0.5 sn 1 hasar. Oyuncuyu 528 birim mesafeye kadar çekip bırakır; bu mesafenin %5 fazlasına kadar yumruk atar.
+- Kancacı: kanca takılırsa 15 hasar, çekerken her 0.5 sn 1 hasar. Oyuncuyu 420 birim yakınlığa (yumruk mesafesi) çekip bırakır; 610 birime kadar yumruk atar.
 - Düşman içine girilince biraz geri gider; geri giderken de vurabildiği an normal vurur.
 - Canı ilk kez %25 altına düşen korsan bir kez kaçar (10 sn ya da 4 vuruş), canı %50'ye doğru dolar.
 

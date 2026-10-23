@@ -25,7 +25,7 @@ function kancaGuncelle(e,dt){      // kanca: hazırlık → atıldığı anki oy
     if(L<=st+20){e.kh=null;e.acd=S.t+2.5+Math.random()*1.5;return}
     h.vx=dx/L*2600;h.vy=dy/L*2600;h.x+=dx/L*st;h.y+=dy/L*st}
 }
-const KANCA_BIRAK=528,KANCA_YUM=KANCA_BIRAK*1.05;      // kanca çekip bu mesafede bırakır (eskisinin %80'i); bu mesafenin %5 fazlasına kadar yumruk atar
+const KANCA_BIRAK=420,KANCA_YUM=610;      // kanca oyuncuyu yumruk atabileceği yakınlığa (420) çekip bırakır; 610'a kadar yumruk atar
 const zEkr=(x,y)=>[W/2+(x-S.x)*SC,ZY()-(y-S.camY)*SC];
 function zincirCiz(pts,s0,s1){      // dünya noktaları boyunca zincir halkaları; boyut s0 → s1 (küçülme)
   const im=R.h_zincir;if(!im||pts.length<2)return;const K=KSK.h,Z=1.44,L0=K.zl[0]*K.sc*0.82*Z;      // Z: halka boyu
