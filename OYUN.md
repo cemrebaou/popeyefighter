@@ -22,8 +22,9 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Ölen (ve parçalanan) düşman siyah beyaz çizilir; yere düşüp yaşayan renkli kalır.
 
 ## XP ve seviye
-- XP: korsan 20, kaptan 250; parçalayarak (yırtarak) öldürme +%50.
-- Seviye 1→2 için 300 XP, sonraki her seviye %25 fazla. Her seviye 1 puan; can ve enerji dolar; seviye atlama sesi (`ses/levelup.mp3`).
+- Öldürülen düşman canının 1/10'u kadar XP verir (yumruklu 15, bıçaklı 10, kancalı 20, kaptan 50). Yırtarak öldürme +%50. Düşman canı artarsa XP de artar.
+- Seviye 1→2 için 100 XP, sonraki her seviye %25 fazla (`XP_ILK`, `XP_ART` yetenek.js). Her seviye 1 puan; can ve enerji dolar; seviye sesi (`ses/levelup.mp3`).
+- Kayıtta oyuncunun TOPLAM XP'si tutulur (`pf_agac2.top`). Seviye/puan her açılışta toplamdan hesaplanır: XP_ILK düşürülürse oyuncular daha çok seviye atlamış olur, yükseltilirse seviye düşer. Puan eksiye düşerse son açılan yetenekler kapanır, puanı geri döner.
 
 ## Hasarlar (oyuncunun)
 - Yumruk kombo: ara vuruşlar 5, son vuruş 5×n+5. Serbest kol vuruşu 15. Bıçak modunda vuruşlar 2 kat (bıçak vuruşu 20, sersemletmez).

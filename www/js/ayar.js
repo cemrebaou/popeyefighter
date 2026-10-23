@@ -1,7 +1,7 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.302';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.303';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
 const SURUM='?v=75';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
@@ -44,7 +44,7 @@ function gorselHazir(){
   for(const q of ['k_','b_','p_','h_']){for(const n of ['ust','on','elF'])R[q+n+'_k']=koyult(R[q+n],.13);for(const n of ['uy','bacak','bot'])R[q+n+'_k']=koyult(R[q+n],.3)}      // korsanın arkadaki kolu/bacağı
   R.p_elN_k=koyult(R.p_elN,.13);R.h_elN_k=koyult(R.h_elN,.13);R.h_elB_k=koyult(R.h_elB,.13);      // kancacının arkadaki kolunda kancalı / boş el
   document.getElementById('yuk').hidden=true;
-  requestAnimationFrame(dongu);
+  (function bas(){if(typeof dongu==='function')requestAnimationFrame(dongu);else setTimeout(bas,20)})();      // önbellekten görseller dongu.js yüklenmeden hazır olabilir: döngü tanımlanınca başlar
 }
 let DEMO=null;      // yetenek önizlemesi çalışıyor mu (demo.js)
 let HPMAX=250;      // oyuncunun en yüksek canı

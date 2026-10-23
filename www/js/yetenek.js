@@ -20,9 +20,25 @@ const YET={      // [x, y, ikon, ad, puan, ikon boyutu (yoksa 1)]
 const YKOK='C';
 const YBAG='C-A C-D C-I I-O O-N O-P O-V O-W O-X V-TOP W-TOP X-TOP A-B A-G A-H B-F F-G F-R R-M M-H G-H H-N N-S S-Y D-E D-K D-AL AL-P AL-Q AL-K C-J J-H C-YT YT-AL K-L L-E L-U U-Q P-T T-Z'.split(' ').map(s=>s.split('-'));
 const YKOM={};for(const k in YET)YKOM[k]=[];for(const [a,b] of YBAG){YKOM[a].push(b);YKOM[b].push(a)}
-const AG={acik:new Set([YKOK]),p:0,xp:0,lv:1};
-try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);AG.p=d.p|0;AG.xp=d.xp|0;AG.lv=d.lv||1}}catch(_){}
-function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],p:AG.p,xp:AG.xp,lv:AG.lv}))}catch(_){}}
+// XP: oyuncunun TOPLAM XP'si saklanır (AG.top). Seviye, seviye içi XP ve puan her açılışta bu toplamdan hesaplanır;
+// böylece XP_ILK / XP_ART değişirse seviye kendiliğinden artar ya da düşer, kazanılan XP boşa gitmez. Puan yetmezse son açılan yetenekler geri kapanır.
+const XP_ILK=100,XP_ART=1.25;      // 1→2 için 100 XP, sonraki her seviye %25 fazla
+const xpGerek=lv=>Math.round(XP_ILK*Math.pow(XP_ART,lv-1));
+const AG={acik:new Set([YKOK]),top:0,p:0,xp:0,lv:1};
+function agHesap(){      // toplam XP'den seviye, seviye içi XP ve harcanabilir puan
+  let lv=1,x=AG.top;while(x>=xpGerek(lv)){x-=xpGerek(lv);lv++}
+  AG.lv=lv;AG.xp=x;
+  const harc=()=>{let h=0;for(const k of AG.acik)if(k!==YKOK)h+=YET[k]?YET[k][4]:0;return h};
+  for(const k of [...AG.acik])if(!YET[k])AG.acik.delete(k);      // ağaçtan kalkmış yetenek
+  AG.p=(lv-1)-harc();
+  while(AG.p<0){const son=[...AG.acik].filter(k=>k!==YKOK).pop();if(!son)break;AG.acik.delete(son);AG.p=(lv-1)-harc()}      // seviye düştüyse son açılanlar kapanır
+}
+try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);
+  if(d.top!==undefined)AG.top=d.top|0;
+  else{let t=d.xp|0;for(let l=1;l<(d.lv||1);l++)t+=Math.round(300*Math.pow(1.25,l-1));AG.top=t}}}catch(_){}      // eski kayıt (300'lük sistem): toplam XP'ye çevrilir
+agHesap();
+function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],top:AG.top}))}catch(_){}}
+agKaydet();
 const YV=k=>AG.acik.has(k)||!!(DEMO&&DEMO.yv.includes(k));      // önizlemede gösterilen yetenek geçici açık
 const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n));
 const yAlinir=k=>yAcilir(k)&&AG.p>=YET[k][4];
@@ -39,13 +55,10 @@ function agBtn(){
   const x=document.getElementById('xpB');if(x)x.style.width=Math.min(100,AG.xp/xpGerek(AG.lv)*100)+'%';
   const ic=document.getElementById('ispB');if(ic)ic.hidden=!YV('TOP');
 }
-const XP_ILK=300,XP_ART=1.25;      // 1→2 için 300 XP, sonraki her seviye %25 fazla
-const xpGerek=lv=>Math.round(XP_ILK*Math.pow(XP_ART,lv-1));
 function xpKazan(n){
   if(DEMO)return;      // önizlemede XP yok
-  let lvSes=false;AG.xp+=n;S.pops.push({x:S.x,y:S.y+1150,t:0,txt:'+'+n+' XP',f:0.3});
-  while(AG.xp>=xpGerek(AG.lv)){AG.xp-=xpGerek(AG.lv);AG.lv++;AG.p+=1;S.hp=HPMAX;S.en=250;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:'SEVİYE '+AG.lv+'! +1 PUAN',f:1});lvSes=true}      // her seviye 1 puan, can ve enerji dolar
-  if(lvSes)bufCal(LVS,1);      // seviye atlama sesi
+  const lv0=AG.lv;AG.top+=n;agHesap();S.pops.push({x:S.x,y:S.y+1150,t:0,txt:'+'+n+' XP',f:0.3});
+  if(AG.lv>lv0){const k=AG.lv-lv0;S.hp=HPMAX;S.en=250;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:'SEVİYE '+AG.lv+'! +'+k+' PUAN',f:1});bufCal(LVS,1)}      // her seviye 1 puan, can ve enerji dolar, seviye sesi
   agKaydet();agBtn();if(window.agacYenile)agacYenile();
 }
 // Ispanak cebi: 30 sn'de bir cepten ıspanak çıkar, elde belirir, standart yeme animasyonu
@@ -70,7 +83,7 @@ let agacAcik=false;
   }
   let secili=null;
   function sec(k){
-    if(secili===k&&yAlinir(k)){AG.p-=YET[k][4];AG.acik.add(k);yetSes(k);if(k==='V'){HPMAX+=100;S.hp+=100;if(DEMO)DEMO.kayit.sb.S.hp+=100}agKaydet()}      // ikinci dokunuş: aç
+    if(secili===k&&yAlinir(k)){AG.acik.add(k);agHesap();yetSes(k);if(k==='V'){HPMAX+=100;S.hp+=100;if(DEMO)DEMO.kayit.sb.S.hp+=100}agKaydet()}      // ikinci dokunuş: aç
     if(secili!==k)demoBasla(k);      // arkadaki karakter yeteneği gösterir
     secili=k;yenile();
   }
