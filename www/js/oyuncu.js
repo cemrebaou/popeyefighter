@@ -2,8 +2,9 @@
 // Zıplama, zemin, oyuncu pozu, oyuncu çizimi (kol, bacak, karakter)
 function ziplaBas(guc=1){
   if(S.ust)return;
+  if(YV('K'))guc*=1.25;      // Çok Zıplama: %25 yüksek
   if(S.yer){S.vy=-ZIP1*guc;S.yer=false;S.ekstra=1;S.donuyor=false;ziplaCal()}
-  else if(S.ekstra>0){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;ziplaCal()}
+  else if(S.ekstra>0&&YV('D')){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;ziplaCal()}
 }
 
 // ---------- Zemin: şimdilik düz yol (ZEMIN tablosu ileride basamak/platform eklemeye hazır) ----------

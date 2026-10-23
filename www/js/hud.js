@@ -7,7 +7,7 @@ const barGen=()=>Math.min(340,W*0.28,H*0.5);      // ekrandaki genişlik: telefo
 const KALP={on:false,t0:0,n:-1,src:null};
 function kalpSesDur(){if(KALP.src){try{KALP.src.stop()}catch(_){}KALP.src=null}}
 function kalpGuncelle(){
-  const ak=S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&S.t-(S.hasT||-9)>=(S.regB||3);      // can dolma modu (düşman vurunca / can dolunca biter)
+  const ak=S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&(S.t-(S.hasT||-9)>=(S.regB||3)||(S.blok&&YV('W')));      // can dolma modu (düşman vurunca / can dolunca biter)
   if(ak&&!KALP.on){KALP.on=true;KALP.t0=S.t;KALP.n=-1}
   if(!ak&&KALP.on){KALP.on=false;kalpSesDur()}
   if(!KALP.on)return false;

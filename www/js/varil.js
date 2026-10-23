@@ -34,7 +34,7 @@ function varilKir(v){              // ilk çarpma: kırılma sesi, parçalar var
 }
 function varilGuncelle(dt){
   for(const k of ['N','F']){        // tutma
-    if(S.durum!=='oyun'||varilElde(k)||tutan(k)){VDW[k]=0;continue}
+    if(S.durum!=='oyun'||!YV('B')||varilElde(k)||tutan(k)){VDW[k]=0;continue}
     const h=EL[k],ac=HS[k]==='ac';if(!KOL[k].ak||(!ac&&(KOL[k].e<0.15||h.v>1600))){VDW[k]=0;continue}
     const v=VAR.find(z=>(z.d==='yer'||z.d==='dus')&&Math.abs(h.wx-z.x)<V_W/2+90&&Math.abs(h.wy-z.y)<V_MRK+110);      // büyük alma alanı: ayaktayken varilin üstüne hafif değmek yeter
     if(!v){VDW[k]=0;continue}

@@ -19,7 +19,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - `js/ayar.js` sürüm, görsel yükleyici, sabitler, `S` · `girdi.js` klavye/tuşlar/sensör/kol sürükleme · `el.js` el konumu/hızı, `DUS`, `MERMI`
 - `ozel.js` özel hareketler (pençe, süpermen, yarık, alkış, blok…) · `mermi.js` aduket, kaptan mermisi · `dusman_kur.js` düşman yerleşimi, `yeniOyun`
 - `ses.js` sesler · `efekt.js` kar, fx, kan · `savas.js` vuruş/tutma/yırtma, `dusmanGuncelle` · `korsan.js` korsan AI, `KSK`, `KPZ`, korsan çizimi
-- `yetenek.js` yetenek ağacı (`YET` düğümler, `YBAG` bağlar, puan `AG`, `ypKazan`; ikonlar `ui/ytN.webp`, ağaç `ui/agac.webp`) · `hud.js` ekran yazıları · `kombo.js` `HAREKET`, kombo ağacı/listesi · `oyuncu.js` oyuncu pozu ve çizimi · `dongu.js` arka plan, `ciz`, `dongu` (en son yüklenir)
+- `yetenek.js` yetenek ağacı (`YET` düğümler [x,y,ikon,ad,puan], `YBAG` bağlar, `AG` seviye/XP/puan, `xpKazan`, `YV(k)` yetenek açık mı — hareketler bununla kilitli, `canCal` can çalma, `ispCep`; ikonlar `ui/ytN.webp`, ağaç `ui/agac.webp`) · `hud.js` ekran yazıları · `kombo.js` `HAREKET`, kombo ağacı/listesi · `oyuncu.js` oyuncu pozu ve çizimi · `dongu.js` arka plan, `ciz`, `dongu` (en son yüklenir)
 - Yeni dosyada en üstte `'use strict';`. Yükleme anında çalışan kod sadece kendinden önceki dosyalardaki şeyleri kullanabilir. `www/parca|fx|yuz|ui/*.webp` görseller, `www/ses/*.mp3`, `www/font/*.woff2` (yerel fontlar).
 - Görseller WebP. Yükleyici `yukle()`; önbellek `SURUM`.
 

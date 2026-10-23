@@ -1,9 +1,9 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.287';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.288';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=69';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=70';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir']
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
@@ -46,7 +46,7 @@ function gorselHazir(){
   document.getElementById('yuk').hidden=true;
   requestAnimationFrame(dongu);
 }
-const HPMAX=250;      // oyuncunun en yüksek canı
+let HPMAX=250;      // oyuncunun en yüksek canı
 function hasarKat(hp){const g=Math.max(0,Math.min(10,(HPMAX-hp)/(HPMAX/10))),i=Math.min(9,Math.floor(g));return [i,g-i]}   // 11 hasar modeli arasında sürekli geçiş: i = alttaki model, f = üstteki sonraki modelin saydamsızlığı (can 100→90: model 0→1, ... 10→0: model 9→10)
 function hasarCiz(ciz,i,f){ciz(i);if(f>0.004){const a=ctx.globalAlpha;ctx.globalAlpha=a*f;ciz(i+1);ctx.globalAlpha=a}}
 
