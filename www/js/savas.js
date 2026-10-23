@@ -178,7 +178,7 @@ function grabKontrol(dt){
   }
   for(const k of ['N','F']){
     const h=EL[k];
-    if(tutan(k)){DW[k]=0;continue}          // bir el bir düşman
+    if(tutan(k)||varilElde(k)){DW[k]=0;continue}          // bir el bir düşman
     if(!KOL[k].ak||KOL[k].e<0.25||h.v>1100){DW[k]=0;continue}
     let en=null,ed=1e9;
     for(const e of DUS){
@@ -196,6 +196,7 @@ function grabKontrol(dt){
   }
 }
 function tutBirak(k){
+  if(varilBirak(k))return;      // elde varil varsa onu bırakır / fırlatır
   const e=DUS.find(x=>x.tut===k||(x.iki&&x.tut));if(!e)return;
   e.tut=null;e.iki=false;
   const h=EL[k],vx=h.sv.x+S.vx,vy=h.sv.y,v=Math.hypot(vx,vy);

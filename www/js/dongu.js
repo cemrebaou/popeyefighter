@@ -28,6 +28,7 @@ function ciz(){
   catlakCiz();
   dusmanCiz();
   ispCiz();
+  varilCiz(false);
   kanCiz();
   fxCiz(false);
   ctx.save();
@@ -36,6 +37,7 @@ function ciz(){
   if(S.pence){ctx.shadowColor='#ffb02e';ctx.shadowBlur=(14+5*Math.sin(S.t*9))*DPR}      // bıçak modu: kenarlarından enerji barı renginde parlar
   karakter();
   ctx.restore();
+  varilCiz(true);
   fxCiz(true);
   karCiz();
   efektCiz();
@@ -76,7 +78,7 @@ function dongu(ms){
   if(S.ust)ustGuncelle();
   if(S.dag)dagGuncelle(dt);
   if(S.sup&&S.t<S.sup.t0+S.sup.T)S.vx=0;      // kayarak yumruk: kısa süre öne atılır
-  ispGuncelle(dt);
+  ispGuncelle(dt);varilGuncelle(dt);
   {const nx=S.x+S.vx*dt;                                        // yüksek basamak/kutu duvar gibidir: üstüne zıplamak gerekir
     if(zemin(nx)>S.y+(S.yer?75:30)){S.vx=0;S.lungeT=-1}else S.x=nx}
   atkGuncelle(dt);
