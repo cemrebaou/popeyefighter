@@ -29,11 +29,12 @@ function vur(e,dmg,vx,vy,f,hy){
   if(dmg<9999){const kyn=e.x>=S.x?1:-1,bs=e.bs||1;      // kan her zaman düşmanın gövdesi üzerinde çıkar (boşa giden yumrukta bile)
     const kx=kisit(S.pHx===undefined?e.x-kyn*59*bs:S.pHx,e.x-99*bs,e.x+99*bs),ky=kisit(hy===undefined?e.y+e.cy:hy,e.y+135*bs,e.y+882*bs);
     kanVurus(kx,ky,f,kyn,S.pSes===true);if(e.hp<=0&&!olu0)kanFiskir(kx,ky,kyn,0.8)}
-  if(!e.boss&&(dmg>10||(dmg===10&&Math.random()<0.5)))e.st=S.t+0.45+0.5*f;else if(dmg<=10)e.hafT=S.t;      // 10 üstü: her zaman sersemler (vuramaz, geri savrulur); tam 10: %50      // 10 altı vuruş sersemletmez: sadece yüz değişir, hafif geri eğilir      // kaptan sersemlemez (sadece parry)
+  if(S.bNo){e.hafT=S.t}      // bıçak vuruşu (20): itmez, düşürmez, sersemletmez; sadece geri eğilir
+  else if(!e.boss&&(dmg>10||(dmg===10&&Math.random()<0.5)))e.st=S.t+0.45+0.5*f;else if(dmg<=10)e.hafT=S.t;      // 10 üstü: her zaman sersemler (vuramaz, geri savrulur); tam 10: %50      // 10 altı vuruş sersemletmez: sadece yüz değişir, hafif geri eğilir      // kaptan sersemlemez (sadece parry)
   const L=Math.hypot(vx,vy)||1,dx=vx/L+(e.x>=S.x?1:-1)*0.35,dy=vy/L;
   const kb=0.5*(250+2450*kisit(dmg/50,0,1))*(e.boss?0.25:1);      // itme hasarla orantılı
-  if(!e.tut&&dmg>=10&&!(S.ust&&S.ust.e===e)){e.vx=dx*kb;e.vy=e.boss?0:dy*kb+250}      // üstündeyken yerdekini itmez
-  if(!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>=10&&dmg<9999&&Math.random()<0.25){      // 10 üstü vuruş: %25 ihtimalle: biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
+  if(!S.bNo&&!e.tut&&dmg>=10&&!(S.ust&&S.ust.e===e)){e.vx=dx*kb;e.vy=e.boss?0:dy*kb+250}      // üstündeyken yerdekini itmez
+  if(!S.bNo&&!e.boss&&e.kc!=='h'&&!e.tut&&e.hp>0&&dmg>=10&&dmg<9999&&Math.random()<0.25){      // 10 üstü vuruş: %25 ihtimalle: biraz geri uçup yere düşer; hasar arttıkça yerde sersem kalma uzar
     const yn=e.x>=S.x?1:-1,sr=kisit(1.8+(dmg-10)*0.06,1.8,5);      // yerde yatma süresi (eskisinin ~2 katı)e.cy0=e.cy0||e.cy;
     if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+sr+DUS_KALK,yn};
     e.vx=yn*Math.max(500,Math.min(Math.abs(e.vx),1000));e.vy=Math.min(e.vy,550)}      // biraz daha uzağa düşer
@@ -56,7 +57,7 @@ function vurusKontrol(){
       if(dugme&&(e.x-S.x)*S.yon<-40)continue;      // kombo vuruşu arkadakine işlemez
       const f=kisit((h.v-1500)/6000,0,1);
       const kd=kDmg(S.atk);if(kd!==null&&!S.atk.tv){S.cE=e;S.cEt=S.t}
-      S.pSes=true;S.pHx=h.wx;vur(e,kd!==null&&!S.atk.tv?kd*PK():(S.atk&&/^pa[NF]$/.test(S.atk.ad)?15:15*PK()),h.vx,h.vy,f,h.wy);S.pSes=false;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);if(S.pence&&S.hp>0)S.hp=Math.min(100,S.hp+1);      // bıçak vuruşu +1 can
+      S.pSes=true;S.pHx=h.wx;S.bNo=!!S.pence;vur(e,S.pence?20:kd!==null&&!S.atk.tv?kd*PK():(S.atk&&/^pa[NF]$/.test(S.atk.ad)?15:15*PK()),h.vx,h.vy,f,h.wy);S.pSes=false;S.bNo=false;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);if(S.pence&&S.hp>0)S.hp=Math.min(100,S.hp+1);      // bıçak vuruşu +1 can
     }
   }
   if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){      // Sub-Zero kayması: alçak çelme, havaya fırlatır
