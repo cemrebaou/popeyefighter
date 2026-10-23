@@ -10,12 +10,13 @@ function kancaGuncelle(e,dt){      // kanca: hazırlık → atıldığı anki oy
     if(dur){h.ph='don';return}
     h.x+=h.vx*dt;h.y+=h.vy*dt;if(h.y<zemin(h.x)+30){h.y=zemin(h.x)+30;if(h.vy<0)h.vy=0}
     if(S.durum==='oyun'&&oyuncuDeg(h.x,h.y,40)){      // vücudun neresine değerse hemen takılır
-      if(dokunulmaz()){S.hp-=10;S.hitR={t0:S.t,z:'kafa',bk:(e.x-S.x)*S.yon>0?-1:1}}
-      titre(40);torbaCal(BLD,BLDBAG,1);kanFiskir(h.x,h.y,(e.x-S.x)>=0?1:-1,0.3);h.ox=h.x-S.x;h.oy=h.y-S.y;h.ph='cek';h.kT=S.t;return}      // saplanınca bıçak sesi ve az kan
+      if(dokunulmaz()){S.hp-=15;S.hitR={t0:S.t,z:'kafa',bk:(e.x-S.x)*S.yon>0?-1:1}}
+      titre(40);torbaCal(BLD,BLDBAG,1);kanFiskir(h.x,h.y,(e.x-S.x)>=0?1:-1,0.3);h.ox=h.x-S.x;h.oy=h.y-S.y;h.ph='cek';h.kT=S.t;h.cn=0.5;return}      // saplanınca bıçak sesi ve az kan
     if(Math.abs(h.x-S.x)>W/2/SC+250||h.y>S.y+2600)h.ph='don';      // ekrandan çıktı: geri döner
     return}
   if(h.ph==='cek'){      // takıldı: oyuncuyu kendine çeker
     if(dur||S.durum!=='oyun'){h.ph='don';return}
+    if(S.t-(h.kT||S.t)>=(h.cn||0.5)){h.cn=(h.cn||0.5)+0.5;if(dokunulmaz()){S.hp-=1;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'-1',f:0.3})}}      // çekerken yarım saniyede 1 can
     h.x=S.x+(h.ox||0);h.y=S.y+(h.oy===undefined?480:h.oy);const d=e.x-S.x;
     if(S.t-(h.kT||0)>0.3){h.kT=S.t;kanFiskir(h.x,h.y,d>=0?1:-1,0.22)}if(Math.random()<dt*10)kanDamla(h.x+(Math.random()-0.5)*30,h.y,(Math.random()-0.5)*160,-80,0.5+Math.random()*0.4);      // çekilirken takıldığı yerden küçük kan ve damlalar
     if(Math.abs(d)<330*(e.bs||1)){h.ph='don';e.mcd=0;return}
@@ -99,7 +100,7 @@ function oyuncuHasar(){
   if(S.durum!=='oyun')return;
   if(dokunulmaz())for(const e of DUS){
     if(e.olu||S.t<e.st||!korsanYakin(e))continue;
-    const dm=e.boss?15:e.kc==='b'?12:10,yn=S.x>=e.x?1:-1;
+    const dm=e.boss?15:e.kc==='b'?15:10,yn=S.x>=e.x?1:-1;
     if(S.blok){
       if(S.t-S.blokT<0.3){                                   // tam zamanında blok = parry: düşman sersemler
         e.st=S.t+(e.boss?0.8:1.5);e.vx=-yn*(e.boss?250:1200);e.vy=500;S.inv=S.t+0.5;
