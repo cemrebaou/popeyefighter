@@ -17,7 +17,8 @@ const AG={acik:new Set([YKOK]),p:0};
 try{const d=JSON.parse(localStorage.getItem('pf_agac')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);AG.p=d.p|0}}catch(_){}
 function agKaydet(){try{localStorage.setItem('pf_agac',JSON.stringify({acik:[...AG.acik],p:AG.p}))}catch(_){}}
 const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n));
-function ypKazan(n){AG.p+=n;agKaydet();if(window.agacYenile)agacYenile()}
+function agBtn(){const b=document.getElementById('agacB');if(b)b.classList.toggle('parla',AG.p>0&&Object.keys(YET).some(yAcilir))}      // harcanacak puan varsa ağaç butonu parlar
+function ypKazan(n){AG.p+=n;agKaydet();S.pops.push({x:S.x,y:S.y+1150,t:0,txt:'+'+n+' PUAN',f:0.6});agBtn();if(window.agacYenile)agacYenile()}
 let agacAcik=false;
 (()=>{
   const el=document.getElementById('agac'),ic=document.getElementById('agac_ic'),bil=document.getElementById('agac_bil');
@@ -36,11 +37,12 @@ let agacAcik=false;
     for(const k in DG)DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(secili===k?' sec':'');
     let t='PUAN: '+AG.p;
     if(secili){const ad=YET[secili][3];t+=' · '+ad+(AG.acik.has(secili)?' (AÇIK)':yAcilir(secili)?(AG.p>0?' · açmak için tekrar dokun':' · puan yok'):' · önce yanındakini aç')}
-    bil.textContent=t;
+    bil.textContent=t;agBtn();
   }
   window.agacYenile=yenile;
   window.agacAc=a=>{agacAcik=a;el.hidden=!a;if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};
   document.getElementById('agacB').addEventListener('click',()=>agacAc(true));
   el.addEventListener('click',e=>{if(e.target===el||e.target.id==='agac_kap')agacAc(false)});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&agacAcik)agacAc(false)});
+  agBtn();
 })();

@@ -186,7 +186,7 @@ function grabKontrol(dt){
     for(const e of DUS){
       if(e.olu||e.tut||e.boss||(!ac&&e.hitT[k]>S.t)||e.noTut>S.t)continue;
       const d=Math.hypot(h.wx-e.x,h.wy-(e.y+e.cy));
-      if((d<e.r+70||(ac&&elDeg(e,k,40)))&&d<ed){ed=d;en=e}      // açık el vücudun herhangi bir yerine değince tutar
+      if((d<e.r+(ac?110:70)||(ac&&elDeg(e,k,70)))&&d<ed){ed=d;en=e}      // açık el vücudun herhangi bir yerine değince tutar
     }
     if(!en){DW[k]=0;continue}
     DW[k]+=dt;

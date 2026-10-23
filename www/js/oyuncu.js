@@ -166,7 +166,8 @@ function elDurum(dt){
     if(S.yeme&&S.yeme.k===k&&!S.yeme.atildi){HS[k]='tut';ACT[k]=0;continue}      // ıspanak tutuyor
     if(tutan(k)||S.parcalar.some(p=>!p.at&&p.el===k)){HS[k]='tut';ACT[k]=0;continue}
     if(HS[k]==='ac'&&KOL[k].ak&&S.sarj<=0)continue;      // açılan el parmak kalkana kadar açık kalır
-    if(S.sarj<=0&&KOL[k].ak&&KOL[k].e>0.25&&EL[k].v<900)ACT[k]+=dt;else ACT[k]=0;   // basılı tutup yavaş çekiştirme: eller açılır
+    const iz=izBul(k),o=k==='N'?'F':'N',bas=!!(iz&&!KOL[o].ak&&!S.blok&&performance.now()-iz.t0>320&&izHiz(iz,0.15)<350);      // tek parmak basılı tutulup bekletilince el açılır (iki parmak hareketsiz = blok)
+    if(S.sarj<=0&&KOL[k].ak&&((KOL[k].e>0.25&&EL[k].v<900)||bas))ACT[k]+=dt;else ACT[k]=0;   // basılı tutup yavaş çekiştirme ya da bekletme: el açılır
     HS[k]=ACT[k]>0.08?'ac':'yum';
   }
 }

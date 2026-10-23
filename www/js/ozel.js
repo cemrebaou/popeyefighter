@@ -223,7 +223,7 @@ function zitKontrol(){            // iki parmak zıt yöne yatay kayar = kasırg
 }
 function blokGuncelle(dt){        // iki parmak ekranda hareketsiz = blok
   const a=izBul('N'),b=izBul('F');
-  const ok=!!(a&&b&&S.durum==='oyun'&&S.sarj<=0&&!(S.tats>0)&&Math.abs(a.turn)<1&&Math.abs(b.turn)<1&&KOL.N.e<0.5&&KOL.F.e<0.5&&izHiz(a,0.25)<150&&izHiz(b,0.25)<150&&!DUS.some(e=>e.tut)&&!ikiYakin());
+  const ok=!!(a&&b&&S.durum==='oyun'&&S.sarj<=0&&!(S.tats>0)&&Math.abs(a.turn)<1&&Math.abs(b.turn)<1&&KOL.N.e<0.5&&KOL.F.e<0.5&&izHiz(a,0.25)<150&&izHiz(b,0.25)<150&&!DUS.some(e=>e.tut)&&!ikiYakin()&&!(HS.N==='ac'&&!S.blok)&&!(HS.F==='ac'&&!S.blok));
   if(ok){S.blokDw+=dt;const ilk=(performance.now()-Math.min(a.t0,b.t0))/1000;      // parmaklar tam aynı anda basılmasa da olur: ilk parmak 0.2 sn önce bastıysa ikinci parmakla hemen blok
     if(!S.blok&&(S.blokDw>0.2||(S.blokDw>0.08&&ilk>0.2))){S.blok=true;S.blokT=S.t}
     if(S.blok){a.blk=b.blk=true;S.blokBos=S.t}}
