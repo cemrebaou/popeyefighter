@@ -19,6 +19,8 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Düşman içine girilince biraz geri gider; geri giderken de vurabildiği an normal vurur.
 - Canı ilk kez %25 altına düşen korsan bir kez kaçar (10 sn ya da 4 vuruş), canı %50'ye doğru dolar.
 
+- Ölen (ve parçalanan) düşman siyah beyaz çizilir; yere düşüp yaşayan renkli kalır.
+
 ## XP ve seviye
 - XP: korsan 20, kaptan 250; parçalayarak (yırtarak) öldürme +%50.
 - Seviye 1→2 için 300 XP, sonraki her seviye %25 fazla. Her seviye 1 puan; can ve enerji dolar; seviye atlama sesi (`ses/levelup.mp3`).

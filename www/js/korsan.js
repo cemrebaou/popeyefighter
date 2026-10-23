@@ -324,7 +324,7 @@ function parcaCiz(){
       p.pt=S.t;
     }
     const sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC;
-    ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);
+    ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);ctx.filter='grayscale(1)';      // parçalanmış (ölü): siyah beyaz
     if(p.at){const u=S.t-p.tT;if(u>1.1)ctx.globalAlpha=Math.max(0,1-(u-1.1)/0.7)}
     if(!p.at)p.phi=zEksen().phi;
     ctx.rotate((p.at?p.rot:0)+(p.phi||0));
@@ -339,6 +339,7 @@ function dusmanCiz(){
     if(sx<-m||sx>W+m){if(e.kh)kancaCiz(e,true);continue}                                   // ekran dışındaki düşman çizilmez
     const zc=e.kc==='h'&&!e.tut&&!e.iki;
     ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);
+    if(e.olu)ctx.filter='grayscale(1)';      // ölü düşman siyah beyaz (yere düşen canlıyla karışmasın)
     if(e.olu){if(e.olm||e.yerOl)ctx.globalAlpha=Math.max(0,1-(e.ol||0));else{ctx.globalAlpha=Math.max(0,1-e.ol/0.9);ctx.translate(0,-e.cy);ctx.rotate(e.rot);ctx.translate(0,e.cy)}
       if(e.olm){ctx.translate(0,-e.cy);ctx.rotate(e.olm.yn*(e.dusA||0)*Math.PI/2);ctx.translate(0,e.cy0)}}      // ölüm: dizden yüzüstü öne / oturduktan sırtüstü geri
     if(e.dus){ctx.translate(0,-e.cy);ctx.rotate(e.dus.yn*(e.dusA||0)*Math.PI/2);ctx.translate(0,e.cy0)}      // yere düşmüş: gövde ortası yere yakın, sırtüstü yatar
