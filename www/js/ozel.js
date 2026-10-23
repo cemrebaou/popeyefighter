@@ -105,15 +105,6 @@ function ustGuncelle(){      // atlarken düşmanın yanına iner, sonra dizleri
   if(u.f==='atla'){S.vx=u.vx;if(S.yer){u.f='diz';u.t0=S.t;S.vx=0;titre(40);bufCal(USTS,1);karBas(S.x,220,KMIN-4,false)}}
   else S.vx=0;
 }
-function dagMi(P){      // parmak yolu dağ gibi mi: bir yanın altından başlar, tepe yapar, diğer yanın altına iner → yön (1 sağ, -1 sol), değilse 0
-  if(!P||P.length<6)return 0;
-  const s=P[0],e=P[P.length-1],dx=e.x-s.x;if(Math.abs(dx)<0.22*W)return 0;
-  let ti=0;for(let i=1;i<P.length;i++)if(P[i].y<P[ti].y)ti=i;
-  const t=P[ti],f=(t.x-s.x)/dx;if(f<0.2||f>0.8)return 0;
-  if(s.y-t.y<0.1*H||e.y-t.y<0.1*H)return 0;
-  let geri=0;for(let i=1;i<P.length;i++)geri+=Math.max(0,-(P[i].x-P[i-1].x)*Math.sign(dx));if(geri>0.25*Math.abs(dx))return 0;      // yatayda çok geri dönmemeli
-  return Math.sign(dx);
-}
 const DAG_VX=4800,DAG_VY=5200,DAG_G=3;      // bıçaklı uçma: eskisinin 2 katı hızlı (ek yerçekimi), daha yatık açı
 function dagAtla(dir){      // bıçak modunda ileri kaydırma: o yöne iki bıçak önde uçar; ilk çarptığı düşmanı yere serer, üstüne çıkar (1 enerji)
   if(!S.pence||S.ust||S.dag||S.durum!=='oyun'||!YV('Z'))return;

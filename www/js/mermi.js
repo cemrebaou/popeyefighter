@@ -126,9 +126,10 @@ function adkDamlaCiz(){
   const im=R.damla;if(!im)return;
   for(const d of ADKD){
     const sx=W/2+(d.x-S.x)*SC,sy=ZY()-(d.y-S.camY)*SC,w=95*d.k*SC,h=w*im.height/im.width;
-    ctx.save();ctx.translate(sx,sy);ctx.rotate(Math.atan2(-d.vy,d.vx));ctx.globalAlpha=Math.min(1,(d.T-d.t)/(d.T*0.35));ctx.drawImage(im,-w*0.75,-h/2,w,h);ctx.restore();      // kalın ucu (sağ) gidiş yönünde
+    if(sx<-w||sx>W+w)continue;
+    donCiz(im,sx,sy,Math.atan2(-d.vy,d.vx),Math.min(1,(d.T-d.t)/(d.T*0.35)),-w*0.75,-h/2,w,h);      // kalın ucu (sağ) gidiş yönünde
   }
-  ctx.globalAlpha=1;
+  tabanDon();
 }
 function efektCiz(){
   if(S.sarj>0){const rh=(EL.N.wx*S.yon>=EL.F.wx*S.yon)?EL.N:EL.F;adkTop(rh.wx,rh.wy,40+170*S.sarj,S.t,1)}      // top, bakılan yöndeki elde büyür

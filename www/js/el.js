@@ -4,6 +4,9 @@
 // ---------- Düşmanlar ve dövüş ----------
 // Yumruk hızı (elin gövdeye göre hızı) hasarı ve geri fırlatmayı belirler; J/K düğmeleri sabit hasar verir.
 Object.assign(S,{hp:HPMAX,inv:0,dur:0,sars:0,shx:0,shy:0,durum:'oyun',durumT:0,pops:[],sarj:0,firT:-1,lungeT:-1,lungeS:0,lungeV:0,shoryu:0,shId:0,shArm:'N',shBoth:false,shDiz:'F',slam:false,tats:0,blok:false,blokT:-9,blokDw:0,bossGeldi:false,halka:null,mesaj:'',mesajT:-9,kay:null,sman:null,en:250,noEn:-9,kayCif:-9,dkick:null,sup:null,pend:null});
+// Hızlı çizim: save/restore yerine doğrudan dönüşüm (ekran sarsıntısı dahil). Bittikten sonra tabanDon() çağrılır.
+function donCiz(im,sx,sy,rot,a,dx,dy,w,h){const c=Math.cos(rot)*DPR,s=Math.sin(rot)*DPR;ctx.setTransform(c,s,-s,c,(sx+S.shx)*DPR,(sy+S.shy)*DPR);ctx.globalAlpha=a;ctx.drawImage(im,dx,dy,w,h)}
+function tabanDon(){ctx.setTransform(DPR,0,0,DPR,S.shx*DPR,S.shy*DPR);ctx.globalAlpha=1}
 const ZY=()=>H*0.80, kisit=(v,a,b)=>Math.max(a,Math.min(b,v));
 const EL={N:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}},F:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}}}, DW={N:0,F:0};
 let sonYon=1, DUS=[], MERMI=[];

@@ -27,7 +27,7 @@ function demoGeri(r){
   const sb=DM_SABIT();
   for(const n in sb){const o=sb[n],c=r.sb[n];for(const k of Object.keys(o))if(!(k in c))delete o[k];Object.assign(o,c)}
   ({DUS,MERMI,EMER,EFL,ISP,VAR,VPAR}=r.ar);
-  KAR.set(r.kar);ISP_CEP=r.isc;sonYon=r.son;
+  KAR.set(r.kar);KLO=0;KHI=KN-1;ISP_CEP=r.isc;sonYon=r.son;
 }
 // ---- önizleme sahnesi ----
 function dmDusman(dx,kc,hp){const e=korsanYap(S.x+dx,kc);e.demo=true;e.hp=e.max=hp||300;e.yon=-1;e.acd=e.mcd=1e9;DUS.push(e);return e}

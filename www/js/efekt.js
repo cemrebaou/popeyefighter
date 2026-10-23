@@ -3,10 +3,11 @@
 // ---- Kar zemini: sütun yükseklik dizisi (her 20 birim), basınca çöker, zamanla dolar; ezilince kar taneleri saçılır ----
 const KX0=-1500,KS=20,KN=2500,KD=90,KMIN=26;      // KD: taze kar kalınlığı, KMIN: ezilmiş kar
 const KAR=new Float32Array(KN).fill(KD);
+let KLO=KN,KHI=-1;      // ezilmiş (dolmayı bekleyen) kar sütunlarının aralığı: her karede sadece burası güncellenir
 S.karP=[];S.leke=[];
 function karI(x){return kisit(Math.round((x-KX0)/KS),0,KN-1)}
 function karBas(x,w,d,puf,dir){      // x civarındaki karı d kalınlığına ezer; puf: kenarlardan kar taneleri saçılır
-  const a=karI(x-w/2),b=karI(x+w/2);let at=0;
+  const a=karI(x-w/2),b=karI(x+w/2);let at=0;if(a<KLO)KLO=a;if(b>KHI)KHI=b;
   for(let i=a;i<=b;i++){const u=Math.abs((KX0+i*KS-x)/(w/2)),kenar=u<0.7?1:Math.max(0,1-(u-0.7)/0.3),hed=d+(KAR[i]-d)*(1-kenar);if(KAR[i]>hed){at+=KAR[i]-hed;KAR[i]=hed}}
   if(!puf||at<30)return;
   const n=Math.min(7,1+Math.floor(at/120));
@@ -25,7 +26,7 @@ function fxCiz(on){
 }
 function patlat(x,g){fxEkle(R.patla,x,380*g,0.42,true,Math.random()<0.5);tasSac(x,3,g)}      // yere çakılma: kısa patlama, sonra küçük kar ve taşlar
 function karGuncelle(dt){
-  for(let i=0;i<KN;i++)if(KAR[i]<KD)KAR[i]=Math.min(KD,KAR[i]+dt*3);      // izler zamanla yavaşça dolar
+  {let lo=KN,hi=-1;for(let i=KLO;i<=KHI;i++)if(KAR[i]<KD){KAR[i]=Math.min(KD,KAR[i]+dt*3);if(KAR[i]<KD){if(i<lo)lo=i;hi=i}}KLO=lo;KHI=hi}      // izler zamanla yavaşça dolar (sadece ezilmiş aralık)
   if(S.yer&&!S.karYer){karBas(S.x,230,KMIN-4,true);for(let i=0;i<12;i++){const sg=Math.random()<0.5?-1:1;karAt(S.x+sg*Math.random()*130,zemin(S.x)+10,sg*(200+Math.random()*750),600+Math.random()*1000)}}      // zıplamadan iniş: geniş çökme, yerden bol kar kalkar
   S.karYer=S.yer;
   if(S.yer&&Math.abs(S.vx)<40)karBas(S.x,110,KMIN+4,false);      // dururken ayaklar karın içinde
@@ -40,8 +41,9 @@ function karCiz(){      // karakterlerin önünde: karda kan lekeleri ve uçuşa
   for(const l of S.leke){const u=S.t-l.t0,sx=W/2+(l.x-S.x)*SC;if(sx<-100||sx>W+100)continue;
     ctx.globalAlpha=0.55*Math.min(1,(25-u)/6);ctx.fillStyle='#8e0d12';ctx.beginPath();ctx.ellipse(sx,sy(zemin(l.x))+3*SC,l.w*SC,l.w*0.22*SC,0,0,7);ctx.fill()}
   ctx.globalAlpha=1;
-  for(const p of S.karP){const im=p.tas?TASI[p.im]:KARI[p.im],w=(p.tas?40:44)*p.s*SC,h=w*im.height/im.width;
-    ctx.save();ctx.translate(W/2+(p.x-S.x)*SC,sy(p.y));ctx.rotate(p.rot);ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore()}
+  for(const p of S.karP){const im=p.tas?TASI[p.im]:KARI[p.im],x=W/2+(p.x-S.x)*SC;if(!im||x<-60||x>W+60)continue;const w=(p.tas?40:44)*p.s*SC,h=w*im.height/im.width;
+    donCiz(im,x,sy(p.y),p.rot,1,-w/2,-h/2,w,h)}
+  tabanDon();
 }
 // ---- Kan efektleri: 3 fışkıran kan çizgisi, 4 büyük fışkırma, 5 kopuk yara, 6 damla (yere değen kan karda leke bırakır) ----
 S.kan=[];
@@ -86,7 +88,8 @@ function kanCiz(){
     else if(p.k===4){w=330*p.s;sc=0.6+u/0.45*0.6;al=0.9*(u<0.25?1:Math.max(0,1-(u-0.25)/0.2));rot=p.r}
     else{w=60*p.s;rot=Math.atan2(p.vy,-p.vx)-KAN_A6}      // damlanın sivri ucu düşüş yönünün tersine
     if(al<=0.01)continue;
-    w*=sc;const h=w*im.height/im.width;
-    ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);ctx.rotate(rot);ctx.globalAlpha=al;ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore();
+    w*=sc*SC;const h=w*im.height/im.width;
+    donCiz(im,sx,sy,rot,al,-w/2,-h/2,w,h);
   }
+  tabanDon();
 }
