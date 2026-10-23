@@ -38,7 +38,8 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - D Çift Zıplama · K Çok Zıplama (pasif) · E Kayar Tekme · L Döner Tekme · U Süper Kahraman İnişi · Q Tekmeyle Can Çalma (pasif)
 - J Ateşli Aparkat · AL Alkış Şok Dalgası · YT Yere Tekme
 - P Bıçak Modu · T Bıçakla Can Çalma (pasif) · Z Bıçak Atlama
-- Aktif yetenek açılınca kendi sesi çalar. Sesi olmayan aktifler: Süpermen Uçuşu, Aduket, Alkış.
+- Aktif yetenek açılınca kendi sesi çalar. Sesi olmayan aktifler: Süpermen Uçuşu, Alkış.
+- Aduket: dönen su girdabı (`fx/aduket_su`), dönerken iki yana su damlası (`fx/damla`) saçar. Oluşurken `ses/wateraduket.mp3` döngüde çalar, atınca kesilir; çarpınca `ses/aduket_carpma.mp3`.
 
 ## Kontroller (dokunmatik)
 - Sağ yarı ön kol, sol yarı arka kol: kaydırınca kol o yöne gider. Telefon eğimi = yürüme, geri silkme = zıplama.
