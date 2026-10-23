@@ -1,13 +1,13 @@
 'use strict';
 // Ekran bilgisi (can/enerji barı, kalp, kombo no, yazılar)
-const BAR={en:250,hp:100};      // ekranda görünen enerji/can (yumuşak)
+const BAR={en:250,hp:HPMAX};      // ekranda görünen enerji/can (yumuşak)
 // Can + enerji barı (sol üst): boş görselin üstüne dolu görseller, eğik uca paralel çizgiyle maskelenir. Kalp: can dolarken atar (küçük kalp görseli + kalp sesi)
 const BARG=600,BARY=285;      // görsel boyutu
 const barGen=()=>Math.min(340,W*0.28,H*0.5);      // ekrandaki genişlik: telefonda küçük, büyük ekranda en çok 340
 const KALP={on:false,t0:0,n:-1,src:null};
 function kalpSesDur(){if(KALP.src){try{KALP.src.stop()}catch(_){}KALP.src=null}}
 function kalpGuncelle(){
-  const ak=S.durum==='oyun'&&S.hp>0&&S.hp<100&&S.t-(S.hasT||-9)>=(S.regB||3);      // can dolma modu (düşman vurunca / can dolunca biter)
+  const ak=S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&S.t-(S.hasT||-9)>=(S.regB||3);      // can dolma modu (düşman vurunca / can dolunca biter)
   if(ak&&!KALP.on){KALP.on=true;KALP.t0=S.t;KALP.n=-1}
   if(!ak&&KALP.on){KALP.on=false;kalpSesDur()}
   if(!KALP.on)return false;
@@ -23,13 +23,13 @@ function barDol(im,f,y0,u0,u1,BEG){
 }
 function barCiz(dt){
   BAR.en+=(S.en-BAR.en)*Math.min(1,dt*8);
-  if(S.hp<BAR.hp||S.hp-BAR.hp>40)BAR.hp=Math.max(0,S.hp);else BAR.hp+=(S.hp-BAR.hp)*Math.min(1,dt*6);      // azalınca direkt, dolarken yumuşak
+  if(S.hp<BAR.hp||S.hp-BAR.hp>HPMAX*0.4)BAR.hp=Math.max(0,S.hp);else BAR.hp+=(S.hp-BAR.hp)*Math.min(1,dt*6);      // azalınca direkt, dolarken yumuşak
   const kk=kalpGuncelle();
   if(!R.bar_bos)return;
   const bw=barGen(),s=bw/BARG;
   ctx.save();ctx.translate(10,8);ctx.scale(s,s);
   ctx.drawImage(R.bar_bos,0,0,BARG,BARY);
-  barDol(R.bar_can,BAR.hp/100,66.4,261.3,582.0,0.39);      // can
+  barDol(R.bar_can,BAR.hp/HPMAX,66.4,261.3,582.0,0.39);      // can
   if(S.t<(S.ispEnT||0)){ctx.shadowColor='#ffd23f';ctx.shadowBlur=(8+4*Math.sin(S.t*8))*s*DPR}      // ıspanak sonrası enerji parlar
   barDol(R.bar_en,BAR.en/250,145.0,262.7,534.6,0.4);      // ince enerji
   ctx.shadowBlur=0;

@@ -33,7 +33,7 @@ function emerGuncelle(dt){
       EMER.splice(i,1);
       if(dokunulmaz()){
         titre(40);
-        if(S.blok){S.hp-=4}else{S.hp-=(p.dm||14);S.hitR={t0:S.t,z:'kafa',bk:p.vx*S.yon<0?1:-1}}
+        {S.hp-=(p.dm||14);S.hitR={t0:S.t,z:'kafa',bk:p.vx*S.yon<0?1:-1}}
       }
     }
   }

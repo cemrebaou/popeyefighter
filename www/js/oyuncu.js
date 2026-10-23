@@ -165,6 +165,7 @@ function elDurum(dt){
   for(const k of ['N','F']){
     if(S.yeme&&S.yeme.k===k&&!S.yeme.atildi){HS[k]='tut';ACT[k]=0;continue}      // ıspanak tutuyor
     if(tutan(k)||S.parcalar.some(p=>!p.at&&p.el===k)){HS[k]='tut';ACT[k]=0;continue}
+    if(HS[k]==='ac'&&KOL[k].ak&&S.sarj<=0)continue;      // açılan el parmak kalkana kadar açık kalır
     if(S.sarj<=0&&KOL[k].ak&&KOL[k].e>0.25&&EL[k].v<900)ACT[k]+=dt;else ACT[k]=0;   // basılı tutup yavaş çekiştirme: eller açılır
     HS[k]=ACT[k]>0.08?'ac':'yum';
   }
@@ -224,7 +225,7 @@ function karakter(){
   ctx.translate(P.ofs-P.hb,-yuk-P.lift);   // kalça ve üstü geriye (sola) kayar
   if(S.donuyor||S.tats>0||S.sman){ctx.translate(0,-170);ctx.rotate(S.spin);ctx.translate(0,170);}   // yuvarlanma: gövde ortasından ileri doğru döner
   BONg=BON;
-  govdeUzayi(()=>{ kol(28,-158,P.aFu,P.aFr,'F',true,1.0); });   // uzak kol en arka katmanda: biraz küçük, omza oturur
+  govdeUzayi(()=>{ kol(28,-158,P.aFu,P.aFr,'F',true,1.0); });varilElCiz('F');   // uzak kol en arka katmanda: biraz küçük, omza oturur
   ctx.save();ctx.translate(BON,0);
   bacak(F.l,F.k,F.a,true);
   ctx.restore();
@@ -232,9 +233,9 @@ function karakter(){
   govdeUzayi(()=>{ ctx.scale(1.1,1.1);const [i,f]=hasarKat(S.hp);hasarCiz(n=>resim(R['govde'+n],97.7,246.4),i,f); });      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak gövdenin önünde
   govdeUzayi(()=>{
-    ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);OGV.boyun=dunyaNok(0,60);OGV.kafa=dunyaNok(7.5,-85.5);OGV.t=S.t;{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((100-Math.max(S._lh,1))/10))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=S.yeme&&S.t-S.yeme.t0>0.7&&S.t-S.yeme.t0<1.85;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-95.4,-192.4,205.8,298.2):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü
+    ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/SC,0);OGV.boyun=dunyaNok(0,60);OGV.kafa=dunyaNok(7.5,-85.5);OGV.t=S.t;{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((HPMAX-Math.max(S._lh,1))/(HPMAX/10)))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=S.yeme&&S.t-S.yeme.t0>0.7&&S.t-S.yeme.t0<1.85;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-95.4,-192.4,205.8,298.2):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü
     ctx.restore();
-    kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
+    varilElCiz('N');kol(-59,-149,P.aNu,P.aNr,'N',false,1.1);         // yakın kol (%10 büyük)
   });
   ispOnCiz();
   ctx.restore();

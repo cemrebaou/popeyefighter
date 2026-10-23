@@ -31,6 +31,7 @@ function ciz(){
   varilCiz(false);
   kanCiz();
   fxCiz(false);
+  VT=ctx.getTransform();
   ctx.save();
   ctx.translate(W/2,zeminY-(S.y-S.camY)*SC);
   ctx.scale(SC*S.yon,SC);
@@ -48,7 +49,7 @@ function ciz(){
 let son=0;
 function dongu(ms){
   requestAnimationFrame(dongu);      // önce sonraki kare istenir: bir karede hata olsa bile oyun donmaz
-  if(listeAcik){son=ms;return}      // kombo listesi açıkken oyun durur
+  if(listeAcik||agacAcik){son=ms;return}      // kombo listesi açıkken oyun durur
   let dt=Math.min(0.05,(ms-son)/1000||0.016);      // 20 FPS'e kadar gerçek zamanlı (yavaş telefonda ağır çekime girmez)
   son=ms;S.dtG=dt;
   if(S.dur>0){S.dur-=dt;dt*=0.08}
@@ -70,7 +71,7 @@ function dongu(ms){
   if(S.pence){S.en-=dt*7.5;if(S.en<=0){S.en=0;penceKapa()}else if(S.blok&&S.t-S.pence.t0>0.5)penceKapa()}      // pençe: enerji dolma hızının 3 katı hızla biter; guard alınca bıçaklar girer
   else S.en=Math.min(250,S.en+dt*2.5*(S.t<(S.ispEnT||0)?2:1));      // ıspanaktan sonra 10 sn 2 kat dolum
   if(S._rh!==undefined&&S.hp<S._rh-0.001){S.hasT=S.t;S.regB=3+Math.random()}      // son hasar zamanı
-  if(S.durum==='oyun'&&S.hp>0&&S.hp<100&&S.t-(S.hasT||-9)>=(S.regB||3))S.hp=Math.min(100,S.hp+5*dt);      // hasardan 3-4 sn (rastgele) sonra iyileşir: 2 sn'de 10 can
+  if(S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&S.t-(S.hasT||-9)>=(S.regB||3))S.hp=Math.min(HPMAX,S.hp+HPMAX*0.05*dt);      // hasardan 3-4 sn (rastgele) sonra iyileşir: 2 sn'de 10 can
   S._rh=S.hp;
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
   if(S.kayKilit&&S.t>=S.lungeT&&Math.abs(S.vx)<HIZ*0.5)S.kayKilit=false;      // kayma bitip hız eşiğin altına inince yeni kayma açılır

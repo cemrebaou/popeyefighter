@@ -102,10 +102,10 @@ function oyuncuHasar(){
     if(e.olu||S.t<e.st||!korsanYakin(e))continue;
     const dm=e.boss?15:e.kc==='b'?15:10,yn=S.x>=e.x?1:-1;
     if(S.blok){
-      if(S.t-S.blokT<0.3){                                   // tam zamanında blok = parry: düşman sersemler
+      if(S.t-S.blokT<0.5){                                   // tam zamanında blok = parry: düşman sersemler
         e.st=S.t+(e.boss?0.8:1.5);e.vx=-yn*(e.boss?250:1200);e.vy=500;S.inv=S.t+0.5;
         S.pops.push({x:S.x,y:S.y+950,t:0,txt:'PARRY!',f:1});titre(50);S.sars=Math.max(S.sars,8);
-      }else{S.hp-=Math.max(1,Math.round(dm*0.25));titre(30)}   // normal blok: hasarın çoğu engellenir
+      }else{S.hp-=Math.max(1,Math.round(dm*0.5));titre(30)}   // normal blok: hasarın yarısı engellenir
     }else{
       if(e.kc==='b')bufCal(SAPLA,1);S.hp-=dm;
       const rel=kisit((e.y+e.cy-S.y)/800,0,1.1);S.hitR={t0:S.t,z:rel<0.4?'bacak':rel<0.78?'govde':'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1};   // vurulan yer ve yön: tepki buna göre

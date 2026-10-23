@@ -123,7 +123,7 @@ function dagGuncelle(dt){
   for(const e of DUS){
     if(e.olu||e.boss||e.tut)continue;
     if(elDeg(e,'N',70)||elDeg(e,'F',70)){      // ilk çarptığı düşman: uçuş biter
-      S.dag=null;S.pSes=true;vur(e,30,d.dir,0.3,0.9,e.y+e.cy);S.pSes=false;if(S.hp>0)S.hp=Math.min(100,S.hp+1);
+      S.dag=null;S.pSes=true;vur(e,30,d.dir,0.3,0.9,e.y+e.cy);S.pSes=false;if(S.hp>0)S.hp=Math.min(HPMAX,S.hp+HPMAX/100);
       if(e.olu){S.vx=d.dir*400;return}
       e.cy0=e.cy0||e.cy;if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+DUS_DUS+2.5+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+2.5+DUS_KALK,yn:d.dir};e.vx=d.dir*200;e.vy=0;      // hemen yere serilir
       const tx=e.x-d.dir*120,T=0.16;      // baktığı yönü bozmadan hemen üstüne iner

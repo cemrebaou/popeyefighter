@@ -41,7 +41,7 @@ function vur(e,dmg,vx,vy,f,hy){
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
   if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;if(e.dus){e.yerOl=true;e.dus.son=S.t+999;e.vx=e.vy=0}else if(dmg<9999){const uc=dmg>=25||e.y>zemin(e.x)+5||Math.abs(e.vx)>1100;e.cy0=e.cy0||e.cy;e.dusA=0;      // ölüm: sert darbe = uçarak kıç üstü düşüp geri yatar, değilse dizler üstüne çöküp yüzüstü düşer
     if(uc){const yn=Math.sign(e.vx)||(e.x>=S.x?1:-1);e.vx=yn*Math.max(900,Math.abs(e.vx)*1.2);e.vy=Math.max(e.vy,0)+900;e.olm={tip:'uc',f:'hava',t0:S.t,yn,ters:(S.x-e.x)*(e.yon||1)<0}}
-    else{e.vx*=0.3;e.vy=0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1}}}else{e.vx*=1.4;e.vy+=700}if(!olu0){ispDus(e.x,e.y+e.cy);bufCal(OLS[e.kc||'k'],1)}}      // yerdeyken ölürse olduğu yerde ölür (dönmez); ölüm sesi      // %25 ıspanak düşer
+    else{e.vx*=0.3;e.vy=0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1}}}else{e.vx*=1.4;e.vy+=700}if(!olu0){ypKazan(e.boss?3:1);ispDus(e.x,e.y+e.cy);bufCal(OLS[e.kc||'k'],1)}}      // yerdeyken ölürse olduğu yerde ölür (dönmez); ölüm sesi      // %25 ıspanak düşer
   if(S.pSes){if(S.pence&&S.pSes===true)torbaCal(BLD,BLDBAG,1);else ses(S.pSes==='tekme'?'tekme':'yumruk')}      // bıçak modunda bıçak sesleri
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
   S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:(krit?'KRİTİK -':'-')+dmg,f:krit?1:f});
@@ -50,14 +50,14 @@ function vurusKontrol(){
   const dugme=S.atk&&!S.atk.tv&&HAREKET[S.atk.ad].p;
   for(const k of ['N','F']){
     const h=EL[k];
-    if(S.sarj>0||!(dugme||kolAktif(KOL[k]))||h.v<1500)continue;
+    if(S.sarj>0||!(dugme||kolAktif(KOL[k]))||h.v<1500||HS[k]==='ac')continue;      // açık el vurmaz, sadece tutar
     for(const e of DUS){
       if(e.olu||e.hitT[k]>S.t||e.tut===k||e.iki)continue;      // kendi tuttuğuna vurmaz, diğer elle vurabilir
       if(!elDeg(e,k,45))continue;
       if(dugme&&(e.x-S.x)*S.yon<-40)continue;      // kombo vuruşu arkadakine işlemez
       const f=kisit((h.v-1500)/6000,0,1);
       const kd=kDmg(S.atk);if(kd!==null&&!S.atk.tv){S.cE=e;S.cEt=S.t}
-      S.pSes=true;S.pHx=h.wx;S.bNo=!!S.pence;vur(e,S.pence?20:kd!==null&&!S.atk.tv?kd*PK():(S.atk&&/^pa[NF]$/.test(S.atk.ad)?15:15*PK()),h.vx,h.vy,f,h.wy);S.pSes=false;S.bNo=false;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);if(S.pence&&S.hp>0)S.hp=Math.min(100,S.hp+1);      // bıçak vuruşu +1 can
+      S.pSes=true;S.pHx=h.wx;S.bNo=!!S.pence;vur(e,S.pence?20:kd!==null&&!S.atk.tv?kd*PK():(S.atk&&/^pa[NF]$/.test(S.atk.ad)?15:15*PK()),h.vx,h.vy,f,h.wy);S.pSes=false;S.bNo=false;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);if(S.pence&&S.hp>0)S.hp=Math.min(HPMAX,S.hp+HPMAX/100);      // bıçak vuruşu +1 can
     }
   }
   if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){      // Sub-Zero kayması: alçak çelme, havaya fırlatır
@@ -180,16 +180,17 @@ function grabKontrol(dt){
   for(const k of ['N','F']){
     const h=EL[k];
     if(tutan(k)||varilElde(k)){DW[k]=0;continue}          // bir el bir düşman
-    if(!KOL[k].ak||KOL[k].e<0.25||h.v>1100){DW[k]=0;continue}
+    const ac=HS[k]==='ac';
+    if(!KOL[k].ak||(!ac&&(KOL[k].e<0.25||h.v>1100))){DW[k]=0;continue}
     let en=null,ed=1e9;
     for(const e of DUS){
-      if(e.olu||e.tut||e.boss||e.hitT[k]>S.t||e.noTut>S.t)continue;
+      if(e.olu||e.tut||e.boss||(!ac&&e.hitT[k]>S.t)||e.noTut>S.t)continue;
       const d=Math.hypot(h.wx-e.x,h.wy-(e.y+e.cy));
-      if(d<e.r+70&&d<ed){ed=d;en=e}
+      if((d<e.r+70||(ac&&elDeg(e,k,40)))&&d<ed){ed=d;en=e}      // açık el vücudun herhangi bir yerine değince tutar
     }
     if(!en){DW[k]=0;continue}
     DW[k]+=dt;
-    if(DW[k]>0.12){
+    if(ac||DW[k]>0.12){
       en.tut=k;DW[k]=0;bufCal(GRS,1);
       let tx=en.x-h.wx,ty=en.y+en.cy-h.wy;const L=Math.hypot(tx,ty);if(L>200){tx*=200/L;ty*=200/L}
       en.tx=tx;en.ty=ty;en.vx=en.vy=0;
@@ -230,7 +231,7 @@ function dusmanGuncelle(dt){
         const u=(S.t-e.kb.t0)/KBDUR;
         if(!e.kb.hit&&u>=0.45){
           e.kb.hit=true;ses('yumruk');
-          if(dokunulmaz()&&Math.abs(e.x-S.x)<900){S.hp-=S.blok?3:10;titre(40);S.hitR={t0:S.t,z:'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}
+          if(dokunulmaz()&&Math.abs(e.x-S.x)<900){S.hp-=S.blok?5:10;titre(40);S.hitR={t0:S.t,z:'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}
         }
         if(u>=1){e.kb=null;e.sonV=S.t}
       }

@@ -35,10 +35,10 @@ function varilKir(v){              // ilk çarpma: kırılma sesi, parçalar var
 function varilGuncelle(dt){
   for(const k of ['N','F']){        // tutma
     if(S.durum!=='oyun'||varilElde(k)||tutan(k)){VDW[k]=0;continue}
-    const h=EL[k];if(!KOL[k].ak||KOL[k].e<0.25||h.v>1100){VDW[k]=0;continue}
-    const v=VAR.find(z=>(z.d==='yer'||z.d==='dus')&&Math.hypot(h.wx-z.x,h.wy-z.y)<V_W/2+40);
+    const h=EL[k],ac=HS[k]==='ac';if(!KOL[k].ak||(!ac&&(KOL[k].e<0.15||h.v>1600))){VDW[k]=0;continue}
+    const v=VAR.find(z=>(z.d==='yer'||z.d==='dus')&&Math.abs(h.wx-z.x)<V_W/2+90&&Math.abs(h.wy-z.y)<V_MRK+110);      // büyük alma alanı: ayaktayken varilin üstüne hafif değmek yeter
     if(!v){VDW[k]=0;continue}
-    VDW[k]+=dt;if(VDW[k]>0.12){v.d='tut';v.k=k;v.rot=0;v.vx=v.vy=0;VDW[k]=0;bufCal(GRS,1)}
+    VDW[k]+=dt;if(ac||VDW[k]>0.06){v.d='tut';v.k=k;v.rot=0;v.vx=v.vy=0;VDW[k]=0;bufCal(GRS,1);if(S.uzan)S.uzan=null}      // eğilip aldıysa varil alınınca ayağa kalkar
   }
   for(let i=VAR.length-1;i>=0;i--){
     const v=VAR[i];
@@ -79,7 +79,9 @@ function vCiz(im,x,y,rot,a){
   if(sx<-w-200||sx>W+w+200)return;
   ctx.save();ctx.translate(sx,sy);if(rot)ctx.rotate(rot);if(a<1)ctx.globalAlpha=a;ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore();
 }
-function varilCiz(on){              // on=false: yerdeki variller (oyuncunun arkasında), on=true: eldeki/uçan varil ve parçalar (önde)
-  for(const v of VAR){const yer=v.d==='yer'||v.d==='dus';if(yer===on)continue;vCiz(R.v_varil,v.x,v.y,v.rot,1)}
+let VT=null;      // karakter çizilmeden önceki dünya dönüşümü (eldeki varil karakterin katmanları arasında çizilir)
+function varilElCiz(k){const v=VAR.find(z=>z.d==='tut'&&z.k===k);if(!v||!VT)return;ctx.save();ctx.setTransform(VT);ctx.shadowBlur=0;vCiz(R.v_varil,v.x,v.y,v.rot,1);ctx.restore()}      // arka el: elin önünde; ön el: elin arkasında
+function varilCiz(on){              // on=false: yerdeki variller (oyuncunun arkasında), on=true: uçan varil ve parçalar (önde); eldeki varil karakterle birlikte çizilir
+  for(const v of VAR){const yer=v.d==='yer'||v.d==='dus';if(yer===on||v.d==='tut')continue;vCiz(R.v_varil,v.x,v.y,v.rot,1)}
   if(on)for(const p of VPAR)vCiz(R[p.im],p.x,p.y,p.rot,p.yat?kisit(6-(S.t-p.yat),0,1):1);
 }

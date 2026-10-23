@@ -61,7 +61,7 @@ function ispOnCiz(){              // arka eldeki kutu: yüzün önünde
 }
 function ispGuncelle(dt){
   if(!S.yeme&&!S.uzan&&S.yer&&S.durum==='oyun'&&!S.pence&&!S.atk&&S.sarj<=0){      // kol 0.5 sn'den uzun aşağı: eğil
-    for(const k of ['N','F']){const K=KOL[k],ok=K.ak&&K.e>0.7&&Math.abs(K.th-90)<60&&!tutan(k);S.uzT[k]=ok?S.uzT[k]+dt:0;if(S.uzT[k]>0.5){S.uzan={k,B:0};break}}
+    for(const k of ['N','F']){const K=KOL[k],ok=K.ak&&K.e>0.7&&Math.abs(K.th-90)<60&&!tutan(k)&&!varilElde(k);S.uzT[k]=ok?S.uzT[k]+dt:0;if(S.uzT[k]>0.5){S.uzan={k,B:0};break}}
   }else{S.uzT.N=S.uzT.F=0}
   if(S.uzan){
     const u=S.uzan;
@@ -75,7 +75,7 @@ function ispGuncelle(dt){
   if(S.yeme){
     const m=S.yeme,t=(S.t-m.t0)/ISP_YAVAS;      // yerken belden aşağısı serbest: yürünebilir
     if(!m.ses&&t>=0.85){m.ses=true;bufCal(YEMS,1)}      // yeme sesi: ağza dökmeye başlayınca
-    if(!m.bos&&t>=1.45){m.bos=true;S.hp=Math.min(100,S.hp+10);S.en=Math.min(250,S.en+50);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+10',f:0.3})}      // max canın %10'u
+    if(!m.bos&&t>=1.45){m.bos=true;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1);S.en=Math.min(250,S.en+50);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1,f:0.3})}      // max canın %10'u
     if(!m.atildi&&t>=2.25){m.atildi=true;ispAt(m.k)}
     if(t>=2.8)S.yeme=null;
   }
