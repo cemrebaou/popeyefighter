@@ -347,6 +347,6 @@ function dusmanCiz(){
     if(e.iki){ctx.translate(0,-e.cy);ctx.rotate(e.phi||0);ctx.translate(0,e.cy)}   // iki elle tutulunca iki elin eksenine yatar (kafa N elinin tarafında)
     ciziKorsan(e);
     ctx.restore();
-    if(zc){kancaCiz(e,false);kancaCiz(e,true)}      // sırttan ele gelen zincir karakterin önünde
+    if(zc){if(e.olu)ctx.filter='grayscale(1)';kancaCiz(e,false);kancaCiz(e,true);ctx.filter='none'}      // sırttan ele gelen zincir karakterin önünde
   }
 }
