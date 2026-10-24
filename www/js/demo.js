@@ -1,7 +1,7 @@
 'use strict';
 // Yetenek önizlemesi: ağaçta bir yeteneğe dokununca arkadaki oyunda karakter o hareketi sessizce, döngüyle gösterir.
 // Başlarken oyunun tüm durumu kaydedilir; ağaç kapanınca (ya da başka yetenek seçilince) her şey kayıttaki haline döner.
-// Pasif yetenekler (can çalma, can dolumu, maks. can…) için önizleme yok.
+// Can çalma yeteneklerinde sahte düşük can gösterilir, vurdukça dolar. Diğer pasifler (can dolumu, maks. can…) için önizleme yok.
 const DM_SABIT=()=>({S,EL,AY,OGV,DW,KOL,HS,ACT,VDW,key,P,BAR,GYRO,KALP});      // içi yerinde geri yüklenen sabit nesneler
 function dmKopya(o,m){      // derin kopya: aynı nesneye giden bağlar kopyada da aynı nesneye gider; görsel, ses, sınıf nesneleri olduğu gibi kalır
   if(o===null||typeof o!=='object')return o;
@@ -30,6 +30,7 @@ function demoGeri(r){
   KAR.set(r.kar);KLO=0;KHI=KN-1;ISP_CEP=r.isc;sonYon=r.son;
 }
 // ---- önizleme sahnesi ----
+function dmCanDusur(){S.hp=HPMAX*0.35;S.regB=999;S.hasT=S.t}      // can çalma önizlemesi: sahte düşük can (kendiliğinden dolmaz); vurdukça dolar, önizleme bitince gerçek can geri gelir
 function dmDusman(dx,kc,hp){const e=korsanYap(S.x+dx,kc);e.demo=true;e.hp=e.max=hp||300;e.yon=-1;e.acd=e.mcd=1e9;DUS.push(e);return e}
 function dmKol(k,th,e){const o=KOL[k];o.ak=true;o.th=th;o.e=e}
 function dmKolBirak(k){const o=KOL[k];o.ak=false;o.e=0;o.bit=-9}
@@ -65,7 +66,11 @@ const DEMOLAR={      // T: döngü süresi (sn), kur: sahne, f(t, o): o(an) o an
        if(o(2.3)){const v=VAR.find(z=>z.d==='tut');if(v){v.k=null;v.d='uc';v.f=0.5;v.vx=2200;v.vy=900;v.vr=4}dmKolBirak('N')}      // fırlatır
      }},
   F:{T:3.2,kur(D){D.e=dmDusman(330,'b',100)},f(t,o,D){dmYirtDemo(t,o,D)}},
-  R:{T:3.2,yv:['F'],kur(D){D.e=dmDusman(330,'b',100)},f(t,o,D){dmYirtDemo(t,o,D)}},
+  R:{T:3.2,yv:['F'],kur(D){D.e=dmDusman(330,'b',100);dmCanDusur()},f(t,o,D){dmYirtDemo(t,o,D)}},
+  H:{T:3,canK:8,kur(D){dmDusman(420,'k');dmCanDusur()},f(t,o){for(const a of [0.2,0.5,0.8,1.4,1.7,2.0])if(o(a))komboTap('y',a*10%2<1?'N':'F')}},      // can çalma: yumrukladıkça sahte can barı dolar
+  M:{T:3,canK:8,kur(D){dmDusman(420,'k');dmCanDusur()},f(t,o){for(const a of [0.2,0.5,0.8,1.4,1.7,2.0])if(o(a))komboTap('y',a*10%2<1?'N':'F')}},
+  Q:{T:3,canK:8,kur(D){dmDusman(450,'k');dmCanDusur()},f(t,o){for(const a of [0.2,0.9,1.6])if(o(a))komboTap('t','N')}},      // tekmeyle can çalma
+  T:{T:3.2,canK:8,yv:['P'],kur(D){dmDusman(420,'k');dmCanDusur()},f(t,o){if(o(0.15))penceAc();for(const a of [0.7,1.0,1.3,1.6,1.9])if(o(a))komboTap('y',a*10%2<1?'N':'F');if(o(2.6))penceKapa()}},      // bıçakla can çalma
   N:{T:2.8,f(t,o){if(o(0.2))ozelTus('n')}},
   S:{T:2.4,kur(D){dmDusman(1000,'k')},f(t,o){if(o(0.2))ozelTus('h')}},
   Y:{T:2.8,f(t,o){if(o(0.1)){S.sarj=1;S.sarjP=null}if(o(1.1))ates(1,0.05,1,EL.N.wx,EL.N.wy)}},

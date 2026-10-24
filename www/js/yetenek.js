@@ -47,7 +47,7 @@ function canCal(dmg,tekme){      // can çalma: H %10 / M %20 her vuruşta; Tekm
   let r=YV('M')?0.2:YV('H')?0.1:0;
   if(tekme&&YV('Q'))r+=0.1;
   if(S.pence&&YV('T'))r+=0.2;
-  if(r>0&&S.hp>0)S.hp=Math.min(HPMAX,S.hp+dmg*r);
+  if(r>0&&S.hp>0)S.hp=Math.min(HPMAX,S.hp+dmg*r*(DEMO&&DEMO.d.canK||1));      // önizlemede can barının dolduğu net görünsün diye büyütülür (sahte can)
 }
 function agBtn(){
   const b=document.getElementById('agacB');if(!b)return;
