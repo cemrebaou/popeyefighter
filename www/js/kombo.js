@@ -107,6 +107,15 @@ function ph(arm,dur,fr){
   cift('kickDE','kickDF',-62,-95);      // alt + orta
   cift('kickDG','kickDH',-95,-125);     // zıplayarak ilerleyen çift tekme
   [HAREKET.kickDG,HAREKET.kickDH].forEach(m=>{m.dur=1.0;m.dash=[.1,.7,340];m.keys.forEach(([t,v])=>{v.lift=(v.lift||0)*1.6+(t>.1&&t<.9?25:0)})});
+  { // altılı havada tekme (kombo 30 bitişi): bacaklar sırayla 6 tekme; ilk 2 çift tekmelerle aynı yükseklikte, sonraki 2 biraz daha yukarı ve ileri, son 2 en yukarı ve en ileri. Hasar 6 pencereye bölünür (30 → 6 x 5)
+    const H=[-92,-112,-135],OF=[55,95,140],LI=[78,112,150],A=[K(0,Object.assign({lN:-30,bN:75,lF:-9,bF:6},G0))],win=[];
+    for(let i=0;i<6;i++){const p=i>>1,t=0.07+i*0.145,n=i%2===0;
+      A.push(K(t,Object.assign(n?{lN:-100,bN:100,lF:-40,bF:95}:{lN:20,bN:20,lF:-105,bF:105},{lift:LI[p],ofs:OF[p]-35},GC)));      // bacağı topla
+      A.push(K(t+0.065,Object.assign(n?{lN:H[p],bN:-6.5,lF:14,bF:20}:{lN:25,bN:30,lF:H[p],bF:-6.5},{lift:LI[p],ofs:OF[p]},n?GA:GB)));      // tekme
+      win.push([t+0.04,t+0.11])}
+    A.push(K(0.95,Object.assign({lN:20,bN:20,lF:-105,bF:105,lift:40,ofs:10},G0)),K(1,Object.assign({lN:7,bN:3,lF:-9,bF:6,torso:6,bas:0},G0)));
+    HAREKET.kickD6={dur:2.0,win,dash:[.3,.9,260],keys:A};HAREKET.kickD6F={dur:2.0,win,dash:[.3,.9,260],keys:A.map(([t,v])=>[t,sw(v)])};
+  }
   { // alçak tekme (aşağı) ve kayarak tekme (Sub-Zero kayması)
     const lo=JSON.parse(JSON.stringify(HAREKET.kick1));lo.keys.forEach(([t,v])=>{if(v.lN<-85)v.lN=-60});HAREKET.kickLo=lo;
     const KS=(t,v)=>[t,Object.assign({torso:-4,bas:-2,ofs:0,lift:0},G0,v)];
@@ -156,10 +165,10 @@ function ph(arm,dur,fr){
   HAREKET.dizJF={dur:HAREKET.dizJ.dur,win:HAREKET.dizJ.win,dash:HAREKET.dizJ.dash,keys:HAREKET.dizJ.keys.map(([t,v])=>[t,sw(v)])};
 }
 // ---- Kombo sistemi: sadece Y (yumruk bölgesi) ve T (tekme bölgesi) dizisine bakılır; sağ/sol sadece hangi kol/bacağın oynayacağını belirler ----
-const KICK_AD={kLo:['kickLo','kickLoF'],k1:['kick1','kick1F'],k2:['kick2','kick2F'],k3:['kick3','kick3F'],k4:['kick4N','kick4'],kSl:['kickSl','kickSlF'],diz:['dizN','dizF'],kDA:['kickDA','kickDB'],kDC:['kickDC','kickDD'],kDE:['kickDE','kickDF'],
+const KICK_AD={kLo:['kickLo','kickLoF'],k1:['kick1','kick1F'],k2:['kick2','kick2F'],k3:['kick3','kick3F'],k4:['kick4N','kick4'],kSl:['kickSl','kickSlF'],diz:['dizN','dizF'],kDA:['kickDA','kickDB'],kD6:['kickD6','kickD6F'],kDC:['kickDC','kickDD'],kDE:['kickDE','kickDF'],
   kFly:['kickFly','kickFlyF'],kDG:['kickDG','kickDH'],kDv:['kickDive','kickDiveF'],dzJ:['dizJ','dizJF']};   // [sağ(N), sol(F)]
 const KAGAC={   // y/t dizisi -> o adımın hareket türü, 30 kombo (yumruk: j jab, c düz, h kanca, u aparkat(yükselir), o üstten, b gövde, w çift jab, s süpermen, z dönerek, k haymaker; tekme: KICK_AD; kFly uçan, kDG çift uçan, kDv havadan aşağı tekme, dzJ zıplayan diz)
-  y:'j', yy:'c', yyy:'h', yyyy:'u', yyyyy:'o', yyyyyt:'k4', yyyyt:'kDv', yyyt:'k3', yyt:'kSl',
+  y:'j', yy:'c', yyy:'h', yyyy:'u', yyyyy:'o', yyyyyt:'kD6', yyyyt:'kDv', yyyt:'k3', yyt:'kSl',
   yt:'kLo', yty:'w', ytyy:'z', ytyyy:'k', ytyyt:'kDC', ytyt:'kDE', ytt:'kFly',
   t:'k1', tt:'diz', ttt:'dzJ', tttt:'kDG', tty:'s', ttyy:'h', ttyt:'k2',
   ty:'b', tyy:'c', tyyt:'k', tyyy:'u', tyyyy:'o', tyyyt:'kDv', tyt:'kDA'

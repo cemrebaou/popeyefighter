@@ -303,8 +303,8 @@ function ciziKorsan(e,mask){
   }
   ctx.restore();
 }
-const KH={kickLo:130,kick1:260,kick2:380,kick3:520,kick4:600,kickSl:470,kickBk:300,dizF:340,dizN:340,kickDA:[300,300],kickDB:[300,300],kickDC:[300,520],kickDD:[300,520],kickDE:[130,300],kickDF:[130,300],kickDG:[330,420],kickDH:[330,420],kickFly:380,kickDive:230,dizJ:340,dizJF:340};
-function kickH(ad,wi){let b=ad;if(/^kick(?!D)\w*[FN]$/.test(b))b=b.slice(0,-1);const h=KH[b];return Array.isArray(h)?h[Math.min(wi,1)]:(h||330)}   // tekmenin vurduğu yükseklik
+const KH={kickLo:130,kick1:260,kick2:380,kick3:520,kick4:600,kickSl:470,kickBk:300,dizF:340,dizN:340,kickDA:[300,300],kickDB:[300,300],kickDC:[300,520],kickDD:[300,520],kickDE:[130,300],kickDF:[130,300],kickDG:[330,420],kickDH:[330,420],kickD6:[300,300,420,420,540,540],kickD6F:[300,300,420,420,540,540],kickFly:380,kickDive:230,dizJ:340,dizJF:340};
+function kickH(ad,wi){let b=ad;if(/^kick(?!D)\w*[FN]$/.test(b))b=b.slice(0,-1);const h=KH[b];return Array.isArray(h)?h[Math.min(wi,h.length-1)]:(h||330)}   // tekmenin vurduğu yükseklik
 function zEksen(){               // iki elle tutulan korsan: N eli boyunda, F eli kalçasında; gövde iki elin arasındaki eksene dizilir
   const N=EL.N,F=EL.F;let dx=N.wx-F.wx,dy=N.wy-F.wy;
   if(Math.hypot(dx,dy)<80){dx=(dx>=0?1:-1)*80;dy=0}
