@@ -11,7 +11,7 @@
 const ZP_HIZ=7500,ZP_DON=6500,ZP_MAX=4500,ZP_MIN=260,ZP_SAR=1900,ZP_SALLA=3000,ZP_HASAR=20,ZP_KAL=14,ZP_YAKIN=400;      // uçuş/geri sarma hızı, halat en uzun/en kısa, tırmanma hızı, sallanma gücü, hasar, halat kalınlığı, düşmanı çekince durduğu mesafe
 const ZP_AGIZ=[160,-12],ZP_TAB=[236,80],ZP_UC=[97.5,24.5],ZP_DUGUM=66,ZP_GOM={c:24,d:30,v:30};      // ön kol uzayında namlu ağzı; tabanca görselinde namlu ağzı; mızrak görselinde uç; halatın bağlandığı düğüm uçtan geride; saplanınca uç ne kadar gömülür
 const ZPK={ac:false,N:null,F:null},zizler=new Map(),ZMASK={};      // ZPK.N/F: o koldaki zıpkın (null = takılı, dolu); zizler: zıpkını tutan parmaklar
-let ZP_PAT=null;
+let ZP_PAT=null;const ZP_SERIT=8192;      // halat şeridi (bir kez çizilir)
 const zpkBtn=document.getElementById('zpkB');
 zpkBtn.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();zpkMod(!ZPK.ac)});
 function zpkIsit(){      // modu açınca dokunma maskeleri boşta tek tek hazırlanır (ilk atışta takılma olmasın)
@@ -35,7 +35,7 @@ function zpkHedefNok(h){const t=h.hd;
 function zpkMaske(ad,im){
   let m=ZMASK[ad];if(m!==undefined)return m;
   try{const k=Math.min(1,128/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),c=document.createElement('canvas');c.width=w;c.height=h;
-    const x=c.getContext('2d');x.drawImage(im,0,0,w,h);const d=x.getImageData(0,0,w,h).data,a=new Uint8Array(w*h);for(let i=0;i<w*h;i++)a[i]=d[i*4+3];m={w,h,a}}catch(_){m=null}
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);const d=x.getImageData(0,0,w,h).data,a=new Uint8Array(w*h);for(let i=0;i<w*h;i++)a[i]=d[i*4+3];m={w,h,a};c.width=c.height=0}catch(_){m=null}
   ZMASK[ad]=m;return m;
 }
 function zpkDolu(ad,im,u,v){      // görselin (u,v) oranındaki noktası (ve biraz çevresi) dolu mu
@@ -212,16 +212,16 @@ function zpkUcVis(h){      // mızrağın görünen ucu ve açısı (saplanınca
   if(h.ph==='tak'){const t=h.hd;if(t.tip==='d'&&(t.e.yon||1)!==h.yn0)a=Math.PI-a;const g=ZP_GOM[t.tip]||24;x+=Math.cos(a)*g;y+=Math.sin(a)*g}
   return [x,y,a];
 }
-function zpkIpCiz(pts){      // halat görseli çizgi boyunca uç uca (desen, parçalar arası kesintisiz)
+function zpkIpCiz(pts){      // halat görseli çizgi boyunca uç uca: bir kez uzun şerit hazırlanır, her parça tek drawImage (desen dolgusu yok)
   const im=R.z_ip;if(!im||pts.length<2)return;
-  if(!ZP_PAT)ZP_PAT=ctx.createPattern(im,'repeat-x');
-  const k=ZP_KAL*SC/22;let acc=0;
-  ctx.save();ctx.fillStyle=ZP_PAT;
+  if(!ZP_PAT){ZP_PAT=document.createElement('canvas');ZP_PAT.width=ZP_SERIT+im.width;ZP_PAT.height=im.height;const g=ZP_PAT.getContext('2d');for(let x=0;x<ZP_PAT.width;x+=im.width)g.drawImage(im,x,0)}
+  const k=ZP_KAL*SC/22,iw=im.width;let acc=0;
+  ctx.save();
   for(let i=1;i<pts.length;i++){
     const a=zEkr(pts[i-1][0],pts[i-1][1]),b=zEkr(pts[i][0],pts[i][1]),dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy);if(L<0.5)continue;
-    const c=dx/L,s=dy/L;
+    const c=dx/L,s=dy/L,u0=acc/k,w=Math.min(ZP_SERIT,L/k+0.8);
     ctx.setTransform(c*k*DPR,s*k*DPR,-s*k*DPR,c*k*DPR,(a[0]-c*acc+s*23*k+S.shx)*DPR,(a[1]-s*acc-c*23*k+S.shy)*DPR);
-    ctx.fillRect(acc/k,12,L/k+0.8,22);acc+=L;
+    ctx.drawImage(ZP_PAT,u0%iw,12,w,22,u0,12,w,22);acc+=L;
   }
   ctx.restore();
 }
