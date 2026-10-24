@@ -11,7 +11,7 @@ const EV_P=0.85;
 const EV_BOY=[1511,1582,1189,1451,1142,1402,1432,1365];      // ev cephelerinin dünya boyları (çizimdeki oranlar korunur)
 const EV_ORAN=[0.887,0.582,1.211,0.985,1.141,0.928,0.878,0.998];      // en / boy
 const KAZIK_BOY=630,KAZIK_ON=159,KAZIK_ARK=TAHTA_ARKA,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
-const KUM_W=2800,KUM_UST=40;      // kum şeridinin ev katmanındaki eni; üst kenarı ev tabanının bu kadar üstünde (evler kuma oturur)
+const KUM_W=2800;      // kum şeridinin ev katmanındaki eni; üst kenarı evlerin alt çizgisinde, alt kenarı tahtanın yarısında
 let CV_EV=[];
 (function cevreKur(){      // sabit tohumlu rastgele dizilim: her oyunda aynı liman
   let tohum=20261024;const r=()=>{tohum=(Math.imul(tohum,1103515245)+12345)>>>0;return (tohum>>>8)/16777216};
@@ -34,9 +34,11 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
   {const gp=zeminY+S.camY*SC*EV_P-TAHTA_ARKA*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
     const K=CVR.kum;if(K){      // kum: evlerin altından iskeleye kadar; evlerle aynı hızda kayar, altı tek renkle iskelenin içine kadar dolar (zıplarken ev ile tahta arası açılmaz)
-      const kw=KUM_W*s,kh=kw*K.height/K.width,ky=gp-KUM_UST*s;
-      for(let x=((W/2-S.x*EV_P*s)%kw+kw)%kw-kw;x<W;x+=kw-1)ctx.drawImage(K,Math.floor(x),Math.round(ky),Math.ceil(kw)+1,Math.ceil(kh));
-      const alt=y0+th*0.3;if(alt>ky+kh-2){ctx.fillStyle='#f6bf58';ctx.fillRect(0,Math.floor(ky+kh-2),W,Math.ceil(alt-(ky+kh-2)))}}
+      const kw=KUM_W*s,kh=kw*K.height/K.width,ky=Math.round(gp+6*s),kes=Math.round(y0+th*0.5);      // üst kenar = evlerin alt çizgisi; tahtanın yarısında kesilir (tahtanın altından çıkmaz)
+      if(kes>ky){ctx.save();ctx.beginPath();ctx.rect(0,ky,W,kes-ky);ctx.clip();
+        for(let x=((W/2-S.x*EV_P*s)%kw+kw)%kw-kw;x<W;x+=kw-1)ctx.drawImage(K,Math.floor(x),ky,Math.ceil(kw)+1,Math.ceil(kh));
+        if(kes>ky+kh-2){ctx.fillStyle='#f6bf58';ctx.fillRect(0,Math.floor(ky+kh-2),W,Math.ceil(kes-(ky+kh-2)))}
+        ctx.restore()}}
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,gp+6*s,e.h*s)}}
   kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
   for(let x=((W/2-S.x*SC)%tw+tw)%tw-tw;x<W;x+=tw-1)ctx.drawImage(T,Math.floor(x),y0,Math.ceil(tw)+1,th);
