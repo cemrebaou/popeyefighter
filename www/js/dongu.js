@@ -4,7 +4,7 @@ function arkaPlan(camX,zeminY){
   if(!GOK){GOK=ctx.createLinearGradient(0,0,0,zeminY);GOK.addColorStop(0,'#bfe3ee');GOK.addColorStop(1,'#f1ead2')}   // gökyüzü gradyanı bir kez oluşturulur
   ctx.fillStyle=GOK;ctx.fillRect(0,0,W,H);
   // en arka: gökyüzü + deniz görseli, ekran boyunu tam kaplar, uç uca döşenir (her ikinci kopya aynalanır: kenarlar dikişsiz), çok yavaş kayar
-  {const G=CVR.gok;if(G){const th=H,tw=th*G.width/G.height,ofs=S.x*SC*0.06,i0=Math.floor(ofs/tw);
+  {const G=CVR[GOK_AD];if(G){const th=H,tw=th*G.width/G.height,ofs=S.x*SC*0.06,i0=Math.floor(ofs/tw);
     for(let i=i0;(i-i0)*tw-((ofs%tw)+tw)%tw<W;i++){const x=Math.floor((i-i0)*tw-((ofs%tw)+tw)%tw);
       if(i&1){ctx.save();ctx.translate(x+Math.ceil(tw),0);ctx.scale(-1,1);ctx.drawImage(G,0,0,Math.ceil(tw)+1,th);ctx.restore()}else ctx.drawImage(G,x,0,Math.ceil(tw)+1,th)}}}
   cevreArka(zeminY);      // evler, tahta iskele, iskele nesneleri (cevre.js)

@@ -4,7 +4,8 @@
 // Diğer nesneler (kasa, lamba, palmiye, fener…) netlik yetersiz olduğu için şimdilik kaldırıldı; daha net görseller gelince eklenecek. Ölçüler oyun birimi (Popeye boyu KARAKTER_BOY=1020).
 const CVR={};
 const EV_SET='yev';      // kullanılan ev seti: 'ev' = eski düz cepheler (ev0-7), 'yev' = yeni kulübeler (yev0-7); ikisi de repoda duruyor
-const CV_ADLAR=['gok','sahil','tahta','kazik','lamba0','lamba1',...[0,1,2,3,4,5,6,7].map(i=>EV_SET+i)];
+const GOK_AD='gok2';      // en arka plan: 'gok2' = sadece gökyüzü (3:1), 'gok' = eski gökyüzü + deniz
+const CV_ADLAR=[GOK_AD,'sahil','tahta','kazik','lamba0','lamba1',...[0,1,2,3,4,5,6,7].map(i=>EV_SET+i)];
 for(const a of CV_ADLAR)yukle('cevre/'+a+'.webp',im=>CVR[a]=im);
 const TAHTA_W=2400,TAHTA_AYAK=0.346;      // bir tahta şeridinin dünya eni; ayakların bastığı çizgi görselin üstünden bu oranda (yüzeyin ortası)
 const TAHTA_ARKA=150;                     // tahta yüzeyinin arka kenarı: ayak çizgisinden bu kadar geride (evler buraya oturur)
