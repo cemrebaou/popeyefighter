@@ -35,11 +35,13 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
   const T=CVR.tahta;if(!T)return;
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
   {const gp=zeminY+S.camY*SC*EV_P-TAHTA_ARKA*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
-    const K=CVR.sahil,ky=Math.round(gp+6*s);if(K&&ky<H){      // sahil: evlerin alt çizgisinden ekranın altına kadar; yatay dilimlere bölünür, üst dilim evlerle (uzak, yavaş), alt dilimler giderek hızlı ve büyük kayar = gerçek zemin perspektifi
-      const yh=H-ky;
-      for(let i=0;i<SAHIL_DILIM;i++){
-        const f=(i+0.5)/SAHIL_DILIM,p=EV_P+(SAHIL_P1-EV_P)*f,sw=SAHIL_W*SC*p,sy0=K.height*i/SAHIL_DILIM,sh=K.height/SAHIL_DILIM,dy=Math.floor(ky+yh*i/SAHIL_DILIM),dh=Math.ceil(ky+yh*(i+1)/SAHIL_DILIM)-dy+1;
-        for(let x=((W/2-S.x*p*SC*p)%sw+sw)%sw-sw;x<W;x+=sw-1)ctx.drawImage(K,0,sy0,K.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh)}}
+    const K=CVR.sahil;if(K){      // sahil: evlerin alt çizgisinden aşağı, sabit dünya yüksekliğinde (zıplayınca su yükselmez); yatay dilimler: üst dilim evlerle (uzak, yavaş), alt dilimler giderek hızlı ve büyük = zemin perspektifi; her dilim kendi derinliğiyle dikeyde de kayar
+      const r0=zeminY-TAHTA_ARKA*SC+6*s,yh=H-r0,N=SAHIL_DILIM,pb=i=>EV_P+(SAHIL_P1-EV_P)*i/N,yb=i=>r0+yh*i/N+S.camY*SC*pb(i);      // r0: kamera yerdeyken üst kenar; yh: sabit boy
+      for(let i=0;i<N;i++){
+        const p=EV_P+(SAHIL_P1-EV_P)*(i+0.5)/N,sw=SAHIL_W*SC*p,sy0=K.height*i/N,sh=K.height/N,dy=Math.floor(yb(i)),dh=Math.ceil(yb(i+1))-dy+1;
+        if(dy>H||dy+dh<0)continue;
+        for(let x=((W/2-S.x*p*SC*p)%sw+sw)%sw-sw;x<W;x+=sw-1)ctx.drawImage(K,0,sy0,K.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh)}
+      const alt=Math.floor(yb(N));if(alt<H){ctx.fillStyle='#2893c2';ctx.fillRect(0,alt,W,H-alt)}}      // görselin altı: aynı su rengi
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}}
   {const a=Math.round(y0+th*0.55),b=Math.round(y0+th*1.35),g=ctx.createLinearGradient(0,a,0,b);g.addColorStop(0,'rgba(20,40,60,0.38)');g.addColorStop(1,'rgba(20,40,60,0)');ctx.fillStyle=g;ctx.fillRect(0,a,W,b-a)}      // iskelenin altında gölge
   kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
