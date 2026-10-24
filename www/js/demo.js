@@ -57,7 +57,7 @@ const DEMOLAR={      // T: döngü süresi (sn), kur: sahne, f(t, o): o(an) o an
   I:{T:3,kur(D){dmDusman(420,'k')},f(t,o){if(o(0.2))komboTap('y','N');if(o(0.5))komboTap('y','F')}},
   A:{T:3,kur(D){D.e=dmDusman(360,'k')},f:dmTutDemo},
   G:{T:3,yv:['A'],kur(D){D.e=dmDusman(360,'k')},f:dmTutDemo},
-  B:{T:3.4,kur(D){VAR.push({x:S.x+260,y:zemin(S.x+260)+V_MRK,vx:0,vy:0,rot:0,vr:0,d:'yer',k:null})},
+  B:{T:3.4,kur(D){VAR.push({x:S.x+260,y:zemin(S.x+260)+V_MRK+V_YUK,vx:0,vy:0,rot:0,vr:0,d:'yer',k:null})},
      f(t,o){
        if(t<1.3)dmKol('N',dmGec(t,0.1,0.5,20,75),1);
        else if(t<2.3)dmKol('N',dmGec(t,1.3,1.8,75,-35),1);

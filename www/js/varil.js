@@ -2,12 +2,13 @@
 // Varil: yolda durur, elle tutulur (el varile 0.12 sn değince), fırlatılınca çarptığı yerde (düşman / yer) parçalanır: 14 tahta + 3 demir halka sağa sola saçılır
 let VAR=[],VPAR=[],VSES_T=-9;      // VAR: variller (x,y = merkez), VPAR: saçılan parçalar
 const VDW={N:0,F:0};
-const V_OL=0.378,V_PX=0.756,V_W=323,V_MRK=190;      // V_OL: orijinal çizim px → birim, V_PX: kayıtlı görsel px → birim, V_W: varil eni, V_MRK: tabandan merkeze
+const V_OL=0.378,V_PX=0.756,V_W=323,V_MRK=190,V_YUK=70;      // V_YUK: yerdeki varil ayak çizgisinin bu kadar üstünde (iskelenin biraz arkasında durur, ayağa çarpmaz)
+// V_OL: orijinal çizim px → birim, V_PX: kayıtlı görsel px → birim, V_W: varil eni, V_MRK: tabandan merkeze
 const V_KONUM=[2600,6300,12400,18000,24200,28600,34000];
 const V_MAXV=3250;      // (+%25)
 const V_CARP=2.0;      // parmak hızı çarpanı: az parmak hızıyla en yüksek hıza ulaşır (en yüksek hız ~1625 parmak hızında)      // fırlatılan varilin en yüksek hızı (hasar fırlatma gücünden hesaplanır, bu sınırdan etkilenmez)
 const V_HALKA=[-201,241,432];      // halkaların varil merkezine göre yüksekliği (orijinal px, aşağı +)
-function varilKur(){VAR=V_KONUM.map(x=>({x,y:zemin(x)+V_MRK,vx:0,vy:0,rot:0,vr:0,d:'yer',k:null}));VPAR=[]}
+function varilKur(){VAR=V_KONUM.map(x=>({x,y:zemin(x)+V_MRK+V_YUK,vx:0,vy:0,rot:0,vr:0,d:'yer',k:null}));VPAR=[]}
 const varilElde=k=>VAR.some(v=>v.d==='tut'&&v.k===k);
 function vSes(buf,L,B,x,v){
   if(!AC||AC.state!=='running')return;
@@ -58,12 +59,12 @@ function varilGuncelle(dt){
         const e=DUS.find(e=>{if(e.olu||e.tut)return false;const ust=e.y+(e.dus?e.cy*0.9:e.cy*2);      // düşmanın tüm boyu (kutu): değince çarpar
           return Math.abs(v.x-e.x)<V_W/2+e.r*0.55&&v.y-V_MRK*0.85<ust&&v.y+V_MRK*0.85>e.y});
         if(e){vur(e,Math.round(15+35*f),v.vx,v.vy,f);varilKir(v);break}      // düşmana çarpınca kırılır
-        const zz=zemin(v.x)+V_MRK;if(v.y<=zz){v.y=zz;varilKir(v);break}     // yere çarpınca kırılır
+        const zz=zemin(v.x)+V_MRK+V_YUK;if(v.y<=zz){v.y=zz;varilKir(v);break}     // yere çarpınca kırılır
       }
       continue;
     }
     v.vy-=G*dt;v.x+=v.vx*dt;v.y+=v.vy*dt;v.rot+=v.vr*dt;
-    const z=zemin(v.x)+V_MRK;
+    const z=zemin(v.x)+V_MRK+V_YUK;
     if(v.y<=z){v.y=z;v.d='yer';v.vx=v.vy=v.vr=0;v.rot=0;vSes(null,TD,TDBAG,v.x,0.7)}      // bırakılan varil yere oturur
   }
   for(let i=VPAR.length-1;i>=0;i--){
