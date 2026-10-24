@@ -41,6 +41,7 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 .sensor .tus,.sensor #kombolB,.sensor #sens,.sensor #sifir,.sensor #tam,.sensor .ipucu,.sensor .etiket{display:none!important}
 #tam{top:calc(54px + env(safe-area-inset-top,0px));right:calc(max(12px,env(safe-area-inset-right,0px)) + 118px);padding:6px 10px}
 #sifir{top:calc(54px + env(safe-area-inset-top,0px))}
+#dilB{top:calc(96px + env(safe-area-inset-top,0px));padding:6px 10px}.sensor #dilB{display:none!important}
 .tus:active,.tus.bas{transform:scale(.92);filter:brightness(.8)}
 @media (pointer:coarse){ .tus{display:flex} .ipucu{display:none} }
 #sol{left:max(16px,env(safe-area-inset-left,0px))} #sag{left:calc(max(16px,env(safe-area-inset-left,0px)) + 88px)}
@@ -69,6 +70,6 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 .yd.sec{transform:translate(-50%,-50%) scale(1.18)}
 @keyframes ydNabiz{50%{filter:grayscale(1) brightness(1.15) drop-shadow(0 0 10px #fff)}}
 /* okuma ikonları (kombo listesi, yetenek ağacı): sönük; tıklanan renklenir, başkası seçilince söner; paneller açıkken de dokunulabilir */
-#kombolB,#agacB{z-index:60;filter:grayscale(1) brightness(.8);transition:transform .05s,filter .15s}
+#kombolB,#agacB{z-index:60;transition:transform .05s,filter .15s}#agacB{filter:grayscale(1) brightness(.8)}
 #agacB.ok:not(.aktif){filter:none}
 #kombolB.aktif,#agacB.aktif{filter:drop-shadow(0 0 8px #ffd84a)}

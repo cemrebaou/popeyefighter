@@ -1,7 +1,7 @@
 'use strict';
 // Boss, aduket topu, kaptan mermisi, top/efekt çizimi
 function bossKur(){
-  S.bossGeldi=true;S.mesaj='KAPTAN!';S.mesajT=S.t;
+  S.bossGeldi=true;S.mesaj='boss_geldi';S.mesajT=S.t;
   const x=BOSS_X;
   DUS.push({t:'korsan',kc:'p',boss:true,bs:1.25,x,y:zemin(x),vx:0,vy:0,hp:500,max:500,cy:560,r:265,yon:-1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:S.t+1.5,ka:null});      // boss: tabancalı korsan, %25 büyük
 }

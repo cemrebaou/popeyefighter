@@ -129,7 +129,7 @@ function resim(img,px,py){ctx.drawImage(img,-px,-py,img.width/RES,img.height/RES
 // Bacak: kalça (uyluk) -> diz (alt pantolon) -> ayak bileği (bacak + bot), üç ayrı parça (görsellerdeki halka merkezleri eklem noktası)
 const T_X=7,T_Y=205.9, S_X=-18.5,S_Y=172, F_SOL=99;
 function efSiddet(){const a=S.atk;if(!a||!a.fl)return 0;const u=a.t/HAREKET[a.ad].dur;return Math.sin(Math.PI*kisit((u-0.15)/0.7,0,1))}   // vuruş anında tepe yapan ışıltı şiddeti
-function efLeg(ad){if(/^kickD/.test(ad))return 'NF';if(ad==='kick4'||ad==='dizF'||ad==='dizJF'||/^kick(?!D)\w*F$/.test(ad))return 'F';if(/^(kick|diz)/.test(ad))return 'N';return ''}
+function efLeg(ad){if(/^kick(D|Sl)/.test(ad))return 'NF';if(ad==='kick4'||ad==='dizF'||ad==='dizJF'||/^kick(?!D)\w*F$/.test(ad))return 'F';if(/^(kick|diz)/.test(ad))return 'N';return ''}
 function ekParla(img,x,y,I){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,I*0.8);resim(img,x,y);ctx.restore()}   // parçayı üstüne ekleyerek parlatır
 function parilti(x,y,r,I,fl){
   if(I<=0.02)return;const g=ctx.createRadialGradient(x,y,0,x,y,r);
@@ -207,7 +207,7 @@ function karakter(){
   let N={l:P.lN,k:P.bN,kn:P.kN},F={l:P.lF,k:P.bF,kn:P.kF};
   N.a=ayakAci(N.l,N.k,N.kn);F.a=ayakAci(F.l,F.k,F.kn);
   const nN=ayakNokta(N.l,N.k,N.a,N.kn),nF=ayakNokta(F.l,F.k,F.a,F.kn);
-  const yukN=S.yer?Math.max(nN.cy,nF.cy):BACAK_BOY;
+  const yukN=S.yer&&!(S.atk&&/^kickSl/.test(S.atk.ad))?Math.max(nN.cy,nF.cy):BACAK_BOY;      // kayar kombo tekmesi: bacaklar havada açılır (yere çökmez)
   const yuk=S.yer?yukN+(CR_H-yukN)*P.cr:BACAK_BOY;      // çömelmede kalça alçalır; her iki ayak da yere basar (aşağıda ters kinematik)
   const celme=S.kay&&S.t<S.kay.t0+S.kay.T;
   const ikAcik=S.yer&&!celme&&!(S.ust&&S.ust.f==='diz')&&!S.sman&&!(S.hitR&&S.hitR.z==='bacak'&&S.t<S.hitR.t0+0.5)&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));

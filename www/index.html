@@ -1,42 +1,43 @@
 <!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>Popeye Fighter</title>
-<link rel="stylesheet" href="css/oyun.css?v=0.304">
+<link rel="stylesheet" href="css/oyun.css?v=0.305">
 </head><body>
 
 
 <canvas id="c"></canvas>
 <div class="etiket"><b>POPEYE FIGHTER</b><span id="surum"></span></div>
-<div class="ipucu">← → yürü &nbsp; ↑ zıpla &nbsp; J yumruk &nbsp; K tekme &nbsp; H süpermen &nbsp; G pençe &nbsp; B dönen tekme &nbsp; N yer yumruğu/süper iniş &nbsp; M kayma &nbsp; ↓ çömel &nbsp; <b>sağ/sol yarıya tık tık: kombo &nbsp; sürükle: sağ yarı ön kol, sol yarı arka kol</b></div>
-<div class="tus" id="asa" aria-label="eğil"></div><div class="tus" id="sol" aria-label="sol"></div><div class="tus" id="sag" aria-label="sağ"></div><div class="tus" id="zipla" aria-label="zıpla"></div>
-<div id="kombolB" aria-label="kombo listesi"></div>
-<div id="agacB" aria-label="yetenek ağacı"><div id="xpY"><div id="xpB"></div></div></div>
-<div id="ispB" hidden aria-label="ıspanak cebi"></div>
+<div class="ipucu" data-lh="ipucu"></div>
+<div class="tus" id="asa" data-la="a_asa"></div><div class="tus" id="sol" data-la="a_sol"></div><div class="tus" id="sag" data-la="a_sag"></div><div class="tus" id="zipla" data-la="a_zipla"></div>
+<div id="kombolB" data-la="a_kombo"></div>
+<div id="agacB" data-la="a_agac"><div id="xpY"><div id="xpB"></div></div></div>
+<div id="ispB" hidden data-la="a_isp"></div>
 <div id="agac" hidden><div class="agac_k"><div id="agac_bil"></div><div id="agac_kap">✕</div><div id="agac_ic"></div></div></div>
 <div id="liste" hidden><div class="kagit"><div id="liste_ic"></div></div></div>
-<div class="mini" id="sens">🎮 SENSÖR: KAPALI</div><div class="mini" id="sifir">⟲ Dengele</div>
-<div class="mini" id="tam">⛶ Tam ekran</div>
+<div class="mini" id="sens"></div><div class="mini" id="sifir" data-l="dengele"></div>
+<div class="mini" id="tam" data-l="tam"></div><div class="mini" id="dilB" data-la="a_dil"></div>
 <div class="mini" id="kapat">✕</div>
-<div id="yuk">YÜKLENİYOR…</div>
+<div id="yuk" data-l="yuk"></div>
 
-<script src="js/ayar.js?v=0.304"></script>
-<script src="js/girdi.js?v=0.304"></script>
-<script src="js/el.js?v=0.304"></script>
-<script src="js/ozel.js?v=0.304"></script>
-<script src="js/mermi.js?v=0.304"></script>
-<script src="js/dusman_kur.js?v=0.304"></script>
-<script src="js/ses.js?v=0.304"></script>
-<script src="js/ispanak.js?v=0.304"></script>
-<script src="js/varil.js?v=0.304"></script>
-<script src="js/efekt.js?v=0.304"></script>
-<script src="js/savas.js?v=0.304"></script>
-<script src="js/korsan.js?v=0.304"></script>
-<script src="js/hud.js?v=0.304"></script>
-<script src="js/kombo.js?v=0.304"></script>
-<script src="js/yetenek.js?v=0.304"></script>
-<script src="js/oyuncu.js?v=0.304"></script>
-<script src="js/demo.js?v=0.304"></script>
-<script src="js/dongu.js?v=0.304"></script>
+<script src="js/dil.js?v=0.305"></script>
+<script src="js/ayar.js?v=0.305"></script>
+<script src="js/girdi.js?v=0.305"></script>
+<script src="js/el.js?v=0.305"></script>
+<script src="js/ozel.js?v=0.305"></script>
+<script src="js/mermi.js?v=0.305"></script>
+<script src="js/dusman_kur.js?v=0.305"></script>
+<script src="js/ses.js?v=0.305"></script>
+<script src="js/ispanak.js?v=0.305"></script>
+<script src="js/varil.js?v=0.305"></script>
+<script src="js/efekt.js?v=0.305"></script>
+<script src="js/savas.js?v=0.305"></script>
+<script src="js/korsan.js?v=0.305"></script>
+<script src="js/hud.js?v=0.305"></script>
+<script src="js/kombo.js?v=0.305"></script>
+<script src="js/yetenek.js?v=0.305"></script>
+<script src="js/oyuncu.js?v=0.305"></script>
+<script src="js/demo.js?v=0.305"></script>
+<script src="js/dongu.js?v=0.305"></script>
 </script>
 
 </body>

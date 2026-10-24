@@ -4,8 +4,10 @@ let AC=null;
 function sesAc(){
   if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(_){return}}
   sesYukle();
-  if(AC.state==='suspended')AC.resume();
+  if(AC.state==='suspended'&&!document.hidden)AC.resume();
 }
+function arkaPlanSes(){if(!AC)return;if(document.hidden){if(AC.state==='running')AC.suspend()}else if(AC.state==='suspended')AC.resume()}      // oyun arkaya düşünce (sekme, uygulama, ekran kilidi) tüm sesler susar
+document.addEventListener('visibilitychange',arkaPlanSes);addEventListener('pagehide',()=>{if(AC&&AC.state==='running')AC.suspend()});addEventListener('pageshow',arkaPlanSes);
 ['pointerdown','keydown','touchstart','click'].forEach(ev=>addEventListener(ev,sesAc,{passive:true}));
 const SES_SON={};
 let ENPOS=[],SWD=null,YAR=null,YARS=null,HAZ=null,PAT=null,PPAR=null,SAPLA=null,SYUK=false,AD_SON=0,EMER=[],EFL=[];      // HAZ/PAT: kaptanın nişan ve ateş sesi, PPAR: yırtma, SAPLA: bıçak saplanma; EMER: düşman mermileri, EFL: namlu ateşi

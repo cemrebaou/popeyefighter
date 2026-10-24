@@ -64,18 +64,18 @@ function sensorOku(e){
     ziplaBas(guc);GYRO.zipBit=S.t+0.9;GYRO.sonZip=now;GYRO.hazir=false;
   }
 }
-const sensBtn=document.getElementById('sens'), yaz=t=>{sensBtn.textContent='🎮 SENSÖR: '+t};
+const sensBtn=document.getElementById('sens'), yaz=k=>{SENS_D=k;sensBtn.textContent=dil('sens',dil(k))};let SENS_D='sens_kapali';DIL_DIN.push(()=>yaz(SENS_D));yaz(SENS_D);
 async function sensorToggle(){
-  if(GYRO.ak){GYRO.ak=false;GYRO.egilKal=false;GYRO.steer=0;document.body.classList.remove('sensor');removeEventListener('deviceorientation',sensorOku);yaz('KAPALI');return}
+  if(GYRO.ak){GYRO.ak=false;GYRO.egilKal=false;GYRO.steer=0;document.body.classList.remove('sensor');removeEventListener('deviceorientation',sensorOku);yaz('sens_kapali');return}
   try{
     if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){
-      if(await DeviceOrientationEvent.requestPermission()!=='granted'){yaz('İZİN YOK');return}
+      if(await DeviceOrientationEvent.requestPermission()!=='granted'){yaz('sens_izin');return}
     }
-  }catch(_){yaz('İZİN YOK');return}
+  }catch(_){yaz('sens_izin');return}
   GYRO.steer=0;GYRO.rate=0;GYRO.sonT=0;GYRO.oz=null;GYRO.kalT=performance.now()/1000+1.5;GYRO.ak=true;document.body.classList.add('sensor');
   addEventListener('deviceorientation',sensorOku);
-  yaz('HAZIRLAN… (nötr tut)');
-  setTimeout(()=>{if(!GYRO.ak)return;yaz(GYRO.sonT?'AÇIK':'VERİ YOK')},1600);
+  yaz('sens_haz');
+  setTimeout(()=>{if(!GYRO.ak)return;yaz(GYRO.sonT?'sens_acik':'sens_veri')},1600);
 }
 sensBtn.addEventListener('click',sensorToggle);
 const tamBtn=document.getElementById('tam');
@@ -84,10 +84,10 @@ tamBtn.addEventListener('click',async()=>{
     if(document.fullscreenElement){await document.exitFullscreen();if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();return}
     await document.documentElement.requestFullscreen({navigationUI:'hide'});
     try{await screen.orientation.lock('landscape')}catch(_){}
-  }catch(_){tamBtn.textContent='⛶ Desteklenmiyor';setTimeout(()=>tamBtn.textContent='⛶ Tam ekran',1800)}
+  }catch(_){tamBtn.textContent=dil('tam_yok');setTimeout(()=>tamBtn.textContent=dil('tam'),1800)}
 });
 document.getElementById('kapat').addEventListener('click',()=>{if(GYRO.ak)sensorToggle()});
-document.getElementById('sifir').addEventListener('click',()=>{if(GYRO.ak){GYRO.kalT=performance.now()/1000+1;yaz('HAZIRLAN… (nötr tut)');setTimeout(()=>{if(GYRO.ak)yaz('AÇIK')},1100)}});
+document.getElementById('sifir').addEventListener('click',()=>{if(GYRO.ak){GYRO.kalT=performance.now()/1000+1;yaz('sens_haz');setTimeout(()=>{if(GYRO.ak)yaz('sens_acik')},1100)}});
 
 // ---------- Kol kontrolü: ekranda sürükle, kol o yöne vursun ----------
 // sağ yarı = ön kol (N), sol yarı = arka kol (F). Sürükleme yönü = kolun yönü, mesafe = uzanma

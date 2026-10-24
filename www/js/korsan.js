@@ -106,7 +106,7 @@ function oyuncuHasar(){
     if(S.blok){
       if(S.t-S.blokT<0.5){                                   // tam zamanında blok = parry: düşman sersemler
         e.st=S.t+(e.boss?0.8:1.5);e.vx=-yn*(e.boss?250:1200);e.vy=500;S.inv=S.t+0.5;
-        S.pops.push({x:S.x,y:S.y+950,t:0,txt:'PARRY!',f:1});titre(50);S.sars=Math.max(S.sars,8);
+        S.pops.push({x:S.x,y:S.y+950,t:0,txt:dil('parry'),f:1});titre(50);S.sars=Math.max(S.sars,8);
       }else{S.hp-=Math.max(1,Math.round(dm*0.5));titre(30)}   // normal blok: hasarın yarısı engellenir
     }else{
       if(e.kc==='b')bufCal(SAPLA,1);S.hp-=dm;
@@ -207,6 +207,8 @@ function korsanPoz(e){
   if(e.kc==='h'){p.uF=-18+Math.sin(t*2.2)*3;p.rF=-58;p.wF=8;p.uN=-26;p.rN=-62;p.wN=0}      // kancacı: kancalı el arkadaki kolda, zincirli el önde      // kaptan: tabancalı kol düz aşağı sarkar, namlu kolla paralel
   if(e.moving){const ph=e.wf||0,s=Math.sin(ph),c=Math.cos(ph);      // yürüyüş: bacaklar sırayla, öne giden bacağın dizi bükülür; kollar ters salınır
     p.lN=-4-24*s;p.kN=6+38*Math.max(0,c);p.lF=-4+24*s;p.kF=6+38*Math.max(0,-c);p.uN+=9*s;p.uF-=9*s;p.torso+=3}
+  if(e.kac&&!e.ka){const s=Math.sin(e.wf||0);      // canı azalıp kaçarken: kollar aşağı sarkık, bel hafif bükük, başı önde; aksayarak gider
+    Object.assign(p,{uN:4+5*s,rN:-8,wN:0,uF:2-5*s,rF:-8,wF:0,torso:p.torso+16,bas:9})}
   const a=e.ka;
   if(a&&KDUR[a.k]){const u=(S.t-a.t0)/KDUR[a.k];
     if(u>=0&&u<1){const pb=e.kc==='p'&&a.k==='B',H=pb?KPZ.hazP:KPZ['haz'+a.k],V=pb?KPZ.vurP:KPZ['vur'+a.k];
@@ -301,7 +303,7 @@ function ciziKorsan(e,mask){
   }
   ctx.restore();
 }
-const KH={kickLo:130,kick1:260,kick2:380,kick3:520,kick4:600,kickSl:200,kickBk:300,dizF:340,dizN:340,kickDA:[300,300],kickDB:[300,300],kickDC:[300,520],kickDD:[300,520],kickDE:[130,300],kickDF:[130,300],kickDG:[330,420],kickDH:[330,420],kickFly:380,kickDive:230,dizJ:340,dizJF:340};
+const KH={kickLo:130,kick1:260,kick2:380,kick3:520,kick4:600,kickSl:470,kickBk:300,dizF:340,dizN:340,kickDA:[300,300],kickDB:[300,300],kickDC:[300,520],kickDD:[300,520],kickDE:[130,300],kickDF:[130,300],kickDG:[330,420],kickDH:[330,420],kickFly:380,kickDive:230,dizJ:340,dizJF:340};
 function kickH(ad,wi){let b=ad;if(/^kick(?!D)\w*[FN]$/.test(b))b=b.slice(0,-1);const h=KH[b];return Array.isArray(h)?h[Math.min(wi,1)]:(h||330)}   // tekmenin vurduğu yükseklik
 function zEksen(){               // iki elle tutulan korsan: N eli boyunda, F eli kalçasında; gövde iki elin arasındaki eksene dizilir
   const N=EL.N,F=EL.F;let dx=N.wx-F.wx,dy=N.wy-F.wy;

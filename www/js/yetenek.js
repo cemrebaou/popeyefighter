@@ -6,7 +6,7 @@ const AGW=2690,AGH=1468,AGX=29,AGY=29;      // ağaç görselinin kırpılmış 
 const YET={      // [x, y, ikon, ad, puan, ikon boyutu (yoksa 1)]
   C:[1373,1399,0,'Yumruk',0],
   I:[1373,1111,21,'Yere Düşürme (vuruşlar %25 şansla düşmanı yere düşürür)',1],
-  O:[1373,821,31,'Can Dolumu x2',1],X:[1576,486,31,'Can Dolumu x3',1],
+  O:[1373,821,31,'Can Dolumu %2',1],X:[1576,486,31,'Can Dolumu %3',1],
   W:[1373,486,32,'Kalkanlı Savunma (blokta can hemen dolar)',2],V:[1171,487,26,'Maks. Can +100',1],
   TOP:[1373,125,18,'Ispanak Cebi (30 sn\'de bir ıspanak, ıspanak gücü x2)',2],
   A:[779,1397,3,'İnsan Tutma',1],B:[126,1399,20,'Varil Tutma (varillerden %50 şansla ıspanak düşer)',1],G:[487,1111,4,'Sıkı Tutuş (tutulan kafa atamaz)',1,0.8],
@@ -14,8 +14,8 @@ const YET={      // [x, y, ikon, ad, puan, ikon boyutu (yoksa 1)]
   H:[869,1099,19,'Can Çalma %10',1],M:[616,859,19,'Can Çalma %20',1],
   N:[1088,876,8,'Yer Yumruğu',2],S:[915,593,7,'Süpermen Uçuşu',2],Y:[727,279,17,'Aduket',2],
   D:[1968,1397,16,'Çift Zıplama',1],E:[2621,1398,15,'Kayar Tekme',1],L:[2603,1055,29,'Döner Tekme',2],U:[2416,628,9,'Süper Kahraman İnişi',2],
-  K:[2260,1111,33,'Çok Zıplama (+%25)',1,0.9],Q:[2158,858,35,'Tekmeyle Can Çalma (x1.5)',1],J:[1124,1253,30,'Ateşli Aparkat',1],AL:[1883,1098,36,'Alkış Şok Dalgası (iki parmak ortaya: 30 hasar, geri savurur, %50 yere düşürür)',2],YT:[1624,1253,37,'Yere Tekme (havada tek parmak aşağı çapraz çek)',1],
-  P:[1659,876,6,'Bıçak Modu',2],T:[1824,593,34,'Bıçakla Can Çalma (x2)',2],Z:[2009,279,12,'Bıçak Atlama',3]
+  K:[2260,1111,33,'Çok Zıplama (+%25)',1,0.9],Q:[2158,858,35,'Tekmeyle Can Çalma (tekmeye +%10)',1],J:[1124,1253,30,'Ateşli Aparkat',1],AL:[1883,1098,36,'Alkış Şok Dalgası (iki parmak ortaya: 30 hasar, geri savurur, %50 yere düşürür)',2],YT:[1624,1253,37,'Yere Tekme (havada tek parmak aşağı çapraz çek)',1],
+  P:[1659,876,6,'Bıçak Modu',2],T:[1824,593,34,'Bıçakla Can Çalma (bıçağa +%20)',1],Z:[2009,279,12,'Bıçak Atlama',3]
 };
 const YKOK='C';
 const YBAG='C-A C-D C-I I-O O-N O-P O-V O-W O-X V-TOP W-TOP X-TOP A-B A-G A-H B-F F-G F-R R-M M-H G-H H-N N-S S-Y D-E D-K D-AL AL-P AL-Q AL-K C-J J-H C-YT YT-AL K-L L-E L-U U-Q P-T T-Z'.split(' ').map(s=>s.split('-'));
@@ -43,10 +43,10 @@ const YV=k=>AG.acik.has(k)||!!(DEMO&&DEMO.yv.includes(k));      // önizlemede g
 const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n));
 const yAlinir=k=>yAcilir(k)&&AG.p>=YET[k][4];
 HPMAX=250+(YV('V')?100:0);S.hp=HPMAX;
-function canCal(dmg,tekme){      // can çalma: yumruk %10 / %20; tekme bunun 1.5 katı (Tekmeyle Can Çalma yoksa tekme çalmaz); bıçak modunda Bıçakla Can Çalma 2 kat
+function canCal(dmg,tekme){      // can çalma: H %10 / M %20 her vuruşta; Tekmeyle Can Çalma (Q) sadece tekmelere kendi +%10'unu ekler; Bıçakla Can Çalma (T) sadece bıçak vuruşlarına kendi +%20'sini ekler
   let r=YV('M')?0.2:YV('H')?0.1:0;
-  if(tekme)r*=YV('Q')?1.5:0;
-  if(S.pence&&YV('T'))r*=2;
+  if(tekme&&YV('Q'))r+=0.1;
+  if(S.pence&&YV('T'))r+=0.2;
   if(r>0&&S.hp>0)S.hp=Math.min(HPMAX,S.hp+dmg*r);
 }
 function agBtn(){
@@ -57,8 +57,8 @@ function agBtn(){
 }
 function xpKazan(n){
   if(DEMO)return;      // önizlemede XP yok
-  const lv0=AG.lv;AG.top+=n;agHesap();S.pops.push({x:S.x,y:S.y+1150,t:0,txt:'+'+n+' XP',f:0.3});
-  if(AG.lv>lv0){const k=AG.lv-lv0;S.hp=HPMAX;S.en=250;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:'SEVİYE '+AG.lv+'! +'+k+' PUAN',f:1});bufCal(LVS,1)}      // her seviye 1 puan, can ve enerji dolar, seviye sesi
+  const lv0=AG.lv;AG.top+=n;agHesap();S.pops.push({x:S.x,y:S.y+1150,t:0,txt:dil('xp_pop',n),f:0.3});
+  if(AG.lv>lv0){const k=AG.lv-lv0;S.hp=HPMAX;S.en=250;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:dil('lv_up',AG.lv,k),f:1});bufCal(LVS,1)}      // her seviye 1 puan, can ve enerji dolar, seviye sesi
   agKaydet();agBtn();if(window.agacYenile)agacYenile();
 }
 // Ispanak cebi: 30 sn'de bir cepten ıspanak çıkar, elde belirir, standart yeme animasyonu
@@ -89,14 +89,14 @@ let agacAcik=false;
   }
   function yenile(){
     for(const k in DG)DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(secili===k?' sec':'');
-    let t='SEVİYE '+AG.lv+' · XP '+AG.xp+'/'+xpGerek(AG.lv)+' · PUAN '+AG.p;
-    if(secili){const ad=YET[secili][3],c=YET[secili][4];t+=' · '+ad+(AG.acik.has(secili)?' (AÇIK)':' · '+c+' puan'+(yAcilir(secili)?(AG.p>=c?' · açmak için tekrar dokun':' · puan yetmiyor'):' · önce yanındakini aç'))}
+    let t=dil('ag_bil',AG.lv,AG.xp,xpGerek(AG.lv),AG.p);
+    if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t+=' · '+ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):dil('ag_once')))}
     bil.textContent=t;agBtn();
   }
-  window.agacYenile=yenile;
+  window.agacYenile=yenile;DIL_DIN.push(yenile);
   window.agacAc=a=>{if(a&&listeAcik)listeAc(false);if(!a)demoBitir();agacAcik=a;el.hidden=!a;document.getElementById('agacB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};
   document.getElementById('agacB').addEventListener('click',()=>agacAc(!agacAcik));      // ikon açıkken tekrar dokununca kapanır
-  document.getElementById('ispB').addEventListener('click',ispCep);
+  document.getElementById('ispB').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();ispCep()});      // click değil: yürüme tuşuna basılıyken de anında çalışır
   el.addEventListener('click',e=>{if(e.target===el||e.target.id==='agac_kap')agacAc(false)});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&agacAcik)agacAc(false)});
   agBtn();

@@ -41,21 +41,21 @@ function hud(dt){
   const bw=Math.min(280,W*0.38),bx=(W-bw)/2,by=12;
   ctx.fillStyle='#fff';ctx.font='700 13px Nunito,sans-serif';ctx.textBaseline='middle';
   ctx.lineWidth=3;ctx.strokeStyle='rgba(31,42,51,.9)';ctx.textAlign='left';
-  {const t='düşman: '+DUS.filter(e=>!e.olu).length,tx=bx+bw+10,ty=by+4;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
+  {const t=dil('dusman',DUS.filter(e=>!e.olu).length),tx=bx+bw+10,ty=by+4;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
   if(S.kNo&&S.t-S.kNo.t<1.2){const a=Math.min(1,(1.2-(S.t-S.kNo.t))*3);ctx.save();ctx.globalAlpha=a;ctx.font='900 30px Nunito,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';ctx.lineWidth=5;ctx.strokeStyle='rgba(31,42,51,.95)';ctx.fillStyle='#ffd23f';const nx=Math.max(bx-12,barGen()+60);ctx.strokeText(S.kNo.no,nx,by+6);ctx.fillText(S.kNo.no,nx,by+6);ctx.restore();ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.textBaseline='middle'}
   barCiz(dt);
-  if(S.t-S.noEn<1.0&&Math.floor((S.t-S.noEn)*8)%2===0){ctx.fillStyle='#ff5a4a';ctx.font='900 14px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('NO ENERGY',W/2,by+24)}
+  if(S.t-S.noEn<1.0&&Math.floor((S.t-S.noEn)*8)%2===0){ctx.fillStyle='#ff5a4a';ctx.font='900 14px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(dil('enerji_yok'),W/2,by+24)}
   const bs=DUS.find(e=>e.boss&&!e.olu);
   if(bs){
     const w2=Math.min(420,W*0.6),x2=(W-w2)/2;
     const by2=74;
     ctx.fillStyle='rgba(31,42,51,.85)';ctx.fillRect(x2-3,by2,w2+6,20);
     ctx.fillStyle='#e8453c';ctx.fillRect(x2,by2+3,w2*Math.max(0,bs.hp/bs.max),14);
-    ctx.fillStyle='#fff';ctx.font='700 12px Nunito,sans-serif';ctx.textAlign='center';ctx.fillText('KAPTAN — kafasına vur (shoryuken / aduket)',W/2,by2+10);
+    ctx.fillStyle='#fff';ctx.font='700 12px Nunito,sans-serif';ctx.textAlign='center';ctx.fillText(dil('boss_bar'),W/2,by2+10);
   }
   if(S.t-S.mesajT<2){
     ctx.globalAlpha=Math.min(1,2-(S.t-S.mesajT));ctx.textAlign='center';ctx.font='56px Bangers,Impact,sans-serif';ctx.lineWidth=7;ctx.strokeStyle='#1f2a33';
-    ctx.strokeText(S.mesaj,W/2,H*0.3);ctx.fillStyle='#ffd36b';ctx.fillText(S.mesaj,W/2,H*0.3);ctx.globalAlpha=1;
+    const ms=dil(S.mesaj);ctx.strokeText(ms,W/2,H*0.3);ctx.fillStyle='#ffd36b';ctx.fillText(ms,W/2,H*0.3);ctx.globalAlpha=1;
   }
   for(let i=S.pops.length-1;i>=0;i--){
     const p=S.pops[i];p.t+=dt;if(p.t>0.8){S.pops.splice(i,1);continue}
@@ -66,8 +66,8 @@ function hud(dt){
   if(S.durum!=='oyun'){
     ctx.fillStyle='rgba(31,42,51,.55)';ctx.fillRect(0,0,W,H);
     ctx.textAlign='center';ctx.font='64px Bangers,Impact,sans-serif';ctx.lineWidth=8;ctx.strokeStyle='#1f2a33';
-    const t=S.durum==='tamam'?'BÖLÜM TAMAM!':'YENİLDİN';
+    const t=dil(S.durum==='tamam'?'tamam':'yenildin');
     ctx.strokeText(t,W/2,H*0.4);ctx.fillStyle=S.durum==='tamam'?'#ffd36b':'#e8453c';ctx.fillText(t,W/2,H*0.4);
-    ctx.font='700 18px Nunito,sans-serif';ctx.fillStyle='#fff';ctx.fillText('tekrar oynamak için ekrana dokun',W/2,H*0.4+50);
+    ctx.font='700 18px Nunito,sans-serif';ctx.fillStyle='#fff';ctx.fillText(dil('tekrar'),W/2,H*0.4+50);
   }
 }

@@ -5,7 +5,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 
 ## Oyuncu
 - Can: 250 (Maks. Can +100 yeteneğiyle 350). Can çubuğu yok; can kafa görselinden (11 hasar seviyesi) ve eğik çubuktan okunur.
-- Can dolumu: son hasardan 6–8 sn (rastgele) sonra başlar; saniyede max canın %2.5'i = 250 canda **6.25 can/sn** (350 canda 8.75). Can Dolumu x2 → 12.5/sn, x3 → 18.75/sn. Kalkanlı Savunma: blokta beklemeden dolar. Dolarken kalp atar ve kalp sesi çalar. (`dongu.js`)
+- Can dolumu: son hasardan 6–8 sn (rastgele) sonra başlar; saniyede max canın %1'i = 250 canda **2.5 can/sn** (350 canda 3.5). Can Dolumu %2 → 5/sn, %3 → 7.5/sn. Kalkanlı Savunma: blokta beklemeden dolar. Dolarken kalp atar ve kalp sesi çalar. (`dongu.js`)
 - Enerji: max 250, saniyede 2.5 dolar (ıspanaktan sonra 10 sn 2 kat). Her özel güç 50 enerji. Bıçak modu saniyede 7.5 enerji yer.
 - Ispanak: max canın %10'u + 50 enerji. Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de). Düşman ölünce %25, varil kırılınca %50 (Varil Tutma ile) ıspanak düşer.
 - Seviye atlayınca can ve enerji tamamen dolar.
@@ -17,9 +17,9 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Sensörle zıplama gücü telefonu silkme hızına göre 0.8–1.45 kat (koşarken x1.18).
 
 ## Can çalma (şu anki kod, `yetenek.js` canCal)
-- Yumruk: Can Çalma %10 (H) ya da %20 (M) — vurulan hasarın yüzdesi kadar can.
-- Tekme: Tekmeyle Can Çalma (Q) yoksa tekme hiç çalmaz; Q varsa yumruk oranının 1.5 katı (%15 / %30). H/M yoksa Q da işe yaramaz.
-- Bıçak modu: Bıçakla Can Çalma (T) varsa oran 2 kat (%20 / %40). H/M yoksa T de işe yaramaz.
+- Can Çalma %10 (H) ya da %20 (M): tüm vuruşlarda (yumruk, tekme, bıçak) vurulan hasarın yüzdesi kadar can.
+- Tekmeyle Can Çalma (Q): sadece tekmelere kendi +%10'unu ekler (H yoksa tekme %10, H varsa %20, M varsa %30). Yumruğu artırmaz.
+- Bıçakla Can Çalma (T): sadece bıçak modu vuruşlarına kendi +%20'sini ekler (H yoksa %20, H varsa %30, M varsa %40). Yumruğu artırmaz.
 - Can Çalmalı Yırtma (R): düşmanın kalan canı kadar can (en az 50).
 
 ## Düşmanlar
@@ -31,7 +31,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Kaptan: ~1075–1900 birim uzaktayken nişan alıp ateş eder (nişandan 0.6 sn sonra), ateşler arası 1–2 sn.
 - Kancacı: 2100 birim içindeyse kanca atar. Kanca takılırsa 15 hasar, çekerken her 0.5 sn 1 hasar. Oyuncuyu 420 birim yakınlığa (yumruk mesafesi) çekip bırakır; 610 birime kadar 2–3 vuruşluk yumruk atar.
 - Düşman içine girilince biraz geri gider; geri giderken de vurabildiği an normal vurur.
-- Canı ilk kez %25 altına düşen korsan bir kez kaçar (10 sn ya da 4 vuruş), canı %50'ye doğru dolar. Kaptan kaçmaz.
+- Canı ilk kez %25 altına düşen korsan bir kez kaçar (10 sn ya da 4 vuruş), canı %50'ye doğru dolar. Kaçarken saldırı pozu yok: kollar aşağı sarkık, bel hafif bükük, aksayarak gider. Kaptan kaçmaz.
 - Yere düşme 0.45 sn, kalkış 1.0 sn sürer.
 
 - Ölen (ve parçalanan) düşman siyah beyaz çizilir; yere düşüp yaşayan renkli kalır.
@@ -43,7 +43,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 
 ## Hasarlar (oyuncunun)
 - Yumruk kombo: ara vuruşlar 5, son vuruş 5×n+5. Serbest kol vuruşu 15. Bıçak modunda vuruşlar 2 kat (bıçak vuruşu 20, sersemletmez).
-- Tekmeler (kombo): 6–18. Kayar tekme 15 (%50 yere serer). Döner tekme 50. Yere tekme (uçan tekme) 15, inince küçük yer sarsıntısı.
+- Tekmeler (kombo): 6–18. Kombo kayar tekmesi (yyt) havada bacaklar açık yapılır, iki ayak da vurur (arkadaki ayak arkadaki düşmana). Kayar tekme 15 (%50 yere serer). Döner tekme 50. Yere tekme (uçan tekme) 15, inince küçük yer sarsıntısı.
 - Ateşli aparkat 32. Süpermen uçuşu 50. Aduket 50. Yer yarma (yarık) 40. Süper kahraman inişi 50 (yer sarsıntısı).
 - Alkış şok dalgası 30: geri savurur, %50 yere düşürür (kaptan ve kancacı hariç).
 - Tutup fırlatma 4–40 (hıza göre); düşman varil gibi el hızıyla uçar, varilin yarı mesafesi (en yüksek hız ~2300). Varil fırlatma 15–50; varil en yüksek hız 3250. Fırlayan düşman başkasına çarparsa 10–35.

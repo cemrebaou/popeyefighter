@@ -7,7 +7,7 @@ function ciftAtil(yon){           // tek parmak kayması: sadece koşarken (en a
   if(S.ust||!S.yer||S.shoryu>0||S.tats>0||S.kayKilit||!YV('E'))return;      // kayarken ya da durmadan/yavaşlamadan ikinci kayma yok
   const r=Math.min(1,S.vx*yon/HIZ);if(r<0.5)return;
   donDon(yon);
-  S.lungeS=S.t;S.lungeT=S.t+0.30;S.lungeV=yon*3400*(0.5+r);S.kay={t0:S.t,T:0.30};S.kayCif=S.t;S.kayKilit=true;S.sars=Math.max(S.sars,6);
+  S.lungeS=S.t;S.lungeT=S.t+0.30;S.lungeV=yon*3400*(0.5+r);S.kay={t0:S.t,T:0.30};S.kayCif=S.t;S.kayKilit=true;S.kayYol=0;S.sars=Math.max(S.sars,6);
 }
 function tutmaVar(){return DUS.some(e=>e.tut)||ikiYakin()||HS.N!=='yum'||HS.F!=='yum'||S.parcalar.some(p=>!p.at)}      // tutuyorken ya da tutmaya çalışırken (el açık) özel hareketler tetiklenmez
 function ciftKontrol(){

@@ -72,11 +72,13 @@ function dongu(ms){
   if(S.pence){S.en-=dt*7.5;if(S.en<=0){S.en=0;penceKapa()}else if(S.blok&&S.t-S.pence.t0>0.5)penceKapa()}      // pençe: enerji dolma hızının 3 katı hızla biter; guard alınca bıçaklar girer
   else S.en=Math.min(250,S.en+dt*2.5*(S.t<(S.ispEnT||0)?2:1));      // ıspanaktan sonra 10 sn 2 kat dolum
   if(S._rh!==undefined&&S.hp<S._rh-0.001){S.hasT=S.t;S.regB=6+2*Math.random()}      // son hasar zamanı
-  if(S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&(S.t-(S.hasT||-9)>=(S.regB||6)||(S.blok&&YV('W'))))S.hp=Math.min(HPMAX,S.hp+HPMAX*0.025*(YV('X')?3:YV('O')?2:1)*dt);      // Can Dolumu x2/x3; Kalkanlı Savunma: blokta vurulsa da hemen dolar
+  if(S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&(S.t-(S.hasT||-9)>=(S.regB||6)||(S.blok&&YV('W'))))S.hp=Math.min(HPMAX,S.hp+HPMAX*0.01*(YV('X')?3:YV('O')?2:1)*dt);      // saniyede max canın %1'i; Can Dolumu %2 / %3; Kalkanlı Savunma: blokta vurulsa da hemen dolar
   ispCepCiz();      // hasardan 6-8 sn (rastgele) sonra iyileşir
   S._rh=S.hp;
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
-  if(S.kayKilit&&S.t>=S.lungeT&&Math.abs(S.vx)<HIZ*0.5)S.kayKilit=false;      // kayma bitip hız eşiğin altına inince yeni kayma açılır
+  if(S.kayKilit&&S.t>=S.lungeT){      // kayma bitince: durur/yavaşlarsa ya da koşarak biraz yol alırsa yeni kayma açılır (koş-kay-koş-kay)
+    const v=Math.abs(S.vx);if(v<=HIZ*1.02&&v>=HIZ*0.5)S.kayYol=(S.kayYol||0)+v*dt;
+    if(v<HIZ*0.5||(S.kayYol||0)>=KAY_YOL){S.kayKilit=false;S.kayYol=0}}
   if(S.dkick)S.vx=S.dkick.vx;
   if(S.ust)ustGuncelle();
   if(S.dag)dagGuncelle(dt);
