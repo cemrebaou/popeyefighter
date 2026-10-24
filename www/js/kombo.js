@@ -3,6 +3,7 @@
 
 // ---------- Saldırılar (parça pozları, zaman çizelgesi 0..1) ----------
 // aNu/aFu: üst kol açısı (0 = aşağı sarkık, -90 = ileri); aNa/aFa: ön kolun mutlak yönü (0 = ileri, -90 = yukarı)
+const D6_SURE=1.33,D6_IT=70;      // altılı tekme süresi (sn) ve tekme başına ilerleme/itme (birim)
 const HAREKET={
   kick1:{dur:0.62,keys:[[0,{lN:-30,bN:75,torso:-4,bas:-2,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.22,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[0.42,{lN:-92,bN:-6.5,torso:-6,bas:-2,ofs:55,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.66,{lN:-93,bN:-6.5,torso:-7,bas:-2,ofs:65,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.85,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[1,{lN:7,bN:3,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]},
   kick2:{dur:0.62,keys:[[0,{lN:-30,bN:75,torso:-4,bas:-2,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}],[0.22,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[0.42,{lN:-112,bN:-6.5,torso:-6,bas:-2,ofs:55,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.66,{lN:-113,bN:-6.5,torso:-7,bas:-2,ofs:65,lift:0,aNu:-85,aNa:-40,aFu:45,aFa:115}],[0.85,{lN:-105,bN:105,torso:-3,bas:-2,ofs:10,lift:0,aNu:-50,aNa:-60,aFu:-5,aFa:-70}],[1,{lN:7,bN:3,torso:6,bas:0,ofs:0,lift:0,aNu:-26,aNa:-70,aFu:-10,aFa:-62}]]},
@@ -114,7 +115,7 @@ function ph(arm,dur,fr){
       A.push(K(t+0.065,Object.assign(n?{lN:H[p],bN:-6.5,lF:14,bF:20}:{lN:25,bN:30,lF:H[p],bF:-6.5},{lift:LI[p],ofs:OF[p]},n?GA:GB)));      // tekme
       win.push([t+0.04,t+0.11])}
     A.push(K(0.95,Object.assign({lN:20,bN:20,lF:-105,bF:105,lift:40,ofs:10},G0)),K(1,Object.assign({lN:7,bN:3,lF:-9,bF:6,torso:6,bas:0},G0)));
-    HAREKET.kickD6={dur:2.0,win,dash:[.3,.9,260],keys:A};HAREKET.kickD6F={dur:2.0,win,dash:[.3,.9,260],keys:A.map(([t,v])=>[t,sw(v)])};
+    HAREKET.kickD6={dur:D6_SURE,win,dash:[.07,.95,D6_IT*6],keys:A};HAREKET.kickD6F={dur:D6_SURE,win,dash:[.07,.95,D6_IT*6],keys:A.map(([t,v])=>[t,sw(v)])};      // tüm tekmeler boyunca ileri gider; her tekme düşmanı D6_IT iter
   }
   { // alçak tekme (aşağı) ve kayarak tekme (Sub-Zero kayması)
     const lo=JSON.parse(JSON.stringify(HAREKET.kick1));lo.keys.forEach(([t,v])=>{if(v.lN<-85)v.lN=-60});HAREKET.kickLo=lo;

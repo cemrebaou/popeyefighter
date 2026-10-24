@@ -118,6 +118,7 @@ function vurusKontrol(){
         if(!dg)continue;
         const kd=kDmg(a);if(kd!==null){S.cE=e;S.cEt=S.t}
         S.pSes=tekme?'tekme':true;S.cs='t';vur(e,kd!==null?Math.max(1,Math.round(kd/PEN.length)):(tekme?24:16),/^kickSl/.test(a.ad)?(e.x>=S.x?1:-1):S.yon*(arkaT?-1:1),0.3,tekme?0.7:0.5,S.y+kickH(a.ad,wi));S.pSes=false;S.cs=null;a.vw[wi]=true;
+        if(/^kickD6/.test(a.ad)&&!e.tut&&!e.olu){e.itK={x0:e.x,dx:S.yon*D6_IT,t0:S.t,T:0.18};e.st=Math.max(e.st||0,S.t+0.4)}      // altılı tekme: her isabet düşmanı bizim ilerlediğimiz kadar iter (aradaki mesafe sabit kalır)
       }
     }
   }
@@ -261,6 +262,7 @@ function dusmanGuncelle(dt){
         if(S.t>=gs){const g=(S.t-gs)/DUS_KALK;hd=g<0.35?1-0.55*ez(g/0.35):g<0.65?0.45-0.37*ez((g-0.35)/0.3):0.08*(1-ez((g-0.65)/0.35))}      // oturur → tek diz → ayağa kalkar
         else{const u=(S.t-d.t0)/DUS_DUS;if(u>=1&&!d.ses){d.ses=true;bufCal(DSS,0.9)}hd=u<1?u*u:1-0.07*Math.sin(Math.PI*kisit((u-1)/0.35,0,1))}      // hızlanarak düşer, sırtı yere çarpınca hafif seker
         e.dusA=(e.dusA||0)+(hd-(e.dusA||0))*Math.min(1,dt*20);e.cy=e.cy0+(110-e.cy0)*e.dusA;e.st=Math.max(e.st,d.son);kolYere(e,dt)}}
+    if(e.itK){const k=e.itK,u=Math.min(1,(S.t-k.t0)/k.T);e.x=k.x0+k.dx*u*(2-u);if(u>=1||e.tut||e.olu)e.itK=null}      // altılı tekme itişi: yumuşak kayar
     const stun=S.t<e.st,dx=S.x-e.x,zH=zemin(e.x),yer=e.y<=zH+1;
     if(!e.akt&&(Math.abs(dx)<1500||stun))e.akt=true;               // oyuncu yaklaşınca uyanır (dalga gibi gelmez)
     if(stun||!yer||e.vy>0){                                         // savrulma / havada
