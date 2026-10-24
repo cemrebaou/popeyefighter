@@ -14,10 +14,7 @@ function arkaPlan(camX,zeminY){
      const pb=kisit(1.05-d/2600,0.04,0.9),yaps=((h>>>13)&1023)/1023<pb,k=yaps?YS[(h>>>4)%3]:YP[(h>>>4)%5],im=AGAC[k];
      const hh=H*(yaps?0.25:0.27)*(0.85+((h>>>12)&255)/255*0.3),ww=hh*im.width/im.height;
      ctx.drawImage(im,bx-par-ww/2,zeminY-hh+H*0.012,ww,hh)}}
-  {      // yol: aynı şerit peş peşe, altında başka zemin yok
-    const Y=R.yol,tw=2400*SC,th=tw*Y.height/Y.width,y0=zeminY-(0-S.camY)*SC-th*0.35;
-    for(let x=((W/2-camX*SC)%tw+tw)%tw-tw;x<W;x+=tw)ctx.drawImage(Y,Math.floor(x),y0,Math.ceil(tw)+1,th);
-  }
+  cevreArka(zeminY);      // evler, tahta iskele, iskele nesneleri (cevre.js)
 }
 function ciz(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
@@ -41,6 +38,7 @@ function ciz(){
   varilCiz(true);
   fxCiz(true);
   karCiz();
+  cevreOn(zeminY);
   efektCiz();
   ctx.setTransform(DPR,0,0,DPR,0,0);hud(S.dtG||0.016);
 }

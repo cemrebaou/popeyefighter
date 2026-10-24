@@ -61,7 +61,7 @@ function hud(dt){
     const p=S.pops[i];p.t+=dt;if(p.t>0.8){S.pops.splice(i,1);continue}
     const x=W/2+(p.x-S.x)*SC,y=ZY()-(p.y-S.camY)*SC-p.t*90;
     ctx.globalAlpha=1-p.t/0.8;ctx.font=(22+14*p.f)+'px Bangers,Impact,sans-serif';ctx.textAlign='center';
-    ctx.lineWidth=5;ctx.strokeStyle='#fff';ctx.strokeText(p.txt,x,y);ctx.fillStyle='#e8453c';ctx.fillText(p.txt,x,y);ctx.globalAlpha=1;
+    ctx.lineWidth=5;ctx.strokeStyle='#fff';ctx.strokeText(p.txt,x,y);ctx.fillStyle=p.mavi?'#2f7fe0':'#e8453c';ctx.fillText(p.txt,x,y);ctx.globalAlpha=1;
   }
   if(S.durum!=='oyun'){
     ctx.fillStyle='rgba(31,42,51,.55)';ctx.fillRect(0,0,W,H);

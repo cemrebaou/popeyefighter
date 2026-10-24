@@ -127,8 +127,9 @@ function yirt(e,hiz){             // iki elle tutulan korsanı belden ikiye ayı
   ses('parca');{const mx=(EL.N.wx+EL.F.wx)/2,my=(EL.N.wy+EL.F.wy)/2;kanFiskir(mx,my,1,1.2);kanFiskir(mx,my,-1,1.2)}
   const hizli=hiz>1000,v=kisit(hiz*0.9,1200,4200),z={yon:e.yon,anim:e.anim,fl:0,moving:false,kc:e.kc};      // çekişin gücü = yarıların fırlama hızı
   for(const el of ['N','F']){const yan=EL[el].wx<=EL[el==='N'?'F':'N'].wx?-1:1;S.parcalar.push({el,yan,kind:el==='N'?'ust':'alt',z,phi:e.phi||0,t0:S.t,at:hizli,tT:hizli?S.t:0,x:EL[el].wx,y:EL[el].wy,vx:yan*v,vy:hizli?900:0,rot:0})}
-  if(YV('R')&&S.hp>0){const c=Math.max(50,Math.ceil(e.hp));S.hp=Math.min(HPMAX,S.hp+c);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:dil('can_pop',c),f:0.5})}      // can çalmalı yırtma: düşmanın canı kadar (en az 50)
-  S.yirtT=S.t;e.iki=false;vur(e,99999,0,0,0.3,e.y);S.pops.pop();e.ol=0.95;titre(60);
+  if(YV('R')&&S.hp>0){const c=Math.max(50,Math.ceil(e.hp));S.hp=Math.min(HPMAX,S.hp+c);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:dil('can_pop',c),f:0.5,mavi:1})}      // can çalmalı yırtma: düşmanın canı kadar (en az 50)
+  S.yirtT=S.t;e.iki=false;vur(e,99999,0,0,0.3,e.y);S.pops.pop();e.yerOl=false;e.olm=null;e.dus=null;e.ol=0.95;      // yerdeyken yırtılsa da gövde hemen silinir (ekranda sadece iki yarı kalır)
+ titre(60);
 }
 function tutReddet(e){            // canı enerjimizden fazla: yırtılamaz, düşman elimizden fırlar (hasar yok), biraz ileride tekrar bize gelir
   const yn=e.x>=S.x?1:-1;

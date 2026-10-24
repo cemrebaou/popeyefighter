@@ -13,6 +13,13 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 - Tüm nesne görselleri düz önden (front elevation) ya da tam yandan profil çizilir. 3/4 veya izometrik çizim kullanılmaz, çünkü kamera yana kayınca hep aynı yüzü göstererek sahte durur.
 - Önce tek tek nesneler (yol parçaları, bina cepheleri, sokak lambası, kasa, varil vb.) toplanır, tam sayfa arka planlar sonra ayrıca istenir.
 
+## Şu anki ön plan (cevre.js)
+- Zemin: `cevre/tahta.webp` iskele şeridi uç uca döşenir, altında deniz. Ayak çizgisi görselin üstten %34.6'sı.
+- Evler (`ev0-7`) p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda palmiye; boss bölgesinde fener.
+- İskele nesneleri (lamba, kasa, yük, çuval, top, tabela, kaya) p=1, karakterlerin arkasında; varil yerlerinin yanı boş bırakılır.
+- Çalılar p=1.12 ön katmanda seyrek, karakterlerin önünde.
+- Dizilim sabit tohumlu rastgele (`cevreKur`). Dağlar ve arka ağaçlar şimdilik dongu.js arkaPlan'da.
+
 ## Metroidvania / geri dönüş (backtracking)
 - Bölümler geri dönülerek yeniden keşfedilecek şekilde tasarlanır.
 - İleride eklenecek **zıpkınlı kanca**: kola takılı, Örümcek Adam gibi atılır, bir yere takılır ve oyuncu kendini oraya çeker. Henüz oyunda yok, bölümler buna göre hazırlanır.
