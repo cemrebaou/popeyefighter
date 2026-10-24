@@ -9,7 +9,7 @@ const TAHTA_W=2400,TAHTA_AYAK=0.346;      // bir tahta şeridinin dünya eni; ay
 const TAHTA_ARKA=150;                     // tahta yüzeyinin arka kenarı: ayak çizgisinden bu kadar geride (evler buraya oturur)
 const EV_P=0.85;
 const EV_BOY=[1511,1582,1189,1451,1142,1402,1432,1365];      // ev cephelerinin dünya boyları (çizimdeki oranlar korunur)
-const EV_ORAN=[0.887,0.582,1.211,0.985,1.141,0.928,0.878,0.998];      // en / boy
+const EV_ORAN=[0.892,0.588,1.191,0.988,1.16,0.938,0.877,1.014];      // en / boy
 const KAZIK_BOY=630,KAZIK_ON=159,KAZIK_ARK=TAHTA_ARKA,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
 const KUM_W=2800;      // kum şeridinin ev katmanındaki eni; üst kenarı evlerin alt çizgisinde, alt kenarı tahtanın yarısında
 let CV_EV=[];
@@ -39,7 +39,7 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
         for(let x=((W/2-S.x*EV_P*s)%kw+kw)%kw-kw;x<W;x+=kw-1)ctx.drawImage(K,Math.floor(x),ky,Math.ceil(kw)+1,Math.ceil(kh));
         if(kes>ky+kh-2){ctx.fillStyle='#f6bf58';ctx.fillRect(0,Math.floor(ky+kh-2),W,Math.ceil(kes-(ky+kh-2)))}
         ctx.restore()}}
-    for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,gp+6*s,e.h*s)}}
+    for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}}
   kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
   for(let x=((W/2-S.x*SC)%tw+tw)%tw-tw;x<W;x+=tw-1)ctx.drawImage(T,Math.floor(x),y0,Math.ceil(tw)+1,th);
 }
