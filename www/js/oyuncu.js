@@ -176,7 +176,9 @@ function elDurum(dt){
 }
 function kol(omuzX,omuzY,u,r,ad,far,sc){
   const sf=far?'_a':'';
-  ctx.save();ctx.translate(omuzX,omuzY);{const q=dunyaNok(0,0);EL[ad].sx=q[0];EL[ad].sy=q[1]}ctx.scale(sc,sc);ctx.rotate(u*D);
+  ctx.save();ctx.translate(omuzX,omuzY);{const q=dunyaNok(0,0);EL[ad].sx=q[0];EL[ad].sy=q[1]}ctx.scale(sc,sc);
+  {const z=zpkKolAci(ad);if(z){u=z[0];r=z[1]}}      // zıpkın: kol halata paralel, dümdüz
+  ctx.rotate(u*D);
   resim(R['ustkol'+sf],43.8,30.65);
   const bitis=S.atk&&S.atk.fl==='*'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad), bI=bitis?efSiddet():0;      // kombo bitiş vuruşu: kolun tamamı parlar
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);

@@ -211,8 +211,14 @@ function zpkPoz(o){      // zıpkınlı kol hedefe / mızrağa doğru dümdüz u
   for(const k of ['N','F']){const h=ZPK[k],q=EL[k];if(!h||q.sx===undefined)continue;
     const T=h.ph==='haz'?(zpkHedefNok(h)||[h.hd.wx,h.hd.wy]):[h.x,h.y];
     const th=Math.atan2(-(T[1]-q.sy),(T[0]-q.sx)*S.yon)/D-(o.torso||0)-(o.pelv||0);
-    o['a'+k+'u']=th-90;o['a'+k+'r']=0;
+    o['a'+k+'u']=th-90;o['a'+k+'r']=90;      // r=90: dirsek düz
   }
+}
+function zpkKolAci(ad){      // kol() içinde omuz uzayında: kol omuzdan namluya kadar halatla aynı doğrultuda (dümdüz); asılıyken sallanınca dirsek hafif kırılır, namlu yine çizgide
+  if(!ZPK.ac||DEMO)return null;const h=ZPK[ad];if(!h)return null;
+  const T=h.ph==='haz'?(zpkHedefNok(h)||[h.hd.wx,h.hd.wy]):[h.x,h.y],q=zEkr(T[0],T[1]),m=ctx.getTransform().inverse(),dx=(q[0]+S.shx)*DPR,dy=(q[1]+S.shy)*DPR;
+  const lx=m.a*dx+m.c*dy+m.e,ly=m.b*dx+m.d*dy+m.f,b=zpkAsili()?Math.min(14,Math.abs(S.vx)/250):0;
+  return [Math.atan2(ly,lx)/D-90+0.56*b,90-b];      // üst kol +y ekseninde; dirsek 90 = düz
 }
 function zpkKolCiz(ad,far){      // kol() içinde ön kol uzayında: tabanca ön kolun üstüne bağlı (mızrak takılıysa dolu görsel)
   const im=R[(ZPK[ad]?'z_bos':'z_dolu')+(far?'_a':'')];if(!im)return;
