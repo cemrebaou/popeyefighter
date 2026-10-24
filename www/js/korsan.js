@@ -236,6 +236,7 @@ function korsanPoz(e){
     if(!e.dus&&S.t-(e.hafT||-9)<0.25){const k=1-(S.t-e.hafT)/0.25;p.torso-=7*k;p.bas-=6*k}      // hafif vuruş: çok az geri eğilir
     if(e.dus){p=dusPoz(e,p);if(e.yk){p.uN+=e.yk[0];p.uF+=e.yk[1]}}
   }
+  if(e.zpk&&!e.tut&&!e.olu&&!e.dus)p=zpkKorsanPoz(e,p);      // zıpkınlandı: elleri mızrakta, çırpınır
   return p;
 }
 function krp(img,a,fl){
@@ -316,7 +317,8 @@ function parcaCiz(){
       if(izBul(p.el)&&S.t-p.t0<6){const h=EL[p.el];p.yan=h.wx<=EL[p.el==='N'?'F':'N'].wx?-1:1;p.x=h.wx+p.yan*70;p.y=h.wy;p.pt=S.t}      // parmak basılı: yarım ellerde kalır
       else{p.at=true;p.tT=S.t;const h=EL[p.el];p.vx=h.sv.x+S.vx+p.yan*250;p.vy=h.sv.y}     // parmak kalktı: yarım elin hızıyla bırakılır, yere düşer
     }else{
-      const dt=Math.min(0.05,S.t-(p.pt||S.t));p.vy-=G*0.5*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.yan*dt*6;
+      const dt=Math.min(0.05,S.t-(p.pt||S.t));p.vy-=G*0.5*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(p.y<=zemin(p.x)+161){const r0=p.rot+(p.phi||0),rh=Math.round((r0-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;p.rot+=(rh-r0)*Math.min(1,dt*10);p.yerT=p.yerT||S.t}else{p.rot+=p.yan*dt*6;p.yerT=0}      // yere değince yan yatar
       {const sp=Math.hypot(p.vx,p.vy);if(sp>900)for(const o of DUS){      // atılan yarım: adam atılmış gibi çarpar
         if(o.olu||o.tut||(p.vr||(p.vr=new Set())).has(o))continue;
         if(Math.hypot(p.x-o.x,p.y-(o.y+o.cy))<o.r*0.8+110){p.vr.add(o);const f=kisit((sp-1500)/3500,0,1),vx=p.vx,vy=p.vy;
@@ -324,10 +326,11 @@ function parcaCiz(){
           if(!o.olu&&!o.boss&&!o.tut){const yn=Math.sign(vx)||1;o.cy0=o.cy0||o.cy;if(o.dus)o.dus.son=Math.max(o.dus.son,S.t+DUS_DUS+1.8+DUS_KALK);else o.dus={t0:S.t,son:S.t+DUS_DUS+1.8+DUS_KALK,yn};o.vx=yn*700;o.vy=350}}}}
       if(p.y<zemin(p.x)+160){if(p.vy<-500){karBas(p.x,170,KMIN-6,true);tasSac(p.x,2,0.7);bufCal(DSS,0.8)}p.y=zemin(p.x)+160;p.vy=Math.abs(p.vy)*0.3;p.vx*=0.85}
       p.pt=S.t;
+      if(!p.son&&p.yerT&&S.t-p.yerT>0.5&&Math.abs(p.vx)<60){p.son=true;parcaYap(p);continue}      // durdu: kalıcı ceset resmi olur, artık hesaplanmaz
     }
+    if(p.son)continue;
     const sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC;
     ctx.save();ctx.translate(sx,sy);ctx.scale(SC,SC);ctx.filter='grayscale(1)';      // parçalanmış (ölü): siyah beyaz
-    if(p.at){const u=S.t-p.tT;if(u>1.1)ctx.globalAlpha=Math.max(0,1-(u-1.1)/0.7)}
     if(!p.at)p.phi=zEksen().phi;
     ctx.rotate((p.at?p.rot:0)+(p.phi||0));
     ctx.translate(0,p.kind==='ust'?(p.z.kc==='b'?270:198):-54);ciziKorsan(p.z,p.kind);
@@ -335,6 +338,7 @@ function parcaCiz(){
   }
 }
 function dusmanCiz(){
+  cesetCiz();
   parcaCiz();
   for(const e of DUS){
     const sx=W/2+(e.x-S.x)*SC, sy=ZY()-(e.y-S.camY)*SC, m=(e.r*2.2+150)*SC;
@@ -346,9 +350,40 @@ function dusmanCiz(){
       if(e.olm){ctx.translate(0,-e.cy);ctx.rotate(e.olm.yn*(e.dusA||0)*Math.PI/2);ctx.translate(0,e.cy0)}}      // ölüm: dizden yüzüstü öne / oturduktan sırtüstü geri
     if(e.dus){ctx.translate(0,-e.cy);ctx.rotate(e.dus.yn*(e.dusA||0)*Math.PI/2);ctx.translate(0,e.cy0)}      // yere düşmüş: gövde ortası yere yakın, sırtüstü yatar
     if(e.tut){ctx.translate(0,-e.cy);ctx.rotate(Math.sin(e.anim*14)*0.12);ctx.translate(0,e.cy)}   // tutulunca çırpınır
+    else if(e.zpk&&!e.olu){ctx.translate(0,-e.cy);ctx.rotate(Math.sin(e.anim*13)*0.05);ctx.translate(0,e.cy)}      // zıpkınlanınca hafif çırpınır
     if(e.iki){ctx.translate(0,-e.cy);ctx.rotate(e.phi||0);ctx.translate(0,e.cy)}   // iki elle tutulunca iki elin eksenine yatar (kafa N elinin tarafında)
     ciziKorsan(e);
     ctx.restore();
     if(zc){if(e.olu)ctx.filter='grayscale(1)';kancaCiz(e,false);kancaCiz(e,true);ctx.filter='none'}      // sırttan ele gelen zincir karakterin önünde
   }
 }
+// ---- Kalıcı cesetler: ölen düşman (ve yırtılan yarıları) yere yatıp durunca bir kez siyah beyaz resme çevrilir (CESET) ve silinir;
+// sonra sadece ekrandayken tek drawImage ile çizilir (güncelleme, poz, filtre yok = yük yok). Önizlemede (DEMO) ceset kalmaz.
+const CESET=[];
+function cesetResim(ciz,cx,cy,x0,x1,y0,y1){      // ciz(): dünya birimiyle, (cx,cy) merkezli çizim (y aşağı); kutu merkeze göre x0..x1, y0..y1 (y yukarı +)
+  const k=Math.min(SC*DPR,0.6),w=Math.ceil((x1-x0)*k),h=Math.ceil((y1-y0)*k);if(w<1||h<1)return null;
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d'),es=ctx;
+  ctx=x;try{x.setTransform(k,0,0,k,-x0*k,y1*k);ciz()}catch(_){}finally{ctx=es}
+  let d;try{d=x.getImageData(0,0,w,h)}catch(_){return null}
+  const p=d.data;let mx=w,my=h,Mx=-1,My=-1;
+  for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=(yy*w+xx)*4;if(p[i+3]>6){const g=p[i]*0.2126+p[i+1]*0.7152+p[i+2]*0.0722;p[i]=p[i+1]=p[i+2]=g;if(xx<mx)mx=xx;if(xx>Mx)Mx=xx;if(yy<my)my=yy;if(yy>My)My=yy}}      // siyah beyaz + dolu alanın sınırı
+  if(Mx<0)return null;
+  x.putImageData(d,0,0);
+  const cw=Mx-mx+1,ch=My-my+1,o=document.createElement('canvas');o.width=cw;o.height=ch;o.getContext('2d').drawImage(c,mx,my,cw,ch,0,0,cw,ch);
+  return {c:o,x:cx+x0+mx/k,y:cy+y1-my/k,w:cw/k,h:ch/k};
+}
+function cesetEkle(r){if(!r)return;CESET.push(r);if(CESET.length>150)CESET.shift()}
+function cesetYap(e){      // dusmanCiz'deki ölü çizimiyle aynı
+  if(DEMO)return;
+  const c=Object.assign({},e);c.t=undefined;c.fl=0;
+  cesetEkle(cesetResim(()=>{
+    if(c.olm){ctx.translate(0,-c.cy);ctx.rotate(c.olm.yn*(c.dusA||0)*Math.PI/2);ctx.translate(0,c.cy0)}
+    if(c.dus){ctx.translate(0,-c.cy);ctx.rotate(c.dus.yn*(c.dusA||0)*Math.PI/2);ctx.translate(0,c.cy0)}
+    ciziKorsan(c)},e.x,e.y,-1300,1300,-250,950));
+}
+function parcaYap(p){      // parcaCiz'deki yarı çizimiyle aynı
+  if(DEMO)return;
+  const z=Object.assign({},p.z);
+  cesetEkle(cesetResim(()=>{ctx.rotate(p.rot+(p.phi||0));ctx.translate(0,p.kind==='ust'?(p.z.kc==='b'?270:198):-54);ciziKorsan(z,p.kind)},p.x,p.y,-1000,1000,-550,650));
+}
+function cesetCiz(){for(const k of CESET){const sx=W/2+(k.x-S.x)*SC,w=k.w*SC;if(sx>W||sx+w<0)continue;ctx.drawImage(k.c,sx,ZY()-(k.y-S.camY)*SC,w,k.h*SC)}}

@@ -10,6 +10,7 @@ function tus(e,d){
   else if((k==='j'||k==='J')&&d&&!e.repeat){S.jEl=S.jEl==='N'?'F':'N';komboTap('y',S.jEl)}      // dokunmatikteki gibi yumruk (eller sırayla), kombo zinciri çalışır
   else if((k==='k'||k==='K')&&d&&!e.repeat){S.kEl=S.kEl==='N'?'F':'N';tekmeAt(S.kEl)}            // tekme
   else if('gGhHbBnNmM'.includes(k)&&k.length===1&&d&&!e.repeat)ozelTus(k.toLowerCase());
+  else if((k==='x'||k==='X')&&d&&!e.repeat)zpkMod(!ZPK.ac);      // zıpkın aç/kapa
   else return;
   e.preventDefault();
 }
@@ -188,11 +189,14 @@ cv.addEventListener('pointerdown',e=>{
   const t=e.clientX<W/2?'F':'N';
   if(tekmeBolgesi(e.clientX,e.clientY)){try{cv.setPointerCapture(e.pointerId)}catch(_){}kizler.set(e.pointerId,{t,t0:performance.now(),x0:e.clientX,y0:e.clientY,maxd:0});return}
   if(KOL[t].ak)return;
+  if(ZPK.ac){if(!ZPK[t]&&!zpkIzBul(t)){try{cv.setPointerCapture(e.pointerId)}catch(_){}      // zıpkın açık: basılan yere o taraftaki kol zıpkın atar, parmak halatı tutar
+    zizler.set(e.pointerId,{t,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,hist:[{t:performance.now()/1000,x:e.clientX,y:e.clientY}]});zpkAt(t,e.clientX,e.clientY)}return}
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
   izler.set(e.pointerId,{t,x0:e.clientX,y0:e.clientY,yon:S.yon,hist:[{t:performance.now()/1000,x:e.clientX,y:e.clientY}],lx:e.clientX,ly:e.clientY,pv:null,turn:0,sho:false,atil:false,sla:false,sup:false,t0:performance.now(),maxd:0,tm:DUS.some(e=>e.tut&&e.tut!==t&&!e.iki),joined:false});
   KOL[t].ak=true;KOL[t].e=0;
 });
 cv.addEventListener('pointermove',e=>{
+  {const z=zizler.get(e.pointerId);if(z){const n=performance.now()/1000;z.hist.push({t:n,x:e.clientX,y:e.clientY});while(z.hist.length>1&&n-z.hist[0].t>0.5)z.hist.shift();z.lx=e.clientX;z.ly=e.clientY;return}}      // zıpkın parmağı
   const kz=kizler.get(e.pointerId);if(kz){kz.maxd=Math.max(kz.maxd,Math.hypot(e.clientX-kz.x0,e.clientY-kz.y0));return}
   const iz=izler.get(e.pointerId);if(!iz)return;
   const now=performance.now()/1000;
@@ -208,6 +212,7 @@ cv.addEventListener('pointermove',e=>{
   daireKontrol();
 });
 const kolBit=e=>{
+  {const z=zizler.get(e.pointerId);if(z){zizler.delete(e.pointerId);zpkBirak(z.t);return}}      // zıpkın parmağı kalktı: halat bırakılır
   const kz=kizler.get(e.pointerId);if(kz){kizler.delete(e.pointerId);if(e.type==='pointerup'&&kz.maxd<30&&performance.now()-kz.t0<400)tekmeAt(kz.t);return}
   const iz=izler.get(e.pointerId);if(!iz)return;izler.delete(e.pointerId);
   const tap=!iz.tm&&e.type==='pointerup'&&!DUS.some(z=>z.tut===iz.t)&&S.sarj<=0&&!iz.joined&&iz.maxd<22&&performance.now()-iz.t0<320&&!iz.sho&&!iz.atil&&!iz.sla&&!iz.sup&&!iz.blk&&HS[iz.t]!=='ac';   // kısa dokunuş = kombo vuruşu (açık el vurmaz)

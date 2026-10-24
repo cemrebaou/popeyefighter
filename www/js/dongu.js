@@ -21,6 +21,7 @@ function ciz(){
   varilCiz(false);
   kanCiz();
   fxCiz(false);
+  zpkCiz('F');      // arka koldaki zıpkının halatı karakterin arkasında
   VT=ctx.getTransform();
   ctx.save();
   ctx.translate(W/2,zeminY-(S.y-S.camY)*SC);
@@ -28,6 +29,7 @@ function ciz(){
   if(S.pence){ctx.shadowColor='#ffb02e';ctx.shadowBlur=(14+5*Math.sin(S.t*9))*DPR}      // bıçak modu: kenarlarından enerji barı renginde parlar
   karakter();
   ctx.restore();
+  zpkCiz('N');
   varilCiz(true);
   fxCiz(true);
   karCiz();
@@ -40,7 +42,7 @@ function ciz(){
 let son=0;
 function dongu(ms){
   requestAnimationFrame(dongu);      // önce sonraki kare istenir: bir karede hata olsa bile oyun donmaz
-  if(listeAcik||(agacAcik&&!DEMO)){son=ms;return}      // kombo listesi / ağaç açıkken oyun durur (ağaçta yetenek önizlemesi hariç)
+  if(listeAcik||(agacAcik&&!DEMO)){son=ms;if(ZPK.N||ZPK.F||zizler.size)zpkTemizle(true);return}      // kombo listesi / ağaç açıkken oyun durur (ağaçta yetenek önizlemesi hariç)
   if(DEMO)demoAdim();
   let dt=Math.min(0.05,(ms-son)/1000||0.016);      // 20 FPS'e kadar gerçek zamanlı (yavaş telefonda ağır çekime girmez)
   son=ms;S.dtG=dt;
@@ -49,8 +51,10 @@ function dongu(ms){
   const gA=DEMO?0:gyroAx(),ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gA)), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
   const hed=ax*HIZ*(S.atk&&S.yer?0.35:1)*(S.yer&&asagiMi()?0.45:1);
   const ivme=S.yer?((gA===0&&S.vx*hed>=0&&Math.abs(hed)>Math.abs(S.vx))?2800:9000):6000;      // tuşla koşu yavaş hızlanır (telefon eğimi aynı kalır)
-  if(yon){S.yon=yon;S.vx+=Math.sign(hed-S.vx)*Math.min(Math.abs(hed-S.vx),ivme*dt)}
-  else{S.vx-=Math.sign(S.vx)*Math.min(Math.abs(S.vx),(S.yer?12000:2500)*dt)}
+  const asili=zpkAsili(),ucus=!S.yer&&S.t<(S.zpUcT||0);      // zıpkın: halata asılıyken eğim/tuşlar sallar; halatı bırakınca savrulma hızı korunur
+  if(asili)S.vx+=ax*ZP_SALLA*0.7*dt;
+  else if(yon){S.yon=yon;if(!(ucus&&S.vx*hed>0&&Math.abs(S.vx)>Math.abs(hed)))S.vx+=Math.sign(hed-S.vx)*Math.min(Math.abs(hed-S.vx),ivme*dt)}
+  else{S.vx-=Math.sign(S.vx)*Math.min(Math.abs(S.vx),(S.yer?12000:ucus?300:2500)*dt)}
   if(S.sman){
     const m=S.sman,u=(S.t-m.t0)/m.T;
     if(u>=1){S.sman=null;S.spin=0}
@@ -91,6 +95,7 @@ function dongu(ms){
       if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};patlat(S.x-70,1);patlat(S.x+100,1);karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
       if(S.dkick){const t0=S.dkick.t0;S.dkick=null;zeminVur(0.5,0,t0);patlat(S.x+S.yon*120,0.8);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
   }
+  zpkGuncelle(dt);      // zıpkın: uçuş, saplanma, halat kısıtı
   S.camY+=(S.y-S.camY)*(1-Math.exp(-dt*5));
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
   {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,Math.abs(S.vx)>HIZ*0.6,-S.yon)}S.adk=k}      // her adım karda iz bırakır

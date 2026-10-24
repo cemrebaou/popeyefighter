@@ -138,7 +138,7 @@ function tutReddet(e){            // canı enerjimizden fazla: yırtılamaz, dü
   S.noEn=S.t;S.yirtT=S.t;S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:dil('enerji_yetmedi'),f:0.3});titre(60);
 }
 function ikiElKontrol(dt){
-  S.parcalar=S.parcalar.filter(p=>p.at?S.t-p.tT<1.8:S.t-p.t0<6);
+  S.parcalar=S.parcalar.filter(p=>p.at?!p.son&&S.t-p.tT<8:S.t-p.t0<6);      // atılan yarı yere yatıp durunca ceset resmi olur
   if(S.pence)return;
   const a=izBul('N'),b=izBul('F');
   let e=DUS.find(x=>x.tut&&!x.olu);
@@ -223,7 +223,7 @@ function olmGuncelle(e,dt){      // ölüm hareketi; yere yattıktan 5 sn sonra 
   }else{e.vx*=Math.pow(0.01,dt);e.x+=e.vx*dt;e.y=z;yat(kisit((S.t-o.t1-0.15)/0.45,0,1))}      // oturduğu yerden gövde geri yere düşer
   kolYere(e,dt);      // yatınca kollar havada kalmaz, yere değene kadar iner
   if(o.yat&&!o.tk2&&S.t-o.yat>0.6&&!yereDeg(e)){e.dusA=0;e.cy=e.cy0||e.cy;e.olm={tip:'diz',t0:S.t,yn:e.yon||1,tk2:1};return false}      // ölmüş ama kafası/gövdesi yere değmiyor: dizler üstüne çöküp yere düşer (ölüm ancak yere değince biter)
-  if(o.yat&&S.t-o.yat>5){e.ol=(S.t-o.yat-5)/0.6;return e.ol>1}
+  if(o.yat&&S.t-o.yat>1.2)return true;      // yere yattı: kalıcı ceset resmi olur (cesetYap)
   return false;
 }
 function dusmanGuncelle(dt){
@@ -252,8 +252,8 @@ function dusmanGuncelle(dt){
       e.cy0=e.cy0||e.cy;e.dusA=(e.dusA||0)+(1-(e.dusA||0))*Math.min(1,dt*8);e.cy=e.cy0+(110-e.cy0)*e.dusA;
       e.olY=(e.olY||0)+dt;kolYere(e,dt);
       if(e.olY>0.8&&!yereDeg(e)){e.yerOl=false;e.dus=null;e.dusA=0;e.cy=e.cy0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1,tk2:1};continue}      // kafası/gövdesi yere değmiyor: dizler üstüne çöküp düşer
-      e.ol=Math.max(0,(e.olY-5)/0.6);if(e.ol>1)DUS.splice(i,1);continue}      // yerde ölen: 5 sn yatar, sonra söner
-    if(e.olu&&e.olm){if(olmGuncelle(e,dt))DUS.splice(i,1);continue}
+      if(e.olY>1.2){cesetYap(e);DUS.splice(i,1)}continue}      // yerde ölen: yatışı bitince kalıcı ceset resmi olur
+    if(e.olu&&e.olm){if(olmGuncelle(e,dt)){cesetYap(e);DUS.splice(i,1)}continue}
     if(e.olu){e.ol+=dt;e.vy-=G*0.5*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;e.rot+=dt*9*(e.vx<0?-1:1);if(e.ol>0.9)DUS.splice(i,1);continue}
     if(e.dus){const d=e.dus;      // yerde: 0.35 sn'de düşer, yatar, son 0.5 sn'de kalkar; tutulursa hemen kalkar (elle kaldırma)
       if(S.ust&&S.ust.e===e)d.son=Math.max(d.son,S.t+DUS_KALK+0.15);      // üstündeyken kalkamaz

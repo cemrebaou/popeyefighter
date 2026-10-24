@@ -59,6 +59,9 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 #ispB::after{content:'';position:absolute;inset:4%;border-radius:50%;background:conic-gradient(transparent var(--p,0%),rgba(20,28,34,.5) 0);pointer-events:none}
 #ispB.hazir{filter:none;box-shadow:0 0 12px 3px #7dd34a}#ispB.hazir::after{display:none}#ispB[hidden]{display:none}
 #ispB:active{transform:scale(.92)}
+#zpkB{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px) + 88px);left:max(16px,env(safe-area-inset-left,0px));width:60px;height:60px;border-radius:50%;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;
+  background:url(../ui/btn_zipkin.webp?v=84) center/contain no-repeat;filter:grayscale(.6) brightness(.85);transition:transform .05s,filter .15s}      /* zıpkın: ıspanak butonunun karşısı, sola gitme tuşunun üstü */
+#zpkB.ac{filter:none;box-shadow:0 0 12px 3px #ffd84a}#zpkB:active{transform:scale(.92)}
 #agac{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(31,42,51,.75);transition:background .2s}#agac.demo{background:rgba(31,42,51,.3)}      /* önizlemede arkadaki oyun daha net */#agac[hidden]{display:none}
 .agac_k{position:relative;width:min(96vw,calc(82vh*1.8325));padding-top:44px}
 #agac_ic{position:relative;width:100%;aspect-ratio:2690/1468;background:url(../ui/agac.webp?v=69) center/100% 100% no-repeat}

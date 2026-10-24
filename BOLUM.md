@@ -24,7 +24,8 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 
 ## Metroidvania / geri dönüş (backtracking)
 - Bölümler geri dönülerek yeniden keşfedilecek şekilde tasarlanır.
-- İleride eklenecek **zıpkınlı kanca**: kola takılı, Örümcek Adam gibi atılır, bir yere takılır ve oyuncu kendini oraya çeker. Henüz oyunda yok, bölümler buna göre hazırlanır.
+- **Zıpkınlı kanca** (v0.327'den beri oyunda, `js/zipkin.js`, kurallar `OYUN.md` Zıpkın): kola takılı, Örümcek Adam gibi atılır, bir yere takılır; oyuncu kendini çeker, tırmanır, sallanır. Şimdilik buton ile her zaman açılabiliyor; metroidvania için ileride bölümde bulunup kazanılan bir eşya yapılabilir.
+- Zıpkın şu an her nesneye takılır (`zpkHedef`: düşman, varil, kazık, lamba, iskele, ev pikseli). Yeni nesne eklenince `zpkHedef`e de eklenmeli; derinlik katmanındaki (p<1) nesnelerde çapa `zpkCapa` ile katman hızında kayar.
 - Her bölümde ilk gelişte görülen ama kancasız çıkılamayan **yukarı alanlar** olsun: yüksek iskeleler, çatılar, gemi direklerinin tepesi, uçurum üstleri.
 - Kancanın takılabileceği noktalar oyuncunun anlayacağı şekilde belli olsun: demir halkalar, kirişler, direk uçları, makaralar.
 - Kanca alındıktan sonra eski bölümlere dönülünce bu yukarı alanlardan yeni yollar, kısayollar ve gizli ödüller (sandık, ıspanak, XP) açılır.

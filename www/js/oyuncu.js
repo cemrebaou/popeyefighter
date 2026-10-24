@@ -3,6 +3,7 @@
 function ziplaBas(guc=1){
   if(S.ust)return;
   if(YV('K'))guc*=1.25;      // Çok Zıplama: %25 yüksek
+  if(zpkAsili()){zpkBirak('N');zpkBirak('F');S.vy=Math.min(S.vy,0)-ZIP2*guc;S.ekstra=1;ziplaCal();return}      // halata asılıyken: halatları bırakıp sıçrar
   if(S.yer){S.vy=-ZIP1*guc;S.yer=false;S.ekstra=1;S.donuyor=false;ziplaCal()}
   else if(S.ekstra>0&&YV('D')){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;ziplaCal()}
 }
@@ -114,13 +115,14 @@ function hedefPoz(){
     for(const k in kl)o[k]=o[k]+(kl[k]-o[k])*A;
     o.torso+=22*A;o.bas-=18*A;o.lN+=(-28-o.lN)*A;o.bN+=(52-o.bN)*A;o.lF+=(-8-o.lF)*A;o.bF+=(44-o.bF)*A;
   }
+  zpkPoz(o);      // zıpkınlı kol hedefe uzanır
   ispPoz(o);
   if(S.t<S.firT){const el=S.firEl||0;o.aNu=-90-el;o.aNr=90;o.aFu=-90-el;o.aFr=90;o.torso+=10}       // ateş: iki kol öne
   return o;
 }
 const ANAH=['lN','bN','lF','bF','torso','bas','aNu','aNr','aFu','aFr','ofs','lift','kN','kF','pelv','hx','hy','hb','cr','cw'];
 function pozGuncelle(dt){
-  const h=hedefPoz(), k=1-Math.exp(-dt*((S.atk||kolVar()||S.yy||S.alk||(S.yeme&&S.t-S.yeme.t0>1.8))?45:(S.yer?22:16)));
+  const h=hedefPoz(), k=1-Math.exp(-dt*((S.atk||kolVar()||S.yy||S.alk||(S.yeme&&S.t-S.yeme.t0>1.8)||ZPK.N||ZPK.F)?45:(S.yer?22:16)));      // zıpkın: kol hedefe hızlı döner
   ANAH.forEach(a=>{P[a]=(P[a]===undefined)?h[a]:P[a]+(h[a]-P[a])*k});
 }
 
@@ -180,11 +182,12 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);
   ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);if(S.pence){EL[ad].b1=dunyaNok(330,0);EL[ad].b2=dunyaNok(420,0)}else EL[ad].b1=EL[ad].b2=null;      // bıçak ağzı / ucu
-  {const d=S.pence?PENCE_EL[ad]:KOL_EL[ad][HS[ad]||'yum'];
+  {const d=S.pence?PENCE_EL[ad]:KOL_EL[ad][(ZPK.ac&&!DEMO)?'ac':(HS[ad]||'yum')];      // zıpkın açıkken el açık
    ctx.save();ctx.translate(140.4,0);if(ad==='N')ispElCiz(ad);resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI);if(ad==='F')ispElCiz(ad);ctx.restore();}   // el bilekte
   resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);
   if(bI>0)ekParla(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6,bI);
   else if(S.atk&&S.atk.fl==='+'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad))parilti(248,0,95,efSiddet(),'+');   // yumruk çerçevesi parlar
+  if(ZPK.ac&&!DEMO)zpkKolCiz(ad,far);      // zıpkın tabancası ön kolun üstünde
   ctx.restore();
 }
 function ayakAci(l,b,diz){const hdf=(S.yer&&Math.abs(S.vx)>40&&!asagiMi())?135:100;const f=((S.atk&&S.atk.ad.indexOf('kick')===0)||S.tats>0||S.dkick||(S.kay&&S.t<S.kay.t0+S.kay.T))?0:((S.yer&&!S.atk)?0.85:0.45),d=-(l+b)*f;return d+((hdf-(l+b))-d)*diz}   // diz: 1 = geride; hdf 100 = ayak ucu yere değer, 135 = koşuda geride kalkan ayak: taban arkaya-yukarı bakar

@@ -36,6 +36,18 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Yere düşme 0.45 sn, kalkış 1.0 sn sürer.
 
 - Ölen (ve parçalanan) düşman siyah beyaz çizilir; yere düşüp yaşayan renkli kalır.
+- Cesetler kalıcı: ölen düşman yere yatınca (1.2 sn) ya da yırtılan yarı yere yatıp durunca bir kez siyah beyaz resme çevrilir (`CESET`, korsan.js `cesetYap`/`parcaYap`) ve düşman listesinden silinir. Sonra sadece ekrandayken tek resim çizilir: güncelleme/poz/filtre yok. En çok 150 ceset (eskisi silinir). Önizlemede ceset kalmaz.
+
+## Zıpkın (`js/zipkin.js`)
+- Sol alttaki zıpkın butonu (ıspanak butonunun karşısı, sola gitme tuşunun üstü; PC'de X) zıpkın modunu açar/kapar. Şimdilik enerji harcamaz, yetenek ağacında değil.
+- Açıkken iki kolda da tabanca durur, eller açık. Ekrana basınca yumruk yerine o yarının kolu (sağ yarı ön kol, sol yarı arka kol) parmağın bastığı yere zıpkın atar. Tekme bölgesi yine tekme atar.
+- Takılabilen her şey: düşman, varil, kazıklar (ön/arka), sokak lambaları, iskele tahtası, evler (görselin dolu pikseline). Gökyüzü/su: zıpkın uçar, geri sarılır.
+- Uçuş hızı 7500, geri sarma 6500, halat en uzun 4500, en kısa 260 birim.
+- Parmak basılı = halat tutuluyor; parmak kalkınca halat bırakılır, zıpkın geri sarılır. Halattan havada bırakınca savrulma hızı 1.5 sn korunur.
+- Nesneye takılınca parmak joystick (merkez = ilk basılan yer): çapaya doğru kaydır = tırman (1900/sn), ters = halatı sal, yana gezdir = sallan; çapaya doğru hızlı fiske = çapaya fırla (3000). Halat gergin ve sarkaç gibi; gevşekken sarkar. Asılıyken zıplama = halatları bırakıp sıçrar. Eğim/sol-sağ tuşları da sallar.
+- Düşmana saplanma 20 hasar (kaptana 10, kafasına 3 kat). Düşman iki eliyle mızrağı tutar, çırpınır, saldıramaz. Parmağı kendine çek = düşmanı çek (400 birime kadar; oyuncu uzaklaşınca da sürüklenir), hızlı geri fiske = kendine savurur (yanına düşer), düşmana doğru hızlı fiske = mızrağı kopar. Kaptan tutmaz, mızrak 0.45 sn sonra çıkar. Aynı düşmana ikinci zıpkın: hasar verir, hemen çıkar.
+- Varil: geri çek = sürükle, hızlı geri fiske = kendine fırlatır (yoldaki düşmana çarpar).
+- Sesler: `ses/zipkin_obje.mp3` (nesneye), `ses/zipkin_insan.mp3` (insana). Görseller: `parca/z_dolu` (mızraklı tabanca), `z_bos`, `z_mizrak`, `z_ip` (halat, uç uca), `ui/btn_zipkin`.
 
 ## XP ve seviye
 - Öldürülen düşman canının 1/10'u kadar XP verir (yumruklu 15, bıçaklı 10, kancalı 20, kaptan 50). Yırtarak öldürme +%50. Düşman canı artarsa XP de artar.
@@ -73,7 +85,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 ## Kontroller (dokunmatik)
 - Sağ yarı ön kol, sol yarı arka kol: kaydırınca kol o yöne gider. Telefon eğimi = yürüme, geri silkme = zıplama.
 - Eğimle yürüme: 3.5° altı durur, ~8°'ye kadar yavaş yürür, 20°'de tam koşu. Ekranı kendine yatırınca eğilir, bir daha yatırınca kalkar.
-- Butonlar: sol/sağ (solda), çömel/zıpla (sağda), ıspanak cebi, yetenek ağacı, kombo listesi.
+- Butonlar: sol/sağ (solda), çömel/zıpla (sağda), ıspanak cebi, zıpkın (sol altta, sola gitme tuşunun üstü), yetenek ağacı, kombo listesi.
 - İki parmak birlikte aşağı (yerde) = yer yumruğu; blokta iki parmak aşağı = bıçak modu.
 - İki parmak aynı yöne yatay = süpermen. Zıt yöne (açılarak) = döner tekme. Ortaya doğru = alkış.
 - Havada tek parmak hızlı aşağı = yere tekme (çekilen yöne); iki parmak aşağı = süper kahraman inişi.
