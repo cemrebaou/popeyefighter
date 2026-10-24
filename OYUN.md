@@ -75,7 +75,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Aduket: dönen su girdabı (`fx/aduket_su`), dönerken iki yana su damlası (`fx/damla`) saçar. Oluşurken `ses/wateraduket.mp3` döngüde çalar, atınca kesilir; çarpınca `ses/aduket_carpma.mp3`.
 
 ## Bölüm
-- Düz zemin, karlı. 7 varil (x: 2600, 6300, 12400, 18000, 24200, 28600, 34000). Boss x=42000.
+- Düz zemin, karlı. Yürüme, zıplama, iniş, kayma, çift ayak/tek ayak yere inişte kar-taş sıçraması yok (sadece yere yumruk/yarık sıçratır). 7 varil (x: 2600, 6300, 12400, 18000, 24200, 28600, 34000). Boss x=42000.
 
 ## Arayüz ve dil
 - Arayüz varsayılan İngilizce. Tüm yazılar `js/dil.js` `DILLER` içinde (en, tr); kod `dil('anahtar')` ile alır, HTML `data-l` / `data-lh` / `data-la`. Yeni dil = `DILLER`'e yeni blok. Sağ üstte 🌐 dil butonu dilleri sırayla değiştirir, seçim kaydedilir (`pf_dil`), anında değişir.

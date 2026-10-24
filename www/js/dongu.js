@@ -92,13 +92,13 @@ function dongu(ms){
     if(S.tats>0){const u=S.t-S.tats;if(u>0.8){S.tats=0;S.spin=0}else{S.vy=-250;S.spin+=dt*Math.PI*2*2/0.8}}   // kasırga: havada asılı döner
     if(S.donuyor){S.spin+=dt*Math.PI*2/ROLL_SURE;if(S.spin>=Math.PI*2){S.spin=0;S.donuyor=false}}
     if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;torbaCal(INS,INSBAG,0.9);S.donuyor=false;S.spin=0;S.shoryu=0;S.tats=0;
-      if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};patlat(S.x-70,1);patlat(S.x+100,1);karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
-      if(S.dkick){const t0=S.dkick.t0;S.dkick=null;zeminVur(0.5,0,t0);patlat(S.x+S.yon*120,0.8);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
+      if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
+      if(S.dkick){const t0=S.dkick.t0;S.dkick=null;zeminVur(0.5,0,t0);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
   }
   zpkGuncelle(dt);      // zıpkın: uçuş, saplanma, halat kısıtı
   S.camY+=(S.y-S.camY)*(1-Math.exp(-dt*5));
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
-  {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,Math.abs(S.vx)>HIZ*0.6,-S.yon)}S.adk=k}      // her adım karda iz bırakır
+  {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,false)}S.adk=k}      // her adım karda iz bırakır
   pozGuncelle(dt);
   ciz();
   elHiz(dt);vurusKontrol();grabKontrol(dt);ikiElKontrol(dt);elDurum(dt);mermiGuncelle(dt);emerGuncelle(dt);dusmanGuncelle(dt);carpisma();blokGuncelle(dt);zitKontrol();ciftKontrol();yereKontrol();alkisKontrol();inisGuncelle();oyuncuHasar();

@@ -27,10 +27,10 @@ function fxCiz(on){
 function patlat(x,g){fxEkle(R.patla,x,380*g,0.42,true,Math.random()<0.5);tasSac(x,3,g)}      // yere çakılma: kısa patlama, sonra küçük kar ve taşlar
 function karGuncelle(dt){
   {let lo=KN,hi=-1;for(let i=KLO;i<=KHI;i++)if(KAR[i]<KD){KAR[i]=Math.min(KD,KAR[i]+dt*3);if(KAR[i]<KD){if(i<lo)lo=i;hi=i}}KLO=lo;KHI=hi}      // izler zamanla yavaşça dolar (sadece ezilmiş aralık)
-  if(S.yer&&!S.karYer){karBas(S.x,230,KMIN-4,true);for(let i=0;i<12;i++){const sg=Math.random()<0.5?-1:1;karAt(S.x+sg*Math.random()*130,zemin(S.x)+10,sg*(200+Math.random()*750),600+Math.random()*1000)}}      // zıplamadan iniş: geniş çökme, yerden bol kar kalkar
+  if(S.yer&&!S.karYer){karBas(S.x,230,KMIN-4,false)}      // zıplamadan iniş: sadece iz, sıçrama yok
   S.karYer=S.yer;
   if(S.yer&&Math.abs(S.vx)<40)karBas(S.x,110,KMIN+4,false);      // dururken ayaklar karın içinde
-  if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){karBas(S.x+S.yon*170,150,10,true,S.yon);if(S.t-(S.spT||-9)>0.09){S.spT=S.t;fxEkle(R.sprey,S.x+S.yon*330,300,0.32,true,S.yon<0,-S.yon*900);const y0=zemin(S.x)+10;for(let i=0;i<3;i++)karAt(S.x+S.yon*(230+Math.random()*80),y0,-S.yon*(300+Math.random()*800),500+Math.random()*900,i===0)}}      // kayma: büyük kar sıçraması ve küçük kar + taş kaydığın yönün tersine fırlar
+  if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer)karBas(S.x+S.yon*170,150,10,false,S.yon)      // kayma: sadece iz, sıçrama yok
   for(let i=S.karP.length-1;i>=0;i--){const p=S.karP[i];p.vy-=G*0.6*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
     if(p.vy<0&&p.y<=zemin(p.x)){if(!p.tas){const k=karI(p.x);KAR[k]=Math.min(KD+20,KAR[k]+3*p.s)}S.karP.splice(i,1)}}
   for(let i=S.fxs.length-1;i>=0;i--)if(S.t-S.fxs[i].t0>S.fxs[i].T)S.fxs.splice(i,1);
