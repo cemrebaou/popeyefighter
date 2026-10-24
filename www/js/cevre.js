@@ -34,11 +34,9 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
   {const gp=zeminY+S.camY*SC*EV_P-TAHTA_ARKA*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
     const K=CVR.kum;if(K){      // kum: evlerin altından iskeleye kadar; evlerle aynı hızda kayar, altı tek renkle iskelenin içine kadar dolar (zıplarken ev ile tahta arası açılmaz)
-      const kw=KUM_W*s,kh=kw*K.height/K.width,ky=Math.round(gp+6*s),kes=Math.round(y0+th*0.5);      // üst kenar = evlerin alt çizgisi; tahtanın yarısında kesilir (tahtanın altından çıkmaz)
-      if(kes>ky){ctx.save();ctx.beginPath();ctx.rect(0,ky,W,kes-ky);ctx.clip();
-        for(let x=((W/2-S.x*EV_P*s)%kw+kw)%kw-kw;x<W;x+=kw-1)ctx.drawImage(K,Math.floor(x),ky,Math.ceil(kw)+1,Math.ceil(kh));
-        if(kes>ky+kh-2){ctx.fillStyle='#f6bf58';ctx.fillRect(0,Math.floor(ky+kh-2),W,Math.ceil(kes-(ky+kh-2)))}
-        ctx.restore()}}
+      const kw=KUM_W*s,kh=kw*K.height/K.width,ky=Math.round(gp+6*s);      // üst kenar = evlerin alt çizgisi; ekranın en altına kadar iner (iskelenin altında da kum görünür)
+      for(let x=((W/2-S.x*EV_P*s)%kw+kw)%kw-kw;x<W;x+=kw-1)ctx.drawImage(K,Math.floor(x),ky,Math.ceil(kw)+1,Math.ceil(kh));
+      const ka=Math.floor(ky+kh-2);if(ka<H){const g=ctx.createLinearGradient(0,ka,0,H);g.addColorStop(0,'#f6bf58');g.addColorStop(1,'#e2a443');ctx.fillStyle=g;ctx.fillRect(0,ka,W,H-ka)}}      // kameraya yaklaştıkça biraz koyulaşır
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}}
   kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
   for(let x=((W/2-S.x*SC)%tw+tw)%tw-tw;x<W;x+=tw-1)ctx.drawImage(T,Math.floor(x),y0,Math.ceil(tw)+1,th);
