@@ -3,17 +3,10 @@
 function arkaPlan(camX,zeminY){
   if(!GOK){GOK=ctx.createLinearGradient(0,0,0,zeminY);GOK.addColorStop(0,'#bfe3ee');GOK.addColorStop(1,'#f1ead2')}   // gökyüzü gradyanı bir kez oluşturulur
   ctx.fillStyle=GOK;ctx.fillRect(0,0,W,H);
-  // uzak dağlar: yatay döşenir, kamerayla 0.2 hızında kayar
-  {const Dg=R.dag,th=H*0.30,tw=th*Dg.width/Dg.height,y=zeminY-H*0.06-th;
-   for(let x=((-camX*0.2)%tw+tw)%tw-tw;x<W;x+=tw)ctx.drawImage(Dg,Math.floor(x),y,Math.ceil(tw)+1,th)}
-  // arka plan ağaçları: sabit rastgele dizilim; düşmana yakın yerlerde yapraksız (3,5,7) çoğalır, uzakta yapraklılar (0,1,2,4,6) çıkar
-  {const AR=230,par=camX*0.6,i0=Math.floor((par-400)/AR),i1=Math.ceil((par+W+400)/AR),YP=[0,1,2,4,6],YS=[3,5,7];
-   for(let i=i0;i<=i1;i++){
-     const h=Math.imul(i^0x9e3779b9,2654435761)>>>0;if((h>>>9)%5===0)continue;
-     const bx=i*AR+(((h>>>20)&255)/255-0.5)*120,wx=bx/0.6;let d=1e9;for(const p of ENPOS){const q=Math.abs(p-wx);if(q<d)d=q}
-     const pb=kisit(1.05-d/2600,0.04,0.9),yaps=((h>>>13)&1023)/1023<pb,k=yaps?YS[(h>>>4)%3]:YP[(h>>>4)%5],im=AGAC[k];
-     const hh=H*(yaps?0.25:0.27)*(0.85+((h>>>12)&255)/255*0.3),ww=hh*im.width/im.height;
-     ctx.drawImage(im,bx-par-ww/2,zeminY-hh+H*0.012,ww,hh)}}
+  // en arka: gökyüzü + deniz görseli, ekran boyunu tam kaplar, uç uca döşenir (her ikinci kopya aynalanır: kenarlar dikişsiz), çok yavaş kayar
+  {const G=CVR.gok;if(G){const th=H,tw=th*G.width/G.height,ofs=S.x*SC*0.06,i0=Math.floor(ofs/tw);
+    for(let i=i0;(i-i0)*tw-((ofs%tw)+tw)%tw<W;i++){const x=Math.floor((i-i0)*tw-((ofs%tw)+tw)%tw);
+      if(i&1){ctx.save();ctx.translate(x+Math.ceil(tw),0);ctx.scale(-1,1);ctx.drawImage(G,0,0,Math.ceil(tw)+1,th);ctx.restore()}else ctx.drawImage(G,x,0,Math.ceil(tw)+1,th)}}}
   cevreArka(zeminY);      // evler, tahta iskele, iskele nesneleri (cevre.js)
 }
 function ciz(){

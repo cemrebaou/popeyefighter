@@ -16,9 +16,10 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 ## Şu anki ön plan (cevre.js)
 - Zemin: `cevre/tahta.webp` iskele şeridi uç uca döşenir, altında deniz. Ayak çizgisi görselin üstten %34.6'sı.
 - Evler (`ev0-7`) p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda palmiye; boss bölgesinde fener.
-- İskele nesneleri (lamba, kasa, yük, çuval, top, tabela, kaya) p=1, karakterlerin arkasında; varil yerlerinin yanı boş bırakılır.
-- Çalılar p=1.12 ön katmanda seyrek, karakterlerin önünde.
-- Dizilim sabit tohumlu rastgele (`cevreKur`). Dağlar ve arka ağaçlar şimdilik dongu.js arkaPlan'da.
+- İskele nesneleri (lamba, kasa, yük, çuval, top, tabela, çalı) p=1, karakterlerin arkasında; varil yerlerinin yanı boş bırakılır.
+- Kayalar p=1.12 ön katmanda seyrek, karakterlerin önünde.
+- Ev katmanındaki nesneler (ev, palmiye, fener) birbirine değmez: palmiye/fener sadece yeterince geniş boşluğa ortalanır.
+- Dizilim sabit tohumlu rastgele (`cevreKur`). En arkada `cevre/gok.webp` gökyüzü+deniz: ekran boyunu tam kaplar, aynalanarak uç uca döşenir, 0.06 hızla kayar. Eski dağ ve ağaçlar kaldırıldı.
 
 ## Metroidvania / geri dönüş (backtracking)
 - Bölümler geri dönülerek yeniden keşfedilecek şekilde tasarlanır.
