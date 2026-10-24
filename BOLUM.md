@@ -15,7 +15,7 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 
 ## Şu anki ön plan (cevre.js)
 - En arkada `cevre/gok.webp` gökyüzü+deniz: ekran boyunu tam kaplar, aynalanarak uç uca döşenir, 0.06 hızla kayar.
-- Evler (`ev0-7`) p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda boşluk; birbirine binmez.
+- Evler: iki set var, `cevre.js` EV_SET ile seçilir (`ev0-7` eski düz cepheler, `yev0-7` yeni kulübeler; şu an `yev`). p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda boşluk; birbirine binmez.
 - Sahil `cevre/sahil.webp` (kum → ıslak kum → köpük → sığ su, perspektifli): evlerin alt çizgisinden ekranın altına kadar. 28 yatay dilime bölünür; üst dilim ev katmanı hızında (0.85), alt dilimler giderek 1.18 hıza ve büyüklüğe çıkar (gerçek zemin perspektifi). İskelenin altında kodla gölge bandı.
 - Zemin: `cevre/tahta.webp` iskele şeridi uç uca döşenir (eni 2400 birim); altında en arkadaki gökyüzü/deniz görseli görünür. Ayak çizgisi görselin üstten %34.6'sı.
 - İskele kazıkları `cevre/kazik.webp` (boy 630 birim) yolla aynı katmanda (p=1) ve aynı hızda, bir tahta şeridi eni aralıkla çift sıra: ön sıranın ortası iskelenin ön kenarında, karakterlerin önünde; arka sıra arka kenarda, %78 küçük (perspektif), alt yarısı tahtanın arkasında kalır.

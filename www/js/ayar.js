@@ -1,9 +1,9 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.320';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.321';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=82';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=83';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir']
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
