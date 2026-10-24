@@ -14,12 +14,11 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 - Önce tek tek nesneler (yol parçaları, bina cepheleri, sokak lambası, kasa, varil vb.) toplanır, tam sayfa arka planlar sonra ayrıca istenir.
 
 ## Şu anki ön plan (cevre.js)
-- Zemin: `cevre/tahta.webp` iskele şeridi uç uca döşenir, altında deniz. Ayak çizgisi görselin üstten %34.6'sı.
-- Evler (`ev0-7`) p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda palmiye; boss bölgesinde fener.
-- İskele nesneleri (lamba, kasa, yük, çuval, top, tabela, çalı) p=1, karakterlerin arkasında; varil yerlerinin yanı boş bırakılır.
-- Kayalar p=1.12 ön katmanda seyrek, karakterlerin önünde.
-- Ev katmanındaki nesneler (ev, palmiye, fener) birbirine değmez: palmiye/fener sadece yeterince geniş boşluğa ortalanır.
-- Dizilim sabit tohumlu rastgele (`cevreKur`). En arkada `cevre/gok.webp` gökyüzü+deniz: ekran boyunu tam kaplar, aynalanarak uç uca döşenir, 0.06 hızla kayar. Eski dağ ve ağaçlar kaldırıldı.
+- En arkada `cevre/gok.webp` gökyüzü+deniz: ekran boyunu tam kaplar, aynalanarak uç uca döşenir, 0.06 hızla kayar.
+- Evler (`ev0-7`) p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda boşluk; birbirine binmez.
+- Zemin: `cevre/tahta.webp` iskele şeridi uç uca döşenir (eni 2400 birim), altında deniz. Ayak çizgisi görselin üstten %34.6'sı.
+- En önde (p=1.12) `cevre/kazik.webp` iskele kazıkları: bir tahta şeridi eni kadar eşit aralıkla, üst ucu iskelenin ön kenarına biraz biner, altı ekrandan çıkar.
+- Kasa, lamba, palmiye, fener gibi nesneler netlik yetersiz olduğu için kaldırıldı; daha net görseller gelince aynı mantıkla (evlerin önü, iskelenin arka yarısı) eklenecek.
 
 ## Metroidvania / geri dönüş (backtracking)
 - Bölümler geri dönülerek yeniden keşfedilecek şekilde tasarlanır.
