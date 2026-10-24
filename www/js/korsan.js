@@ -11,7 +11,7 @@ function kancaGuncelle(e,dt){      // kanca: hazırlık → atıldığı anki oy
     h.x+=h.vx*dt;h.y+=h.vy*dt;if(h.y<zemin(h.x)+30){h.y=zemin(h.x)+30;if(h.vy<0)h.vy=0}
     if(S.durum==='oyun'&&oyuncuDeg(h.x,h.y,40)){      // vücudun neresine değerse hemen takılır
       if(dokunulmaz()){S.hp-=15;S.hitR={t0:S.t,z:'kafa',bk:(e.x-S.x)*S.yon>0?-1:1}}
-      titre(40);torbaCal(BLD,BLDBAG,1);kanFiskir(h.x,h.y,(e.x-S.x)>=0?1:-1,0.3);h.ox=h.x-S.x;h.oy=h.y-S.y;h.ph='cek';h.kT=S.t;h.cn=0.5;return}      // saplanınca bıçak sesi ve az kan
+      titre(40);torbaCal(BLD,BLDBAG,1);bufCal(GOH,1);kanFiskir(h.x,h.y,(e.x-S.x)>=0?1:-1,0.3);h.ox=h.x-S.x;h.oy=h.y-S.y;h.ph='cek';h.kT=S.t;h.cn=0.5;return}      // saplanınca bıçak sesi ve az kan
     if(Math.abs(h.x-S.x)>W/2/SC+250||h.y>S.y+2600)h.ph='don';      // ekrandan çıktı: geri döner
     return}
   if(h.ph==='cek'){      // takıldı: oyuncuyu kendine çeker
@@ -114,7 +114,7 @@ function oyuncuHasar(){
     }
   }      // korunma süresi yok: her düşmanın her vuruşu ayrı sayılır (aynı vuruş bir kez)
   if(DEMO)S.hp=Math.max(S.hp,1);      // önizlemede ölünmez, bölüm bitmez
-  else if(S.hp<=0){S.hp=0;S.durum='yenildi';S.durumT=S.t}
+  else if(S.hp<=0){S.hp=0;S.durum='yenildi';S.durumT=S.t;bufCal(GOS,1)}      // kaybedince game over sesi
   else if(!S.bossGeldi){if(S.x>BOSS_X-2400)bossKur()}            // boss ancak yolun sonuna gelince
   else if(!DUS.some(e=>e.boss&&!(e.olm&&e.olm.yat&&S.t-e.olm.yat>1))){S.durum='tamam';S.durumT=S.t}
 }

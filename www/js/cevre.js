@@ -13,6 +13,7 @@ const EV_TAB={ev:{boy:[1511,1582,1189,1451,1142,1402,1432,1365],oran:[0.892,0.58
   yev:{boy:[1293,1200,1325,1308,1240,1500,1405,1310],oran:[1.095,1.136,1.024,1.074,1.118,0.906,1.062,0.921]}};
 const EV_BOY=EV_TAB[EV_SET].boy,EV_ORAN=EV_TAB[EV_SET].oran;
 const KAZIK_BOY=630,KAZIK_ON=159,KAZIK_ARK=TAHTA_ARKA,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
+const SAHIL_UST=70;      // sahilin üst kenarı ev tabanının bu kadar üstünde: yarı 3D evlerin alt köşelerindeki boşlukları kapatır (evler kumun önünde)
 const SAHIL_W=2900,SAHIL_DILIM=28,SAHIL_P1=1.18;      // sahil (kum→ıslak kum→köpük→sığ su): dünya eni, yatay dilim sayısı, en alt dilimin kayma hızı (üst dilim EV_P)
 const LAMBA_BOY=[1350,1330],LAMBA_GERI=110;      // sokak lambaları: dünya boyu; tabanı ayak çizgisinin bu kadar gerisinde (iskelenin arka yarısı, karakterlerin arkası)
 let CV_EV=[],CV_LMB=[];
@@ -38,7 +39,7 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
   {const gp=zeminY+S.camY*SC*EV_P-TAHTA_ARKA*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
     const K=CVR.sahil;if(K){      // sahil: evlerin alt çizgisinden aşağı, sabit dünya yüksekliğinde (zıplayınca su yükselmez); yatay dilimler: üst dilim evlerle (uzak, yavaş), alt dilimler giderek hızlı ve büyük = zemin perspektifi; her dilim kendi derinliğiyle dikeyde de kayar
-      const r0=zeminY-TAHTA_ARKA*SC+6*s,yh=H-r0,N=SAHIL_DILIM,pb=i=>EV_P+(SAHIL_P1-EV_P)*i/N,yb=i=>r0+yh*i/N+S.camY*SC*pb(i);      // r0: kamera yerdeyken üst kenar; yh: sabit boy
+      const r0=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s,yh=H-r0,N=SAHIL_DILIM,pb=i=>EV_P+(SAHIL_P1-EV_P)*i/N,yb=i=>r0+yh*i/N+S.camY*SC*pb(i);      // r0: kamera yerdeyken üst kenar; yh: sabit boy
       for(let i=0;i<N;i++){
         const p=EV_P+(SAHIL_P1-EV_P)*(i+0.5)/N,sw=SAHIL_W*SC*p,sy0=K.height*i/N,sh=K.height/N,dy=Math.floor(yb(i)),dh=Math.ceil(yb(i+1))-dy+1;
         if(dy>H||dy+dh<0)continue;

@@ -12,7 +12,7 @@ document.addEventListener('visibilitychange',arkaPlanSes);addEventListener('page
 const SES_SON={};
 let ENPOS=[],SWD=null,YAR=null,YARS=null,HAZ=null,PAT=null,PPAR=null,SAPLA=null,SYUK=false,AD_SON=0,EMER=[],EFL=[];      // HAZ/PAT: kaptanın nişan ve ateş sesi, PPAR: yırtma, SAPLA: bıçak saplanma; EMER: düşman mermileri, EFL: namlu ateşi
 const PB=[],PBAG=[],AD=[],ADBAG=[],TK=[],TKBAG=[],KLC=[],WH=[],WHBAG=[],JP=[];let JPBAG=[],JPSON=-1;      // yumruk, adım, tekme, bıçak sesleri (torba: hepsi bir kez çalınmadan aynısı tekrar gelmez)
-const TD=[],TDBAG=[],DMR=[],DMRBAG=[];let TCS=null;      // varil: tahta parçası yere düşme, demir halka, ilk kırılma sesi
+const TD=[],TDBAG=[],DMR=[],DMRBAG=[];let TCS=null,GOS=null,GOH=null;      // GOS: kaybedince (game over), GOH: kanca bize takılınca      // varil: tahta parçası yere düşme, demir halka, ilk kırılma sesi
 const BLD=[],BLDBAG=[],INS=[],INSBAG=[],OLS={};let ADKS=null,ADKC=null,LVS=null,KALPS=null,BOPEN=null,USTS=null,GRS=null,DSS=null,DEVS=null,ARK=null,ARKSRC=null;      // bıçak vuruşu, yere iniş, ölüm (k/b/p/h), üstüne atlama, tutma, düşman düşmesi, arka plan müziği
 function arkaCal(){if(!AC||!ARK||ARKSRC)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ARK;src.loop=true;g.gain.value=0.35;src.connect(g);g.connect(AC.destination);src.start();ARKSRC=src}      // oyun boyunca döngüde
 function bufCal(buf,v){if(!AC||!buf||DEMO)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=buf;g.gain.value=v||1;src.connect(g);g.connect(AC.destination);src.start()}
@@ -23,7 +23,7 @@ function sesYukle(){
   for(let i=2;i<=6;i++)y('stepsnow_'+i,b=>AD.push(b));
   for(let i=1;i<=6;i++)y('kick_'+i,b=>TK.push(b));
   for(const i of [1,5,6,7])y('punch_'+i,b=>PB.push(b));
-  y('blade',b=>SWD=b);
+  y('blade',b=>SWD=b);y('gameover',b=>GOS=b);y('getoverhere',b=>GOH=b);
   for(let i=1;i<=3;i++)y('kilic_'+i,b=>KLC.push(b));
   for(let i=1;i<=5;i++)y('whoosh_'+i,b=>WH.push(b));
   for(let i=1;i<=3;i++)y('jump_'+i,b=>JP.push(b));      // sallama (boşta da dolu da): yumruk, tekme, bıçak
