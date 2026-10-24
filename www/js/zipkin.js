@@ -9,6 +9,7 @@
 //   (oyuncu uzaklaşınca da sürüklenir), hızlı geri fiske = kendine savur, düşmana doğru hızlı fiske = mızrağı kopar. Kaptan tutmaz, mızrak kısa sürede çıkar.
 // Varile saplanınca: geri çek = sürükle, geri fiske = kendine fırlat (yoldaki düşmana çarpar).
 const ZP_HIZ=7500,ZP_DON=6500,ZP_MAX=4500,ZP_MIN=260,ZP_SAR=1900,ZP_SALLA=3000,ZP_HASAR=20,ZP_KAL=14,ZP_YAKIN=400;      // uçuş/geri sarma hızı, halat en uzun/en kısa, tırmanma hızı, sallanma gücü, hasar, halat kalınlığı, düşmanı çekince durduğu mesafe
+const ZP_IP=1.3;      // parmağın çektiği ekran mesafesi başına halat (dünya birimi / (px/SC))
 const ZP_KONI=Math.cos(20*Math.PI/180);      // çekme konisi: çapanın tersi ±20°
 const ZP_AGIZ=[160,-12],ZP_TAB=[236,80],ZP_UC=[97.5,24.5],ZP_DUGUM=66,ZP_GOM={c:24,d:30,v:30};      // ön kol uzayında namlu ağzı; tabanca görselinde namlu ağzı; mızrak görselinde uç; halatın bağlandığı düğüm uçtan geride; saplanınca uç ne kadar gömülür
 const ZPK={ac:false,N:null,F:null},zizler=new Map(),ZMASK={};      // ZPK.N/F: o koldaki zıpkın (null = takılı, dolu); zizler: zıpkını tutan parmaklar
@@ -120,12 +121,16 @@ function zpkUc(k,h,dt){
 function zpkDon(k,h,dt){const m=zpkAgiz(k),dx=m[0]-h.x,dy=m[1]-h.y,L=Math.hypot(dx,dy),st=ZP_DON*dt;
   if(L<=st+12){ZPK[k]=null;return}
   h.x+=dx/L*st;h.y+=dy/L*st;h.a=Math.atan2(-dy,-dx)}      // ucu dışarı bakarak geri sarılır
-function zpkJoy(iz,h){      // parmak: ilk basılan yere göre joystick (al: çapaya doğru +, px: yana) ve hızlı fiske (fl: +1 çapaya doğru, -1 geri)
+function zpkJoy(iz,h){      // parmak: ip gibi çekme/salma (dL: bu karede çapanın tersine ±20° kayan piksel +, çapaya doğru ±20° -), yana joystick (px) ve hızlı fiske (fl)
   if(!iz)return null;
   const g=zpkTutamak(),ax=h.x-g[0],ay=-(h.y-g[1]),L=Math.hypot(ax,ay)||1,ux=ax/L,uy=ay/L;      // ekranda oyuncudan çapaya yön
+  if(iz.pfx===undefined){iz.pfx=iz.x0;iz.pfy=iz.y0}
+  const mx=iz.lx-iz.pfx,my=iz.ly-iz.pfy,ml=Math.hypot(mx,my);let dL=0;
+  if(ml>1.5){const c=(mx*ux+my*uy)/ml;if(c<-ZP_KONI)dL=ml;else if(c>ZP_KONI)dL=-ml}      // sadece çapa ekseninde (±20°) kayınca çeker/salar
+  iz.pfx=iz.lx;iz.pfy=iz.ly;
+  if(dL){iz.x0=iz.lx;iz.y0=iz.ly}      // çekerken/salarken sallanma merkezi parmakla gelir (çekme sallamaz)
   const ox=iz.lx-iz.x0,oy=iz.ly-iz.y0,a=ox*ux+oy*uy,pq=ox-a*ux;
-  const om=Math.hypot(ox,oy),cek=om>18&&a/om<-ZP_KONI;      // çekme: sadece çapanın tam tersine (±20°) kaydırınca; diğer her yön sallar
-  const r={al:cek?-kisit((om-18)/62,0,1):0,px:cek?0:Math.sign(pq)*kisit((Math.abs(pq)-14)/60,0,1),fl:0};
+  const r={dL,al:0,px:dL?0:Math.sign(pq)*kisit((Math.abs(pq)-14)/60,0,1),fl:0};
   const hs=iz.hist,son=hs[hs.length-1];
   if(son&&performance.now()/1000-son.t<0.06&&S.t-(iz.fT||-9)>0.3){const m=kayma(iz,0.1);
     if(m&&m.d>45&&izHiz(iz,0.1)>1300){const f=(m.dx*ux+m.dy*uy)/m.d;r.fl=f>0.6?1:f<-ZP_KONI?-1:0;r.mx=m.dx;r.my=-m.dy;if(r.fl){iz.fT=S.t;iz.hist=[son]}}}
@@ -147,7 +152,7 @@ function zpkTak(k,h,dt){
     if(j){
       if(j.fl>0){zpkKopar(k,h,true);return}      // düşmana doğru fiske: mızrağı kopar
       if(j.fl<0&&yer&&dist>ZP_YAKIN+80){const T=0.36;e.yon=S.x>=e.x?1:-1;e.vx=(S.x>e.x?1:-1)*Math.min(3200,(dist-ZP_YAKIN)/T);e.vy=G*T/2;e.atil=true;e.st=S.t+T+0.25;bufCal(GRS,0.8)}      // geri fiske: kendine savurur, yanına düşer
-      else if(j.al<0)h.L=Math.max(ZP_YAKIN,h.L+j.al*1300*dt)}      // geri çek: halat kısalır, düşman sürüklenir
+      else if(j.dL>0)h.L=Math.max(ZP_YAKIN,h.L-j.dL/SC*ZP_IP)}      // geri çek: halat kısalır, düşman sürüklenir
     if(yer&&dist>h.L+1)e.x=S.x+(e.x>S.x?1:-1)*h.L;
     return}
   if(t.tip==='v'){const v=t.v;
@@ -157,13 +162,12 @@ function zpkTak(k,h,dt){
     if(j){const dist=Math.abs(v.x-S.x),yn=S.x>v.x?1:-1;
       if(j.fl>0){zpkKopar(k,h,false);return}
       if(j.fl<0&&dist>350){const T=0.45;v.d='uc';v.vx=yn*Math.min(3000,(dist-250)/T);v.vy=G*T/2;v.vr=yn*4;v.f=0.45;v.rot=0;zpkKopar(k,h,false);bufCal(GRS,0.8);return}
-      if(j.al<0&&dist>350&&v.d==='yer')v.x+=yn*900*(-j.al)*dt}
+      if(j.dL>0&&dist>350&&v.d==='yer')v.x+=yn*j.dL/SC*ZP_IP}
     return}
   const A=zpkCapa(t);h.x=A[0];h.y=A[1];      // çevre çapası
   const j=zpkJoy(iz,h);if(!j)return;
-  const al=-j.al;      // ipi kendine çek (çapadan uzağa kaydır) = çapaya git, çapaya doğru = halatı sal
-  if(al>0){const g=zpkTutamak(),d=Math.hypot(A[0]-g[0],A[1]-g[1]);if(d<h.L)h.L=Math.max(ZP_MIN,d)}      // gevşek halat önce toplanır
-  if(al)h.L=kisit(h.L-al*ZP_SAR*dt,ZP_MIN,ZP_MAX);
+  if(j.dL>0){const g=zpkTutamak(),d=Math.hypot(A[0]-g[0],A[1]-g[1]);if(d<h.L)h.L=Math.max(ZP_MIN,d)}      // gevşek halat önce toplanır
+  if(j.dL)h.L=kisit(h.L-j.dL/SC*ZP_IP,ZP_MIN,ZP_MAX);      // ip gibi: parmak ne kadar çekerse / salarsa halat o kadar kısalır / uzar
   if(!S.yer&&j.px)S.vx+=j.px*ZP_SALLA*dt;
   if(j.fl<0){const g=zpkTutamak(),dx=A[0]-g[0],dy=A[1]-g[1],d=Math.hypot(dx,dy)||1;
     if(d>ZP_MIN+150){S.vx=dx/d*3000;S.vy=-dy/d*3000;S.yer=false;S.zpZip={k,t0:S.t};S.zpUcT=S.t+1.5;savurCal(S.x)}}      // çapaya fırla
