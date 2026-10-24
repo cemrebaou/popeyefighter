@@ -20,7 +20,7 @@ function torbaCal(L,B,v){if(!L.length)return;if(!B.length)B.push(...L.keys());bu
 function sesYukle(){
   if(SYUK||!AC)return;SYUK=true;
   const y=(ad,al)=>fetch('ses/'+ad+'.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(al).catch(e=>console.warn('Ses yüklenemedi: ses/'+ad+'.mp3',e));
-  for(let i=2;i<=6;i++)y('stepsnow_'+i,b=>AD.push(b));
+  for(let i=1;i<=29;i++)y('woodfoot_'+i,b=>AD.push(b));      // tahta iskele adım sesleri (herkes için, torba ile rastgele)
   for(let i=1;i<=6;i++)y('kick_'+i,b=>TK.push(b));
   for(const i of [1,5,6,7])y('punch_'+i,b=>PB.push(b));
   y('blade',b=>SWD=b);y('gameover',b=>GOS=b);y('getoverhere',b=>GOH=b);
