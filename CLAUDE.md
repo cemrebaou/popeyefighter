@@ -15,7 +15,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Arayüz yazıları sadece `js/dil.js` `DILLER`'de (en + tr; yeni dil = yeni blok). Koda yeni yazı eklerken düz metin yazma, anahtar ekleyip `dil('anahtar')` kullan (HTML: `data-l`/`data-lh`/`data-la`). Yerel değişkene `dil` adı verme.
 - Harita, yol, bölüm düzeni ve arka plan işlerinde önce `BOLUM.md`yi oku (2.5D derinlik, metroidvania geri dönüş, ileride gelecek zıpkınlı kanca).
 - Oyunla ilgili sorular (canlar, hasarlar, XP, yetenekler, kontroller) için önce `OYUN.md`ye bak, koda girme. Bir değer/kural değişince `OYUN.md`yi de güncelle.
-- Test linki: her push sonrası kullanıcıya **commit'e özel** linki ver (önbellek eski sürümü göstermesin): `https://raw.githack.com/cemrebaou/popeyefighter/<tam commit hash>/www/index.html` (hash: `git rev-parse HEAD`). Genel link: https://raw.githack.com/cemrebaou/popeyefighter/main/www/index.html
+- Test linki: her push sonrası kullanıcıya sürüm numaralı linki ver: `https://raw.githack.com/cemrebaou/popeyefighter/main/www/index.html?v=XXX` (XXX = sürümün son 3 hanesi, örn. v0.322 → 322). Commit hash'li githack linkleri boş/mavi ekran verebiliyor, kullanma.
 
 ## Dosya yapısı
 - `www/index.html` sadece HTML iskeleti + script sırası. Stil: `www/css/oyun.css`.
