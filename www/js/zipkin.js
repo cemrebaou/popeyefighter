@@ -14,7 +14,13 @@ const ZPK={ac:false,N:null,F:null},zizler=new Map(),ZMASK={};      // ZPK.N/F: o
 let ZP_PAT=null;
 const zpkBtn=document.getElementById('zpkB');
 zpkBtn.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();zpkMod(!ZPK.ac)});
-function zpkMod(a){ZPK.ac=a;zpkBtn.classList.toggle('ac',a);if(!a)zpkTemizle(true)}
+function zpkIsit(){      // modu açınca dokunma maskeleri boşta tek tek hazırlanır (ilk atışta takılma olmasın)
+  if(zpkIsit.b)return;zpkIsit.b=true;
+  const L=[['kazik',CVR.kazik]];for(const l of CV_LMB)L.push(['lamba'+l.k,CVR['lamba'+l.k]]);for(const e of CV_EV)L.push([e.ad,CVR[e.ad]]);
+  const bek=f=>window.requestIdleCallback?requestIdleCallback(f,{timeout:800}):setTimeout(f,60);
+  (function adim(){const q=L.shift();if(!q)return;if(q[1]&&ZMASK[q[0]]===undefined)zpkMaske(q[0],q[1]);bek(adim)})();
+}
+function zpkMod(a){ZPK.ac=a;if(a)zpkIsit();zpkBtn.classList.toggle('ac',a);if(!a)zpkTemizle(true)}
 function zpkTemizle(hemen){zizler.clear();for(const k of ['N','F']){if(!ZPK[k])continue;zpkBirak(k);if(hemen)ZPK[k]=null}}
 const zpkIzBul=k=>{for(const z of zizler.values())if(z.t===k)return z;return null};
 const zpkTutamak=()=>[S.x,S.y+(S.yer&&asagiMi()?540:720)];      // halatın oyuncuyu çektiği nokta (omuz hizası)

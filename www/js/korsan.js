@@ -364,12 +364,13 @@ function cesetResim(ciz,cx,cy,x0,x1,y0,y1){      // ciz(): dünya birimiyle, (cx
   const k=Math.min(SC*DPR,0.6),w=Math.ceil((x1-x0)*k),h=Math.ceil((y1-y0)*k);if(w<1||h<1)return null;
   const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d'),es=ctx;
   ctx=x;try{x.setTransform(k,0,0,k,-x0*k,y1*k);ciz()}catch(_){}finally{ctx=es}
-  let d;try{d=x.getImageData(0,0,w,h)}catch(_){return null}
-  const p=d.data;let mx=w,my=h,Mx=-1,My=-1;
-  for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=(yy*w+xx)*4;if(p[i+3]>6){const g=p[i]*0.2126+p[i+1]*0.7152+p[i+2]*0.0722;p[i]=p[i+1]=p[i+2]=g;if(xx<mx)mx=xx;if(xx>Mx)Mx=xx;if(yy<my)my=yy;if(yy>My)My=yy}}      // siyah beyaz + dolu alanın sınırı
-  if(Mx<0)return null;
-  x.putImageData(d,0,0);
-  const cw=Mx-mx+1,ch=My-my+1,o=document.createElement('canvas');o.width=cw;o.height=ch;o.getContext('2d').drawImage(c,mx,my,cw,ch,0,0,cw,ch);
+  const q=8,pw=Math.ceil(w/q),ph=Math.ceil(h/q),pc=document.createElement('canvas');pc.width=pw;pc.height=ph;const px=pc.getContext('2d');px.drawImage(c,0,0,pw,ph);      // sınır için sadece küçük bir kopya okunur (büyük resmi okumak takılma yapıyordu)
+  let d;try{d=px.getImageData(0,0,pw,ph).data}catch(_){return null}
+  let a0=pw,b0=ph,a1=-1,b1=-1;
+  for(let yy=0;yy<ph;yy++)for(let xx=0;xx<pw;xx++)if(d[(yy*pw+xx)*4+3]>0){if(xx<a0)a0=xx;if(xx>a1)a1=xx;if(yy<b0)b0=yy;if(yy>b1)b1=yy}
+  if(a1<0)return null;
+  const mx=Math.max(0,a0*q-q),my=Math.max(0,b0*q-q),Mx=Math.min(w-1,a1*q+2*q),My=Math.min(h-1,b1*q+2*q);
+  const cw=Mx-mx+1,ch=My-my+1,o=document.createElement('canvas');o.width=cw;o.height=ch;const og=o.getContext('2d');og.filter='grayscale(1)';og.drawImage(c,mx,my,cw,ch,0,0,cw,ch);      // siyah beyaz + kırpma tek çizimde
   return {c:o,x:cx+x0+mx/k,y:cy+y1-my/k,w:cw/k,h:ch/k};
 }
 function cesetEkle(r){if(!r)return;CESET.push(r);if(CESET.length>150)CESET.shift()}
