@@ -3,14 +3,15 @@
 // Katmanlar: ev katmanı p=0.85 (uzak: yavaş kayar, küçük görünür), iskele + kazıklar p=1 (karakterlerle aynı). Kazıklar çift sıra: ön sıra karakterlerin önünde, arka sıra (küçük) iskelenin arkasında.
 // Diğer nesneler (kasa, lamba, palmiye, fener…) netlik yetersiz olduğu için şimdilik kaldırıldı; daha net görseller gelince eklenecek. Ölçüler oyun birimi (Popeye boyu KARAKTER_BOY=1020).
 const CVR={};
-const CV_ADLAR=['gok','tahta','kazik','ev0','ev1','ev2','ev3','ev4','ev5','ev6','ev7'];
+const CV_ADLAR=['gok','kum','tahta','kazik','ev0','ev1','ev2','ev3','ev4','ev5','ev6','ev7'];
 for(const a of CV_ADLAR)yukle('cevre/'+a+'.webp',im=>CVR[a]=im);
 const TAHTA_W=2400,TAHTA_AYAK=0.346;      // bir tahta şeridinin dünya eni; ayakların bastığı çizgi görselin üstünden bu oranda (yüzeyin ortası)
 const TAHTA_ARKA=150;                     // tahta yüzeyinin arka kenarı: ayak çizgisinden bu kadar geride (evler buraya oturur)
 const EV_P=0.85;
 const EV_BOY=[1511,1582,1189,1451,1142,1402,1432,1365];      // ev cephelerinin dünya boyları (çizimdeki oranlar korunur)
 const EV_ORAN=[0.887,0.582,1.211,0.985,1.141,0.928,0.878,0.998];      // en / boy
-const KAZIK_BOY=900,KAZIK_ON=159,KAZIK_ARK=TAHTA_ARKA,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
+const KAZIK_BOY=630,KAZIK_ON=159,KAZIK_ARK=TAHTA_ARKA,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
+const KUM_W=2800,KUM_UST=40;      // kum şeridinin ev katmanındaki eni; üst kenarı ev tabanının bu kadar üstünde (evler kuma oturur)
 let CV_EV=[];
 (function cevreKur(){      // sabit tohumlu rastgele dizilim: her oyunda aynı liman
   let tohum=20261024;const r=()=>{tohum=(Math.imul(tohum,1103515245)+12345)>>>0;return (tohum>>>8)/16777216};
@@ -27,14 +28,16 @@ function cvCiz(im,sx,taban,h){      // taban: ekranda alt kenar (px), h: ekranda
   if(sx+w/2<-40||sx-w/2>W+40)return;
   ctx.drawImage(im,Math.round(sx-w/2),Math.round(taban-h),Math.round(w),Math.round(h));
 }
-function cevreArka(zeminY){      // arkaPlan'ın sonunda: evler, deniz, tahta iskele
+function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazıklar, tahta iskele (iskelenin altında en arkadaki gökyüzü/deniz görseli görünür)
   const gy=zeminY+S.camY*SC;      // dünya y=0 (ayak çizgisi) ekranda
-  {const gp=zeminY+S.camY*SC*EV_P-TAHTA_ARKA*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
-    for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,gp+6*s,e.h*s)}}
   const T=CVR.tahta;if(!T)return;
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
-  ctx.fillStyle='#4783a7';ctx.fillRect(0,y0+th*0.92,W,H);      // iskelenin altında deniz
-  ctx.fillStyle='#7fb0cf';ctx.fillRect(0,y0+th*0.92,W,Math.max(2,th*0.05));
+  {const gp=zeminY+S.camY*SC*EV_P-TAHTA_ARKA*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
+    const K=CVR.kum;if(K){      // kum: evlerin altından iskeleye kadar; evlerle aynı hızda kayar, altı tek renkle iskelenin içine kadar dolar (zıplarken ev ile tahta arası açılmaz)
+      const kw=KUM_W*s,kh=kw*K.height/K.width,ky=gp-KUM_UST*s;
+      for(let x=((W/2-S.x*EV_P*s)%kw+kw)%kw-kw;x<W;x+=kw-1)ctx.drawImage(K,Math.floor(x),Math.round(ky),Math.ceil(kw)+1,Math.ceil(kh));
+      const alt=y0+th*0.3;if(alt>ky+kh-2){ctx.fillStyle='#f6bf58';ctx.fillRect(0,Math.floor(ky+kh-2),W,Math.ceil(alt-(ky+kh-2)))}}
+    for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,gp+6*s,e.h*s)}}
   kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
   for(let x=((W/2-S.x*SC)%tw+tw)%tw-tw;x<W;x+=tw-1)ctx.drawImage(T,Math.floor(x),y0,Math.ceil(tw)+1,th);
 }
