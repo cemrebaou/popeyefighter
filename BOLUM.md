@@ -17,7 +17,7 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 - En arkada `cevre/gok.webp` gökyüzü+deniz: ekran boyunu tam kaplar, aynalanarak uç uca döşenir, 0.06 hızla kayar.
 - Evler (`ev0-7`) p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda boşluk; birbirine binmez.
 - Zemin: `cevre/tahta.webp` iskele şeridi uç uca döşenir (eni 2400 birim), altında deniz. Ayak çizgisi görselin üstten %34.6'sı.
-- En önde (p=1.12) `cevre/kazik.webp` iskele kazıkları: bir tahta şeridi eni kadar eşit aralıkla, üst ucu iskelenin ön kenarına biraz biner, altı ekrandan çıkar.
+- İskele kazıkları `cevre/kazik.webp` yolla aynı katmanda (p=1) ve aynı hızda, bir tahta şeridi eni aralıkla çift sıra: ön sıranın ortası iskelenin ön kenarında, karakterlerin önünde; arka sıra arka kenarda, %78 küçük (perspektif), alt yarısı tahtanın arkasında kalır.
 - Kasa, lamba, palmiye, fener gibi nesneler netlik yetersiz olduğu için kaldırıldı; daha net görseller gelince aynı mantıkla (evlerin önü, iskelenin arka yarısı) eklenecek.
 
 ## Metroidvania / geri dönüş (backtracking)

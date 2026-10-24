@@ -1,16 +1,16 @@
 'use strict';
 // Liman çevresi: en arkada gökyüzü/deniz (gok, dongu.js arkaPlan), evler (derinlik katmanı), tahta iskele zemini (uç uca döşenir), en önde iskele kazıkları.
-// Katmanlar: ev katmanı p=0.85 (uzak: yavaş kayar, küçük görünür), iskele p=1 (karakterlerle aynı), kazıklar p=1.12 (kameraya yakın, karakterlerin önünde).
+// Katmanlar: ev katmanı p=0.85 (uzak: yavaş kayar, küçük görünür), iskele + kazıklar p=1 (karakterlerle aynı). Kazıklar çift sıra: ön sıra karakterlerin önünde, arka sıra (küçük) iskelenin arkasında.
 // Diğer nesneler (kasa, lamba, palmiye, fener…) netlik yetersiz olduğu için şimdilik kaldırıldı; daha net görseller gelince eklenecek. Ölçüler oyun birimi (Popeye boyu KARAKTER_BOY=1020).
 const CVR={};
 const CV_ADLAR=['gok','tahta','kazik','ev0','ev1','ev2','ev3','ev4','ev5','ev6','ev7'];
 for(const a of CV_ADLAR)yukle('cevre/'+a+'.webp',im=>CVR[a]=im);
 const TAHTA_W=2400,TAHTA_AYAK=0.346;      // bir tahta şeridinin dünya eni; ayakların bastığı çizgi görselin üstünden bu oranda (yüzeyin ortası)
 const TAHTA_ARKA=150;                     // tahta yüzeyinin arka kenarı: ayak çizgisinden bu kadar geride (evler buraya oturur)
-const EV_P=0.85,ON_P=1.12;
+const EV_P=0.85;
 const EV_BOY=[1511,1582,1189,1451,1142,1402,1432,1365];      // ev cephelerinin dünya boyları (çizimdeki oranlar korunur)
 const EV_ORAN=[0.887,0.582,1.211,0.985,1.141,0.928,0.878,0.998];      // en / boy
-const KAZIK_EN=250,KAZIK_UST=110,KAZIK_ARA=TAHTA_W;      // ön kazık: eni, üst ucu ayak çizgisinin bu kadar altında (iskelenin ön kenarına biraz biner), aralık = bir tahta şeridi
+const KAZIK_BOY=900,KAZIK_ON=159,KAZIK_ARK=TAHTA_ARKA,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
 let CV_EV=[];
 (function cevreKur(){      // sabit tohumlu rastgele dizilim: her oyunda aynı liman
   let tohum=20261024;const r=()=>{tohum=(Math.imul(tohum,1103515245)+12345)>>>0;return (tohum>>>8)/16777216};
@@ -35,13 +35,13 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: evler, deniz, tahta is
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
   ctx.fillStyle='#4783a7';ctx.fillRect(0,y0+th*0.92,W,H);      // iskelenin altında deniz
   ctx.fillStyle='#7fb0cf';ctx.fillRect(0,y0+th*0.92,W,Math.max(2,th*0.05));
+  kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
   for(let x=((W/2-S.x*SC)%tw+tw)%tw-tw;x<W;x+=tw-1)ctx.drawImage(T,Math.floor(x),y0,Math.ceil(tw)+1,th);
 }
-function cevreOn(zeminY){      // karakterlerin önünde: eşit aralıklı iskele kazıkları; üst ucu iskelenin ön kenarına biner, altı ekrandan çıkar
+function kazikCiz(zeminY,on){      // on: karakterlerin önündeki sıra (iskelenin ön kenarı), değilse arka sıra (arka kenar, iskele tahtasının arkasında kalır)
   const K=CVR.kazik;if(!K)return;
-  const s=SC*ON_P,ust=zeminY+(S.camY*ON_P+KAZIK_UST*ON_P)*SC,w=KAZIK_EN*s;
-  if(ust>=H)return;
-  const h=H-ust+20,sh=Math.min(K.height,h/w*K.width);      // görselin üstten gereken kadarı (oran bozulmaz; çok uzunsa görsel uzatılır)
-  const ara=KAZIK_ARA*s,ofs=W/2-S.x*ON_P*s;
-  for(let x=((ofs%ara)+ara)%ara-ara;x<W+ara;x+=ara){if(x+w/2<0||x-w/2>W)continue;ctx.drawImage(K,0,0,K.width,sh,Math.round(x-w/2),Math.round(ust),Math.round(w),Math.round(h))}
+  const k=on?1:KAZIK_KUC,h=KAZIK_BOY*k*SC,w=h*K.width/K.height,orta=zeminY+S.camY*SC+(on?KAZIK_ON:-KAZIK_ARK)*SC;
+  const ara=KAZIK_ARA*SC,ofs=W/2-S.x*SC;
+  for(let x=((ofs%ara)+ara)%ara-ara;x<W+ara;x+=ara){if(x+w/2<0||x-w/2>W)continue;ctx.drawImage(K,Math.round(x-w/2),Math.round(orta-h/2),Math.round(w),Math.round(h))}
 }
+function cevreOn(zeminY){kazikCiz(zeminY,true)}      // karakterlerin önünde: ön kazık sırası
