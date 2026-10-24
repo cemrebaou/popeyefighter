@@ -5,19 +5,34 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 
 ## Oyuncu
 - Can: 250 (Maks. Can +100 yeteneğiyle 350). Can çubuğu yok; can kafa görselinden (11 hasar seviyesi) ve eğik çubuktan okunur.
-- Can dolumu: 6 sn vurulmayınca saniyede max canın %2.5'i (Can Dolumu x2 / x3 yetenekleri). Kalkanlı Savunma: blokta da dolar. Dolarken kalp atar ve kalp sesi çalar.
+- Can dolumu: son hasardan 6–8 sn (rastgele) sonra başlar; saniyede max canın %2.5'i = 250 canda **6.25 can/sn** (350 canda 8.75). Can Dolumu x2 → 12.5/sn, x3 → 18.75/sn. Kalkanlı Savunma: blokta beklemeden dolar. Dolarken kalp atar ve kalp sesi çalar. (`dongu.js`)
 - Enerji: max 250, saniyede 2.5 dolar (ıspanaktan sonra 10 sn 2 kat). Her özel güç 50 enerji. Bıçak modu saniyede 7.5 enerji yer.
 - Ispanak: max canın %10'u + 50 enerji. Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de). Düşman ölünce %25, varil kırılınca %50 (Varil Tutma ile) ıspanak düşer.
+- Seviye atlayınca can ve enerji tamamen dolar.
 - Blok: iki parmak ekranda hareketsiz. Hasarın yarısı engellenir; ilk 0.5 sn içinde vurulursa PARRY (düşman sersemler).
 
-- Zıplama: bir basış hep tam zıplar (basılı tutmak yükseltmez). Hız 2700, çift zıplama 1700 (yükseklik eskinin yarısı).
+- Yürüme/koşu hızı (en yüksek): 1100 birim/sn. Yerde saldırırken hız %35'e, çömelikken %45'e düşer.
+- Yerçekimi: 5600.
+- Zıplama: bir basış hep tam zıplar (basılı tutmak yükseltmez). Hız 2700, çift zıplama 1700 (yükseklik eskinin yarısı). Çift zıplama 1 kez (havada 1 ek zıplama, D yeteneğiyle). Çok Zıplama (K): zıplama gücü x1.25.
+- Sensörle zıplama gücü telefonu silkme hızına göre 0.8–1.45 kat (koşarken x1.18).
+
+## Can çalma (şu anki kod, `yetenek.js` canCal)
+- Yumruk: Can Çalma %10 (H) ya da %20 (M) — vurulan hasarın yüzdesi kadar can.
+- Tekme: Tekmeyle Can Çalma (Q) yoksa tekme hiç çalmaz; Q varsa yumruk oranının 1.5 katı (%15 / %30). H/M yoksa Q da işe yaramaz.
+- Bıçak modu: Bıçakla Can Çalma (T) varsa oran 2 kat (%20 / %40). H/M yoksa T de işe yaramaz.
+- Can Çalmalı Yırtma (R): düşmanın kalan canı kadar can (en az 50).
 
 ## Düşmanlar
 - k yumruklu korsan: 150 can, oyuncuya 10 hasar. b bıçaklı: 100 can, 15 hasar. h kancacı: 200 can, yumruk 10 hasar, yürümez.
-- Kaptan (boss): 500 can, 15 hasar; vuruşların yarısını alır, kafaya vuruş 3 kat (KRİTİK).
-- Kancacı: kanca takılırsa 15 hasar, çekerken her 0.5 sn 1 hasar. Oyuncuyu 420 birim yakınlığa (yumruk mesafesi) çekip bırakır; 610 birime kadar yumruk atar.
+- Kaptan (boss): 500 can, 15 hasar; vuruşların yarısını alır, kafaya vuruş 3 kat (KRİTİK). Bölüm sonunda x=42000'de.
+- Yürüme hızı: yumruklu/bıçaklı 520, kaptan 340 birim/sn. Kaçarken yarı hız.
+- Vurma menzili: yumruklu 470, bıçaklı 425, kaptan ~537 birim.
+- Saldırı: yumruklu 1–3 vuruşluk kombo, bıçaklı/kaptan 1–2. Kombo sonrası 0.6–1.4 sn bekler. Vuruş süreleri: uzak kol 0.5 sn, yakın kol 0.62 sn, bıçak/dipçik 0.66 sn.
+- Kaptan: ~1075–1900 birim uzaktayken nişan alıp ateş eder (nişandan 0.6 sn sonra), ateşler arası 1–2 sn.
+- Kancacı: 2100 birim içindeyse kanca atar. Kanca takılırsa 15 hasar, çekerken her 0.5 sn 1 hasar. Oyuncuyu 420 birim yakınlığa (yumruk mesafesi) çekip bırakır; 610 birime kadar 2–3 vuruşluk yumruk atar.
 - Düşman içine girilince biraz geri gider; geri giderken de vurabildiği an normal vurur.
-- Canı ilk kez %25 altına düşen korsan bir kez kaçar (10 sn ya da 4 vuruş), canı %50'ye doğru dolar.
+- Canı ilk kez %25 altına düşen korsan bir kez kaçar (10 sn ya da 4 vuruş), canı %50'ye doğru dolar. Kaptan kaçmaz.
+- Yere düşme 0.45 sn, kalkış 1.0 sn sürer.
 
 - Ölen (ve parçalanan) düşman siyah beyaz çizilir; yere düşüp yaşayan renkli kalır.
 
@@ -35,19 +50,23 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Yırtma: anında öldürür (enerji = düşmanın kalan canı).
 - Yere Düşürme yeteneği: 10 üstü vuruşlar %25 ihtimalle düşmanı yere düşürür.
 
-## Yetenek ağacı (`js/yetenek.js` YET)
+## Yetenek ağacı (`js/yetenek.js` YET) — parantez içi puan
 Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3) açılır; komşusu açık olmalı.
-- C Yumruk (kök) · I Yere Düşürme (pasif) · O/X Can Dolumu x2/x3 (pasif) · W Kalkanlı Savunma (pasif) · V Maks. Can +100 (pasif) · TOP Ispanak Cebi (30 sn'de bir ıspanak butonu, ıspanak gücü x2)
-- A İnsan Tutma · B Varil Tutma · G Sıkı Tutuş (pasif) · F Yırtma · R Can Çalmalı Yırtma · H/M Can Çalma %10/%20 (pasif)
-- N Yer Yumruğu (yarık) · S Süpermen Uçuşu · Y Aduket
-- D Çift Zıplama · K Çok Zıplama (pasif) · E Kayar Tekme · L Döner Tekme · U Süper Kahraman İnişi · Q Tekmeyle Can Çalma (pasif)
-- J Ateşli Aparkat · AL Alkış Şok Dalgası · YT Yere Tekme
-- P Bıçak Modu · T Bıçakla Can Çalma (pasif) · Z Bıçak Atlama
+- C Yumruk (kök, 0) · I Yere Düşürme (1, pasif) · O Can Dolumu x2 (1, pasif) · X Can Dolumu x3 (1, pasif) · W Kalkanlı Savunma (2, pasif) · V Maks. Can +100 (1, pasif) · TOP Ispanak Cebi (2; 30 sn'de bir ıspanak butonu, ıspanak gücü x2)
+- A İnsan Tutma (1) · B Varil Tutma (1) · G Sıkı Tutuş (1, pasif; tutulan kafa atamaz) · F Yırtma (2) · R Can Çalmalı Yırtma (3) · H Can Çalma %10 (1, pasif) · M Can Çalma %20 (1, pasif)
+- N Yer Yumruğu / yarık (2) · S Süpermen Uçuşu (2) · Y Aduket (2)
+- D Çift Zıplama (1) · K Çok Zıplama (1, pasif) · E Kayar Tekme (1) · L Döner Tekme (2) · U Süper Kahraman İnişi (2) · Q Tekmeyle Can Çalma (1, pasif)
+- J Ateşli Aparkat (1) · AL Alkış Şok Dalgası (2) · YT Yere Tekme (1)
+- P Bıçak Modu (2) · T Bıçakla Can Çalma (2, pasif) · Z Bıçak Atlama (3)
 - Aktif yetenek açılınca kendi sesi çalar. Sesi olmayan aktifler: Süpermen Uçuşu, Alkış.
 - Aduket: dönen su girdabı (`fx/aduket_su`), dönerken iki yana su damlası (`fx/damla`) saçar. Oluşurken `ses/wateraduket.mp3` döngüde çalar, atınca kesilir; çarpınca `ses/aduket_carpma.mp3`.
 
+## Bölüm
+- Düz zemin, karlı. 7 varil (x: 2600, 6300, 12400, 18000, 24200, 28600, 34000). Boss x=42000.
+
 ## Kontroller (dokunmatik)
 - Sağ yarı ön kol, sol yarı arka kol: kaydırınca kol o yöne gider. Telefon eğimi = yürüme, geri silkme = zıplama.
+- Eğimle yürüme: 3.5° altı durur, ~8°'ye kadar yavaş yürür, 20°'de tam koşu. Ekranı kendine yatırınca eğilir, bir daha yatırınca kalkar.
 - Butonlar: sol/sağ (solda), çömel/zıpla (sağda), ıspanak cebi, yetenek ağacı, kombo listesi.
 - İki parmak birlikte aşağı (yerde) = yer yumruğu; blokta iki parmak aşağı = bıçak modu.
 - İki parmak aynı yöne yatay = süpermen. Zıt yöne (açılarak) = döner tekme. Ortaya doğru = alkış.
