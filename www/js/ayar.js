@@ -1,7 +1,7 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.331';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.332';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
 const SURUM='?v=84';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
@@ -37,6 +37,7 @@ for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük t
 ['patla','sprey','yarik','aduket_su','damla'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
 ['bos','can','en','kalp'].forEach(n=>yukle('ui/bar_'+n+'.webp',im=>R['bar_'+n]=im));      // can/enerji barı: boş (büyük kalp), can dolgusu, enerji dolgusu, küçük kalp (yuvarlak)
 function gorselHazir(){
+  if(gorselHazir.ok)return;gorselHazir.ok=true;      // tek sefer: sonradan yüklenen görseller (cevre.js) ikinci döngü başlatmasın (oyun 2 kat hızlı akıyordu)
   ['uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));                 // oyuncunun arka bacağı
   ['ustkol','onkol2','el_yum_f','el_ac_n','el_pF'].forEach(n=>R[n+'_a']=koyult(R[n],.13));    // oyuncunun arka kolu ve eli
   for(const q of ['k_','b_','p_','h_']){for(const n of ['ust','on','elF'])R[q+n+'_k']=koyult(R[q+n],.13);for(const n of ['uy','bacak','bot'])R[q+n+'_k']=koyult(R[q+n],.3)}      // korsanın arkadaki kolu/bacağı

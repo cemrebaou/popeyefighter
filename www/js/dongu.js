@@ -41,6 +41,7 @@ function ciz(){
 // ---------- Döngü ----------
 let son=0;
 function dongu(ms){
+  if(ms===dongu.ms)return;dongu.ms=ms;      // aynı kare iki kez çağrılırsa (çift döngü) atlanır
   requestAnimationFrame(dongu);      // önce sonraki kare istenir: bir karede hata olsa bile oyun donmaz
   if(listeAcik||(agacAcik&&!DEMO)){son=ms;if(ZPK.N||ZPK.F||zizler.size)zpkTemizle(true);return}      // kombo listesi / ağaç açıkken oyun durur (ağaçta yetenek önizlemesi hariç)
   if(DEMO)demoAdim();

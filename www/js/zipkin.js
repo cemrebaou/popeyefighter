@@ -9,6 +9,7 @@
 //   (oyuncu uzaklaşınca da sürüklenir), hızlı geri fiske = kendine savur, düşmana doğru hızlı fiske = mızrağı kopar. Kaptan tutmaz, mızrak kısa sürede çıkar.
 // Varile saplanınca: geri çek = sürükle, geri fiske = kendine fırlat (yoldaki düşmana çarpar).
 const ZP_HIZ=7500,ZP_DON=6500,ZP_MAX=4500,ZP_MIN=260,ZP_SAR=1900,ZP_SALLA=3000,ZP_HASAR=20,ZP_KAL=14,ZP_YAKIN=400;      // uçuş/geri sarma hızı, halat en uzun/en kısa, tırmanma hızı, sallanma gücü, hasar, halat kalınlığı, düşmanı çekince durduğu mesafe
+const ZP_KONI=Math.cos(20*Math.PI/180);      // çekme konisi: çapanın tersi ±20°
 const ZP_AGIZ=[160,-12],ZP_TAB=[236,80],ZP_UC=[97.5,24.5],ZP_DUGUM=66,ZP_GOM={c:24,d:30,v:30};      // ön kol uzayında namlu ağzı; tabanca görselinde namlu ağzı; mızrak görselinde uç; halatın bağlandığı düğüm uçtan geride; saplanınca uç ne kadar gömülür
 const ZPK={ac:false,N:null,F:null},zizler=new Map(),ZMASK={};      // ZPK.N/F: o koldaki zıpkın (null = takılı, dolu); zizler: zıpkını tutan parmaklar
 let ZP_PAT=null;const ZP_SERIT=8192;      // halat şeridi (bir kez çizilir)
@@ -123,10 +124,11 @@ function zpkJoy(iz,h){      // parmak: ilk basılan yere göre joystick (al: ça
   if(!iz)return null;
   const g=zpkTutamak(),ax=h.x-g[0],ay=-(h.y-g[1]),L=Math.hypot(ax,ay)||1,ux=ax/L,uy=ay/L;      // ekranda oyuncudan çapaya yön
   const ox=iz.lx-iz.x0,oy=iz.ly-iz.y0,a=ox*ux+oy*uy,pq=ox-a*ux;
-  const r={al:Math.sign(a)*kisit((Math.abs(a)-18)/62,0,1),px:Math.sign(pq)*kisit((Math.abs(pq)-14)/60,0,1),fl:0};
+  const om=Math.hypot(ox,oy),cek=om>18&&a/om<-ZP_KONI;      // çekme: sadece çapanın tam tersine (±20°) kaydırınca; diğer her yön sallar
+  const r={al:cek?-kisit((om-18)/62,0,1):0,px:cek?0:Math.sign(pq)*kisit((Math.abs(pq)-14)/60,0,1),fl:0};
   const hs=iz.hist,son=hs[hs.length-1];
   if(son&&performance.now()/1000-son.t<0.06&&S.t-(iz.fT||-9)>0.3){const m=kayma(iz,0.1);
-    if(m&&m.d>45&&izHiz(iz,0.1)>1300){const f=(m.dx*ux+m.dy*uy)/m.d;r.fl=f>0.6?1:f<-0.6?-1:0;r.mx=m.dx;r.my=-m.dy;if(r.fl){iz.fT=S.t;iz.hist=[son]}}}
+    if(m&&m.d>45&&izHiz(iz,0.1)>1300){const f=(m.dx*ux+m.dy*uy)/m.d;r.fl=f>0.6?1:f<-ZP_KONI?-1:0;r.mx=m.dx;r.my=-m.dy;if(r.fl){iz.fT=S.t;iz.hist=[son]}}}
   return r;
 }
 function zpkTak(k,h,dt){
