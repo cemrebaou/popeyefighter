@@ -76,3 +76,5 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 #kombolB,#agacB{z-index:60;transition:transform .05s,filter .15s}#agacB{filter:grayscale(1) brightness(.8)}
 #agacB.ok:not(.aktif){filter:none}
 #kombolB.aktif,#agacB.aktif{filter:drop-shadow(0 0 8px #ffd84a)}
+
+.tam #sens,.tam #sifir,.tam #dilB,.tam #kapat{display:none!important}      /* tam ekranda sensör ve dil düğmeleri gizli */

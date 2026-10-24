@@ -53,7 +53,7 @@ function zpkKazik(wx,wy,on){
 function zpkHedef(sx,sy){
   const wx=S.x+(sx-W/2)/SC,wy=S.camY+(ZY()-sy)/SC;
   let en=null,ed=1e9;
-  for(const e of DUS){if(e.olu||e.tut||e.dus)continue;if(dusDeg(e,wx,wy,70)){const d=Math.abs(wx-e.x);if(d<ed){ed=d;en=e}}}
+  for(const e of DUS){if(e.olu||e.tut)continue;if(dusDeg(e,wx,wy,70)){const d=Math.abs(wx-e.x);if(d<ed){ed=d;en=e}}}
   if(en)return {tip:'d',e:en,wx,wy};
   for(const v of VAR)if((v.d==='yer'||v.d==='dus')&&Math.abs(wx-v.x)<V_W/2+25&&Math.abs(wy-v.y)<V_MRK+25)return {tip:'v',v,wx,wy};
   let r=zpkKazik(wx,wy,true);if(r)return r;
@@ -65,12 +65,13 @@ function zpkHedef(sx,sy){
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height,cx=W/2+(e.x+w/2-S.x*p)*s,hp=e.h*s,wp=hp*im.width/im.height;
       if(sx<cx-wp/2-6||sx>cx+wp/2+6)continue;
       if(zpkDolu(e.ad,im,(sx-(cx-wp/2))/wp,(sy-(taban-hp))/hp))return {tip:'c',p,X:(wx-S.x*(1-p*p))/p,Y:wy-S.camY*(1-p),wx,wy}}}
+  if(wy>zemin(wx)+250)return {tip:'c',p:1,X:wx,Y:wy,wx,wy};      // gökyüzü: havada takılır
   return {tip:'yok',wx,wy};
 }
 // ---- atış, uçuş, saplanma, geri sarma ----
 function zpkAt(k,sx,sy){
-  if(S.durum!=='oyun'||ZPK[k])return;
-  const t=zpkHedef(sx,sy),h={ph:'haz',t0:S.t,hd:t,x:0,y:0,vx:0,vy:0,a:0,L:0,yol:0,bir:false};
+  if(S.durum!=='oyun')return;
+  const t=zpkHedef(sx,sy),h={ph:'haz',t0:S.t,hd:t,x:0,y:0,vx:0,vy:0,a:0,L:0,yol:0,bir:false,yat0:t.tip==='d'&&!!t.e.dus};
   if(t.tip==='d'){const yn=t.e.yon||1;h.ox=(t.wx-t.e.x)*yn;h.oy=t.wy-t.e.y}
   ZPK[k]=h;
   if(Math.abs(t.wx-S.x)>80)S.yon=t.wx>S.x?1:-1;      // hedefe döner
@@ -88,6 +89,7 @@ function zpkSapla(k,h,e){
   if(e){      // düşman: 20 hasar, iki eliyle mızrağı tutar
     h.hd={tip:'d',e};const yn=e.yon||1;h.ox=(h.x-e.x)*yn;h.oy=h.y-e.y;h.yn0=yn;
     bufCal(ZPS_I,1);
+    if(e.dus){h.yat=true;vur(e,ZP_HASAR,0,0,0,h.y);if(e.olu){h.ph='don';h.hd={tip:'yok'}}else if(h.bir)h.oto=S.t+0.15;return}      // yerde yatan: mızrak saplanır, hızlı çekince havaya fırlar
     const d0=e.dus,ph=S.pHx;S.pHx=h.x;vur(e,ZP_HASAR,Math.cos(h.a),Math.sin(h.a),0.4,h.y);S.pHx=ph;
     if(!d0&&e.dus){e.dus=null;e.dusA=0;if(e.cy0)e.cy=e.cy0}      // zıpkınla yere düşmez, mızrağı tutar
     if(e.olu){h.ph='don';h.hd={tip:'yok'};return}
@@ -103,7 +105,7 @@ function zpkSapla(k,h,e){
 }
 function zpkUc(k,h,dt){
   const t=h.hd;
-  if((t.tip==='d'&&(t.e.olu||t.e.tut||t.e.dus||!DUS.includes(t.e)))||(t.tip==='v'&&!(VAR.includes(t.v)&&(t.v.d==='yer'||t.v.d==='dus')))){      // hedef gitti: boşluğa uçar
+  if((t.tip==='d'&&(t.e.olu||t.e.tut||(t.e.dus&&!h.yat0)||!DUS.includes(t.e)))||(t.tip==='v'&&!(VAR.includes(t.v)&&(t.v.d==='yer'||t.v.d==='dus')))){      // hedef gitti: boşluğa uçar
     const p=zpkHedefNok(h);h.hd={tip:'yok',wx:p[0],wy:p[1]};h.dx=p[0]-h.x;h.dy=p[1]-h.y;h.menz=h.yol+Math.hypot(h.dx,h.dy)+300}
   const hn=zpkHedefNok(h),dx=hn?hn[0]-h.x:h.dx,dy=hn?hn[1]-h.y:h.dy,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,st=ZP_HIZ*dt,n=Math.max(1,Math.ceil(st/60)),s=st/n;
   h.vx=ux*ZP_HIZ;h.vy=uy*ZP_HIZ;h.a=Math.atan2(uy,ux);
@@ -124,22 +126,25 @@ function zpkJoy(iz,h){      // parmak: ilk basılan yere göre joystick (al: ça
   const r={al:Math.sign(a)*kisit((Math.abs(a)-18)/62,0,1),px:Math.sign(pq)*kisit((Math.abs(pq)-14)/60,0,1),fl:0};
   const hs=iz.hist,son=hs[hs.length-1];
   if(son&&performance.now()/1000-son.t<0.06&&S.t-(iz.fT||-9)>0.3){const m=kayma(iz,0.1);
-    if(m&&m.d>45&&izHiz(iz,0.1)>1300){const f=(m.dx*ux+m.dy*uy)/m.d;r.fl=f>0.6?1:f<-0.6?-1:0;if(r.fl){iz.fT=S.t;iz.hist=[son]}}}
+    if(m&&m.d>45&&izHiz(iz,0.1)>1300){const f=(m.dx*ux+m.dy*uy)/m.d;r.fl=f>0.6?1:f<-0.6?-1:0;r.mx=m.dx;r.my=-m.dy;if(r.fl){iz.fT=S.t;iz.hist=[son]}}}
   return r;
 }
 function zpkTak(k,h,dt){
   const t=h.hd,iz=zpkIzBul(k);
   if(h.oto&&S.t>=h.oto){zpkKopar(k,h,false);return}
   if(t.tip==='d'){const e=t.e;
-    if(e.olu||e.tut||e.dus||!DUS.includes(e)){zpkKopar(k,h,false);return}
+    if(e.olu||e.tut||(h.yat?!e.dus:e.dus)||!DUS.includes(e)){zpkKopar(k,h,false);return}
     const p=zpkHedefNok(h);h.x=p[0];h.y=p[1];
+    if(h.yat){const j=zpkJoy(iz,h);      // yerde yatan: hızlı çekince çekilen yöne havaya fırlar
+      if(j&&j.fl<0){const L=Math.hypot(j.mx,j.my)||1;e.dus=null;e.dusA=0;if(e.cy0)e.cy=e.cy0;e.vx=j.mx/L*2600;e.vy=Math.max(1400,j.my/L*2600);e.y+=5;e.atil=true;e.st=S.t+1;bufCal(GRS,0.8);zpkKopar(k,h,false)}
+      return}
     if(e.boss||!(e.zpk&&e.zpk.k===k))return;
     e.yon=S.x>=e.x?1:-1;e.st=Math.max(e.st||0,S.t+0.3);e.ka=null;      // mızrağı tutup çırpınır: saldıramaz
     const dist=Math.abs(e.x-S.x),yer=e.y<=zemin(e.x)+1;h.L=Math.max(ZP_YAKIN,Math.min(h.L,dist));
     const j=zpkJoy(iz,h);
     if(j){
       if(j.fl>0){zpkKopar(k,h,true);return}      // düşmana doğru fiske: mızrağı kopar
-      if(j.fl<0&&yer&&dist>ZP_YAKIN+80){const T=0.36;e.vx=(S.x>e.x?1:-1)*Math.min(3200,(dist-ZP_YAKIN)/T);e.vy=G*T/2;e.atil=true;e.st=S.t+T+0.25;bufCal(GRS,0.8)}      // geri fiske: kendine savurur, yanına düşer
+      if(j.fl<0&&yer&&dist>ZP_YAKIN+80){const T=0.36;e.yon=S.x>=e.x?1:-1;e.vx=(S.x>e.x?1:-1)*Math.min(3200,(dist-ZP_YAKIN)/T);e.vy=G*T/2;e.atil=true;e.st=S.t+T+0.25;bufCal(GRS,0.8)}      // geri fiske: kendine savurur, yanına düşer
       else if(j.al<0)h.L=Math.max(ZP_YAKIN,h.L+j.al*1300*dt)}      // geri çek: halat kısalır, düşman sürüklenir
     if(yer&&dist>h.L+1)e.x=S.x+(e.x>S.x?1:-1)*h.L;
     return}
@@ -154,10 +159,11 @@ function zpkTak(k,h,dt){
     return}
   const A=zpkCapa(t);h.x=A[0];h.y=A[1];      // çevre çapası
   const j=zpkJoy(iz,h);if(!j)return;
-  if(j.al>0){const g=zpkTutamak(),d=Math.hypot(A[0]-g[0],A[1]-g[1]);if(d<h.L)h.L=Math.max(ZP_MIN,d)}      // gevşek halat önce toplanır
-  if(j.al)h.L=kisit(h.L-j.al*ZP_SAR*dt,ZP_MIN,ZP_MAX);
+  const al=-j.al;      // ipi kendine çek (çapadan uzağa kaydır) = çapaya git, çapaya doğru = halatı sal
+  if(al>0){const g=zpkTutamak(),d=Math.hypot(A[0]-g[0],A[1]-g[1]);if(d<h.L)h.L=Math.max(ZP_MIN,d)}      // gevşek halat önce toplanır
+  if(al)h.L=kisit(h.L-al*ZP_SAR*dt,ZP_MIN,ZP_MAX);
   if(!S.yer&&j.px)S.vx+=j.px*ZP_SALLA*dt;
-  if(j.fl>0){const g=zpkTutamak(),dx=A[0]-g[0],dy=A[1]-g[1],d=Math.hypot(dx,dy)||1;
+  if(j.fl<0){const g=zpkTutamak(),dx=A[0]-g[0],dy=A[1]-g[1],d=Math.hypot(dx,dy)||1;
     if(d>ZP_MIN+150){S.vx=dx/d*3000;S.vy=-dy/d*3000;S.yer=false;S.zpZip={k,t0:S.t};S.zpUcT=S.t+1.5;savurCal(S.x)}}      // çapaya fırla
 }
 function zpkAsili(){if(S.yer)return false;for(const k of ['N','F']){const h=ZPK[k];if(h&&h.ph==='tak'&&h.hd.tip==='c')return true}return false}      // halata asılı (havada)
