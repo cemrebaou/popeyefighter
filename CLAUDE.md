@@ -13,6 +13,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Commit yazarı `Claude <noreply@anthropic.com>`; commit sonuna sistemin verdiği Co-Authored-By ve Claude-Session satırlarını ekle.
 - İstekleri liste yap: kullanıcı peş peşe iş söylerse sadece sonuncuyu tekrarla; push gerektiren iş veya ses/görsel gelince listeyi birlikte yap.
 - Arayüz yazıları sadece `js/dil.js` `DILLER`'de (en + tr; yeni dil = yeni blok). Koda yeni yazı eklerken düz metin yazma, anahtar ekleyip `dil('anahtar')` kullan (HTML: `data-l`/`data-lh`/`data-la`). Yerel değişkene `dil` adı verme.
+- Harita, yol, bölüm düzeni ve arka plan işlerinde önce `BOLUM.md`yi oku (2.5D derinlik, metroidvania geri dönüş, ileride gelecek zıpkınlı kanca).
 - Oyunla ilgili sorular (canlar, hasarlar, XP, yetenekler, kontroller) için önce `OYUN.md`ye bak, koda girme. Bir değer/kural değişince `OYUN.md`yi de güncelle.
 - Test linki: https://raw.githack.com/cemrebaou/popeyefighter/main/www/index.html
 
