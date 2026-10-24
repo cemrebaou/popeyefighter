@@ -188,11 +188,14 @@ cv.addEventListener('pointerdown',e=>{
   e.preventDefault();
   if(S.durum!=='oyun'){if(S.t>S.durumT+0.8)yeniOyun();return}
   const t=e.clientX<W/2?'F':'N';
-  if(tekmeBolgesi(e.clientX,e.clientY)&&!(ZPK.ac&&zpkHedef(e.clientX,e.clientY).tip==='d')){      // zıpkın açıkken tekme bölgesindeki (yerde yatan) düşmana basınca zıpkın atılır
+  if(tekmeBolgesi(e.clientX,e.clientY)&&!(ZPK.ac&&(zpkIzBul('N')||zpkHedef(e.clientX,e.clientY).tip==='d'))){      // zıpkın açıkken tekme bölgesindeki (yerde yatan) düşmana basınca zıpkın atılır
    try{cv.setPointerCapture(e.pointerId)}catch(_){}kizler.set(e.pointerId,{t,t0:performance.now(),x0:e.clientX,y0:e.clientY,maxd:0});return}
   if(KOL[t].ak)return;
-  if(ZPK.ac){const zt=!zpkIzBul('N')?'N':!zpkIzBul('F')?'F':null;if(zt){try{cv.setPointerCapture(e.pointerId)}catch(_){}      // zıpkın açık: o an boştaki kol (yer fark etmez) basılan yere zıpkın atar, parmak halatı tutar
-    if(ZPK[zt]){if(ZPK[zt].ph==='tak')zpkKopar(zt,ZPK[zt],false);ZPK[zt]=null}const t=zt;zizler.set(e.pointerId,{t,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,hist:[{t:performance.now()/1000,x:e.clientX,y:e.clientY}]});zpkAt(t,e.clientX,e.clientY)}return}
+  if(ZPK.ac){try{cv.setPointerCapture(e.pointerId)}catch(_){}      // zıpkın (sadece yakın kol): zıpkını tutan parmak yoksa bu parmak atar ve çek/sal yapar; varsa bu parmak sallar
+    const z0={x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,hist:[{t:performance.now()/1000,x:e.clientX,y:e.clientY}]};
+    if(!zpkIzBul('N')){if(ZPK.N){if(ZPK.N.ph==='tak')zpkKopar('N',ZPK.N,false);ZPK.N=null}z0.t='N';zizler.set(e.pointerId,z0);zpkAt('N',e.clientX,e.clientY)}
+    else{z0.t='S';zizler.set(e.pointerId,z0)}
+    return}
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
   izler.set(e.pointerId,{t,x0:e.clientX,y0:e.clientY,yon:S.yon,hist:[{t:performance.now()/1000,x:e.clientX,y:e.clientY}],lx:e.clientX,ly:e.clientY,pv:null,turn:0,sho:false,atil:false,sla:false,sup:false,t0:performance.now(),maxd:0,tm:DUS.some(e=>e.tut&&e.tut!==t&&!e.iki),joined:false});
   KOL[t].ak=true;KOL[t].e=0;

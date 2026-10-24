@@ -7,7 +7,7 @@ Object.assign(S,{hp:HPMAX,inv:0,dur:0,sars:0,shx:0,shy:0,durum:'oyun',durumT:0,p
 // Hızlı çizim: save/restore yerine doğrudan dönüşüm (ekran sarsıntısı dahil). Bittikten sonra tabanDon() çağrılır.
 function donCiz(im,sx,sy,rot,a,dx,dy,w,h){const c=Math.cos(rot)*DPR,s=Math.sin(rot)*DPR;ctx.setTransform(c,s,-s,c,(sx+S.shx)*DPR,(sy+S.shy)*DPR);ctx.globalAlpha=a;ctx.drawImage(im,dx,dy,w,h)}
 function tabanDon(){ctx.setTransform(DPR,0,0,DPR,S.shx*DPR,S.shy*DPR);ctx.globalAlpha=1}
-const ZY=()=>H*0.80, kisit=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ZY=()=>H-ZGAP*SC, kisit=(v,a,b)=>Math.max(a,Math.min(b,v));
 const EL={N:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}},F:{wx:0,wy:0,px:null,py:null,vx:0,vy:0,v:0,sv:{x:0,y:0}}}, DW={N:0,F:0};
 let sonYon=1, DUS=[], MERMI=[];
 const OGV={t:-9}, AY={N:{},F:{}};      // oyuncunun gövde noktaları (kalça, boyun, kafa) ve bacak noktaları (d diz, a bot ortası, u bot ucu): vuruşlar gerçek temasla

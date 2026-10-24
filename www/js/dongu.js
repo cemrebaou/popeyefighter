@@ -96,6 +96,7 @@ function dongu(ms){
       if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
       if(S.dkick){const t0=S.dkick.t0;S.dkick=null;zeminVur(0.5,0,t0);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
   }
+  {const hz=ZPK.ac&&!DEMO?ZOOM_ZPK:ZOOM;if(Math.abs(hz-ZM)>1e-4){ZM+=(hz-ZM)*(1-Math.exp(-dt*4));if(Math.abs(hz-ZM)<1e-3)ZM=hz;SC=SC0*ZM;GOK=null}}      // zıpkın modunda %50 uzak (alttan açmaz, üste açar)
   zpkGuncelle(dt);      // zıpkın: uçuş, saplanma, halat kısıtı
   S.camY+=(S.y-S.camY)*(1-Math.exp(-dt*5));
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));

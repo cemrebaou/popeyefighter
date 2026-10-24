@@ -39,14 +39,15 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Cesetler kalıcı: ölen düşman yere yatınca (1.2 sn) ya da yırtılan yarı yere yatıp durunca bir kez siyah beyaz resme çevrilir (`CESET`, korsan.js `cesetYap`/`parcaYap`) ve düşman listesinden silinir. Sonra sadece ekrandayken tek resim çizilir: güncelleme/poz/filtre yok. En çok 150 ceset (eskisi silinir). Önizlemede ceset kalmaz.
 
 ## Zıpkın (`js/zipkin.js`)
-- Kamera uzaklığı: `ZOOM` 0.75 (%25 uzak; zemin çizgisi ekranda aynı yerde, fazla alan üste açılır).
+- Kamera uzaklığı: `ZOOM` 0.75 (%25 uzak). Ekranın altında zeminin en fazla 285 birim altı görünür (ön tahtanın dibi görünmez); zoom değişince alt sabit kalır, üste açılır.
 - Tam ekranda sensör, dengele ve dil düğmeleri gizlenir; tam ekrandan önce ayarlanmalı.
 - Sol alttaki zıpkın butonu (ıspanak butonunun karşısı, sola gitme tuşunun üstü; PC'de X) zıpkın modunu açar/kapar. Şimdilik enerji harcamaz, yetenek ağacında değil.
-- Açıkken iki kolda da tabanca durur, eller açık. Ekrana basınca yumruk yerine o an boştaki kol (yer/yön fark etmez; önce ön kol) parmağın bastığı yere zıpkın atar. İki parmak = iki zıpkın. Tekme bölgesi yine tekme atar.
+- Zıpkın sadece yakın kolda (tabanca %10 küçük). Zıpkın tutulmuyorken ekrana basan parmak zıpkını basılan yere atar; bu parmak çek/sal parmağıdır. Zıpkın tutulurken basılan diğer parmak sallanma parmağıdır (yana kaydır = sallan, çekmeyi etkilemez). Tekme bölgesi yine tekme atar (zıpkın tutulurken orası da sallar).
+- Zıpkın modunda kamera %50 uzak (ZOOM_ZPK 0.5), ekranın altı sabit kalır, fazlası üste açılır; mod kapanınca normal zoom (0.75).
 - Takılabilen her şey: düşman (yerde yatan dahil), varil, kazıklar (ön/arka), sokak lambaları, iskele tahtası, evler (görselin dolu pikseline), gökyüzü (zeminden 250 birim yukarısı havada takılır). Su: zıpkın uçar, geri sarılır.
 - Uçuş hızı 7500, geri sarma 6500, halat en uzun 4500, en kısa 260 birim.
 - Parmak basılı = halat tutuluyor; parmak kalkınca halat bırakılır, zıpkın geri sarılır. Halattan havada bırakınca savrulma hızı 1.5 sn korunur.
-- Nesneye takılınca parmak joystick (merkez = ilk basılan yer): ip gibi: parmağı çapanın tam tersine (±20°) kaydırdıkça halat o kadar kısalır (çapaya gider), çapaya doğru (±20°) kaydırdıkça o kadar uzar (salar); diğer her yön sallar. Hızlı geri çekme fiskesi (aynı ±20°) = çapaya fırla (3000). Halat gergin ve sarkaç gibi; gevşekken sarkar. Asılıyken zıplama = halatları bırakıp sıçrar. Eğim/sol-sağ tuşları da sallar.
+- Nesneye takılınca: çekme ekseni atışta sabitlenir (hedef yanda ise yatay, üstte/altta ise dikey). İlk parmağı hedefin tersine kaydırdıkça (yeri önemsiz; sağdaysa sola, üstteyse aşağı) halat o kadar kısalır, hedefe doğru kaydırdıkça uzar (ZP_IP 1.3). Hızlı geri çekme fiskesi = çapaya fırla (3000). Halat gergin ve sarkaç gibi. Asılıyken zıplama = halatı bırakıp sıçrar. Eğim/sol-sağ tuşları da sallar.
 - Düşmana saplanma 20 hasar (kaptana 10, kafasına 3 kat). Düşman iki eliyle mızrağı tutar, çırpınır, saldıramaz. Parmağı kendine çek = düşmanı çek (400 birime kadar; oyuncu uzaklaşınca da sürüklenir), hızlı geri fiske = kendine savurur (yanına yüzüstü kapaklanır), düşmana doğru hızlı fiske = mızrağı kopar. Kaptan tutmaz, mızrak 0.45 sn sonra çıkar. Aynı düşmana ikinci zıpkın: hasar verir, hemen çıkar.
 - Yerde yatan düşmana saplanma 20 hasar; hızlı çekince çekilen yöne havaya fırlar, düşünce yine yatar.
 - Varil: geri çek = sürükle, hızlı geri fiske = kendine fırlatır (yoldaki düşmana çarpar).
