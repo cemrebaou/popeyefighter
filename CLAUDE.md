@@ -5,7 +5,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 ## Çalışma kuralları (her değişiklikte)
 - Cevaplar kısa, Türkçe; istenmeyeni anlatma. Kopyalanacak şey kod bloğunda. İndirme isteniyorsa link ver.
 - Kod değişikliği: Edit ile küçük düzenleme yap; dosyanın tamamını okuma, Grep ile ilgili yere git.
-- Her değişiklikte ekrandaki sürümü artır: `OYUN_SURUM` (`js/ayar.js`) ve `index.html`deki tüm `?v=` (js/css) değerlerini aynı sürüme getir. Biçim `v0.XXX` (v0.264 → v0.265 …). Görsel/ses değişirse `SURUM='?v=..'` de artır.
+- Her değişiklikte ekrandaki sürümü artır: `OYUN_SURUM` (`js/ayar.js`, `'v0.XXX'`) ve `index.html`deki tüm `?v=0.XXX` (js/css; dikkat: `v0.` değil `v=0.`) değerlerini aynı sürüme getir. Biçim `v0.XXX` (v0.264 → v0.265 …). Görsel/ses değişirse `SURUM='?v=..'` de artır.
 - Değişiklikleri görsele bakmadan (ekran görüntüsü/görsel inceleme yok) yap; hata olursa kullanıcı söyler.
 - Kullanıcının verdiği tüm görseller: ortalanmış, sağa bakan, düz duran çizimler. Buna göre hizala/kullan.
 - `node --check` ile söz dizimi kontrolü yap; ayrıca tüm js dosyalarını index.html sırasıyla birleştirip `node --check` et (dosyalar ortak global kapsamda: aynı adlı `const` başka dosyada varsa oyun boş açılır). Oyunu açıp test etme, ekran görüntüsü alma (özel görsel durum hariç). APK/AAB/Actions build yok.
@@ -22,7 +22,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - `js/dil.js` (ilk yüklenir) dil sistemi `DILLER`, `dil()`, `dilSec()`, `DIL_DIN` · `js/ayar.js` sürüm, görsel yükleyici, sabitler, `S` · `girdi.js` klavye/tuşlar/sensör/kol sürükleme · `el.js` el konumu/hızı, `DUS`, `MERMI`
 - `ozel.js` özel hareketler (pençe, süpermen, yarık, alkış, blok…) · `mermi.js` aduket, kaptan mermisi · `dusman_kur.js` düşman yerleşimi, `yeniOyun`
 - `cevre.js` liman ön planı (tahta iskele, evler, nesneler, ön çalılar; `cevreArka`/`cevreOn`, görseller `www/cevre/`) · `ses.js` sesler · `efekt.js` kar, fx, kan · `savas.js` vuruş/tutma/yırtma, `dusmanGuncelle` · `korsan.js` korsan AI, `KSK`, `KPZ`, korsan çizimi
-- `zipkin.js` zıpkın (iki kolda kanca tabancası, `ZPK`, `zpkHedef` neye takılır, `zpkTak` joystick/fiske, `zpkKisit` halat sarkacı, `zpkKorsanPoz` düşman elleri mızrakta; kurallar `OYUN.md` Zıpkın) · `yetenek.js` yetenek ağacı (`YET` düğümler [x,y,ikon,ad,puan], `YBAG` bağlar, `AG` seviye/XP/puan, `xpKazan`, `YV(k)` yetenek açık mı — hareketler bununla kilitli, `canCal` can çalma, `ispCep`; ikonlar `ui/ytN.webp`, ağaç `ui/agac.webp`) · `hud.js` ekran yazıları · `kombo.js` `HAREKET`, kombo ağacı/listesi · `oyuncu.js` oyuncu pozu ve çizimi · `demo.js` yetenek önizlemesi (ağaçta yeteneğe dokununca arkadaki oyunda hareket sessizce döngüyle oynar; `DEMOLAR`, başta tüm durum kaydedilir, ağaç kapanınca geri yüklenir; `DEMO` açıkken ses/titreşim/XP yok) · `dongu.js` arka plan, `ciz`, `dongu` (en son yüklenir)
+- `zipkin.js` zıpkın (iki kolda kanca tabancası, `ZPK`, `zpkHedef` neye takılır, `zpkTak` joystick/fiske, `zpkKisit` halat sarkacı, `zpkKorsanPoz` düşman elleri mızrakta; kurallar `OYUN.md` Zıpkın) · `yetenek.js` yetenek ağacı (`YET` düğümler [x,y,ikon,ad,puan], `YBAG` bağlar, `AG` seviye/XP/puan, `xpKazan`, `YV(k)` yetenek açık mı — hareketler bununla kilitli, `canCal` can çalma, `ispCep`; ikonlar `ui/ytN.webp`, ağaç `ui/agac.webp`) · `hud.js` ekran yazıları · `kombo.js` `HAREKET`, kombo ağacı/listesi · `oyuncu.js` oyuncu pozu ve çizimi · `demo.js` yetenek önizlemesi (ağaçta yeteneğe dokununca arkadaki oyunda hareket sessizce döngüyle oynar; `DEMOLAR`, başta tüm durum kaydedilir, ağaç kapanınca geri yüklenir; `DEMO` açıkken ses/titreşim/XP yok) · `menu.js` sağ üst menü (`menuAc`, `menuAcik`; ses/müzik `AYAR` ses.js'te, `SFXC()`/`MUZC()` çıkışları; sensör, tam ekran, dil, kombolar, yetenekler; görseller `ui/m_*.webp`) · `dongu.js` arka plan, `ciz`, `dongu` (en son yüklenir)
 - Yeni dosyada en üstte `'use strict';`. Yükleme anında çalışan kod sadece kendinden önceki dosyalardaki şeyleri kullanabilir. `www/parca|fx|yuz|ui/*.webp` görseller, `www/ses/*.mp3`, `www/font/*.woff2` (yerel fontlar).
 - Görseller WebP. Yükleyici `yukle()`; önbellek `SURUM`.
 
@@ -41,7 +41,4 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Aynı karakterin parçaları aynı ölçekte. Kenar boşlukları script ile kesilir, ofset tabloya yazılır.
 
 ## Yapılacaklar
-- Zıpkın modelini %5 küçült (`ZP_BOY` 0.9 → ~0.855, `zipkin.js`).
-- Zoom: normal hali ve zıpkın hali (%50) %25 yakınlaştır (`ZOOM` 0.75 → ~1.0, `ZOOM_ZPK` 0.5 → ~0.625, `ayar.js`).
-- Zıpkın düşmana vurunca loading: zıpkın düşmana 10 sn saplanamasın (etrafa vurabilsin, düşmana saplanmasın). Buton üstünde loading dolsun, ıspanak gibi görünsün ama aç/kapa çalışsın, loading sayısı yazsın (`zipkin.js`, `oyun.css`, `ayar.js`/`dil.js`).
-- Can çalma: yırtma açılmadan can çalma açılmasın (can çalma yolundan gelince önce yırtma açılması gerektiğini yazsın). (`yetenek.js`, `YV`, `canCal`)
+- (boş)

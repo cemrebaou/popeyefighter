@@ -1,8 +1,12 @@
 'use strict';
 // Sesler (WebAudio), titreşim
-let AC=null;
+let AC=null,SFXG=null,MUZG=null;
+const AYAR={ses:true,muz:true};try{Object.assign(AYAR,JSON.parse(localStorage.getItem('pf_ayar')||'{}'))}catch(_){}      // menü ayarları: ses efektleri, müzik
+function ayarKaydet(){try{localStorage.setItem('pf_ayar',JSON.stringify(AYAR))}catch(_){}sesSeviye()}
+function sesSeviye(){if(SFXG)SFXG.gain.value=AYAR.ses?1:0;if(MUZG)MUZG.gain.value=AYAR.muz?1:0}
+const SFXC=()=>SFXG||AC.destination,MUZC=()=>MUZG||AC.destination;      // efekt / müzik çıkışı (menüden kapatılır)
 function sesAc(){
-  if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(_){return}}
+  if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();SFXG=AC.createGain();SFXG.connect(AC.destination);MUZG=AC.createGain();MUZG.connect(AC.destination);sesSeviye()}catch(_){return}}
   sesYukle();
   if(AC.state==='suspended'&&!document.hidden)AC.resume();
 }
@@ -14,8 +18,8 @@ let ENPOS=[],SWD=null,YAR=null,YARS=null,HAZ=null,PAT=null,PPAR=null,SAPLA=null,
 const PB=[],PBAG=[],AD=[],ADBAG=[],TK=[],TKBAG=[],KLC=[],WH=[],WHBAG=[],JP=[];let JPBAG=[],JPSON=-1;      // yumruk, adım, tekme, bıçak sesleri (torba: hepsi bir kez çalınmadan aynısı tekrar gelmez)
 const TD=[],TDBAG=[],DMR=[],DMRBAG=[];let TCS=null,GOS=null,GOH=null,ZPS_O=null,ZPS_I=null;      // ZPS_O / ZPS_I: zıpkın nesneye / insana saplanma      // GOS: kaybedince (game over), GOH: kanca bize takılınca      // varil: tahta parçası yere düşme, demir halka, ilk kırılma sesi
 const BLD=[],BLDBAG=[],INS=[],INSBAG=[],OLS={};let ADKS=null,ADKC=null,LVS=null,KALPS=null,BOPEN=null,USTS=null,GRS=null,DSS=null,DEVS=null,ARK=null,ARKSRC=null;      // bıçak vuruşu, yere iniş, ölüm (k/b/p/h), üstüne atlama, tutma, düşman düşmesi, arka plan müziği
-function arkaCal(){if(!AC||!ARK||ARKSRC)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ARK;src.loop=true;g.gain.value=0.35;src.connect(g);g.connect(AC.destination);src.start();ARKSRC=src}      // oyun boyunca döngüde
-function bufCal(buf,v){if(!AC||!buf||DEMO)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=buf;g.gain.value=v||1;src.connect(g);g.connect(AC.destination);src.start()}
+function arkaCal(){if(!AC||!ARK||ARKSRC)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ARK;src.loop=true;g.gain.value=0.35;src.connect(g);g.connect(MUZC());src.start();ARKSRC=src}      // oyun boyunca döngüde
+function bufCal(buf,v){if(!AC||!buf||DEMO)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=buf;g.gain.value=v||1;src.connect(g);g.connect(SFXC());src.start()}
 function torbaCal(L,B,v){if(!L.length)return;if(!B.length)B.push(...L.keys());bufCal(L[B.splice(Math.floor(Math.random()*B.length),1)[0]],v)}
 function sesYukle(){
   if(SYUK||!AC)return;SYUK=true;

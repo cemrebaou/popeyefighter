@@ -39,15 +39,16 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Cesetler kalıcı: ölen düşman yere yatınca (1.2 sn) ya da yırtılan yarı yere yatıp durunca bir kez siyah beyaz resme çevrilir (`CESET`, korsan.js `cesetYap`/`parcaYap`) ve düşman listesinden silinir. Sonra sadece ekrandayken tek resim çizilir: güncelleme/poz/filtre yok. En çok 150 ceset (eskisi silinir). Önizlemede ceset kalmaz.
 
 ## Zıpkın (`js/zipkin.js`)
-- Kamera uzaklığı: `ZOOM` 0.75 (%25 uzak). Ekranın altında zeminin en fazla 285 birim altı görünür (ön tahtanın dibi görünmez); zoom değişince alt sabit kalır, üste açılır.
-- Tam ekranda sensör, dengele ve dil düğmeleri gizlenir; tam ekrandan önce ayarlanmalı.
+- Kamera uzaklığı: `ZOOM` 1.0. Ekranın altında zeminin en fazla 285 birim altı görünür (ön tahtanın dibi görünmez); zoom değişince alt sabit kalır, üste açılır.
+- Ekranda sadece can barı, yön/zıplama tuşları, ıspanak ve zıpkın düğmesi ve sağ üstte menü (ayarlar) düğmesi var. Menü açıkken oyun durur; içinde ses efektleri, müzik, eğim sensörü (+dengele), tam ekran, dil, kombolar, yetenekler, devam ve sürüm. Ses/müzik ayarı kayıtlı (`pf_ayar`). Düşman sayacı ekranda yok.
 - Sol alttaki zıpkın butonu (ıspanak butonunun karşısı, sola gitme tuşunun üstü; PC'de X) zıpkın modunu açar/kapar. Şimdilik enerji harcamaz, yetenek ağacında değil.
-- Zıpkın iki kolda (tabanca %10 küçük), ikisi de aynı çalışır. Ekrana basınca parmağı olmayan kol (yer/yön fark etmez; önce zıpkını dışarıda olmayan, sonra ön kol) basılan yere atar; bu parmak o zıpkını çeker/salar. İki kol da tutuluyorsa basılan parmak sallar (yana kaydır). Zıpkın tutulurken tekme bölgesi tekme atmaz. Parmak kalkınca takılı zıpkın 0.5 sn daha asılı kalır, sonra kopar (asılıyken zıplama hemen bırakır).
-- Zıpkın modunda kamera %50 uzak (ZOOM_ZPK 0.5), ekranın altı sabit kalır, fazlası üste açılır; mod kapanınca normal zoom (0.75).
+- Zıpkın iki kolda (tabanca ölçeği 0.855), ikisi de aynı çalışır. Ekrana basınca parmağı olmayan kol (yer/yön fark etmez; önce zıpkını dışarıda olmayan, sonra ön kol) basılan yere atar; bu parmak o zıpkını çeker/salar. İki kol da tutuluyorsa basılan parmak sallar (yana kaydır). Zıpkın tutulurken tekme bölgesi tekme atmaz. Parmak kalkınca takılı zıpkın 0.5 sn daha asılı kalır, sonra kopar (asılıyken zıplama hemen bırakır).
+- Zıpkın modunda kamera uzaklaşır (ZOOM_ZPK 0.625), ekranın altı sabit kalır, fazlası üste açılır; mod kapanınca normal zoom (0.75).
 - Takılabilen her şey: düşman (yerde yatan dahil), varil, kazıklar (ön/arka), sokak lambaları, iskele tahtası, evler (görselin dolu pikseline), gökyüzü (zeminden 250 birim yukarısı havada takılır). Su: zıpkın uçar, geri sarılır.
 - Uçuş hızı 7500, geri sarma 6500, halat en uzun 4500, en kısa 260 birim.
 - Parmak basılı = halat tutuluyor; parmak kalkınca 0.5 sn sonra halat bırakılır, zıpkın geri sarılır. Halattan havada bırakınca savrulma hızı 1.5 sn korunur.
 - Nesneye takılınca: çekme ekseni atışta sabitlenir (hedef yanda ise yatay, üstte/altta ise dikey). İlk parmağı hedefin tersine kaydırdıkça (yeri önemsiz; sağdaysa sola, üstteyse aşağı) halat o kadar kısalır, hedefe doğru kaydırdıkça uzar (ZP_IP 1.3). Sadece takıldıktan sonraki parmak hareketi sayılır. Hızlı geri çekme fiskesi (0.1 sn'de en az 110 px ve 2800 px/sn) = çapaya fırla (3000). Halat gergin ve sarkaç gibi. Asılıyken zıplama = halatı bırakıp sıçrar. Eğim/sol-sağ tuşları da sallar.
+- Düşmana saplanınca zıpkın 10 sn düşmana saplanamaz (etrafa takılır); buton ıspanak gibi dolar, kalan saniyeyi yazar, aç/kapa çalışır.
 - Düşmana saplanma 20 hasar (kaptana 10, kafasına 3 kat). Düşman iki eliyle mızrağı tutar, çırpınır, saldıramaz. Parmağı kendine çek = düşmanı çek (400 birime kadar; oyuncu uzaklaşınca da sürüklenir), hızlı geri fiske = kendine savurur (yanına yüzüstü kapaklanır), düşmana doğru hızlı fiske = mızrağı kopar. Kaptan tutmaz, mızrak 0.45 sn sonra çıkar. Aynı düşmana ikinci zıpkın: hasar verir, hemen çıkar.
 - Yerde yatan düşmana saplanma 20 hasar; hızlı çekince çekilen yöne havaya fırlar, düşünce yine yatar.
 - Varil: geri çek = sürükle, hızlı geri fiske = kendine fırlatır (yoldaki düşmana çarpar).
@@ -70,7 +71,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 ## Yetenek ağacı (`js/yetenek.js` YET) — parantez içi puan
 Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3) açılır; komşusu açık olmalı.
 - C Yumruk (kök, 0) · I Yere Düşürme (1, pasif) · O Can Dolumu %2 (1, pasif) · X Can Dolumu %3 (1, pasif) · W Kalkanlı Savunma (2, pasif) · V Maks. Can +100 (1, pasif) · TOP Ispanak Cebi (2; 30 sn'de bir ıspanak butonu, ıspanak gücü x2)
-- A İnsan Tutma (1) · B Varil Tutma (1) · G Sıkı Tutuş (1, pasif; tutulan kafa atamaz) · F Yırtma (2) · R Can Çalmalı Yırtma (3) · H Can Çalma %10 (1, pasif) · M Can Çalma %20 (1, pasif)
+- A İnsan Tutma (1) · B Varil Tutma (1) · G Sıkı Tutuş (1, pasif; tutulan kafa atamaz) · F Yırtma (2) · R Can Çalmalı Yırtma (3; Yırtma açılmadan açılmaz) · H Can Çalma %10 (1, pasif) · M Can Çalma %20 (1, pasif)
 - N Yer Yumruğu / yarık (2) · S Süpermen Uçuşu (2) · Y Aduket (2)
 - D Çift Zıplama (1) · K Çok Zıplama (1, pasif) · E Kayar Tekme (1) · L Döner Tekme (2) · U Süper Kahraman İnişi (2) · Q Tekmeyle Can Çalma (1, pasif)
 - J Ateşli Aparkat (1) · AL Alkış Şok Dalgası (2) · YT Yere Tekme (1)

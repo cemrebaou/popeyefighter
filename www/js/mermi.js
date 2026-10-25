@@ -93,7 +93,7 @@ function adkDamla(x,y,r,vx,vy,yn,n){      // girdabın kenarından teğet yönde
 }
 let ADK_SRC=null,ADK_DT=0;
 function adkSes(ac){      // aduket oluşurken su sesi döngüde çalar, atınca (ya da şarj bitince) kesilir
-  if(ac&&!ADK_SRC&&AC&&ADKS&&!DEMO){const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ADKS;src.loop=true;g.gain.value=0.9;src.connect(g);g.connect(AC.destination);src.start();ADK_SRC=src}
+  if(ac&&!ADK_SRC&&AC&&ADKS&&!DEMO){const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ADKS;src.loop=true;g.gain.value=0.9;src.connect(g);g.connect(SFXC());src.start();ADK_SRC=src}
   else if(!ac&&ADK_SRC){try{ADK_SRC.stop()}catch(_){}ADK_SRC=null}
 }
 function adkGuncelle(dt){      // mermiGuncelle içinde: damla saçma, hareket, ses

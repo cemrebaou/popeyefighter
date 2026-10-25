@@ -79,3 +79,30 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 #kombolB.aktif,#agacB.aktif{filter:drop-shadow(0 0 8px #ffd84a)}
 
 .tam #sens,.tam #sifir,.tam #dilB,.tam #kapat{display:none!important}      /* tam ekranda sensör ve dil düğmeleri gizli */
+
+/* ---- Menü (sağ üst ayarlar düğmesi; ekranda başka ayar/düğme yok) ---- */
+.etiket,.ipucu,#kombolB,#agacB,.mini{display:none!important}
+#menuB{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));width:54px;height:55px;background:url(../ui/m_ayar.webp?v=85) center/contain no-repeat;cursor:pointer;z-index:60;touch-action:manipulation;transition:transform .05s}
+#menuB:active{transform:scale(.92)}#menuB.ok:not(.aktif){filter:drop-shadow(0 0 8px #ffd84a)}#menuB.aktif{filter:brightness(1.15)}
+#menu{position:fixed;inset:0;z-index:55;display:flex;align-items:center;justify-content:center;background:rgba(31,42,51,.7)}#menu[hidden]{display:none}
+.m_pan{position:relative;width:min(94vw,150vh,900px);aspect-ratio:900/546;background:url(../ui/m_panel.webp?v=85) center/100% 100% no-repeat;--u:calc(min(94vw,150vh,900px)/100)}
+.m_bas{position:absolute;top:5.2%;left:30%;right:30%;height:11%;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:calc(var(--u)*4.6);letter-spacing:.06em;color:#3a2a18}
+.m_ic{position:absolute;left:10%;right:9%;top:27%;bottom:15%;display:flex;gap:4%}
+.m_sol{flex:1.35;display:flex;flex-direction:column;justify-content:space-between}
+.m_sag{flex:1;display:flex;flex-direction:column;justify-content:space-between;align-items:stretch}
+.m_sat{display:flex;align-items:center;gap:calc(var(--u)*1.4);cursor:pointer;user-select:none;-webkit-user-select:none;font-weight:900;font-size:calc(var(--u)*2.5);color:#3a2a18;height:18%}
+.m_sat i{flex:none;width:calc(var(--u)*6);height:calc(var(--u)*6);background:center/contain no-repeat;font-style:normal;display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*4)}
+.m_sat span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m_tg{flex:none;width:calc(var(--u)*9);height:calc(var(--u)*4.5);background:url(../ui/m_acik.webp?v=85) center/contain no-repeat;transform:scaleX(-1);filter:grayscale(1) brightness(.85);transition:transform .12s,filter .12s}
+.m_tg.ac{transform:none;filter:none}
+.m_sat em{font-style:normal;flex:none;padding:0 calc(var(--u)*1.2);height:calc(var(--u)*4.4);line-height:calc(var(--u)*4.4);background:url(../ui/m_btn.webp?v=85) center/100% 100% no-repeat;font-size:calc(var(--u)*1.9)}.m_sat em[hidden]{display:none}
+.m_dilA{flex:none;min-width:calc(var(--u)*9);height:calc(var(--u)*4.6);line-height:calc(var(--u)*4.6);text-align:center;background:url(../ui/m_btn.webp?v=85) center/100% 100% no-repeat;font-size:calc(var(--u)*2.3)}
+.m_b,.m_dev{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*1.2);cursor:pointer;user-select:none;-webkit-user-select:none;font-family:var(--font);letter-spacing:.05em;color:#f3e2c0;font-size:calc(var(--u)*3.3);height:30%;background:url(../ui/m_btn_m.webp?v=85) center/100% 100% no-repeat;text-shadow:0 2px 0 #1f2a33}
+.m_b i{flex:none;width:calc(var(--u)*6);height:calc(var(--u)*6);background:center/contain no-repeat}
+.m_dev{background-image:url(../ui/m_btn.webp?v=85);color:#3a2a18;text-shadow:none}.m_dev i{flex:none;width:calc(var(--u)*6.5);height:calc(var(--u)*6.5);background:url(../ui/m_devam.webp?v=85) center/contain no-repeat}
+.m_b:active,.m_dev:active,.m_sat:active .m_tg{transform:scale(.95)}.m_sat:active .m_tg:not(.ac){transform:scaleX(-1) scale(.95)}
+.m_sur{position:absolute;left:0;right:0;bottom:10%;text-align:center;font-size:calc(var(--u)*1.5);font-weight:800;color:#6b5236;opacity:.8}
+/* zıpkın: düşmana saplandıktan sonra bekleme (ıspanak gibi dolar, kalan saniye) */
+#zpkB::after{content:'';position:absolute;inset:4%;border-radius:50%;background:conic-gradient(transparent var(--p,0%),rgba(20,28,34,.55) 0);pointer-events:none;display:none}
+#zpkB.yuk::after{display:block}
+#zpkB.yuk::before{content:attr(data-s);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:26px;color:#fff;text-shadow:0 0 4px #000,0 2px 0 #000;z-index:1;pointer-events:none}

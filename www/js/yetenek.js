@@ -40,7 +40,8 @@ agHesap();
 function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],top:AG.top}))}catch(_){}}
 agKaydet();
 const YV=k=>AG.acik.has(k)||!!(DEMO&&DEMO.yv.includes(k));      // önizlemede gösterilen yetenek geçici açık
-const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n));
+const YGEREK={R:'F'};      // bu yetenek, komşusu açık olsa da önce şunun açılmasını ister (Can Çalmalı Yırtma ← Yırtma)
+const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n))&&(!YGEREK[k]||AG.acik.has(YGEREK[k]));
 const yAlinir=k=>yAcilir(k)&&AG.p>=YET[k][4];
 HPMAX=250+(YV('V')?100:0);S.hp=HPMAX;
 function canCal(dmg,tekme){      // can çalma: H %10 / M %20 her vuruşta; Tekmeyle Can Çalma (Q) sadece tekmelere kendi +%10'unu ekler; Bıçakla Can Çalma (T) sadece bıçak vuruşlarına kendi +%20'sini ekler
@@ -51,7 +52,7 @@ function canCal(dmg,tekme){      // can çalma: H %10 / M %20 her vuruşta; Tekm
 }
 function agBtn(){
   const b=document.getElementById('agacB');if(!b)return;
-  b.classList.toggle('ok',Object.keys(YET).some(yAlinir));      // sarı oklu çapa: açılacak yetenek var
+  b.classList.toggle('ok',Object.keys(YET).some(yAlinir));{const mb=document.getElementById('menuB');if(mb)mb.classList.toggle('ok',b.classList.contains('ok'))}      // menü düğmesi de parlar      // sarı oklu çapa: açılacak yetenek var
   const x=document.getElementById('xpB');if(x)x.style.width=Math.min(100,AG.xp/xpGerek(AG.lv)*100)+'%';
   const ic=document.getElementById('ispB');if(ic)ic.hidden=!YV('TOP');
 }
@@ -71,7 +72,7 @@ function ispCepCiz(){const b=document.getElementById('ispB');if(!b||b.hidden)ret
 // Yetenek açılınca: basılarak kullanılan (aktif) yeteneğin kendi sesi çalar (önizleme açıkken de). Pasiflerde ses yok.
 const yRnd=L=>L.length?L[Math.floor(Math.random()*L.length)]:null;
 const YSES={A:()=>GRS,B:()=>TCS,F:()=>PPAR,R:()=>PPAR,N:()=>YAR,D:()=>yRnd(JP),E:()=>yRnd(TK),L:()=>yRnd(TK),YT:()=>yRnd(TK),J:()=>yRnd(PB),U:()=>yRnd(INS),P:()=>BOPEN,Z:()=>USTS,TOP:()=>YEMS};
-function yetSes(k){const f=YSES[k],b=f&&f();if(!AC||!b)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.connect(g);g.connect(AC.destination);src.start()}
+function yetSes(k){const f=YSES[k],b=f&&f();if(!AC||!b)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.connect(g);g.connect(SFXC());src.start()}
 let agacAcik=false;
 (()=>{
   const el=document.getElementById('agac'),ic=document.getElementById('agac_ic'),bil=document.getElementById('agac_bil'),pb=document.getElementById('agac_pb');
@@ -91,7 +92,7 @@ let agacAcik=false;
     for(const k in DG)DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(secili===k?' sec':'');
     pb.textContent=dil('ag_bil',AG.lv,AG.xp,xpGerek(AG.lv),AG.p);      // oyuncunun seviye/XP/puanı: ayrı, altta
     let t='';
-    if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t=ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):dil('ag_once')))}      // seçili yetenek: sadece adı, maliyeti ve durumu
+    if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t=ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):(YGEREK[secili]&&!AG.acik.has(YGEREK[secili])?dil('ag_gerek',dil('yet_'+YGEREK[secili])):dil('ag_once'))))}      // seçili yetenek: sadece adı, maliyeti ve durumu
     bil.textContent=t;agBtn();
   }
   window.agacYenile=yenile;DIL_DIN.push(yenile);

@@ -12,7 +12,7 @@ function kalpGuncelle(){
   if(!ak&&KALP.on){KALP.on=false;kalpSesDur()}
   if(!KALP.on)return false;
   const u=S.t-KALP.t0,n=Math.floor(u/1.5);
-  if(n!==KALP.n){KALP.n=n;kalpSesDur();if(AC&&AC.state==='running'&&KALPS&&!DEMO){const src=AC.createBufferSource();src.buffer=KALPS;src.connect(AC.destination);src.start();KALP.src=src}}      // her atış: ses çalar
+  if(n!==KALP.n){KALP.n=n;kalpSesDur();if(AC&&AC.state==='running'&&KALPS&&!DEMO){const src=AC.createBufferSource();src.buffer=KALPS;src.connect(SFXC());src.start();KALP.src=src}}      // her atış: ses çalar
   return u%1.5<0.5;      // sesle kalp küçülür, yarım sn sonra büyür, 1 sn sonra tekrar
 }
 function barDol(im,f,y0,u0,u1,BEG){
@@ -41,7 +41,6 @@ function hud(dt){
   const bw=Math.min(280,W*0.38),bx=(W-bw)/2,by=12;
   ctx.fillStyle='#fff';ctx.font='700 13px Nunito,sans-serif';ctx.textBaseline='middle';
   ctx.lineWidth=3;ctx.strokeStyle='rgba(31,42,51,.9)';ctx.textAlign='left';
-  {const t=dil('dusman',DUS.filter(e=>!e.olu).length),tx=bx+bw+10,ty=by+4;ctx.strokeText(t,tx,ty);ctx.fillText(t,tx,ty)}
   if(S.kNo&&S.t-S.kNo.t<1.2){const a=Math.min(1,(1.2-(S.t-S.kNo.t))*3);ctx.save();ctx.globalAlpha=a;ctx.font='900 30px Nunito,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';ctx.lineWidth=5;ctx.strokeStyle='rgba(31,42,51,.95)';ctx.fillStyle='#ffd23f';const nx=Math.max(bx-12,barGen()+60);ctx.strokeText(S.kNo.no,nx,by+6);ctx.fillText(S.kNo.no,nx,by+6);ctx.restore();ctx.font='700 13px Nunito,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.textBaseline='middle'}
   barCiz(dt);
   if(S.t-S.noEn<1.0&&Math.floor((S.t-S.noEn)*8)%2===0){ctx.fillStyle='#ff5a4a';ctx.font='900 14px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(dil('enerji_yok'),W/2,by+24)}

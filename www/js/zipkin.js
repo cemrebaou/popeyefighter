@@ -12,7 +12,12 @@ const ZP_HIZ=7500,ZP_DON=6500,ZP_MAX=4500,ZP_MIN=260,ZP_SAR=1900,ZP_SALLA=3000,Z
 const ZP_IP=1.3;      // parmağın çektiği ekran mesafesi başına halat (dünya birimi / (px/SC))
 const ZP_FISKE_D=110,ZP_FISKE_V=2800;      // hızlı fiske eşiği: en az mesafe (px, 0.1 sn) ve hız (px/sn)
 const ZP_BEKLE=0.5;      // parmak kalkınca zıpkın bu kadar daha takılı kalır
-const ZP_BOY=0.9;      // tabanca görsel ölçeği
+const ZP_BOY=0.855,ZP_DUS_BEKLE=10;      // ZP_DUS_BEKLE: düşmana saplandıktan sonra düşmana tekrar saplanamama süresi (sn)
+const zpkBekle=()=>S.t<(ZPK.cd||0);
+function zpkBtnCiz(){      // buton: düşman beklemesi ıspanak gibi dolar, kalan saniye yazar
+  const k=Math.max(0,(ZPK.cd||0)-S.t),y=k>0;if(zpkBtn._y!==y){zpkBtn._y=y;zpkBtn.classList.toggle('yuk',y)}
+  if(y){zpkBtn.style.setProperty('--p',((1-k/ZP_DUS_BEKLE)*100)+'%');const n=Math.ceil(k)+'';if(zpkBtn.dataset.s!==n)zpkBtn.dataset.s=n}
+}      // tabanca görsel ölçeği
 const ZP_KONI=Math.cos(20*Math.PI/180);      // çekme konisi: çapanın tersi ±20°
 const ZP_AGIZ=[160,-12],ZP_TAB=[236,80],ZP_UC=[97.5,24.5],ZP_DUGUM=66,ZP_GOM={c:24,d:30,v:30};      // ön kol uzayında namlu ağzı; tabanca görselinde namlu ağzı; mızrak görselinde uç; halatın bağlandığı düğüm uçtan geride; saplanınca uç ne kadar gömülür
 const ZPK={ac:false,N:null,F:null},zizler=new Map(),ZMASK={};      // ZPK.N/F: o koldaki zıpkın (null = takılı, dolu); zizler: zıpkını tutan parmaklar
@@ -58,7 +63,7 @@ function zpkKazik(wx,wy,on){
 function zpkHedef(sx,sy){
   const wx=S.x+(sx-W/2)/SC,wy=S.camY+(ZY()-sy)/SC;
   let en=null,ed=1e9;
-  for(const e of DUS){if(e.olu||e.tut)continue;if(dusDeg(e,wx,wy,70)){const d=Math.abs(wx-e.x);if(d<ed){ed=d;en=e}}}
+  if(!zpkBekle())for(const e of DUS){if(e.olu||e.tut)continue;if(dusDeg(e,wx,wy,70)){const d=Math.abs(wx-e.x);if(d<ed){ed=d;en=e}}}
   if(en)return {tip:'d',e:en,wx,wy};
   for(const v of VAR)if((v.d==='yer'||v.d==='dus')&&Math.abs(wx-v.x)<V_W/2+25&&Math.abs(wy-v.y)<V_MRK+25)return {tip:'v',v,wx,wy};
   let r=zpkKazik(wx,wy,true);if(r)return r;
@@ -93,6 +98,7 @@ function zpkKopar(k,h,sert){      // halat bırakılır / mızrak çıkar, zıpk
 function zpkSapla(k,h,e){
   h.ph='tak';h.tT=S.t;
   if(e){      // düşman: 20 hasar, iki eliyle mızrağı tutar
+    ZPK.cd=S.t+ZP_DUS_BEKLE;      // düşmana saplandı: zıpkın 10 sn düşmana saplanamaz (etrafa takılır)
     h.hd={tip:'d',e};const yn=e.yon||1;h.ox=(h.x-e.x)*yn;h.oy=h.y-e.y;h.yn0=yn;
     bufCal(ZPS_I,1);
     if(e.dus){h.yat=true;vur(e,ZP_HASAR,0,0,0,h.y);if(e.olu){h.ph='don';h.hd={tip:'yok'}}else if(h.bir)h.oto=S.t+0.15;return}      // yerde yatan: mızrak saplanır, hızlı çekince havaya fırlar
@@ -111,14 +117,14 @@ function zpkSapla(k,h,e){
 }
 function zpkUc(k,h,dt){
   const t=h.hd;
-  if((t.tip==='d'&&(t.e.olu||t.e.tut||(t.e.dus&&!h.yat0)||!DUS.includes(t.e)))||(t.tip==='v'&&!(VAR.includes(t.v)&&(t.v.d==='yer'||t.v.d==='dus')))){      // hedef gitti: boşluğa uçar
+  if((t.tip==='d'&&(zpkBekle()||t.e.olu||t.e.tut||(t.e.dus&&!h.yat0)||!DUS.includes(t.e)))||(t.tip==='v'&&!(VAR.includes(t.v)&&(t.v.d==='yer'||t.v.d==='dus')))){      // hedef gitti: boşluğa uçar
     const p=zpkHedefNok(h);h.hd={tip:'yok',wx:p[0],wy:p[1]};h.dx=p[0]-h.x;h.dy=p[1]-h.y;h.menz=h.yol+Math.hypot(h.dx,h.dy)+300}
   const hn=zpkHedefNok(h),dx=hn?hn[0]-h.x:h.dx,dy=hn?hn[1]-h.y:h.dy,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,st=ZP_HIZ*dt,n=Math.max(1,Math.ceil(st/60)),s=st/n;
   h.vx=ux*ZP_HIZ;h.vy=uy*ZP_HIZ;h.a=Math.atan2(uy,ux);
   for(let i=0;i<n;i++){
     if(hn&&Math.hypot(hn[0]-h.x,hn[1]-h.y)<=s+1){h.x=hn[0];h.y=hn[1];zpkSapla(k,h,h.hd.tip==='d'?h.hd.e:null);return}
     h.x+=ux*s;h.y+=uy*s;h.yol+=s;
-    for(const e of DUS){if(e.olu||e.tut||e.dus)continue;if(dusDeg(e,h.x,h.y,22)){zpkSapla(k,h,e);return}}      // yoldaki düşmana saplanır
+    if(!zpkBekle())for(const e of DUS){if(e.olu||e.tut||e.dus)continue;if(dusDeg(e,h.x,h.y,22)){zpkSapla(k,h,e);return}}      // yoldaki düşmana saplanır
     if((!hn&&(h.yol>=h.menz||h.y<-700))||h.yol>ZP_MAX+500){h.ph='don';h.hd={tip:'yok'};return}
   }
 }

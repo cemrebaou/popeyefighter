@@ -11,7 +11,7 @@ Object.assign(S,{uzT:{N:0,F:0},uzan:null,yeme:null});
 function ispSes(x,yarim){
   if(!AC||AC.state!=='running'||!ISPS||DEMO)return;
   const g0=kisit(1-Math.abs(x-S.x)/7000,0.3,1),src=AC.createBufferSource(),g=AC.createGain();
-  src.buffer=ISPS;g.gain.value=g0;src.connect(g);g.connect(AC.destination);
+  src.buffer=ISPS;g.gain.value=g0;src.connect(g);g.connect(SFXC());
   if(yarim){const d=ISPS.duration/2,n=AC.currentTime;g.gain.setValueAtTime(g0,n+d*0.75);g.gain.linearRampToValueAtTime(0,n+d);src.start(n,0,d)}      // sesin ilk yarısı
   else src.start();
 }
