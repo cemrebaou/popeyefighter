@@ -86,7 +86,7 @@ function varilGuncelle(dt){
 }
 function vCiz(im,x,y,rot,a){
   if(!im)return;
-  const s=SC*V_PX,w=im.width*s,h=im.height*s,sx=W/2+(x-S.x)*SC,sy=H*0.80-(y-S.camY)*SC;
+  const s=SC*V_PX,w=im.width*s,h=im.height*s,sx=W/2+(x-S.x)*SC,sy=ZY()-(y-S.camY)*SC;
   if(sx<-w-200||sx>W+w+200)return;
   ctx.save();ctx.translate(sx,sy);if(rot)ctx.rotate(rot);if(a<1)ctx.globalAlpha=a;ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore();
 }

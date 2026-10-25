@@ -11,7 +11,7 @@ function arkaPlan(camX,zeminY){
 }
 function ciz(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
-  const zeminY=H*0.80;
+  const zeminY=ZY();
   S.shx=S.sars>0.3?(Math.random()-.5)*S.sars:0;S.shy=S.sars>0.3?(Math.random()-.5)*S.sars:0;
   ctx.translate(S.shx,S.shy);
   arkaPlan(S.x,zeminY);

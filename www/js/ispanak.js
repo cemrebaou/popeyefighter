@@ -93,7 +93,7 @@ function ispGuncelle(dt){
   }
 }
 function ispCiz(){
-  const zY=H*0.80,s=ISP_BOY*SC;
+  const zY=ZY(),s=ISP_BOY*SC;
   for(const c of ISP){
     const im=c.bos?R.ispB:R.isp;if(!im)continue;
     const sx=W/2+(c.x-S.x)*SC,sy=zY-(c.y-S.camY)*SC;
