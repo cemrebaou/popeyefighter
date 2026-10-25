@@ -43,3 +43,4 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 ## Yapılacaklar
 - Zıpkın modelini %5 küçült (`ZP_BOY` 0.9 → ~0.855, `zipkin.js`).
 - Zoom: normal hali ve zıpkın hali (%50) %25 yakınlaştır (`ZOOM` 0.75 → ~1.0, `ZOOM_ZPK` 0.5 → ~0.625, `ayar.js`).
+- Zıpkın düşmana vurunca loading: zıpkın düşmana 10 sn saplanamasın (etrafa vurabilsin, düşmana saplanmasın). Buton üstünde loading dolsun, ıspanak gibi görünsün ama aç/kapa çalışsın, loading sayısı yazsın (`zipkin.js`, `oyun.css`, `ayar.js`/`dil.js`).
