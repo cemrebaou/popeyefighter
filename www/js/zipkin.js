@@ -11,6 +11,7 @@
 const ZP_HIZ=7500,ZP_DON=6500,ZP_MAX=4500,ZP_MIN=260,ZP_SAR=1900,ZP_SALLA=3000,ZP_HASAR=20,ZP_KAL=14,ZP_YAKIN=400;      // uçuş/geri sarma hızı, halat en uzun/en kısa, tırmanma hızı, sallanma gücü, hasar, halat kalınlığı, düşmanı çekince durduğu mesafe
 const ZP_IP=1.3;      // parmağın çektiği ekran mesafesi başına halat (dünya birimi / (px/SC))
 const ZP_FISKE_D=110,ZP_FISKE_V=2800;      // hızlı fiske eşiği: en az mesafe (px, 0.1 sn) ve hız (px/sn)
+const ZP_BEKLE=0.5;      // parmak kalkınca zıpkın bu kadar daha takılı kalır
 const ZP_BOY=0.9;      // tabanca görsel ölçeği
 const ZP_KONI=Math.cos(20*Math.PI/180);      // çekme konisi: çapanın tersi ±20°
 const ZP_AGIZ=[160,-12],ZP_TAB=[236,80],ZP_UC=[97.5,24.5],ZP_DUGUM=66,ZP_GOM={c:24,d:30,v:30};      // ön kol uzayında namlu ağzı; tabanca görselinde namlu ağzı; mızrak görselinde uç; halatın bağlandığı düğüm uçtan geride; saplanınca uç ne kadar gömülür
@@ -25,7 +26,7 @@ function zpkIsit(){      // modu açınca dokunma maskeleri boşta tek tek hazı
   (function adim(){const q=L.shift();if(!q)return;if(q[1]&&ZMASK[q[0]]===undefined)zpkMaske(q[0],q[1]);bek(adim)})();
 }
 function zpkMod(a){ZPK.ac=a;if(a)zpkIsit();zpkBtn.classList.toggle('ac',a);if(!a)zpkTemizle(true)}
-function zpkTemizle(hemen){zizler.clear();for(const k of ['N','F']){if(!ZPK[k])continue;zpkBirak(k);if(hemen)ZPK[k]=null}}
+function zpkTemizle(hemen){zizler.clear();for(const k of ['N','F']){if(!ZPK[k])continue;zpkBirak(k,true);if(hemen)ZPK[k]=null}}
 const zpkIzBul=k=>{for(const z of zizler.values())if(z.t===k)return z;return null};
 const zpkTutamak=()=>[S.x,S.y+(S.yer&&asagiMi()?540:720)];      // halatın oyuncuyu çektiği nokta (omuz hizası)
 function zpkAgiz(k){const z=EL[k].zr;return z?[S.x+z[0],S.y+z[1]]:[S.x+S.yon*60,S.y+700]}      // namlu ağzının dünya konumu (kol çizilirken gövdeye göre kaydedilir)
@@ -81,8 +82,8 @@ function zpkAt(k,sx,sy){
   ZPK[k]=h;
   if(Math.abs(t.wx-S.x)>80)S.yon=t.wx>S.x?1:-1;      // hedefe döner
 }
-function zpkBirak(k){const h=ZPK[k];if(!h)return;h.bir=true;      // parmak kalktı
-  if(h.ph==='tak'){if(h.hd.tip==='c'&&!S.yer)S.zpUcT=S.t+1.5;zpkKopar(k,h,false)}}
+function zpkBirak(k,hemen){const h=ZPK[k];if(!h)return;h.bir=true;      // parmak kalktı: takılıysa yarım saniye daha asılı kalır (hemen: zıplama/temizlik)
+  if(h.ph==='tak'){if(!hemen){h.bitT=h.bitT||S.t+ZP_BEKLE;return}if(h.hd.tip==='c'&&!S.yer)S.zpUcT=S.t+1.5;zpkKopar(k,h,false)}}
 function zpkKopar(k,h,sert){      // halat bırakılır / mızrak çıkar, zıpkın geri sarılır
   const t=h.hd;
   if(t.tip==='d'){const e=t.e;if(e.zpk&&e.zpk.k===k)e.zpk=null;
@@ -106,7 +107,7 @@ function zpkSapla(k,h,e){
   const t=h.hd,g=zpkTutamak();
   bufCal(ZPS_O,t.tip==='v'?0.9:1);
   h.L=kisit(Math.hypot(h.x-g[0],h.y-g[1]),ZP_MIN,ZP_MAX);
-  if(h.bir){if(t.tip==='c'){h.ph='don';h.hd={tip:'yok'}}else h.oto=S.t+0.15}
+  if(h.bir){if(t.tip==='c')h.bitT=S.t+ZP_BEKLE;else h.oto=S.t+0.15}
 }
 function zpkUc(k,h,dt){
   const t=h.hd;
@@ -137,6 +138,7 @@ function zpkJoy(iz,h){      // ilk parmak (zıpkını atan): ip gibi çek/sal. E
 function zpkSalla(){for(const z of zizler.values())if(z.t==='S'){const ox=z.lx-z.x0;return Math.sign(ox)*kisit((Math.abs(ox)-14)/60,0,1)}return 0}      // ikinci parmak: yana kaydırınca sallar (çekmeyi etkilemez)
 function zpkTak(k,h,dt){
   const t=h.hd,iz=zpkIzBul(k);
+  if(h.bitT&&S.t>=h.bitT){zpkBirak(k,true);return}      // parmak kalkalı yarım saniye oldu: kopar
   if(h.oto&&S.t>=h.oto){zpkKopar(k,h,false);return}
   if(t.tip==='d'){const e=t.e;
     if(e.olu||e.tut||(h.yat?!e.dus:e.dus)||!DUS.includes(e)){zpkKopar(k,h,false);return}
