@@ -5,6 +5,7 @@ const ISP_BOY=180;               // görselin (500 px kare) oyun birimi boyu; ku
 const ISP_MRK=80;                // kutu tabanından ortasına
 const ISP_AGIZ=[150,-350];        // ağızdan biraz yukarıda ve uzakta, el ileriden tutar        // gövde uzayında ağız önü (el buraya gelir)
 const ISP_UST=[205,-455],ISP_ALT=[195,-375];      // gövde uzayında: dirsek V gibi katlı, el ağzın üstünde (üst) ve ağza inmiş (alt)
+const ISP_OMUZ=20,ISP_DIRSEK=-10;      // dökme pozuna ek: omuzdan saat yönü, dirsekten saat yönü tersi (derece)
 const ISP_D0=0.3,ISP_D1=1.75;      // iki kez indir-kaldır (dökme) aralığı (yavaşlatılmış zaman)
 const ispDip=t=>t<ISP_D0||t>=ISP_D1?0:0.5-0.5*Math.cos((t-ISP_D0)/(ISP_D1-ISP_D0)*Math.PI*4);      // 0 üstte, 1 ağızda; iki kez
 const ISP_YAVAS=1.25;            // yeme animasyonu toplam süre çarpanı (%25 uzun)
@@ -41,7 +42,7 @@ function ispPoz(o){              // hedefPoz sonunda: eğilme ve yeme animasyonu
   }
   if(S.yeme){
     const m=S.yeme,t=(S.t-m.t0)/ISP_YAVAS,uK=m.k==='N'?'aNu':'aFu',rK=m.k==='N'?'aNr':'aFr';let a;
-    if(t<1.8){const d=ispDip(t);a=elIK(m.k,ISP_UST[0]+(ISP_ALT[0]-ISP_UST[0])*d,ISP_UST[1]+(ISP_ALT[1]-ISP_UST[1])*d);o.bas=-6-8*d;o.torso=-2}      // alır almaz dirsekten katlayıp ağzın üstüne getirir, iki kez ağza indirip kaldırır
+    if(t<1.8){const d=ispDip(t);a=elIK(m.k,ISP_UST[0]+(ISP_ALT[0]-ISP_UST[0])*d,ISP_UST[1]+(ISP_ALT[1]-ISP_UST[1])*d);a[0]+=ISP_OMUZ;a[1]+=ISP_DIRSEK;o.bas=-6-8*d;o.torso=-2}      // alır almaz dirsekten katlayıp ağzın üstüne getirir, iki kez ağza indirip kaldırır
     else if(t<2.15){a=[-170,-25];o.torso=4;o.bas=0}       // kutuyu kaldırır
     else if(t<2.25){a=[-240,15];o.torso=-12;o.bas=-6}     // arkaya savurur
     else a=[4,60];
