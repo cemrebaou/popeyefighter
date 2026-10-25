@@ -74,7 +74,7 @@ const YSES={A:()=>GRS,B:()=>TCS,F:()=>PPAR,R:()=>PPAR,N:()=>YAR,D:()=>yRnd(JP),E
 function yetSes(k){const f=YSES[k],b=f&&f();if(!AC||!b)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.connect(g);g.connect(AC.destination);src.start()}
 let agacAcik=false;
 (()=>{
-  const el=document.getElementById('agac'),ic=document.getElementById('agac_ic'),bil=document.getElementById('agac_bil');
+  const el=document.getElementById('agac'),ic=document.getElementById('agac_ic'),bil=document.getElementById('agac_bil'),pb=document.getElementById('agac_pb');
   const DG={};
   for(const k in YET){
     const [x,y,i]=YET[k],d=document.createElement('div');
@@ -89,8 +89,9 @@ let agacAcik=false;
   }
   function yenile(){
     for(const k in DG)DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(secili===k?' sec':'');
-    let t=dil('ag_bil',AG.lv,AG.xp,xpGerek(AG.lv),AG.p);
-    if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t+=' · '+ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):dil('ag_once')))}
+    pb.textContent=dil('ag_bil',AG.lv,AG.xp,xpGerek(AG.lv),AG.p);      // oyuncunun seviye/XP/puanı: ayrı, altta
+    let t='';
+    if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t=ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):dil('ag_once')))}      // seçili yetenek: sadece adı, maliyeti ve durumu
     bil.textContent=t;agBtn();
   }
   window.agacYenile=yenile;DIL_DIN.push(yenile);
