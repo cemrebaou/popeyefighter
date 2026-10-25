@@ -41,4 +41,4 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Aynı karakterin parçaları aynı ölçekte. Kenar boşlukları script ile kesilir, ofset tabloya yazılır.
 
 ## Yapılacaklar
-- (boş)
+- Zıpkın modelini %5 küçült (`ZP_BOY` 0.9 → ~0.855, `zipkin.js`).
