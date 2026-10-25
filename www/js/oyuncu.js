@@ -122,7 +122,7 @@ function hedefPoz(){
 }
 const ANAH=['lN','bN','lF','bF','torso','bas','aNu','aNr','aFu','aFr','ofs','lift','kN','kF','pelv','hx','hy','hb','cr','cw'];
 function pozGuncelle(dt){
-  const h=hedefPoz(), k=1-Math.exp(-dt*((S.atk||kolVar()||S.yy||S.alk||(S.yeme&&S.t-S.yeme.t0>1.8)||ZPK.N||ZPK.F)?45:(S.yer?22:16)));      // zıpkın: kol hedefe hızlı döner
+  const h=hedefPoz(), k=1-Math.exp(-dt*((S.atk||kolVar()||S.yy||S.alk||S.yeme||ZPK.N||ZPK.F)?45:(S.yer?22:16)));      // zıpkın: kol hedefe hızlı döner
   ANAH.forEach(a=>{P[a]=(P[a]===undefined)?h[a]:P[a]+(h[a]-P[a])*k});
 }
 
