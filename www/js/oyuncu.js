@@ -185,7 +185,7 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);if(S.pence){EL[ad].b1=dunyaNok(330,0);EL[ad].b2=dunyaNok(420,0)}else EL[ad].b1=EL[ad].b2=null;      // bıçak ağzı / ucu
   {const d=S.pence?PENCE_EL[ad]:KOL_EL[ad][(ZPK.ac&&!DEMO)?'ac':(HS[ad]||'yum')];      // zıpkın açıkken el açık
-   ctx.save();ctx.translate(140.4,0);if(ad==='N')ispElCiz(ad);resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI);if(ad==='F')ispElCiz(ad);ctx.restore();}   // el bilekte
+   ctx.save();ctx.translate(140.4,0);if(!ispElCiz(ad)){resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI)}ctx.restore();}      // ıspanak alınca el, kutuyu tutan ele dönüşür   // el bilekte
   resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);
   if(bI>0)ekParla(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6,bI);
   else if(S.atk&&S.atk.fl==='+'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad))parilti(248,0,95,efSiddet(),'+');   // yumruk çerçevesi parlar
