@@ -6,8 +6,8 @@ const ISP_MRK=80;                // kutu tabanından ortasına
 const ISP_AGIZ=[150,-350];        // ağızdan biraz yukarıda ve uzakta, el ileriden tutar        // gövde uzayında ağız önü (el buraya gelir)
 const ISP_UST=[205,-455],ISP_ALT=[195,-375];      // gövde uzayında: dirsek V gibi katlı, el ağzın üstünde (üst) ve ağza inmiş (alt)
 const ISP_OMUZ=20,ISP_DIRSEK=-10;      // dökme pozuna ek: omuzdan saat yönü, dirsekten saat yönü tersi (derece)
-const ISP_D0=0.3,ISP_D1=1.75;      // iki kez indir-kaldır (dökme) aralığı (yavaşlatılmış zaman)
-const ispDip=t=>t<ISP_D0||t>=ISP_D1?0:0.5-0.5*Math.cos((t-ISP_D0)/(ISP_D1-ISP_D0)*Math.PI*4);      // 0 üstte, 1 ağızda; iki kez
+const ISP_D0=0.25,ISP_D1=0.95,ISP_SALLA=14;      // hızlı 3 sallama (dökme) aralığı (yavaşlatılmış zaman), omuzdan sallama açısı
+const ispDip=t=>t<ISP_D0||t>=ISP_D1?0:Math.pow(Math.abs(Math.sin((t-ISP_D0)/(ISP_D1-ISP_D0)*Math.PI*3)),0.6);      // 0 geride, 1 ağza doğru; 3 kez, sert
 const ISP_YAVAS=1.25;            // yeme animasyonu toplam süre çarpanı (%25 uzun)
 const ISP_G=4200;                // atılan / düşen kutunun yerçekimi
 Object.assign(S,{uzT:{N:0,F:0},uzan:null,yeme:null});
@@ -42,9 +42,9 @@ function ispPoz(o){              // hedefPoz sonunda: eğilme ve yeme animasyonu
   }
   if(S.yeme){
     const m=S.yeme,t=(S.t-m.t0)/ISP_YAVAS,uK=m.k==='N'?'aNu':'aFu',rK=m.k==='N'?'aNr':'aFr';let a;
-    if(t<1.8){const d=ispDip(t);a=elIK(m.k,ISP_UST[0]+(ISP_ALT[0]-ISP_UST[0])*d,ISP_UST[1]+(ISP_ALT[1]-ISP_UST[1])*d);a[0]+=ISP_OMUZ;a[1]+=ISP_DIRSEK;o.bas=-6-8*d;o.torso=-2}      // alır almaz dirsekten katlayıp ağzın üstüne getirir, iki kez ağza indirip kaldırır
-    else if(t<2.15){a=[-170,-25];o.torso=4;o.bas=0}       // kutuyu kaldırır
-    else if(t<2.25){a=[-240,15];o.torso=-12;o.bas=-6}     // arkaya savurur
+    if(t<ISP_D1){const d=ispDip(t);a=elIK(m.k,ISP_UST[0],ISP_UST[1]);a[0]+=ISP_OMUZ-ISP_SALLA*d;a[1]+=ISP_DIRSEK;o.bas=-6-8*d;o.torso=-2}      // alır almaz dirsekten katlayıp ağzın üstüne getirir, iki kez ağza indirip kaldırır
+    else if(t<ISP_D1+0.35){a=[-170,-25];o.torso=4;o.bas=0}       // kutuyu kaldırır
+    else if(t<ISP_D1+0.45){a=[-240,15];o.torso=-12;o.bas=-6}     // arkaya savurur
     else a=[4,60];
     o[uK]=a[0];o[rK]=a[1];
   }
@@ -55,8 +55,7 @@ function ispElCiz(ad){           // kol() içinde bilekte: ıspanak alınca el, 
   if(ad==='F'&&!m.onCiz){m.tf=ctx.getTransform();return true}
   const d=ISP_EL[ad],im=R[d[0]];if(!im)return false;
   const t=(S.t-m.t0)/ISP_YAVAS,q=ctx.getTransform(),th=Math.atan2(q.b,q.d);
-  const tl=-ISP_EGIM*ispDip(t);      // ağza inerken kutu ağza doğru eğilir, kalkarken doğrulur
-  const w=t>=1.8?0:kisit(-th+tl,-ISP_BILEK,ISP_BILEK);      // bilek: kutu dik / dökme açısı (ön kola göre sınırlı)
+  const w=t>=ISP_D1||t<0.1?0:-0.25-0.15*ispDip(t);      // bilek az bükülür: sallama omuzdan
   ctx.save();ctx.rotate(w);resim(im,d[1],d[2]);
   m.agz=dunyaNok(d[3],d[4]);m.agzT=S.t;      // kutunun ağzı (yapraklar buradan dökülür)
   ctx.restore();return true;
@@ -81,10 +80,10 @@ function ispGuncelle(dt){
   if(S.yeme){
     const m=S.yeme,t=(S.t-m.t0)/ISP_YAVAS;      // yerken belden aşağısı serbest: yürünebilir
     if(!m.ses&&t>=ISP_D0+0.15){m.ses=true;bufCal(YEMS,1)}      // yeme sesi: ağza dökmeye başlayınca
-    if(!m.bos&&t>=1.45){m.bos=true;const ik=YV('TOP')?2:1;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1*ik);S.en=Math.min(250,S.en+50*ik);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1*ik,f:0.3,mavi:1})}      // max canın %10'u, +50 enerji; Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de)
+    if(!m.bos&&t>=ISP_D1-0.15){m.bos=true;const ik=YV('TOP')?2:1;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1*ik);S.en=Math.min(250,S.en+50*ik);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1*ik,f:0.3,mavi:1})}      // max canın %10'u, +50 enerji; Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de)
     if(ispDip(t)>0.45&&m.agz&&S.t-m.agzT<0.2&&!DEMO){m.yb=(m.yb||0)+dt*ISP_Y_HIZ;while(m.yb>=1){m.yb--;ispYaprak(m)}}      // dökülen yapraklar
-    if(!m.atildi&&t>=2.25){m.atildi=true;ispAt(m.k)}
-    if(t>=2.8)S.yeme=null;
+    if(!m.atildi&&t>=ISP_D1+0.45){m.atildi=true;ispAt(m.k)}
+    if(t>=ISP_D1+1.0)S.yeme=null;
   }
   for(let i=ISP_Y.length-1;i>=0;i--){const y=ISP_Y[i],u=S.t-y.t0;      // yapraklar: süzülerek düşer; ağza girenler kaybolur, diğerleri yere / yarı yolda biter
     y.vy-=G*0.42*dt;y.vx*=1-1.6*dt;y.vy*=1-0.6*dt;y.x+=(y.vx+Math.sin(u*9+y.f)*90)*dt;y.y+=y.vy*dt;y.r+=y.vr*dt;
@@ -104,7 +103,7 @@ function ispGuncelle(dt){
     else{if(c.sek===0)ispSes(c.x);c.d='yer';c.vx=c.vy=0;c.w0=S.t;c.wa=kisit(Math.atan2(Math.sin(c.rot),Math.cos(c.rot)),-0.45,0.45)||(Math.random()<0.5?-0.3:0.3)}      // oturur, salınır
   }
 }
-const ISP_BILEK=1.1,ISP_EGIM=1.9,ISP_Y_HIZ=110;      // dökerken kutunun eğimi (radyan), saniyede dökülen yaprak
+const ISP_BILEK=1.1,ISP_EGIM=1.9,ISP_Y_HIZ=150;      // dökerken kutunun eğimi (radyan), saniyede dökülen yaprak
 function ispAgiz(){const k=OGV.kafa,b=OGV.boyun;return (k&&b&&S.t-OGV.t<0.3)?[k[0]+(b[0]-k[0])*0.45+S.yon*50,k[1]+(b[1]-k[1])*0.45]:[S.x+S.yon*60,S.y+880]}      // ağız (dünya)
 function ispYaprak(m){      // kutunun ağzından bir yaprak: çoğu ağza yönelir, bir kısmı yanından geçip yere düşer
   if(ISP_Y.length>140)return;
