@@ -12,7 +12,7 @@ let menuAcik=false;
     tg('tam').classList.toggle('ac',!!document.fullscreenElement);
     document.getElementById('m_kal').hidden=!GYRO.ak;
     document.getElementById('m_dilA').textContent=DIL.toUpperCase();
-    document.getElementById('m_sur').textContent='POPEYE FIGHTER '+OYUN_SURUM;
+    document.getElementById('m_sur').textContent='POPEYE FIGHTER '+OYUN_SURUM+' · '+CS_OK+'/'+CS_YOK+(CS_HATA?' '+CS_HATA:'');      // ceset teşhisi (geçici)
   }
   window.menuAc=a=>{
     if(a){if(agacAcik)agacAc(false);if(listeAcik)listeAc(false);izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;menuYenile()}

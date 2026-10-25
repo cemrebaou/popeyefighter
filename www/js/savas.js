@@ -247,13 +247,14 @@ function dusmanGuncelle(dt){
       e.st=S.t+0.3;e.vx=e.vy=0;continue;
     }
     e._tg=undefined;e.kb=null;
+    if(e.kal)continue;      // ceset resmi yapılamadıysa olduğu gibi yerde kalır (silinmez)
     if(e.olu&&e.yerOl){      // yerde ölen: havadaysa düşmeye devam eder, yatışı tamamlanır; 5 sn yatar, sonra söner
       const z=zemin(e.x);if(e.y>z){e.vy=(e.vy||0)-G*dt;e.y=Math.max(z,e.y+e.vy*dt)}else{e.y=z;e.vy=0}
       e.cy0=e.cy0||e.cy;e.dusA=(e.dusA||0)+(1-(e.dusA||0))*Math.min(1,dt*8);e.cy=e.cy0+(110-e.cy0)*e.dusA;
       e.olY=(e.olY||0)+dt;kolYere(e,dt);
       if(e.olY>0.8&&!yereDeg(e)){e.yerOl=false;e.dus=null;e.dusA=0;e.cy=e.cy0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1,tk2:1};continue}      // kafası/gövdesi yere değmiyor: dizler üstüne çöküp düşer
-      if(e.olY>1.2){cesetYap(e);DUS.splice(i,1)}continue}      // yerde ölen: yatışı bitince kalıcı ceset resmi olur
-    if(e.olu&&e.olm){if(olmGuncelle(e,dt)){cesetYap(e);DUS.splice(i,1)}continue}
+      if(e.olY>1.2){if(cesetYap(e))DUS.splice(i,1);else e.kal=true}continue}      // yerde ölen: yatışı bitince kalıcı ceset resmi olur
+    if(e.olu&&e.olm){if(olmGuncelle(e,dt)){if(cesetYap(e))DUS.splice(i,1);else e.kal=true}continue}
     if(e.olu){e.ol+=dt;e.vy-=G*0.5*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;e.rot+=dt*9*(e.vx<0?-1:1);if(e.ol>0.9)DUS.splice(i,1);continue}
     if(e.dus){const d=e.dus;      // yerde: 0.35 sn'de düşer, yatar, son 0.5 sn'de kalkar; tutulursa hemen kalkar (elle kaldırma)
       if(S.ust&&S.ust.e===e)d.son=Math.max(d.son,S.t+DUS_KALK+0.15);      // üstündeyken kalkamaz
