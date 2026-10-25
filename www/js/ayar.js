@@ -1,9 +1,9 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.341';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.342';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=85';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=86';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir','z_dolu','z_bos','z_mizrak','z_ip']      // z_: zıpkın (tabanca dolu/boş, mızrak, halat)
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
@@ -34,7 +34,7 @@ for(let i=0;i<11;i++)yukle('yuz/yuzY'+i+'.webp',im=>YUZY[i]=im);      // ıspana
 for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.webp',im=>KANI[i]=im);
 for(let i=0;i<3;i++)yukle('fx/kar'+i+'.webp',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
 for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)
-['patla','sprey','yarik','aduket_su','damla'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
+['patla','sprey','yarik','aduket_su','damla','yaprak'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // yaprak: kutudan dökülen ıspanak      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
 ['bos','can','en','kalp'].forEach(n=>yukle('ui/bar_'+n+'.webp',im=>R['bar_'+n]=im));      // can/enerji barı: boş (büyük kalp), can dolgusu, enerji dolgusu, küçük kalp (yuvarlak)
 function gorselHazir(){
   if(gorselHazir.ok)return;gorselHazir.ok=true;      // tek sefer: sonradan yüklenen görseller (cevre.js) ikinci döngü başlatmasın (oyun 2 kat hızlı akıyordu)

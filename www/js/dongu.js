@@ -29,7 +29,7 @@ function ciz(){
   if(S.pence){ctx.shadowColor='#ffb02e';ctx.shadowBlur=(14+5*Math.sin(S.t*9))*DPR}      // bıçak modu: kenarlarından enerji barı renginde parlar
   karakter();
   ctx.restore();
-  zpkCiz('N');
+  zpkCiz('N');ispYaprakCiz();      // ıspanak yaprakları karakterin önünde
   varilCiz(true);
   fxCiz(true);
   karCiz();
