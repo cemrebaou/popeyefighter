@@ -4,8 +4,8 @@ let ISP=[],ISPS=null,YEMS=null,ISP_Y=[];      // ISP_Y: kutudan dökülen ıspan
 const ISP_BOY=180;               // görselin (500 px kare) oyun birimi boyu; kutunun kendisi ~133 birim
 const ISP_MRK=80;                // kutu tabanından ortasına
 const ISP_AGIZ=[150,-350];        // ağızdan biraz yukarıda ve uzakta, el ileriden tutar        // gövde uzayında ağız önü (el buraya gelir)
-const ISP_UST=[205,-455],ISP_ALT=[195,-375];      // gövde uzayında: dirsek V gibi katlı, el ağzın üstünde (üst) ve ağza inmiş (alt)
-const ISP_OMUZ=20,ISP_DIRSEK=-10;      // dökme pozuna ek: omuzdan saat yönü, dirsekten saat yönü tersi (derece)
+const ISP_UST=[150,-390],ISP_ALT=[150,-390];      // gövde uzayında: dirsek V gibi katlı, el ağzın üstünde (üst) ve ağza inmiş (alt)
+const ISP_OMUZ=40,ISP_DIRSEK=-20;      // dökme pozuna ek: omuzdan saat yönü, dirsekten saat yönü tersi (derece)
 const ISP_D0=0.25,ISP_D1=0.95,ISP_SALLA=14;      // hızlı 3 sallama (dökme) aralığı (yavaşlatılmış zaman), omuzdan sallama açısı
 const ispDip=t=>t<ISP_D0||t>=ISP_D1?0:Math.pow(Math.abs(Math.sin((t-ISP_D0)/(ISP_D1-ISP_D0)*Math.PI*3)),0.6);      // 0 geride, 1 ağza doğru; 3 kez, sert
 const ISP_YAVAS=1.25;            // yeme animasyonu toplam süre çarpanı (%25 uzun)
