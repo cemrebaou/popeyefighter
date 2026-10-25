@@ -5,7 +5,7 @@ const ISP_BOY=180;               // görselin (500 px kare) oyun birimi boyu; ku
 const ISP_MRK=80;                // kutu tabanından ortasına
 const ISP_AGIZ=[150,-350];        // ağızdan biraz yukarıda ve uzakta, el ileriden tutar        // gövde uzayında ağız önü (el buraya gelir)
 const ISP_UST=[150,-390],ISP_ALT=[150,-390];      // gövde uzayında: dirsek V gibi katlı, el ağzın üstünde (üst) ve ağza inmiş (alt)
-const ISP_OMUZ=40,ISP_DIRSEK=-20;      // dökme pozuna ek: omuzdan saat yönü, dirsekten saat yönü tersi (derece)
+const ISP_OMUZ=45,ISP_DIRSEK=-20,ISP_BILEK0=-15;      // dökme pozuna ek: omuzdan saat yönü, dirsekten saat yönü tersi (derece)
 const ISP_D0=0.25,ISP_D1=0.95,ISP_SALLA=14;      // hızlı 3 sallama (dökme) aralığı (yavaşlatılmış zaman), omuzdan sallama açısı
 const ispDip=t=>t<ISP_D0||t>=ISP_D1?0:Math.pow(Math.abs(Math.sin((t-ISP_D0)/(ISP_D1-ISP_D0)*Math.PI*3)),0.6);      // 0 geride, 1 ağza doğru; 3 kez, sert
 const ISP_YAVAS=1.25;            // yeme animasyonu toplam süre çarpanı (%25 uzun)
@@ -55,7 +55,7 @@ function ispElCiz(ad){           // kol() içinde bilekte: ıspanak alınca el, 
   if(ad==='F'&&!m.onCiz){m.tf=ctx.getTransform();return true}
   const d=ISP_EL[ad],im=R[d[0]];if(!im)return false;
   const t=(S.t-m.t0)/ISP_YAVAS,q=ctx.getTransform(),th=Math.atan2(q.b,q.d);
-  const w=t>=ISP_D1||t<0.1?0:-0.25-0.15*ispDip(t);      // bilek az bükülür: sallama omuzdan
+  const w=t>=ISP_D1||t<0.1?0:-0.25+ISP_BILEK0*D-0.15*ispDip(t);      // bilek az bükülür: sallama omuzdan
   ctx.save();ctx.rotate(w);resim(im,d[1],d[2]);
   m.agz=dunyaNok(d[3],d[4]);m.agzT=S.t;      // kutunun ağzı (yapraklar buradan dökülür)
   ctx.restore();return true;
