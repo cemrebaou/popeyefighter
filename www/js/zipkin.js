@@ -220,7 +220,8 @@ function zpkKolAci(ad){      // kol() içinde omuz uzayında: kol omuzdan namluy
 }
 function zpkKolCiz(ad,far){      // kol() içinde ön kol uzayında: tabanca ön kolun üstüne bağlı (mızrak takılıysa dolu görsel)
   const im=R[(ZPK[ad]?'z_bos':'z_dolu')+(far?'_a':'')];if(!im)return;
-  ctx.save();ctx.translate(140,0);ctx.scale(ZP_BOY,ZP_BOY);ctx.translate(-140,0);      // bilek çevresinde %10 küçükctx.translate(ZP_AGIZ[0],ZP_AGIZ[1]);{const q=dunyaNok(0,0);EL[ad].zr=[q[0]-S.x,q[1]-S.y]}
+  ctx.save();ctx.translate(140,0);ctx.scale(ZP_BOY,ZP_BOY);ctx.translate(-140,0);      // bilek çevresinde %10 küçük
+  ctx.translate(ZP_AGIZ[0],ZP_AGIZ[1]);{const q=dunyaNok(0,0);EL[ad].zr=[q[0]-S.x,q[1]-S.y]}
   resim(im,ZP_TAB[0],ZP_TAB[1]);ctx.restore();
 }
 function zpkUcVis(h){      // mızrağın görünen ucu ve açısı (saplanınca biraz gömülür)
