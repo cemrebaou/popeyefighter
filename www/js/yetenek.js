@@ -38,6 +38,8 @@ try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=n
   if(d.top!==undefined)AG.top=d.top|0;
   else{let t=d.xp|0;for(let l=1;l<(d.lv||1);l++)t+=Math.round(300*Math.pow(1.25,l-1));AG.top=t}}}catch(_){}      // eski kayıt (300'lük sistem): toplam XP'ye çevrilir
 agHesap();
+try{const n=parseInt(new URLSearchParams(location.search).get('seviye'));      // test: linkte ?seviye=N varsa toplam XP en az N. seviyeye çıkar (puanlar gelir)
+  if(n>1){let t=0;for(let l=1;l<n;l++)t+=xpGerek(l);if(AG.top<t){AG.top=t;agHesap()}}}catch(_){}
 function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],anti:[...AG.anti],cip:AG.cip,top:AG.top}))}catch(_){}}
 agKaydet();
 const YV=k=>(AG.acik.has(k)&&!(AG.anti.has(k)&&!DEMO))||!!(DEMO&&DEMO.yv.includes(k));      // anti'ye çevrilen yetenek kapalı sayılır (önizlemede asıl hali gösterilir)
