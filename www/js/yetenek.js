@@ -24,7 +24,7 @@ const YKOM={};for(const k in YET)YKOM[k]=[];for(const [a,b] of YBAG){YKOM[a].pus
 // böylece XP_ILK / XP_ART değişirse seviye kendiliğinden artar ya da düşer, kazanılan XP boşa gitmez. Puan yetmezse son açılan yetenekler geri kapanır.
 const XP_ILK=100,XP_ART=1.25;      // 1→2 için 100 XP, sonraki her seviye %25 fazla
 const xpGerek=lv=>Math.round(XP_ILK*Math.pow(XP_ART,lv-1));
-const AG={acik:new Set([YKOK]),anti:new Set(),top:0,p:0,xp:0,lv:1};      // anti: ölünce zorunlu seçimle anti haline çevrilmiş yetenekler (açık sayılır ama etkisi tersine döner)
+const AG={acik:new Set([YKOK]),anti:new Set(),cip:0,top:0,p:0,xp:0,lv:1};      // anti: ölünce zorunlu seçimle anti haline çevrilmiş yetenekler (açık sayılır ama etkisi tersine döner)
 function agHesap(){      // toplam XP'den seviye, seviye içi XP ve harcanabilir puan
   let lv=1,x=AG.top;while(x>=xpGerek(lv)){x-=xpGerek(lv);lv++}
   AG.lv=lv;AG.xp=x;
@@ -34,18 +34,19 @@ function agHesap(){      // toplam XP'den seviye, seviye içi XP ve harcanabilir
   AG.p=(lv-1)-harc();
   while(AG.p<0){const son=[...AG.acik].filter(k=>k!==YKOK).pop();if(!son)break;AG.acik.delete(son);AG.p=(lv-1)-harc()}      // seviye düştüyse son açılanlar kapanır
 }
-try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);AG.anti=new Set(d.anti||[]);
+try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);AG.anti=new Set(d.anti||[]);AG.cip=d.cip|0;
   if(d.top!==undefined)AG.top=d.top|0;
   else{let t=d.xp|0;for(let l=1;l<(d.lv||1);l++)t+=Math.round(300*Math.pow(1.25,l-1));AG.top=t}}}catch(_){}      // eski kayıt (300'lük sistem): toplam XP'ye çevrilir
 agHesap();
-function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],anti:[...AG.anti],top:AG.top}))}catch(_){}}
+function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],anti:[...AG.anti],cip:AG.cip,top:AG.top}))}catch(_){}}
 agKaydet();
 const YV=k=>(AG.acik.has(k)&&!(AG.anti.has(k)&&!DEMO))||!!(DEMO&&DEMO.yv.includes(k));      // anti'ye çevrilen yetenek kapalı sayılır (önizlemede asıl hali gösterilir)
 const YA=k=>AG.anti.has(k)&&!DEMO;      // yetenek anti haline çevrilmiş mi      // önizlemede gösterilen yetenek geçici açık
 const YGEREK={R:'F'};      // bu yetenek, komşusu açık olsa da önce şunun açılmasını ister (Can Çalmalı Yırtma ← Yırtma)
 const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n))&&(!YGEREK[k]||AG.acik.has(YGEREK[k]));
 const yAlinir=k=>yAcilir(k)&&AG.p>=YET[k][4];
-HPMAX=250+(YV('V')?100:0);ENMAX=250+(YA('V')?100:0);S.hp=HPMAX;S.en=ENMAX;
+HPMAX=Math.max(50,250+(YV('V')?100:0)-10*AG.cip);      // yeteneksiz her ölüm: maks. can -10 (en az 50)
+ENMAX=250+(YA('V')?100:0);S.hp=HPMAX;S.en=ENMAX;
 function canCal(dmg,tekme){      // can çalma: H %10 / M %20 her vuruşta; Tekmeyle Can Çalma (Q) sadece tekmelere kendi +%10'unu ekler; Bıçakla Can Çalma (T) sadece bıçak vuruşlarına kendi +%20'sini ekler
   let r=YV('M')?0.2:YV('H')?0.1:0;
   if(tekme&&YV('Q'))r+=0.1;

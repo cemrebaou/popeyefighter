@@ -4,7 +4,11 @@
 const BCK=[];      // bumerang bıçaklar (Bıçak Atlama anti)
 let ATES=[];       // ateş parçacıkları (dünya koordinatı)
 // ---- ölüm: seçim ekranı kısa süre sonra açılır ----
-function antiOlum(){if(antiAday().length)S.antiBek=S.t+1.3}
+function antiOlum(){
+  if(antiAday().length){S.antiBek=S.t+1.3;return}
+  AG.cip++;HPMAX=Math.max(50,HPMAX-10);agKaydet();      // hiç verilmiş yetenek yokken ölüm: maks. can -10, her vuruşa +1 hasar (birikir)
+  S.pops.push({x:S.x,y:S.y+1200,t:0,txt:dil('cip_pop'),f:1});
+}
 // ---- hasar çarpanı (vur içinde, yuvarlamadan önce) ----
 function antiHasar(e,dmg){
   if(dmg>=9999||S.antiTik)return dmg;
@@ -17,7 +21,7 @@ function antiHasar(e,dmg){
   if(YA('N')&&yum&&S.yer&&asagiMi())k*=2;              // çömelik yumruk 2x
   if(YA('YT')&&e.dus)k*=2;                             // yerde yatana 2x
   if(YA('L')&&tek){S.antiTek=(S.antiTek||0)+1;if(S.antiTek%3===0){k*=2;S.antiKrit=true}}      // her 3. tekme kritik
-  dmg*=k;
+  dmg=dmg*k+AG.cip;      // yeteneksiz ölümlerden gelen düz hasar
   if(YA('F')&&yum&&!e.boss&&e.hp>0&&e.hp<=e.max*0.2)dmg=Math.max(dmg,Math.ceil(e.hp));      // canı %20 altındaki tek yumrukla ölür
   if(YA('M'))S.en=Math.min(ENMAX,S.en+2);              // her vuruş +2 enerji
   return dmg;
