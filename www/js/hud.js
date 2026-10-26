@@ -7,7 +7,7 @@ const barGen=()=>Math.min(340,W*0.28,H*0.5);      // ekrandaki genişlik: telefo
 const KALP={on:false,t0:0,n:-1,src:null};
 function kalpSesDur(){if(KALP.src){try{KALP.src.stop()}catch(_){}KALP.src=null}}
 function kalpGuncelle(){
-  const ak=S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&(S.t-(S.hasT||-9)>=(S.regB||6)||(S.blok&&YV('W')));      // can dolma modu (düşman vurunca / can dolunca biter)
+  const ak=S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&((S.t-(S.hasT||-9)>=(S.regB||6)&&!antiDolumYok())||(S.blok&&YV('W')));      // can dolma modu (düşman vurunca / can dolunca biter)
   if(ak&&!KALP.on){KALP.on=true;KALP.t0=S.t;KALP.n=-1}
   if(!ak&&KALP.on){KALP.on=false;kalpSesDur()}
   if(!KALP.on)return false;
@@ -31,7 +31,7 @@ function barCiz(dt){
   ctx.drawImage(R.bar_bos,0,0,BARG,BARY);
   barDol(R.bar_can,BAR.hp/HPMAX,66.4,261.3,582.0,0.39);      // can
   if(S.t<(S.ispEnT||0)){ctx.shadowColor='#ffd23f';ctx.shadowBlur=(8+4*Math.sin(S.t*8))*s*DPR}      // ıspanak sonrası enerji parlar
-  barDol(R.bar_en,BAR.en/250,145.0,262.7,534.6,0.4);      // ince enerji
+  barDol(R.bar_en,BAR.en/ENMAX,145.0,262.7,534.6,0.4);      // ince enerji
   ctx.shadowBlur=0;
   if(kk&&R.bar_kalp)ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);      // küçük kalp (yuvarlak maskeli, büyük kalbin üstüne)
   ctx.restore();

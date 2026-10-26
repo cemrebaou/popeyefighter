@@ -20,7 +20,7 @@ function ispSes(x,yarim){
   else src.start();
 }
 function ispDus(x,y,p=0.25){            // düşman ölünce (%25) / varil kırılınca (%50): kutu havaya fırlar, yere düşer
-  if(ISP.length>=12||Math.random()>=p)return;
+  if(ISP.length>=12||Math.random()>=p*(YA('TOP')?2:1))return;      // Ispanak Cebi anti: 2 kat sık
   ISP.push({x,y,vx:(Math.random()-0.5)*600,vy:1100,rot:(Math.random()-0.5)*0.4,vr:(Math.random()-0.5)*4,d:'dus',bos:false,sek:0});
 }
 function ispAt(k){               // boş kutu arkaya atılır: ilk iniş ekranın içinde, ikinci sekişte ekrandan çıkar
@@ -80,7 +80,7 @@ function ispGuncelle(dt){
   if(S.yeme){
     const m=S.yeme,t=(S.t-m.t0)/ISP_YAVAS;      // yerken belden aşağısı serbest: yürünebilir
     if(!m.ses&&t>=ISP_D0+0.15){m.ses=true;bufCal(YEMS,1)}      // yeme sesi: ağza dökmeye başlayınca
-    if(!m.bos&&t>=ISP_D1-0.15){m.bos=true;const ik=YV('TOP')?2:1;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1*ik);S.en=Math.min(250,S.en+50*ik);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1*ik,f:0.3,mavi:1})}      // max canın %10'u, +50 enerji; Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de)
+    if(!m.bos&&t>=ISP_D1-0.15){m.bos=true;const ik=YV('TOP')?2:1;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1*ik);S.en=Math.min(ENMAX,S.en+50*ik);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1*ik,f:0.3,mavi:1})}      // max canın %10'u, +50 enerji; Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de)
     if(ispDip(t)>0.45&&m.agz&&S.t-m.agzT<0.2&&!DEMO){m.yb=(m.yb||0)+dt*ISP_Y_HIZ;while(m.yb>=1){m.yb--;ispYaprak(m)}}      // dökülen yapraklar
     if(!m.atildi&&t>=ISP_D1+0.45){m.atildi=true;ispAt(m.k)}
     if(t>=ISP_D1+1.0)S.yeme=null;

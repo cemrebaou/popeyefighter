@@ -1,7 +1,7 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.353';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.354';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
 const SURUM='?v=88';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
@@ -47,7 +47,7 @@ function gorselHazir(){
   (function bas(){if(typeof dongu==='function')requestAnimationFrame(dongu);else setTimeout(bas,20)})();      // önbellekten görseller dongu.js yüklenmeden hazır olabilir: döngü tanımlanınca başlar
 }
 let DEMO=null;      // yetenek önizlemesi çalışıyor mu (demo.js)
-let HPMAX=250;      // oyuncunun en yüksek canı
+let HPMAX=250,ENMAX=250;      // oyuncunun en yüksek canı
 function hasarKat(hp){const g=Math.max(0,Math.min(10,(HPMAX-hp)/(HPMAX/10))),i=Math.min(9,Math.floor(g));return [i,g-i]}   // 11 hasar modeli arasında sürekli geçiş: i = alttaki model, f = üstteki sonraki modelin saydamsızlığı (can 100→90: model 0→1, ... 10→0: model 9→10)
 function hasarCiz(ciz,i,f){ciz(i);if(f>0.004){const a=ctx.globalAlpha;ctx.globalAlpha=a*f;ciz(i+1);ctx.globalAlpha=a}}
 

@@ -108,6 +108,7 @@ function ustGuncelle(){      // atlarken düşmanın yanına iner, sonra dizleri
 }
 const DAG_VX=4800,DAG_VY=5200,DAG_G=3;      // bıçaklı uçma: eskisinin 2 katı hızlı (ek yerçekimi), daha yatık açı
 function dagAtla(dir){      // bıçak modunda ileri kaydırma: o yöne iki bıçak önde uçar; ilk çarptığı düşmanı yere serer, üstüne çıkar (1 enerji)
+  if(YA('Z')){bicakAt(dir);return}      // Bıçak Atlama anti: bumerang bıçak
   if(!S.pence||S.ust||S.dag||S.durum!=='oyun'||!YV('Z'))return;
   if(!enerji(50))return;
   S.dag={dir,vur:[]};S.yon=dir;S.yer=false;S.vy=-DAG_VY;S.vx=dir*DAG_VX;S.atk=null;S.kuyruk.length=0;S.kay=null;S.lungeT=-1;ziplaCal();
@@ -237,7 +238,7 @@ function carpisma(){              // fırlayan düşman başka düşmana çarpı
       if(o===e||o.olu||o.tut)continue;
       if(Math.hypot(e.x-o.x,(e.y+e.cy)-(o.y+o.cy))<(e.r+o.r)*0.8){
         const f=kisit((sp-1500)/3500,0,1),vx=e.vx,vy=e.vy;
-        e.bwT=S.t+0.4;vur(o,10+25*f,vx,vy,f,e.y+e.cy);vur(e,6,-vx*0.3,0.2,0.2);bufCal(DEVS||DSS,1);
+        e.bwT=S.t+0.4;vur(o,(10+25*f)*antiCarp(e),vx,vy,f,e.y+e.cy);vur(e,6,-vx*0.3,0.2,0.2);bufCal(DEVS||DSS,1);
         if(!o.olu&&!o.boss&&!o.tut){const yn=Math.sign(vx)||1;o.cy0=o.cy0||o.cy;if(o.dus)o.dus.son=Math.max(o.dus.son,S.t+DUS_DUS+1.8+DUS_KALK);else o.dus={t0:S.t,son:S.t+DUS_DUS+1.8+DUS_KALK,yn};o.vx=yn*700;o.vy=350}      // çarpılan yıkılır
         break;
       }

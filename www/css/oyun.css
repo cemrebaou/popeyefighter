@@ -106,3 +106,8 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 #zpkB::after{content:'';position:absolute;inset:4%;border-radius:50%;background:conic-gradient(transparent var(--p,0%),rgba(20,28,34,.55) 0);pointer-events:none;display:none}
 #zpkB.yuk::after{display:block}
 #zpkB.yuk::before{content:attr(data-s);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:26px;color:#fff;text-shadow:0 0 4px #000,0 2px 0 #000;z-index:1;pointer-events:none}
+.ykan{position:absolute;width:10%;aspect-ratio:1;transform:translate(-50%,-50%);background:url(../ui/kanleke.webp?v=1) center/contain no-repeat;pointer-events:none;display:none}.ykan.on{display:block}      /* anti'ye çevrilen yetenek: ağacın üstünde, simgenin altında kan lekesi */
+.yd.anti{filter:drop-shadow(0 0 5px #c0161b)}
+#agac.anti{background:rgba(60,8,10,.82)}#agac.anti #agac_kap{display:none}#agac.anti #agac_bil{right:0;background:#e8453c;color:#fff}
+.yd.antiK{opacity:.35;filter:grayscale(1) brightness(.6);animation:none}
+.yd.antiH{opacity:1;filter:drop-shadow(0 0 8px #ff2a2a);animation:ydNabiz 1s ease-in-out infinite}

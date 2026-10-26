@@ -4,8 +4,8 @@ function ziplaBas(guc=1){
   if(S.ust)return;
   if(YV('K'))guc*=1.25;      // Çok Zıplama: %25 yüksek
   if(zpkAsili()){zpkBirak('N',true);zpkBirak('F',true);S.vy=Math.min(S.vy,0)-ZIP2*guc;S.ekstra=1;ziplaCal();return}      // halata asılıyken: halatları bırakıp sıçrar
-  if(S.yer){S.vy=-ZIP1*guc;S.yer=false;S.ekstra=1;S.donuyor=false;ziplaCal()}
-  else if(S.ekstra>0&&YV('D')){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;ziplaCal()}
+  if(S.yer){S.vy=-ZIP1*guc;S.yer=false;S.ekstra=(YV('D')?1:0)+(YA('K')?1:0);S.donuyor=false;ziplaCal()}      // Çok Zıplama anti: +1 havada zıplama
+  else if(S.ekstra>0&&(YV('D')||YA('K'))){S.ekstra--;S.vy=-ZIP2*guc;S.donuyor=true;S.spin=0;ziplaCal()}
 }
 
 // ---------- Zemin: şimdilik düz yol (ZEMIN tablosu ileride basamak/platform eklemeye hazır) ----------
@@ -179,6 +179,7 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   ctx.save();ctx.translate(omuzX,omuzY);{const q=dunyaNok(0,0);EL[ad].sx=q[0];EL[ad].sy=q[1]}ctx.scale(sc,sc);
   {const z=zpkKolAci(ad);if(z){u=z[0];r=z[1]}}      // zıpkın: kol halata paralel, dümdüz
   ctx.rotate(u*D);
+  if(far&&ZPK.ac&&!DEMO){ctx.save();ctx.translate(-11.35,123.6);ctx.rotate(r*D);zpkKolCiz(ad,far);ctx.restore()}      // arka koldaki zıpkın kolun tamamının arkasında
   resim(R['ustkol'+sf],43.8,30.65);yaraCiz('ustkol_'+ad,43.8,30.65);
   const bitis=S.atk&&S.atk.fl==='*'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad), bI=bitis?efSiddet():0;      // kombo bitiş vuruşu: kolun tamamı parlar
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);
@@ -189,7 +190,7 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);yaraCiz(far?'onkol2':'onkol',28.5,far?48.3:48.6);
   if(bI>0)ekParla(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6,bI);
   else if(S.atk&&S.atk.fl==='+'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad))parilti(248,0,95,efSiddet(),'+');   // yumruk çerçevesi parlar
-  if(ZPK.ac&&!DEMO)zpkKolCiz(ad,far);      // zıpkın iki kolda      // zıpkın tabancası ön kolun üstünde
+  if(ZPK.ac&&!DEMO&&!far)zpkKolCiz(ad,far);      // zıpkın iki kolda      // zıpkın tabancası ön kolun üstünde
   ctx.restore();
 }
 function ayakAci(l,b,diz){const hdf=(S.yer&&Math.abs(S.vx)>40&&!asagiMi())?135:100;const f=((S.atk&&S.atk.ad.indexOf('kick')===0)||S.tats>0||S.dkick||(S.kay&&S.t<S.kay.t0+S.kay.T))?0:((S.yer&&!S.atk)?0.85:0.45),d=-(l+b)*f;return d+((hdf-(l+b))-d)*diz}   // diz: 1 = geride; hdf 100 = ayak ucu yere değer, 135 = koşuda geride kalkan ayak: taban arkaya-yukarı bakar

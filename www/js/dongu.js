@@ -17,6 +17,7 @@ function ciz(){
   arkaPlan(S.x,zeminY);
   catlakCiz();
   dusmanCiz();
+  antiCiz();      // yanan düşman ateşi, bumerang bıçak
   ispCiz();
   varilCiz(false);
   kanCiz();
@@ -50,7 +51,7 @@ function dongu(ms){
   if(S.dur>0){S.dur-=dt;dt*=0.08}
   S.sars*=Math.pow(0.002,dt);S.t+=dt;
   const gA=DEMO?0:gyroAx(),ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gA)), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
-  const hed=ax*HIZ*(S.atk&&S.yer?0.35:1)*(S.yer&&asagiMi()?0.45:1);
+  const hed=ax*HIZ*(S.atk&&S.yer?0.35:1)*(S.yer&&asagiMi()?0.45:1)*antiHiz();
   const ivme=S.yer?((gA===0&&S.vx*hed>=0&&Math.abs(hed)>Math.abs(S.vx))?2800:9000):6000;      // tuşla koşu yavaş hızlanır (telefon eğimi aynı kalır)
   const asili=zpkAsili(),ucus=!S.yer&&S.t<(S.zpUcT||0);      // zıpkın: halata asılıyken eğim/tuşlar sallar; halatı bırakınca savrulma hızı korunur
   if(asili)S.vx+=ax*ZP_SALLA*0.7*dt;
@@ -64,11 +65,11 @@ function dongu(ms){
   if(S.atk){const mv=HAREKET[S.atk.ad];if(mv&&mv.dash){const u=S.atk.t/mv.dur;if(u>=mv.dash[0]&&u<mv.dash[1])S.vx=S.yon*mv.dash[2]/((mv.dash[1]-mv.dash[0])*mv.dur)}}   // ileri atılan hareketler (uçan tekme vb.)
   if(S.yy){const m=S.yy,u=(S.t-m.t0)/m.T;S.vx=0;S.yon=m.dir;if(u>=1)S.yy=null;else if(!m.hit&&u>=0.3){m.hit=true;yerYumrukVur(m)}}
   if(S.alk){const m=S.alk,u=(S.t-m.t0)/m.T;if(u>=1)S.alk=null;else{if(u<0.4)S.vx*=0.8;if(!m.hit&&u>=0.4)alkisVur()}}
-  catlakGuncelle();kanGuncelle(dt);karGuncelle(dt);
+  antiGuncelle(dt);catlakGuncelle();kanGuncelle(dt);karGuncelle(dt);
   if(S.pence){S.en-=dt*7.5;if(S.en<=0){S.en=0;penceKapa()}else if(S.blok&&S.t-S.pence.t0>0.5)penceKapa()}      // pençe: enerji dolma hızının 3 katı hızla biter; guard alınca bıçaklar girer
-  else S.en=Math.min(250,S.en+dt*2.5*(S.t<(S.ispEnT||0)?2:1));      // ıspanaktan sonra 10 sn 2 kat dolum
+  else S.en=Math.min(ENMAX,S.en+dt*2.5*(S.t<(S.ispEnT||0)?2:1));      // ıspanaktan sonra 10 sn 2 kat dolum
   if(S._rh!==undefined&&S.hp<S._rh-0.001){S.hasT=S.t;S.regB=6+2*Math.random()}      // son hasar zamanı
-  if(S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&(S.t-(S.hasT||-9)>=(S.regB||6)||(S.blok&&YV('W'))))S.hp=Math.min(HPMAX,S.hp+HPMAX*0.01*(YV('X')?3:YV('O')?2:1)*dt);      // saniyede max canın %1'i; Can Dolumu %2 / %3; Kalkanlı Savunma: blokta vurulsa da hemen dolar
+  if(S.durum==='oyun'&&S.hp>0&&S.hp<HPMAX&&((S.t-(S.hasT||-9)>=(S.regB||6)&&!antiDolumYok())||(S.blok&&YV('W'))))S.hp=Math.min(HPMAX,S.hp+HPMAX*0.01*(YV('X')?3:YV('O')?2:1)*dt);      // saniyede max canın %1'i; Can Dolumu %2 / %3; Kalkanlı Savunma: blokta vurulsa da hemen dolar
   ispCepCiz();zpkBtnCiz();      // hasardan 6-8 sn (rastgele) sonra iyileşir
   S._rh=S.hp;
   if(S.t<S.lungeT){const u=(S.t-S.lungeS)/Math.max(0.1,S.lungeT-S.lungeS);S.vx=S.lungeV*(1-u*u)}
@@ -92,7 +93,7 @@ function dongu(ms){
     S.vy+=G*dt;S.y-=S.vy*dt;
     if(S.tats>0){const u=S.t-S.tats;if(u>0.8){S.tats=0;S.spin=0}else{S.vy=-250;S.spin+=dt*Math.PI*2*2/0.8}}   // kasırga: havada asılı döner
     if(S.donuyor){S.spin+=dt*Math.PI*2/ROLL_SURE;if(S.spin>=Math.PI*2){S.spin=0;S.donuyor=false}}
-    if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;torbaCal(INS,INSBAG,0.9);S.donuyor=false;S.spin=0;S.shoryu=0;S.tats=0;
+    if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;torbaCal(INS,INSBAG,0.9);if(!S.slam&&!S.dkick)antiInis(zH);S.donuyor=false;S.spin=0;S.shoryu=0;S.tats=0;
       if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
       if(S.dkick){const t0=S.dkick.t0;S.dkick=null;zeminVur(0.5,0,t0);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
   }

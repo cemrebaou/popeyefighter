@@ -186,7 +186,7 @@ function tekmeAt(t){
 }
 cv.addEventListener('pointerdown',e=>{
   e.preventDefault();
-  if(S.durum!=='oyun'){if(S.t>S.durumT+0.8)yeniOyun();return}
+  if(S.durum!=='oyun'){if(S.t>S.durumT+0.8&&!S.antiBek&&!antiMod)yeniOyun();return}      // ölüm seçimi bekliyorsa yeniden başlamaz
   const t=e.clientX<W/2?'F':'N';
   if(tekmeBolgesi(e.clientX,e.clientY)&&!(ZPK.ac&&(zpkIzBul('N')||zpkIzBul('F')||zpkHedef(e.clientX,e.clientY).tip==='d'))){      // zıpkın açıkken tekme bölgesindeki (yerde yatan) düşmana basınca zıpkın atılır
    try{cv.setPointerCapture(e.pointerId)}catch(_){}kizler.set(e.pointerId,{t,t0:performance.now(),x0:e.clientX,y0:e.clientY,maxd:0});return}

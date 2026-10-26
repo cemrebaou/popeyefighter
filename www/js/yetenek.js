@@ -24,26 +24,28 @@ const YKOM={};for(const k in YET)YKOM[k]=[];for(const [a,b] of YBAG){YKOM[a].pus
 // böylece XP_ILK / XP_ART değişirse seviye kendiliğinden artar ya da düşer, kazanılan XP boşa gitmez. Puan yetmezse son açılan yetenekler geri kapanır.
 const XP_ILK=100,XP_ART=1.25;      // 1→2 için 100 XP, sonraki her seviye %25 fazla
 const xpGerek=lv=>Math.round(XP_ILK*Math.pow(XP_ART,lv-1));
-const AG={acik:new Set([YKOK]),top:0,p:0,xp:0,lv:1};
+const AG={acik:new Set([YKOK]),anti:new Set(),top:0,p:0,xp:0,lv:1};      // anti: ölünce zorunlu seçimle anti haline çevrilmiş yetenekler (açık sayılır ama etkisi tersine döner)
 function agHesap(){      // toplam XP'den seviye, seviye içi XP ve harcanabilir puan
   let lv=1,x=AG.top;while(x>=xpGerek(lv)){x-=xpGerek(lv);lv++}
   AG.lv=lv;AG.xp=x;
   const harc=()=>{let h=0;for(const k of AG.acik)if(k!==YKOK)h+=YET[k]?YET[k][4]:0;return h};
   for(const k of [...AG.acik])if(!YET[k])AG.acik.delete(k);      // ağaçtan kalkmış yetenek
+  for(const k of [...AG.anti])if(!AG.acik.has(k))AG.anti.delete(k);
   AG.p=(lv-1)-harc();
   while(AG.p<0){const son=[...AG.acik].filter(k=>k!==YKOK).pop();if(!son)break;AG.acik.delete(son);AG.p=(lv-1)-harc()}      // seviye düştüyse son açılanlar kapanır
 }
-try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);
+try{const d=JSON.parse(localStorage.getItem('pf_agac2')||'null');if(d){AG.acik=new Set([YKOK,...(d.acik||[])]);AG.anti=new Set(d.anti||[]);
   if(d.top!==undefined)AG.top=d.top|0;
   else{let t=d.xp|0;for(let l=1;l<(d.lv||1);l++)t+=Math.round(300*Math.pow(1.25,l-1));AG.top=t}}}catch(_){}      // eski kayıt (300'lük sistem): toplam XP'ye çevrilir
 agHesap();
-function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],top:AG.top}))}catch(_){}}
+function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],anti:[...AG.anti],top:AG.top}))}catch(_){}}
 agKaydet();
-const YV=k=>AG.acik.has(k)||!!(DEMO&&DEMO.yv.includes(k));      // önizlemede gösterilen yetenek geçici açık
+const YV=k=>(AG.acik.has(k)&&!(AG.anti.has(k)&&!DEMO))||!!(DEMO&&DEMO.yv.includes(k));      // anti'ye çevrilen yetenek kapalı sayılır (önizlemede asıl hali gösterilir)
+const YA=k=>AG.anti.has(k)&&!DEMO;      // yetenek anti haline çevrilmiş mi      // önizlemede gösterilen yetenek geçici açık
 const YGEREK={R:'F'};      // bu yetenek, komşusu açık olsa da önce şunun açılmasını ister (Can Çalmalı Yırtma ← Yırtma)
 const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n))&&(!YGEREK[k]||AG.acik.has(YGEREK[k]));
 const yAlinir=k=>yAcilir(k)&&AG.p>=YET[k][4];
-HPMAX=250+(YV('V')?100:0);S.hp=HPMAX;
+HPMAX=250+(YV('V')?100:0);ENMAX=250+(YA('V')?100:0);S.hp=HPMAX;S.en=ENMAX;
 function canCal(dmg,tekme){      // can çalma: H %10 / M %20 her vuruşta; Tekmeyle Can Çalma (Q) sadece tekmelere kendi +%10'unu ekler; Bıçakla Can Çalma (T) sadece bıçak vuruşlarına kendi +%20'sini ekler
   let r=YV('M')?0.2:YV('H')?0.1:0;
   if(tekme&&YV('Q'))r+=0.1;
@@ -59,7 +61,7 @@ function agBtn(){
 function xpKazan(n){
   if(DEMO)return;      // önizlemede XP yok
   const lv0=AG.lv;AG.top+=n;agHesap();S.pops.push({x:S.x,y:S.y+1150,t:0,txt:dil('xp_pop',n),f:0.3});
-  if(AG.lv>lv0){const k=AG.lv-lv0;S.hp=HPMAX;S.en=250;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:dil('lv_up',AG.lv,k),f:1});bufCal(LVS,1)}      // her seviye 1 puan, can ve enerji dolar, seviye sesi
+  if(AG.lv>lv0){const k=AG.lv-lv0;S.hp=HPMAX;S.en=ENMAX;S.pops.push({x:S.x,y:S.y+1300,t:0,txt:dil('lv_up',AG.lv,k),f:1});bufCal(LVS,1)}      // her seviye 1 puan, can ve enerji dolar, seviye sesi
   agKaydet();agBtn();if(window.agacYenile)agacYenile();
 }
 // Ispanak cebi: 30 sn'de bir cepten ıspanak çıkar, elde belirir, standart yeme animasyonu
@@ -73,30 +75,44 @@ function ispCepCiz(){const b=document.getElementById('ispB');if(!b||b.hidden)ret
 const yRnd=L=>L.length?L[Math.floor(Math.random()*L.length)]:null;
 const YSES={A:()=>GRS,B:()=>TCS,F:()=>PPAR,R:()=>PPAR,N:()=>YAR,D:()=>yRnd(JP),E:()=>yRnd(TK),L:()=>yRnd(TK),YT:()=>yRnd(TK),J:()=>yRnd(PB),U:()=>yRnd(INS),P:()=>BOPEN,Z:()=>USTS,TOP:()=>YEMS};
 function yetSes(k){const f=YSES[k],b=f&&f();if(!AC||!b)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.connect(g);g.connect(SFXC());src.start()}
-let agacAcik=false;
+let agacAcik=false,antiMod=false;      // antiMod: ölünce açılan zorunlu anti seçimi (kapatılamaz)
+const antiAday=()=>[...AG.acik].filter(k=>k!==YKOK&&YET[k]&&!AG.anti.has(k));      // anti'ye çevrilebilecek (verilmiş) yetenekler
 (()=>{
   const el=document.getElementById('agac'),ic=document.getElementById('agac_ic'),bil=document.getElementById('agac_bil'),pb=document.getElementById('agac_pb');
-  const DG={};
+  const DG={},KN={};
+  for(const k in YET){      // kan lekesi: ağacın üstünde, simgenin altında (sadece anti'ye çevrilenlerde görünür)
+    const [x,y]=YET[k],d=document.createElement('div');d.className='ykan';if(YET[k][5])d.style.width=(10*YET[k][5])+'%';
+    d.style.left=((x-AGX)/AGW*100)+'%';d.style.top=((y-AGY)/AGH*100)+'%';ic.appendChild(d);KN[k]=d;
+  }
   for(const k in YET){
     const [x,y,i]=YET[k],d=document.createElement('div');
     d.className='yd';if(YET[k][5])d.style.width=(6.8*YET[k][5])+'%';d.style.left=((x-AGX)/AGW*100)+'%';d.style.top=((y-AGY)/AGH*100)+'%';d.style.backgroundImage=`url(ui/yt${i}.webp${SURUM})`;
     d.addEventListener('click',ev=>{ev.stopPropagation();sec(k)});ic.appendChild(d);DG[k]=d;
   }
   let secili=null;
+  function antiCevir(k){      // seçilen yetenek anti haline döner, ağaç kapanır, oyun yeniden başlar
+    AG.anti.add(k);if(k==='V'){HPMAX-=100;ENMAX+=100}agKaydet();
+    antiMod=false;el.classList.remove('anti');agacAc(false);yeniOyun();
+  }
   function sec(k){
+    if(antiMod){if(secili===k&&antiAday().includes(k)){antiCevir(k);return}secili=k;yenile();return}      // ölüm seçimi: önizleme yok, ikinci dokunuş çevirir
     if(secili===k&&yAlinir(k)){AG.acik.add(k);agHesap();yetSes(k);if(k==='V'){HPMAX+=100;S.hp+=100;if(DEMO)DEMO.kayit.sb.S.hp+=100}agKaydet()}      // ikinci dokunuş: aç
     if(secili!==k)demoBasla(k);      // arkadaki karakter yeteneği gösterir
     secili=k;yenile();
   }
   function yenile(){
-    for(const k in DG)DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(secili===k?' sec':'');
+    const ad=antiMod?antiAday():null;
+    for(const k in DG){DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(AG.anti.has(k)?' anti':'')+(ad?(ad.includes(k)?' antiH':' antiK'):'')+(secili===k?' sec':'');KN[k].classList.toggle('on',AG.anti.has(k))}
     pb.textContent=dil('ag_bil',AG.lv,AG.xp,xpGerek(AG.lv),AG.p);      // oyuncunun seviye/XP/puanı: ayrı, altta
     let t='';
-    if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t=ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):(YGEREK[secili]&&!AG.acik.has(YGEREK[secili])?dil('ag_gerek',dil('yet_'+YGEREK[secili])):dil('ag_once'))))}      // seçili yetenek: sadece adı, maliyeti ve durumu
+    if(antiMod)t=secili?dil('yet_'+secili)+' → '+dil('anti_etiket',dil('anti_'+secili))+(ad.includes(secili)?dil('anti_sec'):dil('anti_yok')):dil('anti_bas');
+    else if(secili&&AG.anti.has(secili))t=dil('anti_etiket',dil('anti_'+secili));      // anti'ye çevrilmiş yetenek: yeni etkisi
+    else if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t=ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):(YGEREK[secili]&&!AG.acik.has(YGEREK[secili])?dil('ag_gerek',dil('yet_'+YGEREK[secili])):dil('ag_once'))))}      // seçili yetenek: sadece adı, maliyeti ve durumu
     bil.textContent=t;agBtn();
   }
   window.agacYenile=yenile;DIL_DIN.push(yenile);
-  window.agacAc=a=>{if(a&&listeAcik)listeAc(false);if(!a)demoBitir();agacAcik=a;el.hidden=!a;document.getElementById('agacB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};
+  window.agacAc=a=>{if(!a&&antiMod)return;if(a&&listeAcik)listeAc(false);if(!a)demoBitir();agacAcik=a;el.hidden=!a;document.getElementById('agacB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};      // ölüm seçimi bitmeden kapanmaz
+  window.antiAc=()=>{if(!antiAday().length)return false;if(menuAcik)menuAc(false);if(listeAcik)listeAc(false);demoBitir();antiMod=true;el.classList.add('anti');agacAcik=false;agacAc(true);return true};
   document.getElementById('agacB').addEventListener('click',()=>agacAc(!agacAcik));      // ikon açıkken tekrar dokununca kapanır
   document.getElementById('ispB').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();ispCep()});      // click değil: yürüme tuşuna basılıyken de anında çalışır
   el.addEventListener('click',e=>{if(e.target===el||e.target.id==='agac_kap')agacAc(false)});
