@@ -90,7 +90,7 @@ const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süre
     const d=document.createElement('div');d.className='yd';yer(d,k,6.8);d.style.backgroundImage=`url(ui/yt${YET[k][2]}.webp${SURUM})`;
     d.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();bas(k)});d.addEventListener('click',ev=>ev.stopPropagation());ic.appendChild(d);DG[k]=d;
   }
-  for(const k in YET){const d=document.createElement('div');d.className='ydol';yer(d,k,6.8);d.style.setProperty('--im',`url(ui/yt${YET[k][2]}.webp${SURUM})`);ic.appendChild(d);OL[k]=d}      // basılı tutunca dönerek renklenen kopya (gri simgenin üstünde)
+  for(const k in YET){const d=document.createElement('div');d.className='ydol';yer(d,k,6.8);d.style.setProperty('--im',`url("${new URL(`ui/yt${YET[k][2]}.webp${SURUM}`,location.href).href}")`);ic.appendChild(d);OL[k]=d}      // basılı tutunca dönerek renklenen kopya; --im tam adres (göreli adres css/ klasörüne göre çözülüyordu, dolum görünmüyordu)
   const kalp=document.createElement('div');kalp.id='agac_kalp';ic.appendChild(kalp);      // skill öldürmek yerine: maks. can -10, +1 hasar
   const kalpOl=document.createElement('div');kalpOl.id='agac_kalpOl';kalpOl.className='ydol';ic.appendChild(kalpOl);OL.KALP=kalpOl;
   kalp.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();bas('KALP')});kalp.addEventListener('click',ev=>ev.stopPropagation());
