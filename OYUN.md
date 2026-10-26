@@ -95,3 +95,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - İki parmak aynı yöne yatay = süpermen. Zıt yöne (açılarak) = döner tekme. Ortaya doğru = alkış.
 - Havada tek parmak hızlı aşağı = yere tekme (çekilen yöne); iki parmak aşağı = süper kahraman inişi.
 - Çok hızlı yukarı = ateşli aparkat. Kol 0.5 sn aşağıda = eğilip ıspanak alma.
+
+## Yaralar (`js/yara.js`)
+- Can azaldıkça gövde, kollar ve pantolona rastgele yara görselleri (`yara/y1-16`) basılır; her yeni oyunda yerleşim yeniden rastgele. Üst üste gelmez, eklem halkalarına, dövmeye ve göğsün alt çizgisine değmez. Yerleşen yara sayısı N (~50) ise her HPMAX/N can kaybında (~5 can) bir yara görünür; can dolunca ters sırayla kaybolur.
+- y1-2 sadece pantolonda (bacak başına en çok 2-4), y5/y9 yara bandı (sabit boy, %30), diğerleri deride büyüklü küçüklü. Gövde artık hep temiz `govde0` + yaralar; yüz eskisi gibi can kademesiyle değişir.
