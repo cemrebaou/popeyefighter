@@ -81,7 +81,10 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 
 - Ağaçta yetenek açma: dokun = bilgi/önizleme, 2 sn basılı tut = açılır (simge dönerek renklenir, bırakınca dolum boşalır).
 
-## Anti yetenekler (`js/anti.js`, `AG.anti`, `YA(k)`)
+## Skill öldürme (kodda anti; `js/anti.js`, `AG.anti`, `YA(k)`)
+- Arayüzde "Öldür" denir. Öldürünce `ses/skill_oldur.mp3` çalar, değişiklik 2 sn görünür, sonra oyun başlar. Öldürme ekranında simgeler renkli, çeper griden kırmızıya yavaş geçer; yazıda önce öldürülmüş hali, sonra eski ad üstü çizili. Normal ağaçta skill yazısının sonunda ölüm hali üstü çizili.
+- Kalpli kol ağaçta hep görünür: dokununca güncel maks. can ve toplam ceza/bonus yazar; sadece ölüm seçiminde 2 sn basılı tutunca seçilir (maks. can 50 ise seçilemez).
+- Öldürülecek skill yok ve maks. can 50 iken ölüm: OYUN BİTTİ, her şey sıfırlanır (XP, seviye, skill'ler, öldürülenler, cezalar).
 - Hiç verilmiş yetenek yokken ölünce: maks. can -10 (en az 50), her vuruşa +1 düz hasar; her ölümde birikir (`AG.cip`, kayıtlı).
 - Ölünce verilmiş (Yumruk hariç, henüz çevrilmemiş) yetenek varsa 1.3 sn sonra ağaç zorunlu seçimle açılır, kapatılamaz; yeteneğe dokun = anti metni (önce anti, yanında orijinal; yazı yana kaydırılır), 2 sn basılı tut = çevrilir, oyun yeniden başlar. Sağ üstteki kalpli kol (`ui/kalpkol.webp`): skill öldürmek yerine maks. can -10, +1 hasar (dokun = açıklama, 2 sn basılı = seçer). Çevrilen yetenek kapalı sayılır (YV false), ağaçta simgenin altında kan lekesi (`ui/kanleke.webp`). Kayıt `pf_agac2.anti`.
 - O: can dolumu yok, öldürünce düşmanın maks. canının %10'u kadar can (boss dahil) · X: can dolumu yok, can %25 altında hasar +%50 · W: blokta dolum yok, blok %75 engeller · V: +100 can yerine +100 maks. enerji (ENMAX) · TOP: ıspanak 2 kat sık düşer · I: vuruş %15 sersemletir (1.3 sn)

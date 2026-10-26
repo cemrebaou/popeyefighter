@@ -92,9 +92,10 @@ const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süre
   const kalp=document.createElement('div');kalp.id='agac_kalp';ic.appendChild(kalp);      // skill öldürmek yerine: maks. can -10, +1 hasar
   const kalpOl=document.createElement('div');kalpOl.id='agac_kalpOl';kalpOl.className='ydol';ic.appendChild(kalpOl);OL.KALP=kalpOl;
   kalp.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();bas('KALP')});kalp.addEventListener('click',ev=>ev.stopPropagation());
-  let secili=null,tut=null;      // tut: {k, p: 0-1 dolum, bas: parmak basılı mı}
-  const verilir=k=>k==='KALP'?antiMod:antiMod?antiAday().includes(k):yAlinir(k);
+  let secili=null,tut=null,bekle=false;      // bekle: öldürme yapıldı, 2 sn gösterilip oyun yeniden başlar      // tut: {k, p: 0-1 dolum, bas: parmak basılı mı}
+  const verilir=k=>bekle?false:k==='KALP'?antiMod&&HPMAX>50:antiMod?antiAday().includes(k):yAlinir(k);
   function bas(k){
+    if(bekle)return;
     if(!antiMod&&k!=='KALP'&&secili!==k)demoBasla(k);      // arkadaki karakter yeteneği gösterir
     if(tut&&tut.k!==k){OL[tut.k].style.setProperty('--p',0);OL[tut.k].classList.remove('tut')}
     secili=k;yenile();
@@ -110,23 +111,28 @@ const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süre
     if(tut.p<=0){d.style.setProperty('--p',0);d.classList.remove('tut');tut=null;return}
     requestAnimationFrame(dolum);
   }
-  function antiBitir(){antiMod=false;el.classList.remove('anti');agacAc(false);yeniOyun()}
+  function antiBitir(k){      // öldürme sesi, değişiklik 2 sn görünür, sonra oyun yeniden başlar
+    bekle=true;secili=k;if(AC&&OLDS){const src=AC.createBufferSource();src.buffer=OLDS;src.connect(SFXC());src.start()}yenile();
+    setTimeout(()=>{bekle=false;antiMod=false;el.classList.remove('anti');agacAc(false);yeniOyun()},2000);
+  }
   function ver(k){
-    if(k==='KALP'){if(!antiMod)return;AG.cip++;HPMAX=Math.max(50,HPMAX-10);agKaydet();antiBitir();S.pops.push({x:S.x,y:S.y+1200,t:0,txt:dil('cip_pop'),f:1});return}      // skill öldürmek yerine ceza/bonus
-    if(antiMod){if(!antiAday().includes(k))return;AG.anti.add(k);if(k==='V'){HPMAX-=100;ENMAX+=100}agKaydet();antiBitir();return}
+    if(k==='KALP'){if(!antiMod||HPMAX<=50)return;AG.cip++;HPMAX=Math.max(50,HPMAX-10);agKaydet();antiBitir(k);S.pops.push({x:S.x,y:S.y+1200,t:0,txt:dil('cip_pop'),f:1});return}      // skill öldürmek yerine ceza/bonus
+    if(antiMod){if(!antiAday().includes(k))return;AG.anti.add(k);if(k==='V'){HPMAX-=100;ENMAX+=100}agKaydet();antiBitir(k);return}
     if(!yAlinir(k))return;AG.acik.add(k);agHesap();yetSes(k);if(k==='V'){HPMAX+=100;S.hp+=100;if(DEMO)DEMO.kayit.sb.S.hp+=100}agKaydet();yenile();
   }
-  function yaz(t){if(bil.textContent!==t){bil.textContent=t;bil.scrollLeft=0}}
+  function yaz(t){if(bil.innerHTML!==t){bil.innerHTML=t;bil.scrollLeft=0}}      // t: kaçışlı HTML (eski skill adı üstü çizili)
+  const h=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   function yenile(){
-    const ad=antiMod?antiAday():null;
+    const ad=antiMod&&!bekle?antiAday():null;
     for(const k in DG){DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(AG.anti.has(k)?' anti':'')+(ad?(ad.includes(k)?' antiH':' antiK'):'')+(secili===k?' sec':'');KN[k].classList.toggle('on',AG.anti.has(k))}
     kalp.classList.toggle('sec',secili==='KALP');
     pb.textContent=dil('ag_bil',AG.lv,AG.xp,xpGerek(AG.lv),AG.p);      // oyuncunun seviye/XP/puanı: ayrı, altta
     let t='';
-    if(secili==='KALP')t=dil('kalp_bil')+(antiMod?dil('ag_tut'):'');
-    else if(antiMod)t=secili?dil('anti_etiket',dil('anti_'+secili))+'  ·  '+dil('yet_'+secili)+(ad.includes(secili)?dil('ag_tut'):dil('anti_yok')):dil('anti_bas');      // önce anti, sonra orijinal
-    else if(secili&&AG.anti.has(secili))t=dil('anti_etiket',dil('anti_'+secili))+'  ·  '+dil('yet_'+secili);
-    else if(secili){const a=dil('yet_'+secili),c=YET[secili][4];t=a+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_tut'):dil('ag_yetmez')):(YGEREK[secili]&&!AG.acik.has(YGEREK[secili])?dil('ag_gerek',dil('yet_'+YGEREK[secili])):dil('ag_once'))))}      // seçili yetenek: adı, maliyeti ve durumu
+    const eski=k=>'  ·  <s>'+h(dil('yet_'+k))+'</s>';      // öldürülen skill'in eski adı üstü çizili
+    if(secili==='KALP')t=h(dil('kalp_dur',HPMAX,AG.cip*10,AG.cip)+(antiMod?'  ·  '+dil('kalp_bil')+(HPMAX>50?dil('ag_tut'):dil('kalp_son')):''));      // normal ekranda sadece bilgi (vermez)
+    else if(antiMod)t=secili?h(dil('anti_etiket',dil('anti_'+secili)))+eski(secili)+h(bekle?'':ad.includes(secili)?dil('ag_tut'):dil('anti_yok')):h(dil('anti_bas'));      // önce öldürülmüş hali, sonra eski ad
+    else if(secili&&AG.anti.has(secili))t=h(dil('anti_etiket',dil('anti_'+secili)))+eski(secili);
+    else if(secili){const a=dil('yet_'+secili),c=YET[secili][4];t=h(a+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_tut'):dil('ag_yetmez')):(YGEREK[secili]&&!AG.acik.has(YGEREK[secili])?dil('ag_gerek',dil('yet_'+YGEREK[secili])):dil('ag_once')))))+(secili!==YKOK?'  ·  <s>'+h(dil('olum_etiket',dil('anti_'+secili)))+'</s>':'')}      // normal ekranda ölüm hali üstü çizili      // seçili yetenek: adı, maliyeti ve durumu
     yaz(t);agBtn();
   }
   window.agacYenile=yenile;DIL_DIN.push(yenile);

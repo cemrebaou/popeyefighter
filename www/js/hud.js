@@ -65,7 +65,7 @@ function hud(dt){
   if(S.durum!=='oyun'){
     ctx.fillStyle='rgba(31,42,51,.55)';ctx.fillRect(0,0,W,H);
     ctx.textAlign='center';ctx.font='64px Bangers,Impact,sans-serif';ctx.lineWidth=8;ctx.strokeStyle='#1f2a33';
-    const t=dil(S.durum==='tamam'?'tamam':'yenildin');
+    const t=dil(S.durum==='tamam'?'tamam':S.tamSif?'tam_son':'yenildin');      // tam sıfırlama: OYUN BİTTİ
     ctx.strokeText(t,W/2,H*0.4);ctx.fillStyle=S.durum==='tamam'?'#ffd36b':'#e8453c';ctx.fillText(t,W/2,H*0.4);
     ctx.font='700 18px Nunito,sans-serif';ctx.fillStyle='#fff';ctx.fillText(dil('tekrar'),W/2,H*0.4+50);
   }

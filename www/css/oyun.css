@@ -110,15 +110,16 @@ canvas{cursor:crosshair}.etiket,.ipucu{pointer-events:none}
 .yd.anti{filter:drop-shadow(0 0 5px #c0161b)}
 #agac.anti{background:rgba(60,8,10,.82)}#agac.anti #agac_kap{display:none}#agac.anti #agac_bil{right:0;background:#e8453c;color:#fff}
 .yd.antiK{opacity:.35;filter:grayscale(1) brightness(.6);animation:none}
-.yd.antiH{opacity:1;filter:drop-shadow(0 0 8px #ff2a2a);animation:ydNabiz 1s ease-in-out infinite}
+.yd.antiH{opacity:1;filter:drop-shadow(0 0 7px rgba(160,160,160,.9));animation:oldurNabiz 2.6s ease-in-out infinite}
+@keyframes oldurNabiz{0%,100%{filter:drop-shadow(0 0 7px rgba(160,160,160,.9))}50%{filter:drop-shadow(0 0 12px rgba(225,25,25,.95))}}      /* öldürülebilir skill: renkli, çeper griden kırmızıya yumuşak */
 
-#agac_bil{overflow-x:auto;overflow-y:hidden;text-overflow:clip;touch-action:pan-x;-webkit-overflow-scrolling:touch;scrollbar-width:none;pointer-events:auto}#agac_bil::-webkit-scrollbar{display:none}      /* uzun yazı parmakla yana kaydırılır */
+#agac_bil{overflow-x:auto;overflow-y:hidden;text-overflow:clip;touch-action:pan-x;-webkit-overflow-scrolling:touch;scrollbar-width:none;pointer-events:auto}#agac_bil::-webkit-scrollbar{display:none}#agac_bil s{opacity:.75;text-decoration-thickness:2px}      /* uzun yazı parmakla yana kaydırılır */
 .ydol{position:absolute;width:6.8%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;--p:0;opacity:0}
 .ydol::before{content:'';position:absolute;inset:0;background:var(--im) center/contain no-repeat;-webkit-mask:conic-gradient(#000 calc(var(--p)*360deg),transparent 0);mask:conic-gradient(#000 calc(var(--p)*360deg),transparent 0)}      /* basılı tutunca saat yönünde renklenir */
 .ydol.tut{opacity:1}.ydol.tut::before{filter:drop-shadow(0 0 8px #ffd84a)}
 .ydol.tut::after{content:'';position:absolute;inset:-14%;border-radius:50%;border:4px solid transparent;border-top-color:#ffd84a;border-right-color:#ffb02e;animation:ydDon .35s linear infinite}
 @keyframes ydDon{to{transform:rotate(360deg)}}
-#agac_kalp,#agac_kalpOl{position:absolute;right:0.5%;top:1%;width:10%;aspect-ratio:300/263;display:none;transform:none;--im:url(../ui/kalpkol.webp?v=1)}#agac_kalp{background:var(--im) center/contain no-repeat}
-#agac_kalp{cursor:pointer;touch-action:manipulation;filter:grayscale(1) brightness(.85)}#agac_kalp.sec{transform:scale(1.15)}
+#agac_kalp,#agac_kalpOl{position:absolute;right:0.5%;top:1%;width:10%;aspect-ratio:300/263;display:block;transform:none;--im:url(../ui/kalpkol.webp?v=1)}#agac_kalp{background:var(--im) center/contain no-repeat}
+#agac_kalp{cursor:pointer;touch-action:manipulation}#agac_kalp.sec{transform:scale(1.15)}
 #agac_kalpOl{pointer-events:none;left:auto}
-#agac.anti #agac_kalp,#agac.anti #agac_kalpOl{display:block}#agac.anti #agac_kalp{animation:ydNabiz 1s ease-in-out infinite}
+#agac.anti #agac_kalp{animation:oldurNabiz 2.6s ease-in-out infinite}
