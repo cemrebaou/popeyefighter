@@ -43,6 +43,27 @@ function xpYuvarlak(dt){      // yuvarlak boşluk XP ile alttan dolar; dolunca s
   const fu=S.t-(BAR.flT||-9);if(fu<0.8){ctx.globalCompositeOperation='lighter';ctx.fillStyle='rgba(255,220,90,'+(0.55*(1-fu/0.8))+')';ctx.fillRect(XPC.x-XPC.r,XPC.y-XPC.r,XPC.r*2,XPC.r*2)}      // seviye atlayınca parlar
   ctx.restore();
 }
+// Cam: barların ve XP yuvarlağının üstünde bombeli saydam cam. Bar camı bir kez hazırlanır (dolu bar görselinin şekliyle maskeli): üst kenarda parlak bant, altta hafif gölge.
+const CAM={};
+function camHazirla(ad,im,dy){
+  if(CAM[ad]||!im||!im.width)return CAM[ad];
+  const k=2,c=document.createElement('canvas');c.width=BARG*k;c.height=BARY*k;const x=c.getContext('2d');
+  const bant=(sh,renk)=>{const t=document.createElement('canvas');t.width=c.width;t.height=c.height;const y=t.getContext('2d');
+    y.drawImage(im,0,0,t.width,t.height);y.globalCompositeOperation='destination-out';y.drawImage(im,0,sh*k,t.width,t.height);y.globalCompositeOperation='source-in';y.fillStyle=renk;y.fillRect(0,0,t.width,t.height);x.drawImage(t,0,0)};
+  x.drawImage(im,0,0,c.width,c.height);x.globalCompositeOperation='source-in';x.fillStyle='rgba(255,255,255,.07)';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='source-over';      // hafif cam pusu
+  bant(dy,'rgba(255,255,255,.32)');bant(dy*0.35,'rgba(255,255,255,.35)');bant(Math.max(2,dy*0.08),'rgba(255,255,255,.55)');      // üstte katmanlı parlaklık: bombeli görünüm
+  bant(-dy*0.3,'rgba(10,25,45,.22)');      // alt kenarda gölge
+  return CAM[ad]=c;
+}
+function camYuvarlak(){      // XP yuvarlağının üstüne cam kubbe
+  const {x:cx,y:cy,r}=XPC;
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
+  let g=ctx.createRadialGradient(cx,cy,r*0.7,cx,cy,r);g.addColorStop(0,'rgba(10,25,45,0)');g.addColorStop(1,'rgba(10,25,45,.3)');ctx.fillStyle=g;ctx.fillRect(cx-r,cy-r,2*r,2*r);      // kenarda iç gölge
+  ctx.save();ctx.translate(cx-r*0.22,cy-r*0.48);ctx.rotate(-0.38);ctx.scale(1,0.5);
+  g=ctx.createLinearGradient(0,-r*0.6,0,r*0.6);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r*0.62,0,Math.PI*2);ctx.fill();ctx.restore();      // büyük yansıma
+  g=ctx.createRadialGradient(cx+r*0.5,cy+r*0.45,0,cx+r*0.5,cy+r*0.45,r*0.16);g.addColorStop(0,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.fillRect(cx-r,cy-r,2*r,2*r);      // alttaki küçük parıltı
+  ctx.restore();
+}
 function barDol(im,f,y0,u0,u1,BEG){
   if(!im||f<=0.002)return;
   const uf=u0+(u1-u0)*Math.min(1,f);
@@ -62,8 +83,9 @@ function barCiz(dt){
   if(S.t<(S.ispEnT||0)){ctx.shadowColor='#ffd23f';ctx.shadowBlur=(8+4*Math.sin(S.t*8))*s*DPR}      // ıspanak sonrası enerji parlar
   barDol(R.bar_en,BAR.en/ENMAX,145.0,262.7,534.6,0.4);      // ince enerji
   ctx.shadowBlur=0;
+  {const a=camHazirla('can',R.bar_can,30),b=camHazirla('en',R.bar_en,8);if(a)ctx.drawImage(a,0,0,BARG,BARY);if(b)ctx.drawImage(b,0,0,BARG,BARY)}      // bar camları
   const ki=R.kalp_tek;
-  if(ki&&R.bar_cerceve){const o=kalpOlcek(dt,kk),h=178*o,w=h*ki.width/ki.height;ctx.drawImage(ki,XPC.x+3-w/2,XPC.y+3-h/2,w,h)}      // tek kalp: alttaki küçük kalbi örter
+  if(ki&&R.bar_cerceve){const o=kalpOlcek(dt,kk),h=178*o,w=h*ki.width/ki.height;ctx.drawImage(ki,XPC.x+3-w/2,XPC.y+3-h/2,w,h);camYuvarlak()}      // tek kalp: alttaki küçük kalbi örter; üstüne cam
   else if(kk&&R.bar_kalp)ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);
   ctx.restore();
 }

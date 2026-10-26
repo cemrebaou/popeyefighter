@@ -41,7 +41,7 @@ function antiOldu(e){
   if(YA('O')&&S.hp>0){const c=Math.round((e.max||100)*0.1);S.hp=Math.min(HPMAX,S.hp+c);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:dil('can_pop',c),f:0.4,mavi:1})}      // öldürünce düşmanın maks. canının %10'u kadar can (boss dahil)
   e.yan=null;e.kanama=null;
 }
-const antiDolumYok=()=>YA('O')||YA('X');      // can dolumu iptal
+const antiDolumYok=()=>false;      // Can Dolumu %2/%3 öldürülünce sadece bonus gider; karakterin kendi pasif dolumu kalır
 function antiBlok(e){      // blok / parry: çevredeki düşmanlar sersemler (Alkış anti)
   if(!YA('AL')||S.t-(S.alAntiT||-9)<0.8)return;S.alAntiT=S.t;
   for(const o of DUS){if(o.olu||o.tut||Math.abs(o.x-S.x)>900)continue;o.st=Math.max(o.st||0,S.t+(o.boss?0.6:1.3));o.vx=(o.x>=S.x?1:-1)*(o.boss?150:600)}
