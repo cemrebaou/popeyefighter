@@ -22,8 +22,9 @@ let CV_EV=[],CV_LMB=[],CV_OBJ=[];
 // Çevre objeleri (v0.372, cevre/o_*.webp): ev katmanında (kumla aynı, evlerin önünde, iskelenin arkasında). Boylar çizim oranında (görsel px × 1.31 = dünya birimi; varil = 380).
 // dümen ve çapa sadece bir eve yaslanır (ev cephesine değer), diğerleri evlerin yanına, önüne ve aralarına rastgele; dy: öne çıkma (biraz büyür, aşağı iner).
 const CV_OBJ_BOY={dumen:251,capa:344,kasa:296,sandik:241,tabela:452,top:367,kurutma:436,sepet:221,kova:231,odun:160,varil:289,testi:184,simit:613,matara:178,sandal:294,tabure:168,cuval:293,halat:208},CV_OBJ_K=1.31;
-(function cevreKur(){      // sabit tohumlu rastgele dizilim: her oyunda aynı liman
-  let tohum=20261024;const r=()=>{tohum=(Math.imul(tohum,1103515245)+12345)>>>0;return (tohum>>>8)/16777216};
+function cevreKur(t1,t2){      // tohumlu rastgele dizilim; ilk açılış sabit tohum, her yeniden başlamada (yeniOyun) yeni tohum
+  CV_EV=[];CV_LMB=[];CV_OBJ=[];
+  let tohum=t1;const r=()=>{tohum=(Math.imul(tohum,1103515245)+12345)>>>0;return (tohum>>>8)/16777216};
   // evler: 2-3'lü sokak kümeleri, aralarda boşluk (arkadaki deniz görünür); evler birbirine binmez
   let lx=-900,son=-1;const SON=(BOSS_X+3500)*EV_P;
   while(lx<SON){
@@ -32,14 +33,15 @@ const CV_OBJ_BOY={dumen:251,capa:344,kasa:296,sandik:241,tabela:452,top:367,kuru
     lx+=500+r()*900;
   }
   for(let x=-400;x<BOSS_X+2500;x+=1800+r()*2000){if(V_KONUM.some(v=>Math.abs(v-x)<450))x+=600;CV_LMB.push({k:r()<0.5?0:1,x})}      // lambalar rastgele aralıklarla, varillerin üstüne gelmez
-  {let t2=20261027;const q=()=>{t2=(Math.imul(t2,1103515245)+12345)>>>0;return (t2>>>8)/16777216};      // objeler: ayrı tohum (evler/lambalar değişmesin)
+  {const q=()=>{t2=(Math.imul(t2,1103515245)+12345)>>>0;return (t2>>>8)/16777216};      // objeler: ayrı tohum (evler/lambalar değişmesin)
     const gen=a=>{const im=CVR['o_'+a];return CV_OBJ_BOY[a]*CV_OBJ_K*(im&&im.width?im.width/im.height:1)};
     for(const e of CV_EV){if(q()<0.35){const a=q()<0.5?'dumen':'capa',w=e.h*EV_ORAN[+e.ad.slice(-1)];CV_OBJ.push({ad:a,x:e.x+w*(0.2+q()*0.6),dy:0,ev:1})}}      // eve yaslanan dümen / çapa
     const dig=CV_OBJ_AD.filter(a=>a!=='dumen'&&a!=='capa');let x=-700,son2='';
     while(x<SON){let a;do a=dig[Math.floor(q()*dig.length)];while(a===son2);son2=a;
       CV_OBJ.push({ad:a,x,dy:q()<0.5?0:10+q()*50});x+=CV_OBJ_BOY[a]*CV_OBJ_K*1.2+250+q()*1100}      // tek tek ya da küçük gruplar, aralarında boşluk
     CV_OBJ.sort((a,b)=>(a.dy-b.dy)||(b.ev?1:0)-(a.ev?1:0))}      // arkadakiler önce
-})();
+}
+cevreKur(20261024,20261027);
 function cvCiz(im,sx,taban,h){      // taban: ekranda alt kenar (px), h: ekranda boy (px)
   if(!im)return;const w=h*im.width/im.height;
   if(sx+w/2<-40||sx-w/2>W+40)return;
@@ -65,7 +67,7 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
 // İkisi de yatay dilimlerle perspektifli: üst dilim ev katmanı hızında (EV_P), alt dilimler giderek SAHIL_P1 hızına çıkar. Deniz kendi kendine akar:
 // deniz kumdan bağımsız, dere gibi sürekli yavaşça sola akar (DZ_X); koşunca parallaksla daha hızlı kayar.
 const ZEMIN_W=1700,DAG_P=0.5,DAG_BOY=1500;      // zemin dokusu dünya eni; yakın dağ: derinlik (evlerden uzak, yavaş kayar) ve dünya boyu
-const KUM_ORAN=0.36,DZ_AKIS=70,DZ_KIYI=0.12,DZ_PER=40,DZ_HIZ=0.16;      // + ekrana doğru akış: kıyı payı, kayma (görsel px), devir (1/sn)      // bandın kum payı; deniz kendi kendine sola akar (dünya birimi/sn), koşunca parallaksla daha hızlı kayar
+const KUM_ORAN=0.36,DZ_AKIS=70,DZ_KIYI=0.12,DZ_PER=60,DZ_HIZ=0.22;      // + ekrana doğru akış: kıyı payı, kayma (görsel px), devir (1/sn)      // bandın kum payı; deniz kendi kendine sola akar (dünya birimi/sn), koşunca parallaksla daha hızlı kayar
 let DZ_X=0,DZ_T=-1;
 function dagCiz(zeminY){      // yakın dağ: evlerle orantılı, biraz uzakta (DAG_P), tabanı zeminin arkasında kalır
   const D=CVR.dag_yakin;if(!D)return;const s=SC*DAG_P,h=DAG_BOY*s,w=h*D.width/D.height;
@@ -85,7 +87,7 @@ function kumDeniz(zeminY,s){
     const akar=!kum&&sy0>im.height*DZ_KIYI,fz=(S.t*DZ_HIZ)%1;      // açık su ayrıca ekrana doğru akar (kıyı köpüğü sabit)
     for(let x=ox;x<W;x+=sw-1){
       ctx.drawImage(im,0,sy0,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh);
-      if(akar)for(let k=0;k<3;k++){const f=(fz+k/3)%1,a=0.28*Math.sin(Math.PI*f),sy=Math.max(im.height*DZ_KIYI,sy0-f*DZ_PER);      // üç yumuşak, aşağı kayan saydam kopya: sırayla belirip söner (homojen)
+      if(akar)for(let k=0;k<2;k++){const f=(fz+k*0.5)%1,a=0.55*Math.sin(Math.PI*f),sy=Math.max(im.height*DZ_KIYI,sy0-f*DZ_PER);      // iki aşağı kayan saydam kopya (v0.368 hali), sola akışla birlikte
         ctx.globalAlpha=a;ctx.drawImage(im,0,sy,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh)}
       ctx.globalAlpha=1}
   }

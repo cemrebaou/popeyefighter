@@ -35,7 +35,7 @@ function antiVurSonra(e,dmg,hf){
   if(dmg>=9999||S.antiTik||e.olu)return;
   if(YA('Q')&&S.cs==='t'&&!e.tut){e.vx*=1.3;e.vy*=1.3}      // tekmeler %30 daha uzağa
   if(YA('J')&&Math.random()<0.05){e.yan={son:S.t+4,tik:(e.yan&&e.yan.tik)||S.t+0.5};if(S.cs==='y'&&S.vEl)S.atesEl={k:S.vEl,son:S.t+0.6}}      // yakan yumruk alev alır      // Ateşli Aparkat öldürülünce: her vuruş %5 yakar, 4 sn
-  if(YA('I')&&!e.boss&&!e.tut&&Math.random()<0.05){e.st=Math.max(e.st||0,S.t+1.3);e.ser=e.st;S.pops.push({x:e.x,y:e.y+e.cy+e.r+120,t:0,txt:dil('sersem'),f:0.5})}      // %15 sersemletir
+  if(YA('I')&&!e.tut&&Math.random()<(e.boss?0.025:0.05)){e.st=Math.max(e.st||0,S.t+(e.boss?0.65:1.3));e.ser=e.st;S.pops.push({x:e.x,y:e.y+e.cy+e.r+120,t:0,txt:dil('sersem'),f:0.5})}      // %15 sersemletir
   if(YA('P')&&S.cs==='y'&&!S.pence&&Math.random()<0.25){if(!e.kanama)S.pops.push({x:e.x,y:e.y+e.cy+e.r+120,t:0,txt:dil('kanama'),f:0.4});e.kanama={son:S.t+4,tik:S.t+0.5}}      // %25 kanama
 }
 function antiOldu(e){
@@ -45,7 +45,7 @@ function antiOldu(e){
 const antiDolumYok=()=>false;      // Can Dolumu %2/%3 öldürülünce sadece bonus gider; karakterin kendi pasif dolumu kalır
 function antiBlok(e){      // blok / parry: çevredeki düşmanlar sersemler (Alkış anti)
   if(!YA('AL')||S.t-(S.alAntiT||-9)<0.8)return;S.alAntiT=S.t;
-  for(const o of DUS){if(o.olu||o.tut||Math.abs(o.x-S.x)>900)continue;o.st=Math.max(o.st||0,S.t+(o.boss?0.6:1.3));o.ser=o.st;o.vx=(o.x>=S.x?1:-1)*(o.boss?150:600)}
+  for(const o of DUS){if(o.olu||o.tut||Math.abs(o.x-S.x)>900||(o.boss&&Math.random()<0.5))continue;o.st=Math.max(o.st||0,S.t+(o.boss?0.65:1.3));o.ser=o.st;o.vx=(o.x>=S.x?1:-1)*(o.boss?150:600)}
   S.pops.push({x:S.x,y:S.y+1150,t:0,txt:dil('sersem'),f:0.6});S.sars=Math.max(S.sars,8);
 }
 const antiBlokKat=()=>YA('W')?0.25:0.5;      // blokta geçen hasar

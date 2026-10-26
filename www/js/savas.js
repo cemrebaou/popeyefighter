@@ -239,7 +239,7 @@ function dusmanGuncelle(dt){
         const u=(S.t-e.kb.t0)/KBDUR;
         if(!e.kb.hit&&u>=0.45){
           e.kb.hit=true;ses('yumruk');
-          if(dokunulmaz()&&Math.abs(e.x-S.x)<900){S.hp-=S.blok?(YA('W')?3:5):10;if(S.blok)antiBlok(e);titre(40);S.hitR={t0:S.t,z:'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}
+          if(dokunulmaz()&&Math.abs(e.x-S.x)<900){S.hp-=Math.round((S.blok?(YA('W')?3:5):10)*ZK());if(S.blok)antiBlok(e);titre(40);S.hitR={t0:S.t,z:'kafa',bk:((e.x-S.x)*S.yon>0)?1:-1}}
         }
         if(u>=1){e.kb=null;e.sonV=S.t}
       }

@@ -3,7 +3,7 @@
 function bossKur(){
   S.bossGeldi=true;S.mesaj='boss_geldi';S.mesajT=S.t;
   const x=BOSS_X;
-  DUS.push({t:'korsan',kc:'p',boss:true,bs:1.25,x,y:zemin(x),vx:0,vy:0,hp:500,max:500,cy:560,r:265,yon:-1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:S.t+1.5,ka:null});      // boss: tabancalı korsan, %25 büyük
+  DUS.push({t:'korsan',kc:'p',boss:true,bs:1.25,x,y:zemin(x),vx:0,vy:0,hp:Math.round(500*ZK()),max:Math.round(500*ZK()),cy:560,r:265,yon:-1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:S.t+1.5,ka:null});      // boss: tabancalı korsan, %25 büyük
 }
 function ates(dx,dy,ch,bx,by){    // aduket: topun ele göre yönüne (yukarı/aşağı dahil) gider
   if(!enerji(50)){S.sarj=0;return}
@@ -20,7 +20,7 @@ function pAtesle(e){      // namludan oyuncunun kafasına doğru tek mermi; sonr
   let dx=el?m.x-el.x:S.x-m.x,dy=el?m.y-el.y:kafaY()-m.y;      // namlunun gösterdiği yön (el → namlu ucu)
   if(Math.abs(dx)<1&&Math.abs(dy)<1){dx=S.x-m.x;dy=kafaY()-m.y}
   const L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
-  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:30});EFL.push({x:m.x+Math.cos(ang)*14,y:m.y+Math.sin(ang)*14,ang,t:S.t});
+  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:Math.round(30*ZK())});EFL.push({x:m.x+Math.cos(ang)*14,y:m.y+Math.sin(ang)*14,ang,t:S.t});
   bufCal(PAT,0.9);S.sars=Math.max(S.sars,3);
 }
 function emerGuncelle(dt){

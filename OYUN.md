@@ -32,6 +32,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 ## Düşmanlar
 - k yumruklu korsan: 150 can, oyuncuya 10 hasar. b bıçaklı: 100 can, 15 hasar. h kancacı: 200 can, yumruk 10 hasar, yürümez.
 - Kaptan (boss): 500 can, 15 hasar; vuruşların yarısını alır, kafaya vuruş 3 kat (KRİTİK). Bölüm sonunda x=42000'de.
+- Zorluk: her yeniden başlamada tüm düşmanların canı ve saldırı gücü (yakın dövüş, kanca 15/çekerken 1, kaptan mermisi 30, kafa atma 10/5/3) ×1.1 birikerek artar (en çok 4 kat; `ZOR_N`, `ZK()` dusman_kur.js, localStorage `pf_zor`). Tam sıfırlamada sıfırlanır. XP canın 1/10'u olduğu için o da artar. Yukarıdaki can/hasar değerleri başlangıç (×1) değerleridir.
 - Yürüme hızı: yumruklu/bıçaklı 520, kaptan 340 birim/sn. Kaçarken yarı hız.
 - Vurma menzili: yumruklu 470, bıçaklı 425, kaptan ~537 birim.
 - Saldırı: yumruklu 1–3 vuruşluk kombo, bıçaklı/kaptan 1–2. Kombo sonrası 0.6–1.4 sn bekler. Vuruş süreleri: uzak kol 0.5 sn, yakın kol 0.62 sn, bıçak/dipçik 0.66 sn.
@@ -45,6 +46,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Cesetler kalıcı: ölen düşman yere yatınca (1.2 sn) ya da yırtılan yarı yere yatıp durunca bir kez siyah beyaz resme çevrilir (`CESET`, korsan.js `cesetYap`/`parcaYap`) ve düşman listesinden silinir. Sonra sadece ekrandayken tek resim çizilir: güncelleme/poz/filtre yok. En çok 150 ceset (eskisi silinir). Önizlemede ceset kalmaz.
 
 - Sersem (parry, Yere Düşürme ölümü %15, Alkış ölümü; `e.ser`): yıldızlı sersem yüzü (`parca/X_ser.webp`) ve olduğu yerde yalpalama (baş/gövde sallanır, kollar sarkık, dizler çöker).
+- Kaptan da sersemler: diğerlerinin yarı şansıyla, yarı süresiyle (parry %50 / 0.75 sn, Yere Düşürme ölümü %2.5 / 0.65 sn, Alkış ölümü %50 / 0.65 sn).
 - Baygın (yerde) ya da sersemken vurulsa da baygın/sersem yüz kalır; vurulma yüzüne geçmez.
 ## Zıpkın (`js/zipkin.js`)
 - Kamera uzaklığı: `ZOOM` 1.0. Ekranın altında zeminin en fazla 285 birim altı görünür (ön tahtanın dibi görünmez); zoom değişince alt sabit kalır, üste açılır.
