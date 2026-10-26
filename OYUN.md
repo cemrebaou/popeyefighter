@@ -85,7 +85,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Çerçeve `ui/bar_cerceve.webp`; soldaki yuvarlak XP ile alttan (dalgalı) dolar, dolunca seviye atlar, parlayıp boşalır. Üstte tek kalp `ui/kalp_tek.webp`: lub-dub atar, can azaldıkça hızlanır; can dolarken kalp sesiyle güçlü atar; ölünce durur. Barlarda ve XP yuvarlağında bombeli cam efekti.
 
 ## Düşman yaraları (`js/dyara.js`)
-- Vuruldukça canıyla orantılı yara (en çok 36), sadece ten yerlerinde (gövde, üst/ön kol; ızgara `dyara_veri.js`); can dolunca azalır. Kaptanda ten yok, yara çıkmaz. Yumruklu korsanın göğüs altındaki gölgeli çizgiye yara gelmez.
+- Vuruldukça canıyla orantılı yara (en çok 36), sadece ten yerlerinde (gövde, üst/ön kol; ızgara `dyara_veri.js`); can dolunca azalır. Kaptanda ten yok, yara çıkmaz. Yara görselleri sadece y4–y11 havuzundan. Yumruklu korsanın göğüs altındaki gölgeli çizgiye yara gelmez.
 
 ## Skill öldürme (kodda anti; `js/anti.js`, `AG.anti`, `YA(k)`)
 - Arayüzde "Öldür" denir. Öldürünce `ses/skill_oldur.mp3` çalar, değişiklik 2 sn görünür, sonra oyun başlar. Öldürme ekranında simgeler renkli, çeper griden kırmızıya yavaş geçer; yazıda önce öldürülmüş hali, sonra eski ad üstü çizili. Normal ağaçta skill yazısının sonunda ölüm hali üstü çizili.

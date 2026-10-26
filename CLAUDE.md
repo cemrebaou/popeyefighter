@@ -10,6 +10,7 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Kullanıcının verdiği tüm görseller: ortalanmış, sağa bakan, düz duran çizimler. Buna göre hizala/kullan.
 - `node --check` ile söz dizimi kontrolü yap; ayrıca tüm js dosyalarını index.html sırasıyla birleştirip `node --check` et (dosyalar ortak global kapsamda: aynı adlı `const` başka dosyada varsa oyun boş açılır). Oyunu açıp test etme, ekran görüntüsü alma (özel görsel durum hariç). APK/AAB/Actions build yok.
 - Her değişiklikten sonra `main`e push et. Önce GitHub'da yerelden yeni sürüm var mı bak, varsa çek.
+- Her push'ta: değişen kuralları/değerleri ilgili .md'ye (OYUN.md, BOLUM.md, CLAUDE.md) de kaydet ve bekleyen yapılacaklar listesini de aynı push'ta yap (liste boşalsın).
 - Commit yazarı `Claude <noreply@anthropic.com>`; commit sonuna sistemin verdiği Co-Authored-By ve Claude-Session satırlarını ekle.
 - İstekleri liste yap: kullanıcı peş peşe iş söylerse sadece sonuncuyu tekrarla; push gerektiren iş veya ses/görsel gelince listeyi birlikte yap.
 - Arayüz yazıları sadece `js/dil.js` `DILLER`'de (en + tr; yeni dil = yeni blok). Koda yeni yazı eklerken düz metin yazma, anahtar ekleyip `dil('anahtar')` kullan (HTML: `data-l`/`data-lh`/`data-la`). Yerel değişkene `dil` adı verme.

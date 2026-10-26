@@ -15,9 +15,10 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 
 ## Şu anki ön plan (cevre.js)
 - En arkada `GOK_AD` (cevre.js) ile seçilen görsel: `gok2.webp` sadece gökyüzü 3:1 (şu an), `gok.webp` eski gökyüzü+deniz. Görsel ekran boyunu tam kaplar, aynalanarak uç uca döşenir, 0.06 hızla kayar.
-- Evler: iki set var, `cevre.js` EV_SET ile seçilir (`ev0-7` eski düz cepheler, `yev0-7` yeni kulübeler; şu an `yev`). p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda boşluk; birbirine binmez.
+- Evler: iki set var, `cevre.js` EV_SET ile seçilir (`ev0-7` eski düz cepheler, `yev0-7` yeni kulübeler; şu an `yev`; `EV_YOK` ile yev2 sarı samanlı ev kullanılmıyor). p=0.85 derinlik katmanında 2-3'lü kümeler, aralarda boşluk; birbirine binmez.
 - Sahil `cevre/sahil.webp` (kum → ıslak kum → köpük → sığ su, perspektifli): evlerin alt çizgisinden ekranın altına kadar. 28 yatay dilime bölünür; üst dilim ev katmanı hızında (0.85), alt dilimler giderek 1.18 hıza ve büyüklüğe çıkar (gerçek zemin perspektifi). İskelenin altında kodla gölge bandı.
 - Zemin: `cevre/tahta.webp` iskele şeridi uç uca döşenir (eni 2400 birim); altında en arkadaki gökyüzü/deniz görseli görünür. Ayak çizgisi görselin üstten %34.6'sı.
+- Kamera: ekranın altı ayak çizgisinin `ZGAP` (en çok `KAZIK_DIP`=450) altına kadar gösterir; ön kazığın dibi (474) ve alt siyah çizgisi görünmez, tahtanın altında deniz görünür. Daha aşağı inilecekse daha uzun kazık görseli gerekir.
 - İskele kazıkları `cevre/kazik.webp` (boy 630 birim) yolla aynı katmanda (p=1) ve aynı hızda, bir tahta şeridi eni aralıkla çift sıra: ön sıranın ortası iskelenin ön kenarında, karakterlerin önünde; arka sıra arka kenarda, %78 küçük (perspektif), alt yarısı tahtanın arkasında kalır.
 - Sokak lambaları (`lamba0`, `lamba1`, yüksek çözünürlük) iskelenin arka yarısında rastgele 1800–3800 birim aralıkla, varillerin yanına gelmez.
 - Kasa, palmiye, fener gibi nesneler netlik yetersiz olduğu için kaldırıldı; daha net görseller gelince aynı mantıkla (evlerin önü, iskelenin arka yarısı) eklenecek.

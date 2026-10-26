@@ -2,7 +2,7 @@
 // Düşman yaraları: vuruldukça canıyla orantılı olarak sadece ten görünen yerlerde (gövde, üst kol, ön kol) yaralar çıkar; can dolunca ters sırayla kaybolur.
 // Ten ızgarası dyara_veri.js (DY_GRID, offline). Kaptanda (p) ten yok sayılır: yara çıkmaz. Yara görselleri ve örnek noktaları oyuncununkiyle ortak (yara.js).
 const DY_PAR={govde:'govde',ustN:'ust',ustF:'ust',onN:'on',onF:'on'};      // yuva → parça görseli
-const DY_M={};
+const DY_M={},DY_HAVUZ=[4,5,6,7,8,9,10,11];      // düşmanda kullanılan yara görselleri (y4-y11)
 function dyMaske(ad){
   if(DY_M[ad]!==undefined)return DY_M[ad];const g=DY_GRID[ad];if(!g)return DY_M[ad]=null;
   const t=atob(g.b),u=new Uint8Array(g.w*g.h);for(let i=0;i<u.length;i++)u[i]=(t.charCodeAt(i>>3)>>(7-(i&7)))&1;
@@ -17,7 +17,7 @@ function dyKur(e){      // bu düşmana özel rastgele yerleşim (ilk vuruşta b
     while(hata<600&&L.length<36){
       let r=Math.random()*top,s=ad[0];for(const a of ad){r-=alan[a];if(r<=0){s=a;break}}
       const m=dyMaske(q+'_'+DY_PAR[s]);
-      const n=Math.random()<0.2?YR_BANT[Math.random()*2|0]:YR_DERI[Math.random()*YR_DERI.length|0];
+      const n=DY_HAVUZ[Math.random()*DY_HAVUZ.length|0];
       const boy=YR_BANT.includes(n)?50:34+Math.random()*34;
       const a=n===10?(Math.random()-0.5)*0.4:(Math.random()-0.5)*2.2,ay=Math.random()<0.5?-1:1,ca=Math.cos(a),sa=Math.sin(a);
       const x=Math.random()*m.w,y=Math.random()*m.h,rr=boy*0.42;

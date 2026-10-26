@@ -1,7 +1,7 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.362';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.363';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
 const SURUM='?v=88';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
@@ -64,13 +64,13 @@ const kafaY=()=>S.y+((S.yer&&asagiMi())?620:790);      // oyuncunun kafa yüksek
 
 // ---------- Durum ----------
 const cv=document.getElementById('c');let ctx=cv.getContext('2d');      // ctx: ceset resmi çizilirken geçici olarak başka tuvale döner (korsan.js cesetResim)
-let W=0,H=0,DPR=1,SC=1,SC0=1,ZM=1.0,ZGAP=300,GOK=null;const ZOOM=1.0,ZOOM_ZPK=0.625,TAHTA_DIP=300;      // ZM: anlık zoom (zıpkın modunda ZOOM_ZPK'ya yumuşak geçer); ZGAP: zeminin altında görünen dünya payı (ön tahtanın dibi görünmesin)
+let W=0,H=0,DPR=1,SC=1,SC0=1,ZM=1.0,ZGAP=300,GOK=null;const ZOOM=1.0,ZOOM_ZPK=0.625,KAZIK_DIP=450;      // ZM: anlık zoom (zıpkın modunda ZOOM_ZPK'ya yumuşak geçer); ZGAP: zeminin altında görünen dünya payı; KAZIK_DIP: ön kazığın alt siyah çizgisi görünmeden inilebilen en alt (kazık dibi 159+315=474)
 function boyut(){
   DPR=Math.min(window.devicePixelRatio||1,2);GOK=null;   // 3x çözünürlük telefonda çok pahalı: en fazla 2x
   W=window.innerWidth;H=window.innerHeight;
   cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
   SC0=Math.min(H*0.58/KARAKTER_BOY, W*0.45/KARAKTER_BOY);SC=SC0*ZM;      // ZOOM<1: uzaktan bakış
-  ZGAP=Math.min(H*0.2/(SC0*ZOOM),TAHTA_DIP-15);      // ekranın altı hep aynı dünya yüksekliğinde: zoom yalnız üste açılır
+  ZGAP=Math.min(H*0.3/(SC0*ZOOM),KAZIK_DIP);      // ekranın altı hep aynı dünya yüksekliğinde: zoom yalnız üste açılır
 }
 window.addEventListener('resize',boyut);boyut();
 
