@@ -1,14 +1,14 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.368';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.369';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=91';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=92';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['el_isp_n','el_isp_f','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir','z_dolu','z_bos','z_mizrak','z_ip']      // z_: zıpkın (tabanca dolu/boş, mızrak, halat)
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
 const RES=2;                       // oyuncu parçaları oyun biriminin 2 katı çözünürlükte
-const R={},YUZY=[],YUZ=[],YUZA=[],KARI=[],KANI=[],AGAC=[],TASI=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
+const R={},YUZY=[],YUZ=[],YUZA=[],KARI=[],KANI=[],AGAC=[],TASI=[],KIYI=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
 function koyult(img,al=.28){            // arka taraftaki uzuvlar için hafif koyu kopya
   const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
   const x=c.getContext('2d');x.drawImage(img,0,0);
@@ -33,7 +33,7 @@ for(let i=0;i<10;i++)yukle('yuz/yuzA'+i+'.webp',im=>YUZA[i]=im);
 for(let i=0;i<11;i++)yukle('yuz/yuzY'+i+'.webp',im=>YUZY[i]=im);      // ıspanak yerken ağzı açık yüzler (can kademesine göre)
 for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.webp',im=>KANI[i]=im);
 for(let i=0;i<3;i++)yukle('fx/kar'+i+'.webp',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
-for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)
+for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);for(let i=0;i<4;i++)yukle('fx/kiymik'+i+'.webp',im=>KIYI[i]=im);      // tahta kıymıkları: yerden fışkıran her şey      // küçük taşlar (düşme, patlama)
 ['patla','sprey','yarik','aduket_su','damla','yaprak'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // yaprak: kutudan dökülen ıspanak      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
 ['bos','can','en','kalp','cerceve'].forEach(n=>yukle('ui/bar_'+n+'.webp',im=>R['bar_'+n]=im));yukle('ui/kalp_tek.webp',im=>R.kalp_tek=im);      // cerceve: boş çerçeve (yuvarlak XP ile dolar), kalp_tek: atan kalp      // can/enerji barı: boş (büyük kalp), can dolgusu, enerji dolgusu, küçük kalp (yuvarlak)
 function gorselHazir(){

@@ -13,7 +13,7 @@ function karBas(x,w,d,puf,dir){      // x civarındaki karı d kalınlığına e
   const n=Math.min(7,1+Math.floor(at/120));
   for(let j=0;j<n;j++){const sg=dir||(Math.random()<0.5?-1:1),px=x+sg*w*(0.3+Math.random()*0.3);karAt(px,zemin(px)+10,sg*(250+Math.random()*700),500+Math.random()*900)}
 }
-function karAt(x,y,vx,vy,tas){if(S.karP.length<90)S.karP.push({x,y,vx,vy,tas,im:Math.floor(Math.random()*(tas?4:3)),s:0.7+Math.random()*0.8,rot:Math.random()*6,vr:(Math.random()-0.5)*(tas?14:8)})}
+function karAt(x,y,vx,vy,tas){if(S.karP.length<90)S.karP.push({x,y,vx,vy,tas,im:Math.floor(Math.random()*4),s:0.7+Math.random()*0.8,rot:(Math.random()-0.5)*0.6,vr:(Math.random()-0.5)*(tas?4:3),fl:vx>0})}      // yerden fışkıran tahta kıymıkları (görsel sola fışkırır; sağa gidenler aynalanır)
 function tasSac(x,n,g=1){const y=zemin(x)+10;for(let i=0;i<n;i++){const sg=Math.random()<0.5?-1:1;karAt(x+sg*Math.random()*80,y,sg*(200+Math.random()*600)*g,(700+Math.random()*900)*g,true)}for(let i=0;i<n+2;i++){const sg=Math.random()<0.5?-1:1;karAt(x+sg*Math.random()*90,y,sg*(250+Math.random()*700)*g,(500+Math.random()*900)*g)}}      // taş + kar saçılır
 // ---- yer efektleri (görsel): ayağın dibinde kısa süre çıkar, büyüyerek fırlar ve söner ----
 S.fxs=[];
@@ -26,6 +26,8 @@ function fxCiz(on){
 }
 function patlat(x,g){fxEkle(R.patla,x,380*g,0.42,true,Math.random()<0.5);tasSac(x,3,g)}      // yere çakılma: kısa patlama, sonra küçük kar ve taşlar
 function karGuncelle(dt){
+  if(S.yer&&S.kay&&S.t<S.kay.t0+S.kay.T&&S.t>(S.kiyT||0)){S.kiyT=S.t+0.06;karAt(S.x-S.yon*40,zemin(S.x)+10,-S.yon*(250+Math.random()*450),350+Math.random()*550,false)}      // kayarken ayağın arkasından kıymık
+  for(const e of DUS)if(e.dus&&!e.tut&&Math.abs(e.vx)>500&&e.y-zemin(e.x)<30&&S.t>(e.kiyT||0)){e.kiyT=S.t+0.08;karAt(e.x,zemin(e.x)+10,-Math.sign(e.vx)*(150+Math.random()*350),300+Math.random()*500,false)}      // yerde sürüklenen düşmandan kıymık
   {let lo=KN,hi=-1;for(let i=KLO;i<=KHI;i++)if(KAR[i]<KD){KAR[i]=Math.min(KD,KAR[i]+dt*3);if(KAR[i]<KD){if(i<lo)lo=i;hi=i}}KLO=lo;KHI=hi}      // izler zamanla yavaşça dolar (sadece ezilmiş aralık)
   if(S.yer&&!S.karYer){karBas(S.x,230,KMIN-4,false)}      // zıplamadan iniş: sadece iz, sıçrama yok
   S.karYer=S.yer;
@@ -41,8 +43,9 @@ function karCiz(){      // karakterlerin önünde: karda kan lekeleri ve uçuşa
   for(const l of S.leke){const u=S.t-l.t0,sx=W/2+(l.x-S.x)*SC;if(sx<-100||sx>W+100)continue;
     ctx.globalAlpha=0.55*Math.min(1,(25-u)/6);ctx.fillStyle='#8e0d12';ctx.beginPath();ctx.ellipse(sx,sy(zemin(l.x))+3*SC,l.w*SC,l.w*0.22*SC,0,0,7);ctx.fill()}
   ctx.globalAlpha=1;
-  for(const p of S.karP){const im=p.tas?TASI[p.im]:KARI[p.im],x=W/2+(p.x-S.x)*SC;if(!im||x<-60||x>W+60)continue;const w=(p.tas?40:44)*p.s*SC,h=w*im.height/im.width;
-    donCiz(im,x,sy(p.y),p.rot,1,-w/2,-h/2,w,h)}
+  for(const p of S.karP){const im=KIYI[p.im]||(p.tas?TASI[p.im]:KARI[p.im%3]),x=W/2+(p.x-S.x)*SC;if(!im||x<-80||x>W+80)continue;const w=(p.tas?62:42)*p.s*SC,h=w*im.height/im.width;
+    if(KIYI[p.im]&&p.fl){const c=Math.cos(p.rot)*DPR,s=Math.sin(p.rot)*DPR;ctx.setTransform(-c,-s,-s,c,(x+S.shx)*DPR,(sy(p.y)+S.shy)*DPR);ctx.globalAlpha=1;ctx.drawImage(im,-w/2,-h/2,w,h)}      // sağa fışkıran: aynalı
+    else donCiz(im,x,sy(p.y),p.rot,1,-w/2,-h/2,w,h)}
   tabanDon();
 }
 // ---- Kan efektleri: 3 fışkıran kan çizgisi, 4 büyük fışkırma, 5 kopuk yara, 6 damla (yere değen kan karda leke bırakır) ----

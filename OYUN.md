@@ -40,6 +40,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Cesetler kalıcı: ölen düşman yere yatınca (1.2 sn) ya da yırtılan yarı yere yatıp durunca bir kez siyah beyaz resme çevrilir (`CESET`, korsan.js `cesetYap`/`parcaYap`) ve düşman listesinden silinir. Sonra sadece ekrandayken tek resim çizilir: güncelleme/poz/filtre yok. En çok 150 ceset (eskisi silinir). Önizlemede ceset kalmaz.
 
 - Sersem (parry, Yere Düşürme ölümü %15, Alkış ölümü; `e.ser`): yıldızlı sersem yüzü (`parca/X_ser.webp`) ve olduğu yerde yalpalama (baş/gövde sallanır, kollar sarkık, dizler çöker).
+- Baygın (yerde) ya da sersemken vurulsa da baygın/sersem yüz kalır; vurulma yüzüne geçmez.
 ## Zıpkın (`js/zipkin.js`)
 - Kamera uzaklığı: `ZOOM` 1.0. Ekranın altında zeminin en fazla 285 birim altı görünür (ön tahtanın dibi görünmez); zoom değişince alt sabit kalır, üste açılır.
 - Ekranda sadece can barı, yön/zıplama tuşları, ıspanak ve zıpkın düğmesi ve sağ üstte menü (ayarlar) düğmesi var. Menü açıkken oyun durur; içinde ses efektleri, müzik, eğim sensörü (+dengele), tam ekran, dil, kombolar, yetenekler, devam ve sürüm. Ses/müzik ayarı kayıtlı (`pf_ayar`). Düşman sayacı ekranda yok.

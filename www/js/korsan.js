@@ -304,7 +304,7 @@ function ciziKorsan(e,mask){
     ctx.save();ctx.translate(0,K.ud||0);ctx.rotate(p.torso*D);if(K.us)ctx.scale(K.us,K.us);      // us: belden yukarısının ölçeği; ud: belden üstü aşağı kayma
     krp(R[K.p+'govde'],K.A.govde,fl);dyCiz(e,'govde',K.A.govde);if(ek&&!mask)bk(ek,'boy',K.boyun[0],K.boyun[1]);if(ek&&K.sp)uc(ek,3,K.sp[0],K.sp[1]);      // kancacı: sırttaki zincir makarası
     if(mask==='ust')yaraCiz(e,0,0,170,true);
-    ctx.save();ctx.translate(K.boyun[0]+(p.hb||0)*70,K.boyun[1]+(K.kd||0)+(p.hb||0)*28);ctx.rotate(p.bas*D);if(K.ks)ctx.scale(K.ks,K.ks);if(ek&&!mask){const hi=R[K.p+'kafa'];bk(ek,'kafa',hi.width/2-K.A.kafa[0],hi.height/2-K.A.kafa[1])}{const vy=e.vurT!=null&&S.t-e.vurT<0.6&&R[K.p+'vur'],ah=!vy&&e.dus&&(e.dusA||0)>0.5&&R[K.p+'ahh'];const se=!vy&&!ah&&!e.olu&&S.t<(e.ser||0)&&R[K.p+'ser'];const ac=!vy&&!ah&&!se&&e.kac&&R[K.p+'aci'];krp(vy||ah||se||ac||R[K.p+'kafa'],vy?K.A.vur:ah?K.A.ahh:se?K.A.ser:ac?(K.A.aci||K.A.vur):K.A.kafa,fl)};ctx.restore();      // se: sersem yüzü (yıldızlı)
+    ctx.save();ctx.translate(K.boyun[0]+(p.hb||0)*70,K.boyun[1]+(K.kd||0)+(p.hb||0)*28);ctx.rotate(p.bas*D);if(K.ks)ctx.scale(K.ks,K.ks);if(ek&&!mask){const hi=R[K.p+'kafa'];bk(ek,'kafa',hi.width/2-K.A.kafa[0],hi.height/2-K.A.kafa[1])}{const ah=e.dus&&(e.dusA||0)>0.5&&R[K.p+'ahh'],se=!ah&&!e.olu&&S.t<(e.ser||0)&&R[K.p+'ser'],vy=!ah&&!se&&e.vurT!=null&&S.t-e.vurT<0.6&&R[K.p+'vur'];const ac=!vy&&!ah&&!se&&e.kac&&R[K.p+'aci'];krp(vy||ah||se||ac||R[K.p+'kafa'],vy?K.A.vur:ah?K.A.ahh:se?K.A.ser:ac?(K.A.aci||K.A.vur):K.A.kafa,fl)};ctx.restore();      // se: sersem yüzü (yıldızlı)
     kKol(K,K.omN,p.uN,p.rN,p.wN,false,fl,ek,0);      // yakın kol en önde
     ctx.restore();
   }
