@@ -83,7 +83,7 @@ function antiGuncelle(dt){
     if(tek)for(const v of VAR){
       if(v.d!=='yer'&&v.d!=='dus')continue;
       for(const L of ['N','F']){const a=AY[L]&&AY[L].a;if(!a)continue;
-        if(Math.abs(a[0]-v.x)<V_W/2+70&&a[1]<v.y+V_MRK+40){const dir=Math.sign(v.x-S.x)||S.yon;v.d='uc';v.f=0.7;v.vx=dir*2900;v.vy=1200;v.vr=dir*9;ses('tekme');S.sars=Math.max(S.sars,8);break}}
+        if(Math.abs(a[0]-v.x)<V_W/2+70&&a[1]<v.y+V_MRK+40){const dir=Math.sign(v.x-S.x)||S.yon;v.d='uc';v.tek=true;v.f=0.7;v.vx=dir*2900;v.vy=1200;v.vr=dir*9;ses('tekme');S.sars=Math.max(S.sars,8);break}}
     }
   }
   bicakGuncelle(dt);

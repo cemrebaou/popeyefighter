@@ -85,11 +85,10 @@ function ispGuncelle(dt){
     if(!m.atildi&&t>=ISP_D1+0.45){m.atildi=true;ispAt(m.k)}
     if(t>=ISP_D1+1.0)S.yeme=null;
   }
-  for(let i=ISP_Y.length-1;i>=0;i--){const y=ISP_Y[i],u=S.t-y.t0;      // yapraklar: süzülerek düşer; ağza girenler kaybolur, diğerleri yere / yarı yolda biter
-    y.vy-=G*0.42*dt;y.vx*=1-1.6*dt;y.vy*=1-0.6*dt;y.x+=(y.vx+Math.sin(u*9+y.f)*90)*dt;y.y+=y.vy*dt;y.r+=y.vr*dt;
-    if(y.ye){const a=ispAgiz();if(Math.hypot(y.x-a[0],y.y-a[1])<62){ISP_Y.splice(i,1);continue}}
-    if(u>y.l||y.y<=zemin(y.x)+4)ISP_Y.splice(i,1);
-  }
+  {const a=ispAgiz();for(let i=ISP_Y.length-1;i>=0;i--){const y=ISP_Y[i],k=(S.t-y.t0)/y.T;      // yapraklar: kutunun ağzından eğri bir yolla açık ağzın içine akar; yaklaştıkça kararıp küçülür, ağızda kaybolur
+    if(k>=1){ISP_Y.splice(i,1);continue}
+    const e=k*k*(3-2*k),mx=(y.x0+a[0])/2+y.ox,my=Math.max(y.y0,a[1])+y.oy;      // kutu ağzı → (yukarı kavisli orta nokta) → ağız
+    y.x=(1-e)*(1-e)*y.x0+2*(1-e)*e*mx+e*e*a[0];y.y=(1-e)*(1-e)*y.y0+2*(1-e)*e*my+e*e*a[1];y.r+=y.vr*dt;y.k=k}}
   for(let i=ISP.length-1;i>=0;i--){
     const c=ISP[i];
     if(c.d==='yer')continue;
@@ -104,17 +103,18 @@ function ispGuncelle(dt){
   }
 }
 const ISP_BILEK=1.1,ISP_EGIM=1.9,ISP_Y_HIZ=150;      // dökerken kutunun eğimi (radyan), saniyede dökülen yaprak
-function ispAgiz(){const k=OGV.kafa,b=OGV.boyun;return (k&&b&&S.t-OGV.t<0.3)?[k[0]+(b[0]-k[0])*0.45+S.yon*50,k[1]+(b[1]-k[1])*0.45]:[S.x+S.yon*60,S.y+880]}      // ağız (dünya)
-function ispYaprak(m){      // kutunun ağzından bir yaprak: çoğu ağza yönelir, bir kısmı yanından geçip yere düşer
+let ISP_KARA=null;
+function ispAgiz(){if(OGV.agiz&&S.t-OGV.t<0.3)return OGV.agiz;const k=OGV.kafa,b=OGV.boyun;return (k&&b&&S.t-OGV.t<0.3)?[k[0]+(b[0]-k[0])*0.45+S.yon*50,k[1]+(b[1]-k[1])*0.45]:[S.x+S.yon*60,S.y+880]}      // ağız (dünya)
+function ispYaprak(m){      // kutunun ağzından bir yaprak: ağzın içine akar
   if(ISP_Y.length>140)return;
-  const a=ispAgiz(),ye=Math.random()<0.62,T=0.2+Math.random()*0.12,ox=ye?(Math.random()-0.5)*50:(Math.random()<0.5?-1:1)*(70+Math.random()*130),oy=ye?(Math.random()-0.5)*40:-(Math.random()*80);
-  const x=m.agz[0]+(Math.random()-0.5)*30,y=m.agz[1]+(Math.random()-0.5)*20,g=G*0.42;
-  ISP_Y.push({x,y,vx:(a[0]+ox-x)/T,vy:(a[1]+oy-y)/T+0.5*g*T,r:Math.random()*6.3,vr:(Math.random()-0.5)*14,t0:S.t,l:0.6+Math.random()*1.4,f:Math.random()*6.3,s:0.8+Math.random()*0.5,ye});
+  const x=m.agz[0]+(Math.random()-0.5)*30,y=m.agz[1]+(Math.random()-0.5)*20;
+  ISP_Y.push({x0:x,y0:y,x,y,ox:(Math.random()-0.5)*40,oy:20+Math.random()*50,T:0.28+Math.random()*0.14,r:Math.random()*6.3,vr:(Math.random()-0.5)*10,t0:S.t,s:0.8+Math.random()*0.4,k:0});      // hepsi ağza gider, saçılmaz
 }
 function ispYaprakCiz(){      // karakterin önünde
   const im=R.yaprak;if(!im||!ISP_Y.length)return;
-  for(const y of ISP_Y){const q=zEkr(y.x,y.y),w=46*y.s*SC,h=w*im.height/im.width,u=S.t-y.t0;
-    ctx.save();ctx.globalAlpha=u>y.l-0.2?Math.max(0,(y.l-u)/0.2):1;ctx.translate(q[0],q[1]);ctx.rotate(y.r);ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore()}
+  if(!ISP_KARA||ISP_KARA.k!==im){const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-in';x.fillStyle='#0d1408';x.fillRect(0,0,c.width,c.height);c.k=im;ISP_KARA=c}      // yaprağın kararmış hali (bir kez)
+  for(const y of ISP_Y){const k=y.k||0,q=zEkr(y.x,y.y),sk=1-0.8*Math.pow(Math.max(0,(k-0.45)/0.55),1.3),w=46*y.s*SC*sk,h=w*im.height/im.width,kr=kisit((k-0.4)/0.5,0,1);      // ağza yaklaştıkça küçülür ve kararır
+    ctx.save();ctx.translate(q[0],q[1]);ctx.rotate(y.r);ctx.drawImage(im,-w/2,-h/2,w,h);if(kr>0){ctx.globalAlpha=kr;ctx.drawImage(ISP_KARA,-w/2,-h/2,w,h)}ctx.restore()}
 }
 function ispCiz(){
   const zY=ZY(),s=ISP_BOY*SC;

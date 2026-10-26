@@ -59,7 +59,13 @@ function varilGuncelle(dt){
         const e=DUS.find(e=>{if(e.olu||e.tut)return false;const ust=e.y+(e.dus?e.cy*0.9:e.cy*2);      // düşmanın tüm boyu (kutu): değince çarpar
           return Math.abs(v.x-e.x)<V_W/2+e.r*0.55&&v.y-V_MRK*0.85<ust&&v.y+V_MRK*0.85>e.y});
         if(e){vur(e,Math.round(15+35*f),v.vx,v.vy,f);varilKir(v);break}      // düşmana çarpınca kırılır
-        const zz=zemin(v.x)+V_MRK+V_YUK;if(v.y<=zz){v.y=zz;varilKir(v);break}     // yere çarpınca kırılır
+        const zz=zemin(v.x)+V_MRK+V_YUK;
+        if(v.y<=zz&&v.tek){v.y=zz;      // tekmelenen varil kırılmaz: seker, yuvarlanır, yavaşlayıp yerde durur (tekrar tekme bekler)
+          if(v.vy<-350){v.vy=-v.vy*0.35;v.vx*=0.75;vSes(null,TD,TDBAG,v.x,0.6)}
+          else{v.vy=0;const sg=Math.sign(v.vx);v.vx-=sg*Math.min(Math.abs(v.vx),2200*h);v.vr=v.vx/(V_W*0.5);      // yerde yuvarlanır
+            if(Math.abs(v.vx)<60){const hd=Math.round(v.rot/Math.PI)*Math.PI;v.rot+=(hd-v.rot)*Math.min(1,h*10);if(Math.abs(hd-v.rot)<0.03){v.rot=hd;v.d='yer';v.tek=false;v.vx=v.vy=v.vr=0}}}      // dik ya da ters oturur
+          if(v.d==='yer')break;continue}
+        if(v.y<=zz){v.y=zz;varilKir(v);break}     // yere çarpınca kırılır (fırlatılan)
       }
       continue;
     }
