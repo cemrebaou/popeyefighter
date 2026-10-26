@@ -18,7 +18,14 @@ let ENPOS=[],SWD=null,YAR=null,YARS=null,HAZ=null,PAT=null,PPAR=null,SAPLA=null,
 const PB=[],PBAG=[],AD=[],ADBAG=[],TK=[],TKBAG=[],KLC=[],WH=[],WHBAG=[],JP=[];let JPBAG=[],JPSON=-1;      // yumruk, adım, tekme, bıçak sesleri (torba: hepsi bir kez çalınmadan aynısı tekrar gelmez)
 const TD=[],TDBAG=[],DMR=[],DMRBAG=[];let TCS=null,GOS=null,GOH=null,ZPS_O=null,ZPS_I=null;      // ZPS_O / ZPS_I: zıpkın nesneye / insana saplanma      // GOS: kaybedince (game over), GOH: kanca bize takılınca      // varil: tahta parçası yere düşme, demir halka, ilk kırılma sesi
 const BLD=[],BLDBAG=[],INS=[],INSBAG=[],OLS={};let OLDS=null,ADKS=null,ADKC=null,LVS=null,KALPS=null,BOPEN=null,USTS=null,GRS=null,DSS=null,DEVS=null,ARK=null,ARKSRC=null;      // bıçak vuruşu, yere iniş, ölüm (k/b/p/h), üstüne atlama, tutma, düşman düşmesi, arka plan müziği
-function arkaCal(){if(!AC||!ARK||ARKSRC)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=ARK;src.loop=true;g.gain.value=0.35;src.connect(g);g.connect(MUZC());src.start();ARKSRC=src}      // oyun boyunca döngüde
+function arkaCal(){      // arka plan deniz sesi: döngü; her kopyanın son 0.5 sn'sinde bir sonraki başlar, üst üste binerek geçer (atlama duyulmaz)
+  if(!AC||!ARK||ARKSRC)return;ARKSRC=true;
+  const D=ARK.duration,X=0.5,g=AC.createGain();g.gain.value=0.35;g.connect(MUZC());let t=AC.currentTime+0.05;
+  const bas=t0=>{const s=AC.createBufferSource(),f=AC.createGain();s.buffer=ARK;s.connect(f);f.connect(g);
+    f.gain.setValueAtTime(0,t0);f.gain.linearRampToValueAtTime(1,t0+X);f.gain.setValueAtTime(1,t0+D-X);f.gain.linearRampToValueAtTime(0,t0+D);s.start(t0);s.stop(t0+D+0.05)};
+  const sira=()=>{if(t<AC.currentTime)t=AC.currentTime+0.05;bas(t);t+=D-X;setTimeout(sira,Math.max(200,(t-AC.currentTime-2)*1000))};
+  sira();
+}
 function bufCal(buf,v){if(!AC||!buf||DEMO)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=buf;g.gain.value=v||1;src.connect(g);g.connect(SFXC());src.start()}
 function torbaCal(L,B,v){if(!L.length)return;if(!B.length)B.push(...L.keys());bufCal(L[B.splice(Math.floor(Math.random()*B.length),1)[0]],v)}
 function sesYukle(){
@@ -32,7 +39,7 @@ function sesYukle(){
   for(let i=1;i<=5;i++)y('whoosh_'+i,b=>WH.push(b));
   for(let i=1;i<=3;i++)y('jump_'+i,b=>JP.push(b));      // sallama (boşta da dolu da): yumruk, tekme, bıçak
   for(const n of ['blade','blade_1','blade_2'])y(n,b=>BLD.push(b));for(const i of [1,2])y('inis_'+i,b=>INS.push(b));for(const k of ['k','b','p','h'])y('olum_'+k,b=>OLS[k]=b);
-  y('ust_atla',b=>USTS=b);y('grap',b=>GRS=b);y('bladeopen',b=>BOPEN=b);y('dusme',b=>DSS=b);y('devrilses',b=>DEVS=b);y('arkaplansoguk2',b=>{ARK=b;arkaCal()});
+  y('ust_atla',b=>USTS=b);y('grap',b=>GRS=b);y('bladeopen',b=>BOPEN=b);y('dusme',b=>DSS=b);y('devrilses',b=>DEVS=b);y('deniz',b=>{ARK=b;arkaCal()});      // arka plan: deniz sesi (eskisi arkaplansoguk2)
   y('tahta_carpma',b=>TCS=b);for(let i=1;i<=4;i++)y('tahta_dus_'+i,b=>TD.push(b));
   y('spinach-drop',b=>ISPS=b);y('levelup',b=>LVS=b);y('skill_oldur',b=>OLDS=b);y('wateraduket',b=>ADKS=b);y('aduket_carpma',b=>ADKC=b);y('kalpsesi',b=>KALPS=b);y('yemeses',b=>YEMS=b);
   y('parcalanma',b=>PPAR=b);y('yarildi',b=>YAR=b);y('yarildi_sonra',b=>YARS=b);y('sapla',b=>SAPLA=b);y('mermi_haz',b=>HAZ=b);y('mermi_patla',b=>PAT=b);
