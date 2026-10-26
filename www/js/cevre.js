@@ -5,7 +5,8 @@
 const CVR={};
 const EV_SET='yev';      // kullanılan ev seti: 'ev' = eski düz cepheler (ev0-7), 'yev' = yeni kulübeler (yev0-7); ikisi de repoda duruyor
 const GOK_AD='gok2';      // en arka plan: 'gok2' = sadece gökyüzü (3:1), 'gok' = eski gökyüzü + deniz
-const CV_ADLAR=[GOK_AD,'sahil','kum','deniz','tahta','kazik','lamba0','lamba1',...[0,1,2,3,4,5,6,7].map(i=>EV_SET+i)];
+const CV_OBJ_AD='dumen capa kasa sandik tabela top kurutma sepet kova odun varil testi simit matara sandal tabure cuval halat'.split(' ');
+const CV_ADLAR=[GOK_AD,'sahil','kum','deniz',...CV_OBJ_AD.map(a=>'o_'+a),'tahta','kazik','lamba0','lamba1',...[0,1,2,3,4,5,6,7].map(i=>EV_SET+i)];
 for(const a of CV_ADLAR)yukle('cevre/'+a+'.webp',im=>CVR[a]=im);
 const TAHTA_W=2400,TAHTA_AYAK=0.346;      // bir tahta şeridinin dünya eni; ayakların bastığı çizgi görselin üstünden bu oranda (yüzeyin ortası)
 const TAHTA_ARKA=150;                     // tahta yüzeyinin arka kenarı: ayak çizgisinden bu kadar geride (evler buraya oturur)
@@ -17,7 +18,10 @@ const KAZIK_BOY=976,KAZIK_ON=332,KAZIK_ARK=15,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W; 
 const SAHIL_UST=70;      // sahilin üst kenarı ev tabanının bu kadar üstünde: yarı 3D evlerin alt köşelerindeki boşlukları kapatır (evler kumun önünde)
 const SAHIL_W=2900,SAHIL_DILIM=28,SAHIL_P1=1.18;      // sahil (kum→ıslak kum→köpük→sığ su): dünya eni, yatay dilim sayısı, en alt dilimin kayma hızı (üst dilim EV_P)
 const LAMBA_BOY=[1350,1330],LAMBA_GERI=110;      // sokak lambaları: dünya boyu; tabanı ayak çizgisinin bu kadar gerisinde (iskelenin arka yarısı, karakterlerin arkası)
-let CV_EV=[],CV_LMB=[];
+let CV_EV=[],CV_LMB=[],CV_OBJ=[];
+// Çevre objeleri (v0.372, cevre/o_*.webp): ev katmanında (kumla aynı, evlerin önünde, iskelenin arkasında). Boylar çizim oranında (görsel px × 1.31 = dünya birimi; varil = 380).
+// dümen ve çapa sadece bir eve yaslanır (ev cephesine değer), diğerleri evlerin yanına, önüne ve aralarına rastgele; dy: öne çıkma (biraz büyür, aşağı iner).
+const CV_OBJ_BOY={dumen:251,capa:344,kasa:296,sandik:241,tabela:452,top:367,kurutma:436,sepet:221,kova:231,odun:160,varil:289,testi:184,simit:613,matara:178,sandal:294,tabure:168,cuval:293,halat:208},CV_OBJ_K=1.31;
 (function cevreKur(){      // sabit tohumlu rastgele dizilim: her oyunda aynı liman
   let tohum=20261024;const r=()=>{tohum=(Math.imul(tohum,1103515245)+12345)>>>0;return (tohum>>>8)/16777216};
   // evler: 2-3'lü sokak kümeleri, aralarda boşluk (arkadaki deniz görünür); evler birbirine binmez
@@ -28,6 +32,13 @@ let CV_EV=[],CV_LMB=[];
     lx+=500+r()*900;
   }
   for(let x=-400;x<BOSS_X+2500;x+=1800+r()*2000){if(V_KONUM.some(v=>Math.abs(v-x)<450))x+=600;CV_LMB.push({k:r()<0.5?0:1,x})}      // lambalar rastgele aralıklarla, varillerin üstüne gelmez
+  {let t2=20261027;const q=()=>{t2=(Math.imul(t2,1103515245)+12345)>>>0;return (t2>>>8)/16777216};      // objeler: ayrı tohum (evler/lambalar değişmesin)
+    const gen=a=>{const im=CVR['o_'+a];return CV_OBJ_BOY[a]*CV_OBJ_K*(im&&im.width?im.width/im.height:1)};
+    for(const e of CV_EV){if(q()<0.35){const a=q()<0.5?'dumen':'capa',w=e.h*EV_ORAN[+e.ad.slice(-1)];CV_OBJ.push({ad:a,x:e.x+w*(0.2+q()*0.6),dy:0,ev:1})}}      // eve yaslanan dümen / çapa
+    const dig=CV_OBJ_AD.filter(a=>a!=='dumen'&&a!=='capa');let x=-700,son2='';
+    while(x<SON){let a;do a=dig[Math.floor(q()*dig.length)];while(a===son2);son2=a;
+      CV_OBJ.push({ad:a,x,dy:q()<0.5?0:10+q()*50});x+=CV_OBJ_BOY[a]*CV_OBJ_K*1.2+250+q()*1100}      // tek tek ya da küçük gruplar, aralarında boşluk
+    CV_OBJ.sort((a,b)=>(a.dy-b.dy)||(b.ev?1:0)-(a.ev?1:0))}      // arkadakiler önce
 })();
 function cvCiz(im,sx,taban,h){      // taban: ekranda alt kenar (px), h: ekranda boy (px)
   if(!im)return;const w=h*im.width/im.height;
@@ -41,7 +52,8 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
   {const gp=zeminY+S.camY*SC*EV_P-TAHTA_ARKA*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
     if(CVR.kum&&CVR.deniz)kumDeniz(zeminY,s);      // kum (sabit, uç uca) + akan deniz
     else{const K=CVR.sahil;if(K){const r0=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s;ctx.fillStyle='#2893c2';ctx.fillRect(0,r0,W,H-r0)}}
-    for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}}
+    for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}
+    for(const o of CV_OBJ){const im=CVR['o_'+o.ad];if(!im)continue;const k=1+o.dy/300;cvCiz(im,W/2+(o.x-S.x*EV_P)*s,Math.round(gp+(6+o.dy)*s)+3,CV_OBJ_BOY[o.ad]*CV_OBJ_K*k*s)}}      // çevre objeleri: evlerin önünde
   {const a=Math.round(y0+th*0.55),b=Math.round(y0+th*1.35),g=ctx.createLinearGradient(0,a,0,b);g.addColorStop(0,'rgba(20,40,60,0.38)');g.addColorStop(1,'rgba(20,40,60,0)');ctx.fillStyle=g;ctx.fillRect(0,a,W,b-a)}      // iskelenin altında gölge
   kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
   for(let x=((W/2-S.x*SC)%tw+tw)%tw-tw;x<W;x+=tw-1)ctx.drawImage(T,Math.floor(x),y0,Math.ceil(tw)+1,th);
@@ -51,7 +63,7 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
 // Kum + deniz (v0.368): evlerin altından ekranın altına. Üstte kum (dünyada sabit, uç uca döşenir), altında deniz (en üstü kıyı köpüğü).
 // İkisi de yatay dilimlerle perspektifli: üst dilim ev katmanı hızında (EV_P), alt dilimler giderek SAHIL_P1 hızına çıkar. Deniz kendi kendine akar:
 // deniz kumdan bağımsız, dere gibi sürekli yavaşça sola akar (DZ_X); koşunca parallaksla daha hızlı kayar.
-const KUM_ORAN=0.36,DZ_AKIS=70;      // bandın kum payı; deniz kendi kendine sola akar (dünya birimi/sn), koşunca parallaksla daha hızlı kayar
+const KUM_ORAN=0.36,DZ_AKIS=70,DZ_KIYI=0.12,DZ_PER=40,DZ_HIZ=0.16;      // + ekrana doğru akış: kıyı payı, kayma (görsel px), devir (1/sn)      // bandın kum payı; deniz kendi kendine sola akar (dünya birimi/sn), koşunca parallaksla daha hızlı kayar
 let DZ_X=0,DZ_T=-1;
 function kumDeniz(zeminY,s){
   const KM=CVR.kum,DZ=CVR.deniz;
@@ -62,7 +74,12 @@ function kumDeniz(zeminY,s){
     const dy=Math.floor(yb(i)),dh=Math.ceil(yb(i+1))-dy+1;if(dy>H||dy+dh<0)continue;
     const sh=im.height/n,sy0=sh*j,pm=(EV_P+SAHIL_P1)/2,sw=yh*(kum?KUM_ORAN:1-KUM_ORAN)*im.width/im.height*p/pm;      // dilim: görselin yatay şeridi; döşeme eni görselin oranından (perspektifle)
     const ox=((W/2-(S.x+(kum?0:DZ_X))*p*SC*p)%sw+sw)%sw-sw;      // kum dünyada sabit, deniz ayrıca akar
-    for(let x=ox;x<W;x+=sw-1)ctx.drawImage(im,0,sy0,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh);
+    const akar=!kum&&sy0>im.height*DZ_KIYI,fz=(S.t*DZ_HIZ)%1;      // açık su ayrıca ekrana doğru akar (kıyı köpüğü sabit)
+    for(let x=ox;x<W;x+=sw-1){
+      ctx.drawImage(im,0,sy0,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh);
+      if(akar)for(let k=0;k<3;k++){const f=(fz+k/3)%1,a=0.28*Math.sin(Math.PI*f),sy=Math.max(im.height*DZ_KIYI,sy0-f*DZ_PER);      // üç yumuşak, aşağı kayan saydam kopya: sırayla belirip söner (homojen)
+        ctx.globalAlpha=a;ctx.drawImage(im,0,sy,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh)}
+      ctx.globalAlpha=1}
   }
   const alt=Math.floor(yb(N));if(alt<H){ctx.fillStyle='#2b9ac4';ctx.fillRect(0,alt,W,H-alt)}      // görselin altı: denizin en koyu rengi
 }

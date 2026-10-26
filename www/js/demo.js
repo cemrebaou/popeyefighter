@@ -89,7 +89,7 @@ const DEMOLAR={      // T: döngü süresi (sn), kur: sahne, f(t, o): o(an) o an
 function demoSifirla(){      // her döngüde: karakter başladığı yere ışınlanır, sahne yeniden kurulur
   const D=DEMO;
   DUS=[];VAR=[];VPAR=[];MERMI=[];ADKD=[];EMER=[];EFL=[];ISP=[];zpkTemizle(true);
-  if(S.catlak)yarikSesDur(S.catlak,0.05);
+  if(S.catlak)for(const c of S.catlak)yarikSesDur(c,0.05);
   Object.assign(S,{yeme:null,ust:null,dag:null,uzan:null,pence:null,hitR:null,sarj:0,sarjP:null,en:ENMAX,yy:null,alk:null,sman:null,dkick:null,sup:null,pend:null,
     shoryu:0,slam:false,tats:0,blok:false,hp:HPMAX,inv:0,x:D.x0,vx:0,vy:0,yon:1,durum:'oyun',atk:null,kay:null,lungeT:-1,kayKilit:false,kayCif:-9,donuyor:false,
     spin:0,ekstra:1,parcalar:[],sonAtk:-9,yirtT:-9,bossGeldi:true,catlak:null,noEn:-9,ispEnT:0});
@@ -113,7 +113,7 @@ function demoAdim(){
 }
 function demoBitir(){
   if(!DEMO)return;
-  if(S.catlak)yarikSesDur(S.catlak,0.05);
+  if(S.catlak)for(const c of S.catlak)yarikSesDur(c,0.05);
   const r=DEMO.kayit;DEMO=null;demoGeri(r);
   document.getElementById('agac').classList.remove('demo');
 }

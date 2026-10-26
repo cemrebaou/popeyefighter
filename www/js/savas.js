@@ -60,7 +60,7 @@ function vurusKontrol(){
       if(dugme&&(e.x-S.x)*S.yon<-40)continue;      // kombo vuruşu arkadakine işlemez
       const f=kisit((h.v-1500)/6000,0,1);
       const kd=kDmg(S.atk);if(kd!==null&&!S.atk.tv){S.cE=e;S.cEt=S.t}
-      S.pSes=true;S.pHx=h.wx;S.bNo=!!S.pence;S.cs='y';vur(e,S.pence?20:kd!==null&&!S.atk.tv?kd*PK():(S.atk&&/^pa[NF]$/.test(S.atk.ad)?15:15*PK()),h.vx,h.vy,f,h.wy);S.pSes=false;S.bNo=false;S.cs=null;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);
+      S.pSes=true;S.pHx=h.wx;S.bNo=!!S.pence;S.cs='y';S.vEl=k;vur(e,S.pence?20:kd!==null&&!S.atk.tv?kd*PK():(S.atk&&/^pa[NF]$/.test(S.atk.ad)?15:15*PK()),h.vx,h.vy,f,h.wy);S.pSes=false;S.bNo=false;S.cs=null;S.vEl=null;S.pHx=undefined;e.hitT[k]=S.t+(S.pence?0.15:0.4);
     }
   }
   if(S.kay&&S.t<S.kay.t0+S.kay.T&&S.yer){      // Sub-Zero kayması: alçak çelme, havaya fırlatır

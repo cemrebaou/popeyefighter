@@ -115,6 +115,11 @@ function hedefPoz(){
     for(const k in kl)o[k]=o[k]+(kl[k]-o[k])*A;
     o.torso+=22*A;o.bas-=18*A;o.lN+=(-28-o.lN)*A;o.bN+=(52-o.bN)*A;o.lF+=(-8-o.lF)*A;o.bF+=(44-o.bF)*A;
   }
+  if(S.omuz){      // omuz atma: belden yukarısı öne çapraz eğilir, yakın omuz önde iter, kollar göğse toplanır; arka bacak kalkar, tek ayak üstünde öne yüklenir
+    const u=S.t-S.omuz.t0,ez=x=>x*x*(3-2*x),A=u<0.14?ez(u/0.14):u<0.3?1:ez(Math.max(0,1-(u-0.3)/0.15));
+    const h={torso:30,bas:-10,aNu:-12,aNr:118,aFu:38,aFr:32,lN:-16,bN:22,lF:42,bF:88};
+    for(const k in h)o[k]=o[k]+(h[k]-o[k])*A;
+  }
   zpkPoz(o);      // zıpkınlı kol hedefe uzanır
   ispPoz(o);
   if(S.t<S.firT){const el=S.firEl||0;o.aNu=-90-el;o.aNr=90;o.aFu=-90-el;o.aFr=90;o.torso+=10}       // ateş: iki kol öne

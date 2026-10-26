@@ -77,11 +77,13 @@ function ispGuncelle(dt){
       for(let i=0;i<ISP.length;i++){const c=ISP[i];if(c.d==='yer'&&Math.hypot(h.wx-c.x,h.wy-(c.y+ISP_MRK))<130){ISP.splice(i,1);S.yeme={k:u.k,t0:S.t,bos:false,atildi:false};S.uzan=null;break}}
     }
   }
+  if(S.ispCan&&S.t>=S.ispCan.bas){const c=S.ispCan,son=!ISP_Y.length&&(!S.yeme||S.yeme.bos);let d=son?c.kalan:Math.min(c.kalan,c.hiz*dt);if(S.hp>0)S.hp=Math.min(HPMAX,S.hp+d);c.kalan-=d;if(c.kalan<=1e-6)S.ispCan=null}      // ıspanak canı yapraklarla birlikte yavaş yavaş dolar
   if(S.yeme){
     const m=S.yeme,t=(S.t-m.t0)/ISP_YAVAS;      // yerken belden aşağısı serbest: yürünebilir
     if(!m.ses&&t>=ISP_D0+0.15){m.ses=true;bufCal(YEMS,1)}      // yeme sesi: ağza dökmeye başlayınca
-    if(!m.bos&&t>=ISP_D1-0.15){m.bos=true;const ik=YV('TOP')?2:1;S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1*ik);S.en=Math.min(ENMAX,S.en+50*ik);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1*ik,f:0.3,mavi:1})}      // max canın %10'u, +50 enerji; Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de)
-    if(ispDip(t)>0.45&&m.agz&&S.t-m.agzT<0.2&&!DEMO){m.yb=(m.yb||0)+dt*ISP_Y_HIZ;while(m.yb>=1){m.yb--;ispYaprak(m)}}      // dökülen yapraklar
+    if(!m.bos&&t>=ISP_D1-0.15){m.bos=true;const ik=YV('TOP')?2:1;if(!S.ispCan)S.hp=Math.min(HPMAX,S.hp+HPMAX*0.1*ik);S.en=Math.min(ENMAX,S.en+50*ik);S.ispEnT=S.t+10;S.pops.push({x:S.x,y:S.y+1050,t:0,txt:'+'+HPMAX*0.1*ik,f:0.3,mavi:1})}      // max canın %10'u, +50 enerji; Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de)
+    if(ispDip(t)>0.45&&m.agz&&S.t-m.agzT<0.2&&!DEMO){if(!m.canB){m.canB=true;const ik=YV('TOP')?2:1,top=HPMAX*0.1*ik,T=Math.max(0.2,(ISP_D1-0.15-t)*ISP_YAVAS+0.1);S.ispCan={kalan:top,hiz:top/T,bas:S.t+0.3}}      // can: ilk yaprak ağza girince başlar, son yaprakla biter
+      m.yb=(m.yb||0)+dt*ISP_Y_HIZ;while(m.yb>=1){m.yb--;ispYaprak(m)}}      // dökülen yapraklar
     if(!m.atildi&&t>=ISP_D1+0.45){m.atildi=true;ispAt(m.k)}
     if(t>=ISP_D1+1.0)S.yeme=null;
   }

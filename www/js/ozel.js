@@ -153,16 +153,19 @@ function yereKontrol(){           // yerdeyken iki parmak birlikte hızlı aşa�
 const CV=1600,CTW=650;      // yarığın açılma hızı (birim/sn) ve bir yarık görselinin dünya genişliği (iki görsel uç uca)
 function yarikSesDur(c,t){if(c&&c.src){try{c.g.gain.cancelScheduledValues(AC.currentTime);c.g.gain.setValueAtTime(c.g.gain.value,AC.currentTime);c.g.gain.linearRampToValueAtTime(0,AC.currentTime+t);c.src.stop(AC.currentTime+t+0.05)}catch(_){}c.src=null}}
 function yerYumrukVur(m){         // iki yumruk yere iner: vurulan yerde patlama, yarık bakılan yönde açılarak ilerler, yerdeki düşmanları havaya fırlatır
-  yarikSesDur(S.catlak,0.2);
   const x=S.x+m.dir*120;
-  S.catlak={x,y:zemin(x),dir:m.dir,t0:S.t,len:CTW*4,T:CTW*4/CV+3.3,spT:0};      // 2 kat uzağa yarar
+  (S.catlak=S.catlak||[]).push({x,y:zemin(x),dir:m.dir,t0:S.t,len:CTW*4,T:CTW*4/CV+3.3,spT:0});      // 2 kat uzağa yarar; eski yarıklar silinmez, her biri kendi süresinde kaybolur (S.catlak: dizi)
   patlat(x,0.95);bufCal(YAR,1);
   S.sars=Math.max(S.sars,20);titre(100);
 }
 function catlakGuncelle(){
-  const c=S.catlak;if(!c)return;
+  if(!S.catlak)return;
+  for(let i=S.catlak.length-1;i>=0;i--)if(catlakGuncelle1(S.catlak[i]))S.catlak.splice(i,1);
+  if(!S.catlak.length)S.catlak=null;
+}
+function catlakGuncelle1(c){      // true = yarık bitti
   const u=S.t-c.t0,d=Math.min(c.len,u*CV);
-  if(u>c.T){yarikSesDur(c,0.05);S.catlak=null;return}
+  if(u>c.T){yarikSesDur(c,0.05);return true}
   if(d<c.len){if(S.t-c.spT>0.035){c.spT=S.t;const tx=c.x+c.dir*d,ty=zemin(tx)+10;      // açılan ucundan taş ağırlıklı fışkırma
       for(let i=0;i<3;i++)karAt(tx+(Math.random()-0.5)*60,ty,c.dir*(80+Math.random()*520)+(Math.random()-0.5)*400,900+Math.random()*1200,true);      // yarıktan çeşitli kıymıklar
       karAt(tx,ty,(Math.random()-0.5)*600,700+Math.random()*900)}}
@@ -172,15 +175,21 @@ function catlakGuncelle(){
     const dx=(e.x-c.x)*c.dir,ey=e.y+e.cy-S.y;
     if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100);bufCal(TVS,1)}      // yarık düşmana vurunca tahta sesi
   }
+  return false;
 }
-function catlakCiz(){      // yarık görseli: vurulan yerden başlar, maskeyle yavaşça ilerleyerek görünür; bir süre kalır, söner
-  const c=S.catlak,im=R.yarik;if(!c||!im)return;
-  const u=S.t-c.t0,d=Math.min(c.len,u*CV),al=u<c.T-0.8?1:Math.max(0,(c.T-u)/0.8);
-  const tw=CTW*SC,th=tw*im.height/im.width;
-  ctx.save();ctx.globalAlpha=al;ctx.translate(W/2+(c.x-S.x)*SC,ZY()-(c.y-S.camY)*SC);if(c.dir<0)ctx.scale(-1,1);
-  ctx.beginPath();ctx.rect(0,-th,d*SC,th*2);ctx.clip();
-  for(let i=0;i*CTW<d;i++)ctx.drawImage(im,i*(tw-1),-th*0.52,tw,th);
-  ctx.restore();
+function catlakCiz(){      // yarıklar: vurulan yerden başlar, maskeyle ilerleyerek görünür; bir süre kalır, söner. Yeni yarık eskisinin üstüne binmez (o aralık maskelenir).
+  const L=S.catlak,im=R.yarik;if(!L||!im)return;
+  const tw=CTW*SC,th=tw*im.height/im.width,ara=[];      // ara: daha eski yarıkların kapladığı dünya aralıkları
+  for(const c of L){
+    const u=S.t-c.t0,d=Math.min(c.len,u*CV),al=u<c.T-0.8?1:Math.max(0,(c.T-u)/0.8);
+    const a0=Math.min(c.x,c.x+c.dir*d),a1=Math.max(c.x,c.x+c.dir*d);
+    let par=[[a0,a1]];for(const [b0,b1] of ara){const yeni=[];for(const [p0,p1] of par){if(b1<=p0||b0>=p1){yeni.push([p0,p1]);continue}if(b0>p0)yeni.push([p0,b0]);if(b1<p1)yeni.push([b1,p1])}par=yeni}      // eskilerle kesişen kısım çıkarılır
+    ara.push([a0,a1]);if(!par.length||al<=0)continue;
+    ctx.save();ctx.globalAlpha=al;ctx.beginPath();for(const [p0,p1] of par)ctx.rect(W/2+(p0-S.x)*SC,ZY()-(c.y-S.camY)*SC-th,(p1-p0)*SC,th*2);ctx.clip();
+    ctx.translate(W/2+(c.x-S.x)*SC,ZY()-(c.y-S.camY)*SC);if(c.dir<0)ctx.scale(-1,1);
+    for(let i=0;i*CTW<d;i++)ctx.drawImage(im,i*(tw-1),-th*0.52,tw,th);
+    ctx.restore();
+  }
 }
 function alkisKontrol(){          // iki parmak ortaya doğru birleşir = alkış şok dalgası
   if(tutmaVar())return;      // bir şey tutuluyorsa (ya da iki elle tutmaya gidiyorsak) çift el hareketleri tetiklenmez

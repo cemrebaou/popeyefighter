@@ -30,7 +30,7 @@ function ciz(){
   if(S.pence){ctx.shadowColor='#ffb02e';ctx.shadowBlur=(14+5*Math.sin(S.t*9))*DPR}      // bıçak modu: kenarlarından enerji barı renginde parlar
   karakter();
   ctx.restore();
-  zpkCiz('N');      // (ıspanak yaprakları oyuncu.js'te, kutunun arkasında)
+  zpkCiz('N');atesElCiz();      // (ıspanak yaprakları oyuncu.js'te, kutunun arkasında); yakan yumruğun alevi karakterin önünde
   varilCiz(true);
   fxCiz(true);
   karCiz();
