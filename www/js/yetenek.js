@@ -101,7 +101,7 @@ const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süre
     if(!antiMod&&k!=='KALP'&&secili!==k)demoBasla(k);      // arkadaki karakter yeteneği gösterir
     if(tut&&tut.k!==k){OL[tut.k].style.setProperty('--p',0);OL[tut.k].classList.remove('tut')}
     secili=k;yenile();
-    if(verilir(k)){tut={k,p:tut&&tut.k===k?tut.p:0,bas:true,t:performance.now()};OL[k].classList.add('tut');requestAnimationFrame(dolum)}
+    if(verilir(k)){tut={k,p:tut&&tut.k===k?tut.p:0,bas:true,t:performance.now()};OL[k].classList.add('tut');if(DG[k])DG[k].classList.add('tutY');requestAnimationFrame(dolum)}
   }
   function birak(){if(tut)tut.bas=false}
   addEventListener('pointerup',birak);addEventListener('pointercancel',birak);
@@ -110,7 +110,7 @@ const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süre
     tut.p+=dt/BASILI*(tut.bas?1:-1.6);      // basılıyken 2 sn'de dolar, bırakınca boşalır
     const d=OL[tut.k];d.style.setProperty('--p',Math.max(0,Math.min(1,tut.p)));
     if(tut.p>=1){const k=tut.k;tut=null;d.style.setProperty('--p',0);d.classList.remove('tut');ver(k);return}
-    if(tut.p<=0){d.style.setProperty('--p',0);d.classList.remove('tut');tut=null;return}
+    if(tut.p<=0){d.style.setProperty('--p',0);d.classList.remove('tut');if(DG[tut.k])DG[tut.k].classList.remove('tutY');tut=null;return}
     requestAnimationFrame(dolum);
   }
   function antiBitir(k){      // öldürme sesi, değişiklik 2 sn görünür, sonra oyun yeniden başlar

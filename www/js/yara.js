@@ -70,4 +70,4 @@ function yaraGuncelle0(){      // can kaybına göre görünen yara sayısı; de
     YARA.var[q]=var_;
   }
 }
-function yaraCiz(q,px,py){const c=YARA.c[q];if(c&&YARA.var[q])ctx.drawImage(c,-px,-py,c.width/RES,c.height/RES)}      // parçanın hemen üstüne, aynı bağlantı noktasıyla
+function yrCiz(q,px,py){const c=YARA.c[q];if(c&&YARA.var[q])ctx.drawImage(c,-px,-py,c.width/RES,c.height/RES)}      // parçanın hemen üstüne, aynı bağlantı noktasıyla

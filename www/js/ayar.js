@@ -1,7 +1,7 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.359';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.360';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
 const SURUM='?v=88';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
@@ -35,7 +35,7 @@ for(let i=3;i<=6;i++)yukle('fx/kan'+i+'.webp',im=>KANI[i]=im);
 for(let i=0;i<3;i++)yukle('fx/kar'+i+'.webp',im=>KARI[i]=im);      // küçük kar topakları (adım, iniş, saçılma)
 for(let i=0;i<4;i++)yukle('fx/tas'+i+'.webp',im=>TASI[i]=im);      // küçük taşlar (düşme, patlama)
 ['patla','sprey','yarik','aduket_su','damla','yaprak'].forEach(n=>yukle('fx/'+n+'.webp',im=>R[n]=im));      // yaprak: kutudan dökülen ıspanak      // iniş kanatları, yere çakılma patlaması, kayma sıçraması
-['bos','can','en','kalp'].forEach(n=>yukle('ui/bar_'+n+'.webp',im=>R['bar_'+n]=im));      // can/enerji barı: boş (büyük kalp), can dolgusu, enerji dolgusu, küçük kalp (yuvarlak)
+['bos','can','en','kalp','cerceve'].forEach(n=>yukle('ui/bar_'+n+'.webp',im=>R['bar_'+n]=im));yukle('ui/kalp_tek.webp',im=>R.kalp_tek=im);      // cerceve: boş çerçeve (yuvarlak XP ile dolar), kalp_tek: atan kalp      // can/enerji barı: boş (büyük kalp), can dolgusu, enerji dolgusu, küçük kalp (yuvarlak)
 function gorselHazir(){
   if(gorselHazir.ok)return;gorselHazir.ok=true;      // tek sefer: sonradan yüklenen görseller (cevre.js) ikinci döngü başlatmasın (oyun 2 kat hızlı akıyordu)
   ['uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));                 // oyuncunun arka bacağı

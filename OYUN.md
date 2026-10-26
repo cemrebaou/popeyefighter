@@ -81,6 +81,12 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 
 - Ağaçta yetenek açma: dokun = bilgi/önizleme, 2 sn basılı tut = açılır (simge dönerek renklenir, bırakınca dolum boşalır).
 
+## Ekran barı (`hud.js`)
+- Çerçeve `ui/bar_cerceve.webp`; soldaki yuvarlak XP ile alttan (dalgalı) dolar, dolunca seviye atlar, parlayıp boşalır. Üstte tek kalp `ui/kalp_tek.webp`: lub-dub atar, can azaldıkça hızlanır; can dolarken kalp sesiyle güçlü atar; ölünce durur.
+
+## Düşman yaraları (`js/dyara.js`)
+- Vuruldukça canıyla orantılı yara (en çok 36), sadece ten yerlerinde (gövde, üst/ön kol; ızgara `dyara_veri.js`); can dolunca azalır. Kaptanda ten yok, yara çıkmaz.
+
 ## Skill öldürme (kodda anti; `js/anti.js`, `AG.anti`, `YA(k)`)
 - Arayüzde "Öldür" denir. Öldürünce `ses/skill_oldur.mp3` çalar, değişiklik 2 sn görünür, sonra oyun başlar. Öldürme ekranında simgeler renkli, çeper griden kırmızıya yavaş geçer; yazıda önce öldürülmüş hali, sonra eski ad üstü çizili. Normal ağaçta skill yazısının sonunda ölüm hali üstü çizili.
 - Kalpli kol ağaçta hep görünür: dokununca güncel maks. can ve toplam ceza/bonus yazar; sadece ölüm seçiminde 2 sn basılı tutunca seçilir (maks. can 50 ise seçilemez).

@@ -148,10 +148,10 @@ function bacak(l,k,ank,koyu){
   ctx.save();ctx.translate(S_X,S_Y);ctx.rotate(ank*D);ay.a=dunyaNok(36,40);ay.u=dunyaNok(110,80);resim(R['bacak_bot'+sfx],55,22);   // bot en arkada
   if(lf)ekParla(R['bacak_bot'+sfx],55,22,lI);else if(lb)parilti(70,80,80,lI,'+');
   ctx.restore();
-  resim(R['altpan'+sfx],61.6,32.1);yaraCiz(koyu?'altpan_F':'altpan_N',61.6,32.1);
+  resim(R['altpan'+sfx],61.6,32.1);yrCiz(koyu?'altpan_F':'altpan_N',61.6,32.1);
   if(lf)ekParla(R['altpan'+sfx],61.6,32.1,lI);
   ctx.restore();
-  resim(R['uyluk'+sfx],66,47.5);yaraCiz(koyu?'uyluk_F':'uyluk_N',66,47.5);                                                                        // uyluk dizi örter
+  resim(R['uyluk'+sfx],66,47.5);yrCiz(koyu?'uyluk_F':'uyluk_N',66,47.5);                                                                        // uyluk dizi örter
   if(lf)ekParla(R['uyluk'+sfx],66,47.5,lI);
   ctx.restore();
 }
@@ -180,14 +180,14 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   {const z=zpkKolAci(ad);if(z){u=z[0];r=z[1]}}      // zıpkın: kol halata paralel, dümdüz
   ctx.rotate(u*D);
   if(far&&ZPK.ac&&!DEMO){ctx.save();ctx.translate(-11.35,123.6);ctx.rotate(r*D);zpkKolCiz(ad,far);ctx.restore()}      // arka koldaki zıpkın kolun tamamının arkasında
-  resim(R['ustkol'+sf],43.8,30.65);yaraCiz('ustkol_'+ad,43.8,30.65);
+  resim(R['ustkol'+sf],43.8,30.65);yrCiz('ustkol_'+ad,43.8,30.65);
   const bitis=S.atk&&S.atk.fl==='*'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad), bI=bitis?efSiddet():0;      // kombo bitiş vuruşu: kolun tamamı parlar
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);
   ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
   elKaydet(ad);if(S.pence){EL[ad].b1=dunyaNok(330,0);EL[ad].b2=dunyaNok(420,0)}else EL[ad].b1=EL[ad].b2=null;      // bıçak ağzı / ucu
   {const d=S.pence?PENCE_EL[ad]:KOL_EL[ad][(ZPK.ac&&!DEMO)?'ac':(HS[ad]||'yum')];      // zıpkın açıkken el açık
    ctx.save();ctx.translate(140.4,0);if(!ispElCiz(ad)){resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI)}ctx.restore();}      // ıspanak alınca el, kutuyu tutan ele dönüşür   // el bilekte
-  resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);yaraCiz(far?'onkol2':'onkol',28.5,far?48.3:48.6);
+  resim(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6);yrCiz(far?'onkol2':'onkol',28.5,far?48.3:48.6);
   if(bI>0)ekParla(R[far?'onkol2_a':'onkol'],28.5,far?48.3:48.6,bI);
   else if(S.atk&&S.atk.fl==='+'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad))parilti(248,0,95,efSiddet(),'+');   // yumruk çerçevesi parlar
   if(ZPK.ac&&!DEMO&&!far)zpkKolCiz(ad,far);      // zıpkın iki kolda      // zıpkın tabancası ön kolun üstünde
@@ -239,7 +239,7 @@ function karakter(){
   bacak(F.l,F.k,F.a,true);
   ctx.restore();
   ctx.save();ctx.translate(P.hx+BON,-P.hy);ctx.rotate(P.pelv*D);OGV.kal=dunyaNok(0,-20);resim(R.kalca,73.5,118.8);ctx.restore();   // kalça (şort) bacakların önünde, gövdenin arkasında
-  govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R.govde0,97.7,246.4);yaraCiz('govde',97.7,246.4); });      // gövde: temiz gövde + can azaldıkça yaralar (yara.js)      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
+  govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R.govde0,97.7,246.4);yrCiz('govde',97.7,246.4); });      // gövde: temiz gövde + can azaldıkça yaralar (yara.js)      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak gövdenin önünde
   govdeUzayi(()=>{
     ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/(SC0*ZOOM),0);OGV.boyun=dunyaNok(0,60);OGV.kafa=dunyaNok(7.5,-85.5);OGV.t=S.t;{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((HPMAX-Math.max(S._lh,1))/(HPMAX/10)))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=S.yeme&&S.t-S.yeme.t0>ISP_D0*ISP_YAVAS&&S.t-S.yeme.t0<(ISP_D1+0.1)*ISP_YAVAS;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-95.4,-192.4,205.8,298.2):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü

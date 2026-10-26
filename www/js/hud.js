@@ -13,7 +13,35 @@ function kalpGuncelle(){
   if(!KALP.on)return false;
   const u=S.t-KALP.t0,n=Math.floor(u/1.5);
   if(n!==KALP.n){KALP.n=n;kalpSesDur();if(AC&&AC.state==='running'&&KALPS&&!DEMO){const src=AC.createBufferSource();src.buffer=KALPS;src.connect(SFXC());src.start();KALP.src=src}}      // her atış: ses çalar
-  return u%1.5<0.5;      // sesle kalp küçülür, yarım sn sonra büyür, 1 sn sonra tekrar
+  return true;
+}
+// Kalp atışı: "lub-dub" (iki yumuşak vuruş). Normalde hafif ve can azaldıkça hızlanır; can dolarken sesle eş zamanlı, güçlü atar. Ölünce durur.
+const KAT={ph:0};
+const kAt=(t,c,w)=>Math.exp(-((t-c)/w)*((t-c)/w));
+function kalpOlcek(dt,dolar){
+  if(S.hp<=0)return 0.95;
+  if(dolar){const t=(S.t-KALP.t0)%1.5;return 1+0.14*kAt(t,0.07,0.06)+0.08*kAt(t,0.33,0.07)}
+  const T=1.15-0.5*kisit(1-S.hp/HPMAX,0,1);KAT.ph=(KAT.ph+dt/T)%1;const t=KAT.ph*T;      // can azaldıkça kalp hızlanır
+  const g=0.035+0.04*kisit(1-S.hp/HPMAX,0,1);return 1+g*kAt(t,0.07,0.06)+g*0.6*kAt(t,0.3,0.07);
+}
+const XPC={x:134,y:130.5,r:111.5};      // çerçevedeki yuvarlak (görsel px)
+function xpYuvarlak(dt){      // yuvarlak boşluk XP ile alttan dolar; dolunca seviye atlar ve boşalır
+  const hed=AG.xp/xpGerek(AG.lv);
+  if(BAR.lv===undefined){BAR.lv=AG.lv;BAR.xp=hed}
+  if(AG.lv>BAR.lv){BAR.xp+=(1.02-BAR.xp)*Math.min(1,dt*6);if(BAR.xp>=0.995){BAR.xp=0;BAR.lv=AG.lv;BAR.flT=S.t}}      // önce tam dolar, sonra boşalır
+  else{if(AG.lv<BAR.lv)BAR.lv=AG.lv;BAR.xp+=(hed-BAR.xp)*Math.min(1,dt*5)}
+  const f=kisit(BAR.xp,0,1);
+  ctx.save();ctx.beginPath();ctx.arc(XPC.x,XPC.y,XPC.r,0,Math.PI*2);ctx.clip();
+  if(f>0.003&&R.bar_kalp){
+    const y0=XPC.y+XPC.r-2*XPC.r*f,dl=f<0.995?4:0;      // dalgalı yüzey
+    ctx.save();ctx.beginPath();ctx.moveTo(XPC.x-XPC.r-2,XPC.y+XPC.r+2);
+    for(let x=-XPC.r-2;x<=XPC.r+2;x+=8)ctx.lineTo(XPC.x+x,y0+Math.sin(x*0.055+S.t*3.2)*dl);
+    ctx.lineTo(XPC.x+XPC.r+2,XPC.y+XPC.r+2);ctx.closePath();ctx.clip();
+    ctx.translate(XPC.x,XPC.y);ctx.scale(1.1,1.1);ctx.translate(-129.5,-128.5);ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);      // mavi dolu yuvarlak
+    ctx.restore();
+  }
+  const fu=S.t-(BAR.flT||-9);if(fu<0.8){ctx.globalCompositeOperation='lighter';ctx.fillStyle='rgba(255,220,90,'+(0.55*(1-fu/0.8))+')';ctx.fillRect(XPC.x-XPC.r,XPC.y-XPC.r,XPC.r*2,XPC.r*2)}      // seviye atlayınca parlar
+  ctx.restore();
 }
 function barDol(im,f,y0,u0,u1,BEG){
   if(!im||f<=0.002)return;
@@ -25,15 +53,18 @@ function barCiz(dt){
   BAR.en+=(S.en-BAR.en)*Math.min(1,dt*8);
   if(S.hp<BAR.hp||S.hp-BAR.hp>HPMAX*0.4)BAR.hp=Math.max(0,S.hp);else BAR.hp+=(S.hp-BAR.hp)*Math.min(1,dt*6);      // azalınca direkt, dolarken yumuşak
   const kk=kalpGuncelle();
-  if(!R.bar_bos)return;
+  const cer=R.bar_cerceve||R.bar_bos;if(!cer)return;
   const bw=barGen(),s=bw/BARG;
   ctx.save();ctx.translate(10,8);ctx.scale(s,s);
-  ctx.drawImage(R.bar_bos,0,0,BARG,BARY);
+  ctx.drawImage(cer,0,0,BARG,BARY);
+  if(R.bar_cerceve)xpYuvarlak(dt);
   barDol(R.bar_can,BAR.hp/HPMAX,66.4,261.3,582.0,0.39);      // can
   if(S.t<(S.ispEnT||0)){ctx.shadowColor='#ffd23f';ctx.shadowBlur=(8+4*Math.sin(S.t*8))*s*DPR}      // ıspanak sonrası enerji parlar
   barDol(R.bar_en,BAR.en/ENMAX,145.0,262.7,534.6,0.4);      // ince enerji
   ctx.shadowBlur=0;
-  if(kk&&R.bar_kalp)ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);      // küçük kalp (yuvarlak maskeli, büyük kalbin üstüne)
+  const ki=R.kalp_tek;
+  if(ki&&R.bar_cerceve){const o=kalpOlcek(dt,kk),h=178*o,w=h*ki.width/ki.height;ctx.drawImage(ki,XPC.x+3-w/2,XPC.y+3-h/2,w,h)}      // tek kalp: alttaki küçük kalbi örter
+  else if(kk&&R.bar_kalp)ctx.drawImage(R.bar_kalp,0,0,BARG,BARY);
   ctx.restore();
 }
 function hud(dt){
