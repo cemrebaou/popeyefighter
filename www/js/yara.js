@@ -8,7 +8,7 @@ const YARAI=[];for(let i=1;i<=16;i++)yukle('yara/y'+i+'.webp',im=>YARAI[i]=im);
 const YR_PANT=[1,2],YR_BANT=[5,9],YR_DERI=[3,4,6,7,8,10,11,12,13,14,15,16],YR_BANT_BOY=58;
 // yuva: parça görseli, deri/pantolon, koyulaştırma, yara boyu [en az, en çok] (görsel px; oyun birimi = px/RES), yasak daireler [x,y,r] ve yasak bant
 const YR_YUVA={
-  govde:{im:'govde0',tur:'d',koyu:0,boy:[46,86],yas:[[94,183,66],[309,120,46]],ust:96,alt:478,bant:[262,350]},
+  govde:{im:'govde0',tur:'d',koyu:0,boy:[46,86],yas:[[94,183,66],[309,120,46]],ust:96,alt:478,kut:[[122,294,354,350]]},      // kut: göğsün alt çizgisi (sadece o ince bant)
   ustkol_N:{im:'ustkol',tur:'d',koyu:0,boy:[42,66],yas:[[88,61,72],[65,308,62]]},
   ustkol_F:{im:'ustkol',tur:'d',koyu:.13,boy:[42,66],yas:[[88,61,72],[65,308,62]]},
   onkol:{im:'onkol',tur:'d',koyu:0,boy:[40,62],yas:[[57,97,64],[338,97,64],[173,94,52]]},
@@ -29,7 +29,7 @@ function yrUygun(y,m,px,py){      // bu nokta yara alabilir mi: deri/pantolon ı
   if(px<0||py<0||px>=m.w||py>=m.h)return false;
   const gx=px/3|0,gy=py/3|0;if(gx>=m.gw||gy>=m.gh||!m.u[gy*m.gw+gx])return false;
   for(const [x0,y0,rr] of y.yas)if((px-x0)*(px-x0)+(py-y0)*(py-y0)<rr*rr)return false;
-  if(y.ust&&py<y.ust)return false;if(y.alt&&py>y.alt)return false;if(y.bant&&py>y.bant[0]&&py<y.bant[1])return false;
+  if(y.ust&&py<y.ust)return false;if(y.alt&&py>y.alt)return false;if(y.kut)for(const [a,b,c,d] of y.kut)if(px>a&&px<c&&py>b&&py<d)return false;
   return true;
 }
 const yrNokta=n=>YR_NOK[n];      // yara görselinin dolu yerlerinden örnek noktalar (merkeze göre, uzun kenar = 1)
