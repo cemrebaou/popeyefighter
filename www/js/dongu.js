@@ -30,7 +30,7 @@ function ciz(){
   if(S.pence){ctx.shadowColor='#ffb02e';ctx.shadowBlur=(14+5*Math.sin(S.t*9))*DPR}      // bıçak modu: kenarlarından enerji barı renginde parlar
   karakter();
   ctx.restore();
-  zpkCiz('N');ispYaprakCiz();      // ıspanak yaprakları karakterin önünde
+  zpkCiz('N');      // (ıspanak yaprakları oyuncu.js'te, kutunun arkasında)
   varilCiz(true);
   fxCiz(true);
   karCiz();
@@ -93,7 +93,7 @@ function dongu(ms){
     S.vy+=G*dt;S.y-=S.vy*dt;
     if(S.tats>0){const u=S.t-S.tats;if(u>0.8){S.tats=0;S.spin=0}else{S.vy=-250;S.spin+=dt*Math.PI*2*2/0.8}}   // kasırga: havada asılı döner
     if(S.donuyor){S.spin+=dt*Math.PI*2/ROLL_SURE;if(S.spin>=Math.PI*2){S.spin=0;S.donuyor=false}}
-    if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;torbaCal(INS,INSBAG,0.9);if(!S.slam&&!S.dkick)antiInis(zH);S.donuyor=false;S.spin=0;S.shoryu=0;S.tats=0;
+    if(S.y<=zH&&(S.vy>=0||S.y<zH-1)){S.y=zH;S.vy=0;S.yer=true;if(WDS)bufCal(WDS,0.9);else torbaCal(INS,INSBAG,0.9);if(!S.slam&&!S.dkick)antiInis(zH);S.donuyor=false;S.spin=0;S.shoryu=0;S.tats=0;
       if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
       if(S.dkick){const t0=S.dkick.t0;S.dkick=null;zeminVur(0.5,0,t0);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
   }

@@ -7,7 +7,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Can: 250 (Maks. Can +100 yeteneğiyle 350). Can çubuğu yok; can kafa görselinden (11 hasar seviyesi) ve eğik çubuktan okunur.
 - Can dolumu: son hasardan 6–8 sn (rastgele) sonra başlar; saniyede max canın %1'i = 250 canda **2.5 can/sn** (350 canda 3.5). Can Dolumu %2 → 5/sn, %3 → 7.5/sn. Kalkanlı Savunma: blokta beklemeden dolar. Dolarken kalp atar ve kalp sesi çalar. (`dongu.js`)
 - Enerji: max 250, saniyede 2.5 dolar (ıspanaktan sonra 10 sn 2 kat). Her özel güç 50 enerji. Bıçak modu saniyede 7.5 enerji yer.
-- Ispanak yerken kutudan dökülen yapraklar saçılmaz: hepsi kavisle açık ağzın içine (`OGV.agiz`) akar, yaklaşınca kararıp küçülerek kaybolur.
+- Ispanak yerken kutudan dökülen yapraklar (kutunun arkasında, yüzün önünde) saçılmaz; yapraklar bitene kadar ağız açık kalır: hepsi kavisle açık ağzın içine (`OGV.agiz`) akar, yaklaşınca kararıp küçülerek kaybolur.
 - Ispanak: max canın %10'u + 50 enerji. Ispanak Cebi açıksa ikisi de 2 kat (yerden de cepten de). Düşman ölünce %25, varil kırılınca %50 (Varil Tutma ile) ıspanak düşer.
 - Seviye atlayınca can ve enerji tamamen dolar.
 - Blok: iki parmak ekranda hareketsiz. Hasarın yarısı engellenir; ilk 0.5 sn içinde vurulursa PARRY (düşman sersemler).
@@ -23,6 +23,9 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Tekmeyle Can Çalma (Q): sadece tekmelere kendi +%10'unu ekler (H yoksa tekme %10, H varsa %20, M varsa %30). Yumruğu artırmaz.
 - Bıçakla Can Çalma (T): sadece bıçak modu vuruşlarına kendi +%20'sini ekler (H yoksa %20, H varsa %30, M varsa %40). Yumruğu artırmaz.
 - Can Çalmalı Yırtma (R): düşmanın kalan canı kadar can (en az 50).
+
+## Sesler
+- Havadan tahtaya düşme (oyuncu inişi, fırlatılan/ölen düşman, yarılar): `ses/wooddusme.mp3`. Yer yarma düşmana vurunca `ses/tahtavurma.mp3`; yarıktan sonraki sürekli çatırdama sesi kaldırıldı. Arka plan `ses/deniz.mp3`.
 
 ## Düşmanlar
 - k yumruklu korsan: 150 can, oyuncuya 10 hasar. b bıçaklı: 100 can, 15 hasar. h kancacı: 200 can, yumruk 10 hasar, yürümez.
@@ -82,7 +85,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Aktif yetenek açılınca kendi sesi çalar. Sesi olmayan aktifler: Süpermen Uçuşu, Alkış.
 - Aduket: dönen su girdabı (`fx/aduket_su`), dönerken iki yana su damlası (`fx/damla`) saçar. Oluşurken `ses/wateraduket.mp3` döngüde çalar, atınca kesilir; çarpınca `ses/aduket_carpma.mp3`.
 
-- Ağaçta yetenek açma: dokun = bilgi/önizleme, 2 sn basılı tut = açılır (simge dönerek renklenir, bırakınca dolum boşalır).
+- Ağaçta yetenek açma: dokun = bilgi/önizleme, 1 sn basılı tut = açılır (simge dönerek renklenir, bırakınca dolum boşalır).
 
 ## Ekran barı (`hud.js`)
 - Çerçeve `ui/bar_cerceve.webp`; soldaki yuvarlak XP ile alttan (dalgalı) dolar, dolunca seviye atlar, parlayıp boşalır. Üstte tek kalp `ui/kalp_tek.webp`: lub-dub atar, can azaldıkça hızlanır; can dolarken kalp sesiyle güçlü atar; ölünce durur. Barlarda ve XP yuvarlağında bombeli cam efekti.
@@ -95,12 +98,12 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Kalpli kol ağaçta hep görünür: dokununca güncel maks. can ve toplam ceza/bonus yazar; sadece ölüm seçiminde 2 sn basılı tutunca seçilir (maks. can 50 ise seçilemez).
 - Öldürülecek skill yok ve maks. can 50 iken ölüm: OYUN BİTTİ, her şey sıfırlanır (XP, seviye, skill'ler, öldürülenler, cezalar).
 - Hiç verilmiş yetenek yokken ölünce: maks. can -10 (en az 50), her vuruşa +1 düz hasar; her ölümde birikir (`AG.cip`, kayıtlı).
-- Ölünce verilmiş (Yumruk hariç, henüz çevrilmemiş) yetenek varsa 1.3 sn sonra ağaç zorunlu seçimle açılır, kapatılamaz; yeteneğe dokun = anti metni (önce anti, yanında orijinal; yazı yana kaydırılır), 2 sn basılı tut = çevrilir, oyun yeniden başlar. Sağ üstteki kalpli kol (`ui/kalpkol.webp`): skill öldürmek yerine maks. can -10, +1 hasar (dokun = açıklama, 2 sn basılı = seçer). Çevrilen yetenek kapalı sayılır (YV false), ağaçta simgenin altında kan lekesi (`ui/kanleke.webp`). Kayıt `pf_agac2.anti`.
-- O: can dolumu bonusu yok (pasif %1 dolum kalır), öldürünce düşmanın maks. canının %10'u kadar can (boss dahil) · X: can dolumu bonusu yok (pasif dolum kalır), can %25 altında hasar +%50 · W: blokta dolum yok, blok %75 engeller · V: +100 can yerine +100 maks. enerji (ENMAX) · TOP: ıspanak 2 kat sık düşer · I: vuruş %15 sersemletir (1.3 sn)
+- Ölünce verilmiş (Yumruk hariç, henüz çevrilmemiş) yetenek varsa 1.3 sn sonra ağaç zorunlu seçimle açılır, kapatılamaz; yeteneğe dokun = anti metni (önce anti, yanında orijinal; yazı yana kaydırılır), 1 sn basılı tut = çevrilir, oyun yeniden başlar. Sağ üstteki kalpli kol (`ui/kalpkol.webp`): skill öldürmek yerine maks. can -10, +1 hasar (dokun = açıklama, 1 sn basılı = seçer). Çevrilen yetenek kapalı sayılır (YV false), ağaçta simgenin altında kan lekesi (`ui/kanleke.webp`). Kayıt `pf_agac2.anti`.
+- O: can dolumu bonusu yok (pasif %1 dolum kalır), öldürünce düşmanın maks. canının %10'u kadar can (boss dahil) · X: can dolumu bonusu yok (pasif dolum kalır), can %25 altında hasar +%50 · W: blokta dolum yok, blok %75 engeller · V: +100 can yerine +100 maks. enerji (ENMAX) · TOP: ıspanak 2 kat sık düşer · I: vuruş %5 sersemletir (1.3 sn)
 - H: +%20 saldırı · M: her vuruş +2 enerji · Q: tekme itmesi +%30 · T: bıçak hasarı +%20 · R: yırtma enerjisi yarı
-- A: koşarken (max hızın %70'i) düşmana çarpınca %25 şansla güçlü omuz: 25 hasar, uzağa fırlatıp yere serer · B: tekme varili top gibi uçurur; tekmelenen varil kırılmaz (seker, yuvarlanır, yerde durur, tekrar tekmelenebilir), sadece düşmana çarpınca kırılır · G: fırlatılan düşman çarptığına 2x, %40 uzağa · F: canı %20 altındaki tek yumrukla ölür
+- A: koşarken (max hızın %70'i) düşmana çarpınca %25 şansla güçlü omuz: 25 hasar, uzağa fırlatıp yere serer · B: tekme varili top gibi uçurur; tekmelenen varil kırılmaz (seker, yuvarlanır, hacıyatmaz gibi hep dik durur, tekrar tekmelenebilir), sadece düşmana çarpınca kırılır · G: fırlatılan düşman çarptığına 2x, %40 uzağa · F: canı %20 altındaki tek yumrukla ölür
 - D: havada ileri hız 2x · K: +1 havada zıplama (D açıksa 3 zıplama) · E: koşu +%20 · U: yüksekten inişte (380 üstü) taş patlaması: hasar (yükseklik-300)/40, 3–25; alan 450–1100
-- N: çömelik yumruk 2x · S: havadaki vuruşlar +%50 · Y: yumruk menzili +80 birim, yumruk hasarı +%30 · L: her 3. tekme kritik (2x) · J: havaya fırlatılan düşman 3 sn yanar (0.5 sn'de 5) · AL: blok/parry yapınca 900 içindeki düşmanlar sersemler · YT: yerde yatana 2x · P: yumruk %25 kanatır (4 sn, 0.5 sn'de 3) · Z: bıçak modunda yana kaydırma = bumerang bıçak (25 enerji, 30 hasar, gidiş-dönüş)
+- N: çömelik yumruk 2x · S: havadaki vuruşlar +%50 · Y: yumruk menzili +80 birim, yumruk hasarı +%30 · L: her 3. tekme kritik (2x) · J: her vuruş %5 şansla yakar: 4 sn, 0.5 sn'de bir düz vuruşun (5 + ölüm bonusu) yarısı; ateş efekti hafif/saydam · AL: blok/parry yapınca 900 içindeki düşmanlar sersemler · YT: yerde yatana 2x · P: yumruk %25 kanatır (4 sn, 0.5 sn'de 3) · Z: bıçak modunda yana kaydırma = bumerang bıçak (25 enerji, 30 hasar, gidiş-dönüş)
 
 ## Bölüm
 - Düz zemin, karlı. Yürüme, zıplama, iniş, kayma, çift ayak/tek ayak yere inişte kar-taş sıçraması yok (sadece yere yumruk/yarık sıçratır). 7 varil (x: 2600, 6300, 12400, 18000, 24200, 28600, 34000). Boss x=42000.

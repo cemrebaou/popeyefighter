@@ -166,12 +166,11 @@ function catlakGuncelle(){
   if(d<c.len){if(S.t-c.spT>0.035){c.spT=S.t;const tx=c.x+c.dir*d,ty=zemin(tx)+10;      // açılan ucundan taş ağırlıklı fışkırma
       for(let i=0;i<3;i++)karAt(tx+(Math.random()-0.5)*60,ty,c.dir*(80+Math.random()*520)+(Math.random()-0.5)*400,900+Math.random()*1200,true);      // yarıktan çeşitli kıymıklar
       karAt(tx,ty,(Math.random()-0.5)*600,700+Math.random()*900)}}
-  else if(!c.sesB){c.sesB=true;if(AC&&YARS&&!DEMO){const src=AC.createBufferSource(),g=AC.createGain();src.buffer=YARS;src.loop=true;g.gain.value=0.9;src.connect(g);g.connect(SFXC());src.start();c.src=src;c.g=g}}      // yarıldıktan sonra: yarık kaybolana kadar süren ses
   if(!c.sonu&&u>c.T-0.8){c.sonu=true;yarikSesDur(c,0.8)}
   for(const e of DUS){
     if(e.olu||e.catT===c.t0)continue;
     const dx=(e.x-c.x)*c.dir,ey=e.y+e.cy-S.y;
-    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100)}
+    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100);bufCal(TVS,1)}      // yarık düşmana vurunca tahta sesi
   }
 }
 function catlakCiz(){      // yarık görseli: vurulan yerden başlar, maskeyle yavaşça ilerleyerek görünür; bir süre kalır, söner

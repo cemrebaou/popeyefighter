@@ -34,7 +34,8 @@ function antiHasar(e,dmg){
 function antiVurSonra(e,dmg,hf){
   if(dmg>=9999||S.antiTik||e.olu)return;
   if(YA('Q')&&S.cs==='t'&&!e.tut){e.vx*=1.3;e.vy*=1.3}      // tekmeler %30 daha uzağa
-  if(YA('I')&&!e.boss&&!e.tut&&Math.random()<0.15){e.st=Math.max(e.st||0,S.t+1.3);e.ser=e.st;S.pops.push({x:e.x,y:e.y+e.cy+e.r+120,t:0,txt:dil('sersem'),f:0.5})}      // %15 sersemletir
+  if(YA('J')&&Math.random()<0.05)e.yan={son:S.t+4,tik:(e.yan&&e.yan.tik)||S.t+0.5};      // Ateşli Aparkat öldürülünce: her vuruş %5 yakar, 4 sn
+  if(YA('I')&&!e.boss&&!e.tut&&Math.random()<0.05){e.st=Math.max(e.st||0,S.t+1.3);e.ser=e.st;S.pops.push({x:e.x,y:e.y+e.cy+e.r+120,t:0,txt:dil('sersem'),f:0.5})}      // %15 sersemletir
   if(YA('P')&&S.cs==='y'&&!S.pence&&Math.random()<0.25){if(!e.kanama)S.pops.push({x:e.x,y:e.y+e.cy+e.r+120,t:0,txt:dil('kanama'),f:0.4});e.kanama={son:S.t+4,tik:S.t+0.5}}      // %25 kanama
 }
 function antiOldu(e){
@@ -62,8 +63,7 @@ function antiGuncelle(dt){
   if(!S.yer)S.tepe=Math.max(S.tepe||S.y,S.y);else S.tepe=S.y;      // inişte düşme yüksekliği
   for(const e of DUS){
     if(e.olu){e.yan=null;e.kanama=null;continue}
-    if(YA('J')&&!e.tut&&e.sonV!==undefined&&S.t-e.sonV<0.25&&e.vy>1000){e.yan={son:S.t+3,tik:(e.yan&&e.yan.tik)||S.t+0.5}}      // havaya fırlatılan düşman yanar
-    if(e.yan){if(S.t>=e.yan.son)e.yan=null;else if(S.t>=e.yan.tik){e.yan.tik+=0.5;dotVur(e,5)}}
+    if(e.yan){if(S.t>=e.yan.son)e.yan=null;else if(S.t>=e.yan.tik){e.yan.tik+=0.5;dotVur(e,Math.max(1,Math.round((5+AG.cip)/2)))}}      // yanma: düz vuruşun (5 + ölüm bonusu) yarısı
     if(e.kanama&&!e.olu){if(S.t>=e.kanama.son)e.kanama=null;else if(S.t>=e.kanama.tik){e.kanama.tik+=0.5;kanVurus(e.x,e.y+e.cy*(0.8+Math.random()*0.6),0.15,Math.random()<0.5?-1:1,false);dotVur(e,3)}}
   }
   if(S.durum!=='oyun')return;
@@ -132,7 +132,7 @@ function atesUret(e,dt){
   const b=e._b,bs=e.bs||1,ps=[];
   if(b&&S.t-b.t<0.2){for(const n of ['kafa','boy','kal','dN','dF'])if(b[n])ps.push([b[n].x,b[n].y])}
   if(!ps.length)ps.push([e.x,e.y+e.cy]);
-  let n=dt*55;while(n>0){if(n<1&&Math.random()>n)break;n--;
+  let n=dt*38;while(n>0){if(n<1&&Math.random()>n)break;n--;
     if(ATES.length>220)ATES.shift();
     const p=ps[Math.floor(Math.random()*ps.length)];
     ATES.push({x:p[0]+(Math.random()-0.5)*90*bs,y:p[1]+(Math.random()-0.5)*90*bs,vx:(Math.random()-0.5)*120+e.vx*0.3,vy:380+Math.random()*420,s:(70+Math.random()*80)*bs,t0:S.t,L:0.45+Math.random()*0.4,f:Math.random()*6})}
@@ -150,10 +150,10 @@ function antiCiz(){
         const sz=p.s*SC*bk*(1+0.5*u)*(1-0.45*u),sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC;
         if(sx<-sz||sx>W+sz)continue;ctx.globalAlpha=a;ctx.drawImage(im,sx-sz/2,sy-sz*0.62,sz,sz*1.25)}
     };
-    ek(ATS.kir,0.55,0.35,1,1.3,false);      // dış: saydam kırmızı (en son)
-    ek(ATS.tur,0.75,0.12,0.85,1.1,false);   // turuncu
-    ek(ATS.sar,0.8,0,0.6,0.9,true);         // sarı
-    ek(ATS.oz,0.7,0,0.35,0.55,true);        // parlak beyaz-sarı çekirdek
+    ek(ATS.kir,0.3,0.35,1,1.3,false);      // dış: saydam kırmızı (en son)
+    ek(ATS.tur,0.42,0.12,0.85,1.1,false);   // turuncu
+    ek(ATS.sar,0.45,0,0.6,0.9,true);         // sarı
+    ek(ATS.oz,0.35,0,0.35,0.55,true);      // hepsi hafif ve saydam (v0.370)        // parlak beyaz-sarı çekirdek
     ctx.restore();
   }
   for(const b of BCK){      // dönen bıçak: gümüş ağız, kahverengi sap

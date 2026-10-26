@@ -50,23 +50,19 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
 }
 // Kum + deniz (v0.368): evlerin altından ekranın altına. Üstte kum (dünyada sabit, uç uca döşenir), altında deniz (en üstü kıyı köpüğü).
 // İkisi de yatay dilimlerle perspektifli: üst dilim ev katmanı hızında (EV_P), alt dilimler giderek SAHIL_P1 hızına çıkar. Deniz kendi kendine akar:
-// sabit deniz görselinin üstünde, aşağı (ekrana doğru) kayan iki saydam kopya; her biri kendi döngüsünde belirip söner, atlama görünmez.
-const KUM_ORAN=0.36,DZ_KIYI=0.12,DZ_PER=60,DZ_HIZ=0.22;      // bandın kum payı, deniz görselinde kıyının bittiği oran, akış kayması (görsel px), akış devri (1/sn)
+// deniz kumdan bağımsız, dere gibi sürekli yavaşça sola akar (DZ_X); koşunca parallaksla daha hızlı kayar.
+const KUM_ORAN=0.36,DZ_AKIS=70;      // bandın kum payı; deniz kendi kendine sola akar (dünya birimi/sn), koşunca parallaksla daha hızlı kayar
+let DZ_X=0,DZ_T=-1;
 function kumDeniz(zeminY,s){
   const KM=CVR.kum,DZ=CVR.deniz;
   const r0=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s,yh=Math.max(60,H-r0),N=34,pb=i=>EV_P+(SAHIL_P1-EV_P)*i/N,yb=i=>r0+yh*i/N+S.camY*SC*pb(i);
-  const nK=Math.round(N*KUM_ORAN),fz=(S.t*DZ_HIZ)%1;
+  const nK=Math.round(N*KUM_ORAN);if(DZ_T>=0)DZ_X+=Math.max(0,Math.min(0.1,S.t-DZ_T))*DZ_AKIS;DZ_T=S.t;      // dere gibi sürekli sola akış
   for(let i=0;i<N;i++){
     const kum=i<nK,im=kum?KM:DZ,j=kum?i:i-nK,n=kum?nK:N-nK,p=EV_P+(SAHIL_P1-EV_P)*(i+0.5)/N;
     const dy=Math.floor(yb(i)),dh=Math.ceil(yb(i+1))-dy+1;if(dy>H||dy+dh<0)continue;
     const sh=im.height/n,sy0=sh*j,pm=(EV_P+SAHIL_P1)/2,sw=yh*(kum?KUM_ORAN:1-KUM_ORAN)*im.width/im.height*p/pm;      // dilim: görselin yatay şeridi; döşeme eni görselin oranından (perspektifle)
-    const ox=((W/2-S.x*p*SC*p)%sw+sw)%sw-sw;
-    const akar=!kum&&sy0>im.height*DZ_KIYI;      // kıyı köpüğü sabit, açık su akar
-    for(let x=ox;x<W;x+=sw-1){
-      ctx.drawImage(im,0,sy0,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh);
-      if(akar)for(let k=0;k<2;k++){const f=(fz+k*0.5)%1,a=Math.sin(Math.PI*f)*0.55,sy=Math.max(im.height*DZ_KIYI,sy0-f*DZ_PER);      // aşağı kayan saydam kopya
-        if(a<0.02)continue;ctx.globalAlpha=a;ctx.drawImage(im,0,sy,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh);ctx.globalAlpha=1}
-    }
+    const ox=((W/2-(S.x+(kum?0:DZ_X))*p*SC*p)%sw+sw)%sw-sw;      // kum dünyada sabit, deniz ayrıca akar
+    for(let x=ox;x<W;x+=sw-1)ctx.drawImage(im,0,sy0,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh);
   }
   const alt=Math.floor(yb(N));if(alt<H){ctx.fillStyle='#2b9ac4';ctx.fillRect(0,alt,W,H-alt)}      // görselin altı: denizin en koyu rengi
 }
@@ -74,17 +70,18 @@ function kumDeniz(zeminY,s){
 let SICRA=[],SICRA_T=0;
 function sicramaCiz(yAlt){      // yAlt: tahtanın alt kenarı (ekran px)
   const dt=S.dtG||0.016;
-  if(S.t>SICRA_T){SICRA_T=S.t+0.35+Math.random()*0.7;      // ara sıra ekranın bir yerinde
-    const wx=S.x+(Math.random()-0.5)*(W/SC)*1.1,wy=S.camY+(ZY()-yAlt)/SC+10,n=14+Math.random()*10|0;
-    for(let i=0;i<n&&SICRA.length<160;i++)SICRA.push({x:wx+(Math.random()-0.5)*90,y:wy,vx:(Math.random()-0.5)*900,vy:600+Math.random()*1100,r:8+Math.random()*12,t0:S.t,yy:wy})
-    SICRA.push({x:wx,y:wy,kopuk:1,t0:S.t,r:110+Math.random()*80})}
+  if(S.t>SICRA_T){SICRA_T=S.t+2.5+Math.random()*4;      // seyrek: dalga ekrandaki bir ön kazığa vurur
+    const L=Math.ceil((S.x-W/2/SC)/KAZIK_ARA),R2=Math.floor((S.x+W/2/SC)/KAZIK_ARA);
+    if(R2>=L){const wx=(L+Math.floor(Math.random()*(R2-L+1)))*KAZIK_ARA,wy=S.camY+(ZY()-(H-4))/SC,n=8+Math.random()*6|0;      // kazığın x ortası, ekranın altında su hizası (kazığın dibi görünmez)
+      for(let i=0;i<n&&SICRA.length<120;i++)SICRA.push({x:wx+(Math.random()-0.5)*120,y:wy,vx:(Math.random()-0.5)*600,vy:700+Math.random()*900,r:4+Math.random()*6,t0:S.t,yy:wy})
+      SICRA.push({x:wx,y:wy,kopuk:1,t0:S.t,r:90+Math.random()*50})}}
   ctx.save();
   for(let i=SICRA.length-1;i>=0;i--){const d=SICRA[i],sx=W/2+(d.x-S.x)*SC,sy=ZY()-(d.y-S.camY)*SC;
     if(d.kopuk){const u=(S.t-d.t0)/0.45;if(u>=1){SICRA.splice(i,1);continue}      // vuran dalganın köpük yayı
-      ctx.globalAlpha=0.7*(1-u);ctx.strokeStyle='#f4fdff';ctx.lineWidth=Math.max(1.5,5*SC*(1-u)+1);ctx.beginPath();ctx.ellipse(sx,sy,d.r*SC*(0.5+u),d.r*SC*0.35*(0.4+u),0,Math.PI,2*Math.PI);ctx.stroke();continue}
+      ctx.globalAlpha=0.45*(1-u);ctx.strokeStyle='#f4fdff';ctx.lineWidth=Math.max(1.5,5*SC*(1-u)+1);ctx.beginPath();ctx.ellipse(sx,sy,d.r*SC*(0.5+u),d.r*SC*0.35*(0.4+u),0,Math.PI,2*Math.PI);ctx.stroke();continue}
     d.vy-=G*0.55*dt;d.x+=d.vx*dt;d.y+=d.vy*dt;
-    if(d.y<d.yy-160){SICRA.splice(i,1);continue}
-    const a=kisit((S.t-d.t0)<0.1?1:1-(d.yy-d.y)/160,0,1);ctx.globalAlpha=0.85*a;
+    if(d.y<d.yy-60){SICRA.splice(i,1);continue}
+    const a=kisit(1-Math.max(0,d.yy-d.y)/60,0,1);ctx.globalAlpha=0.5*a;
     ctx.fillStyle='#d9f6ff';ctx.beginPath();ctx.ellipse(sx,sy,d.r*SC,d.r*SC*1.25,Math.atan2(-d.vy,d.vx)+Math.PI/2,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(sx-d.r*SC*0.3,sy-d.r*SC*0.35,d.r*SC*0.35,0,Math.PI*2);ctx.fill()}
   ctx.restore();

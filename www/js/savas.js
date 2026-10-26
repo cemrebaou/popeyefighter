@@ -220,7 +220,7 @@ function olmGuncelle(e,dt){      // ölüm hareketi; yere yattıktan 5 sn sonra 
   else if(o.f==='hava'||o.f==='sek'){
     e.vy-=G*dt;let nx=e.x+e.vx*dt;if(zemin(nx)>e.y+30){e.vx*=-0.2;nx=e.x}e.x=nx;e.y+=e.vy*dt;
     if(e.y<=z){e.y=z;
-      if(o.f==='hava'){o.f='sek';bufCal(DEVS||DSS,1);tasSac(e.x,2,0.8);titre(30);e.vy=Math.max(450,Math.abs(e.vy)*0.3);e.vx*=0.5}      // kıçının üstüne düşer, seker
+      if(o.f==='hava'){o.f='sek';bufCal(WDS||DEVS||DSS,1);tasSac(e.x,2,0.8);titre(30);e.vy=Math.max(450,Math.abs(e.vy)*0.3);e.vx*=0.5}      // kıçının üstüne düşer, seker
       else{o.f='otur';o.t1=S.t;e.vy=0}}
   }else{e.vx*=Math.pow(0.01,dt);e.x+=e.vx*dt;e.y=z;yat(kisit((S.t-o.t1-0.15)/0.45,0,1))}      // oturduğu yerden gövde geri yere düşer
   kolYere(e,dt);      // yatınca kollar havada kalmaz, yere değene kadar iner
@@ -273,7 +273,7 @@ function dusmanGuncelle(dt){
       e.vy-=G*dt;let nx=e.x+e.vx*dt;
       if(zemin(nx)>e.y+30){e.vx*=-0.2;nx=e.x}
       e.x=nx;e.y+=e.vy*dt;e.vx*=Math.pow(yer?0.02:0.5,dt);
-      const z=zemin(e.x);if(e.y<=z){if(e.vy<-1500)tasSac(e.x,2,0.8);if(e.atil){e.atil=false;bufCal(DEVS||DSS,1);if(!e.olu&&!e.boss&&!e.dus){e.cy0=e.cy0||e.cy;e.dus={t0:S.t,son:S.t+DUS_DUS+1.5+DUS_KALK,yn:Math.sign(e.vx)||1}}}e.y=z;e.vy=e.vy<-1500?-e.vy*0.25:0}      // fırlatılan yere düşünce yatar
+      const z=zemin(e.x);if(e.y<=z){if(e.vy<-1500)tasSac(e.x,2,0.8);if(e.atil){e.atil=false;bufCal(WDS||DEVS||DSS,1);if(!e.olu&&!e.boss&&!e.dus){e.cy0=e.cy0||e.cy;e.dus={t0:S.t,son:S.t+DUS_DUS+1.5+DUS_KALK,yn:Math.sign(e.vx)||1}}}e.y=z;e.vy=e.vy<-1500?-e.vy*0.25:0}      // fırlatılan yere düşünce yatar
       continue;
     }
     e.vx=e.vy=0;e.y=zH;

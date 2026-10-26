@@ -139,7 +139,7 @@ const KSK={      // her korsan kendi görsel setinden, tüm parçalar aynı öl�
      ust:185.6,on:172.3,uy:248.8,ak:[0,197.5],bh:111.0,bel:641.6,kN:[20.0,84.2],kF:[-16.0,84.2],omN:[-103.0,-220.2],omF:[50.6,-229.2],boyun:[12.6,-330.7]},
   b:{p:'b_',sc:0.794,A:{ust:[55.3,52.2],on:[125.2,45.5],elN:[65.9,32.1],elF:[91.8,40.6],uy:[87.9,39.7],bacak:[60.5,30.8],bot:[86.4,28.8],govde:[118.0,297.0],kalca:[98.4,49.7],kafa:[180.9,236.6],vur:[180.9,241.6],ahh:[180.9,246.6],ser:[182.9,252.6]},
      ust:137.0,on:165.6,uy:191.3,ak:[0,103.2],bh:249.2,bs:1.15,bel:624.4,kN:[15.0,75.9],kF:[-21.0,75.9],omN:[-53.2,-195.0],omF:[58.4,-204.0],boyun:[37.8,-283.5]},
-  p:{p:'p_',sc:0.86,bf:1,A:{ust:[57.7,47.7],on:[104.6,39.0],elN:[133.9,38.5],elF:[85.1,40.1],uy:[74.3,45.2],bacak:[70.9,42.3],bot:[57.6,43.8],govde:[126.8,268.8],kalca:[85.8,50.2],kafa:[181.3,224.3],vur:[179.3,230.3],ahh:[179.3,246.3],ser:[179.3,232.3],ates:[3.0,45.9]},
+  p:{p:'p_',sc:0.86,A:{ust:[57.7,47.7],on:[104.6,39.0],elN:[133.9,38.5],elF:[85.1,40.1],uy:[74.3,45.2],bacak:[70.9,42.3],bot:[57.6,43.8],govde:[126.8,268.8],kalca:[85.8,50.2],kafa:[181.3,224.3],vur:[179.3,230.3],ahh:[179.3,246.3],ser:[179.3,232.3],ates:[3.0,45.9]},
   ust:137.0,on:130.3,uy:196.8,ak:[0,141.7],bh:131.2,bs:1.1,mz:[-0.0,352.4],bel:592.0,kN:[0.0,95.0],kF:[-36.0,95.0],omN:[-96.2,-151.8],omF:[47.8,-181.8],boyun:[-5.0,-231.6]},      // kaptan: belden aşağısı %10 büyük (bs, uyluk, bel yüksekliği), kafa 10 birim ileride
   h:{p:'h_',sc:0.9315,us:1.375,A:{ust:[65.4,43.8],on:[107.1,37.5],elN:[105.8,47.3],elB:[78.9,36.2],elF:[100.3,36.8],uy:[90.5,40.4],bacak:[75.6,36.1],bot:[68.2,25.7],govde:[176.8,326.0],alt:[182.8,47.4],kalca:[116.5,35.6],kafa:[69.1,128.1],vur:[67.1,127.1],ahh:[67.1,128.1],ser:[76.1,132.1],kanca:[15.8,49.6]},
   ust:145.0,on:134.6,uy:184.1,ak:[0.0,151.2],bh:145.3,bel:662.0,tek:1,kN:[0.0,77.8],kF:[-40.0,77.8],omN:[-112.1,-219.9],omF:[24.7,-253.7],boyun:[-8.6,-286.1],goz:[-69.6,62.2],zt:[39.3,95.0],sp:[-104.7,-289.3],zl:[61,28],ud:115.5,kd:27.3,ks:1.05}      // ud: belden üstü aşağı kayma, kd: kafa aşağı kayma, ks: kafa ek ölçeği      // kancacı: yürümez, kanca fırlatır (goz: kancanın zincir halkası, zt: zincirli elin zincir çıkışı, sp: sırttaki makara)
@@ -330,7 +330,7 @@ function parcaCiz(){
         if(Math.hypot(p.x-o.x,p.y-(o.y+o.cy))<o.r*0.8+110){p.vr.add(o);const f=kisit((sp-1500)/3500,0,1),vx=p.vx,vy=p.vy;
           vur(o,10+25*f,vx,vy,f,p.y);bufCal(DEVS||DSS,1);p.vx*=-0.25;p.vy*=0.3;
           if(!o.olu&&!o.boss&&!o.tut){const yn=Math.sign(vx)||1;o.cy0=o.cy0||o.cy;if(o.dus)o.dus.son=Math.max(o.dus.son,S.t+DUS_DUS+1.8+DUS_KALK);else o.dus={t0:S.t,son:S.t+DUS_DUS+1.8+DUS_KALK,yn};o.vx=yn*700;o.vy=350}}}}
-      if(p.y<zemin(p.x)+160){if(p.vy<-500){karBas(p.x,170,KMIN-6,true);tasSac(p.x,2,0.7);bufCal(DSS,0.8)}p.y=zemin(p.x)+160;p.vy=Math.abs(p.vy)*0.3;p.vx*=0.85}
+      if(p.y<zemin(p.x)+160){if(p.vy<-500){karBas(p.x,170,KMIN-6,true);tasSac(p.x,2,0.7);bufCal(WDS||DSS,0.8)}p.y=zemin(p.x)+160;p.vy=Math.abs(p.vy)*0.3;p.vx*=0.85}
       p.pt=S.t;
       if(!p.son&&p.yerT&&S.t-p.yerT>0.5&&Math.abs(p.vx)<60){p.son=true;parcaYap(p);continue}      // durdu: kalıcı ceset resmi olur, artık hesaplanmaz
     }

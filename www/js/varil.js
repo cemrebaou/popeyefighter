@@ -63,7 +63,7 @@ function varilGuncelle(dt){
         if(v.y<=zz&&v.tek){v.y=zz;      // tekmelenen varil kırılmaz: seker, yuvarlanır, yavaşlayıp yerde durur (tekrar tekme bekler)
           if(v.vy<-350){v.vy=-v.vy*0.35;v.vx*=0.75;vSes(null,TD,TDBAG,v.x,0.6)}
           else{v.vy=0;const sg=Math.sign(v.vx);v.vx-=sg*Math.min(Math.abs(v.vx),2200*h);v.vr=v.vx/(V_W*0.5);      // yerde yuvarlanır
-            if(Math.abs(v.vx)<60){const hd=Math.round(v.rot/Math.PI)*Math.PI;v.rot+=(hd-v.rot)*Math.min(1,h*10);if(Math.abs(hd-v.rot)<0.03){v.rot=hd;v.d='yer';v.tek=false;v.vx=v.vy=v.vr=0}}}      // dik ya da ters oturur
+            if(Math.abs(v.vx)<60){const hd=Math.round(v.rot/(2*Math.PI))*2*Math.PI;v.rot+=(hd-v.rot)*Math.min(1,h*10);if(Math.abs(hd-v.rot)<0.03){v.rot=hd;v.d='yer';v.tek=false;v.vx=v.vy=v.vr=0}}}      // hacıyatmaz gibi hep dik oturur
           if(v.d==='yer')break;continue}
         if(v.y<=zz){v.y=zz;varilKir(v);break}     // yere çarpınca kırılır (fırlatılan)
       }

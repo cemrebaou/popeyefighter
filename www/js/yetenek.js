@@ -80,7 +80,7 @@ const YSES={A:()=>GRS,B:()=>TCS,F:()=>PPAR,R:()=>PPAR,N:()=>YAR,D:()=>yRnd(JP),E
 function yetSes(k){const f=YSES[k],b=f&&f();if(!AC||!b)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.connect(g);g.connect(SFXC());src.start()}
 let agacAcik=false,antiMod=false;      // antiMod: ölünce açılan zorunlu anti seçimi (kapatılamaz)
 const antiAday=()=>[...AG.acik].filter(k=>k!==YKOK&&YET[k]&&!AG.anti.has(k));      // anti'ye çevrilebilecek (verilmiş) yetenekler
-const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süresi (sn)
+const BASILI=1;      // yetenek açmak / anti seçmek için basılı tutma süresi (sn)
 (()=>{
   const el=document.getElementById('agac'),ic=document.getElementById('agac_ic'),bil=document.getElementById('agac_bil'),pb=document.getElementById('agac_pb');
   const DG={},KN={},OL={};
