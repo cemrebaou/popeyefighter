@@ -1,9 +1,9 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.364';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.365';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=89';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=90';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['el_isp_n','el_isp_f','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir','z_dolu','z_bos','z_mizrak','z_ip']      // z_: zıpkın (tabanca dolu/boş, mızrak, halat)
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
@@ -64,7 +64,7 @@ const kafaY=()=>S.y+((S.yer&&asagiMi())?620:790);      // oyuncunun kafa yüksek
 
 // ---------- Durum ----------
 const cv=document.getElementById('c');let ctx=cv.getContext('2d');      // ctx: ceset resmi çizilirken geçici olarak başka tuvale döner (korsan.js cesetResim)
-let W=0,H=0,DPR=1,SC=1,SC0=1,ZM=1.0,ZGAP=300,GOK=null;const ZOOM=1.0,ZOOM_ZPK=0.625,KAZIK_DIP=450;      // ZM: anlık zoom (zıpkın modunda ZOOM_ZPK'ya yumuşak geçer); ZGAP: zeminin altında görünen dünya payı; KAZIK_DIP: ön kazığın alt siyah çizgisi görünmeden inilebilen en alt (kazık dibi 159+315=474)
+let W=0,H=0,DPR=1,SC=1,SC0=1,ZM=1.0,ZGAP=300,GOK=null;const ZOOM=1.0,ZOOM_ZPK=0.625,KAZIK_DIP=450;      // ZM: anlık zoom (zıpkın modunda ZOOM_ZPK'ya yumuşak geçer); ZGAP: zeminin altında görünen dünya payı; KAZIK_DIP: kameranın ayak çizgisinin altında gösterdiği en çok pay (uzun kazığın dibi 820'de, görünmez)
 function boyut(){
   DPR=Math.min(window.devicePixelRatio||1,2);GOK=null;   // 3x çözünürlük telefonda çok pahalı: en fazla 2x
   W=window.innerWidth;H=window.innerHeight;

@@ -13,7 +13,7 @@ const EV_P=0.85,EV_YOK=[2];      // EV_YOK: rastgele dizilime girmeyen evler (ye
 const EV_TAB={ev:{boy:[1511,1582,1189,1451,1142,1402,1432,1365],oran:[0.892,0.588,1.191,0.988,1.16,0.938,0.877,1.014]},      // evlerin dünya boyları (çizimdeki oranlar korunur) ve en/boy
   yev:{boy:[1293,1200,1325,1308,1240,1500,1405,1310],oran:[1.095,1.136,1.024,1.074,1.118,0.906,1.062,0.921]}};
 const EV_BOY=EV_TAB[EV_SET].boy,EV_ORAN=EV_TAB[EV_SET].oran;
-const KAZIK_BOY=630,KAZIK_ON=159,KAZIK_ARK=TAHTA_ARKA,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
+const KAZIK_BOY=976,KAZIK_ON=332,KAZIK_ARK=15,KAZIK_KUC=0.78,KAZIK_ARA=TAHTA_W;      // uzun kazık (v0.365): tepeleri eskisiyle aynı yerde (ön: ayak çizgisinin 156 altı, arka: 396 üstü), altları suya iner; KAZIK_ON/ARK = kazık ortası;      // iskele kazıkları (yolla aynı katman, aynı hız): ön kazığın ortası iskelenin ön kenarında (ayak çizgisinin 159 altı), arka kazık arka kenarda ve perspektifle küçük; aralık = bir tahta şeridi
 const SAHIL_UST=70;      // sahilin üst kenarı ev tabanının bu kadar üstünde: yarı 3D evlerin alt köşelerindeki boşlukları kapatır (evler kumun önünde)
 const SAHIL_W=2900,SAHIL_DILIM=28,SAHIL_P1=1.18;      // sahil (kum→ıslak kum→köpük→sığ su): dünya eni, yatay dilim sayısı, en alt dilimin kayma hızı (üst dilim EV_P)
 const LAMBA_BOY=[1350,1330],LAMBA_GERI=110;      // sokak lambaları: dünya boyu; tabanı ayak çizgisinin bu kadar gerisinde (iskelenin arka yarısı, karakterlerin arkası)
