@@ -104,7 +104,7 @@ const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süre
   function birak(){if(tut)tut.bas=false}
   addEventListener('pointerup',birak);addEventListener('pointercancel',birak);
   function dolum(ms){
-    if(!tut)return;const dt=Math.min(0.05,(ms-tut.t)/1000||0);tut.t=ms;
+    if(!tut)return;const n=performance.now(),dt=Math.max(0,Math.min(0.05,(n-tut.t)/1000||0));tut.t=n;      // ilk karede zaman geri gidebiliyordu (önizleme başlarken): dolum hemen sıfırlanıp kayboluyordu
     tut.p+=dt/BASILI*(tut.bas?1:-1.6);      // basılıyken 2 sn'de dolar, bırakınca boşalır
     const d=OL[tut.k];d.style.setProperty('--p',Math.max(0,Math.min(1,tut.p)));
     if(tut.p>=1){const k=tut.k;tut=null;d.style.setProperty('--p',0);d.classList.remove('tut');ver(k);return}
