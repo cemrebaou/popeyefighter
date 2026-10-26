@@ -365,9 +365,10 @@ function cesetResim(ciz,cx,cy,x0,x1,y0,y1){      // ciz(): dünya birimiyle, (cx
   const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d'),es=ctx;
   ctx=x;try{x.setTransform(k,0,0,k,-x0*k,y1*k);ciz()}catch(h){CS_HATA=String(h&&h.message||h).slice(0,40)}finally{ctx=es}
   const q=8,pw=Math.ceil(w/q),ph=Math.ceil(h/q),pc=document.createElement('canvas');pc.width=pw;pc.height=ph;const px=pc.getContext('2d',{willReadFrequently:true});px.drawImage(c,0,0,pw,ph);      // sınır için sadece küçük bir kopya okunur (büyük resmi okumak takılma yapıyordu)
-  let d;try{d=px.getImageData(0,0,pw,ph).data}catch(h){d=null;CS_HATA='gid '+String(h&&h.message||h).slice(0,30)}pc.width=pc.height=0;if(!d){c.width=c.height=0;return null}
+  let d;try{d=px.getImageData(0,0,pw,ph).data}catch(h){d=null;CS_HATA='gid '+String(h&&h.message||h).slice(0,30)}pc.width=pc.height=0;
   let a0=pw,b0=ph,a1=-1,b1=-1;
-  for(let yy=0;yy<ph;yy++)for(let xx=0;xx<pw;xx++)if(d[(yy*pw+xx)*4+3]>0){if(xx<a0)a0=xx;if(xx>a1)a1=xx;if(yy<b0)b0=yy;if(yy>b1)b1=yy}
+  if(!d){a0=1;b0=1;a1=pw-2;b1=ph-2}      // piksel okunamıyorsa (bazı telefon/uygulamalarda) kutunun tamamı kullanılır
+  else for(let yy=0;yy<ph;yy++)for(let xx=0;xx<pw;xx++)if(d[(yy*pw+xx)*4+3]>0){if(xx<a0)a0=xx;if(xx>a1)a1=xx;if(yy<b0)b0=yy;if(yy>b1)b1=yy}
   if(a1<0){c.width=c.height=0;return null}
   const mx=Math.max(0,a0*q-q),my=Math.max(0,b0*q-q),Mx=Math.min(w-1,a1*q+2*q),My=Math.min(h-1,b1*q+2*q);
   const cw=Mx-mx+1,ch=My-my+1,o=document.createElement('canvas');o.width=cw;o.height=ch;const og=o.getContext('2d');og.filter='grayscale(1)';og.drawImage(c,mx,my,cw,ch,0,0,cw,ch);      // siyah beyaz + kırpma tek çizimde
@@ -378,13 +379,19 @@ function cesetResim(ciz,cx,cy,x0,x1,y0,y1){      // ciz(): dünya birimiyle, (cx
 }
 let CS_OK=0,CS_YOK=0,CS_HATA='';      // ceset resmi yapılabildi / yapılamadı (menüde sürümün yanında görünür)
 function cesetEkle(r){if(!r){CS_YOK++;return false}CS_OK++;CESET.push(r);if(CESET.length>150)CESET.shift();return true}
+function cesetKutu(e){      // ölü gövdenin kutusu: son çizimdeki vücut noktalarından (_b) + pay; yoksa geniş kutu
+  const b=e._b;if(!b||S.t-b.t>1)return [-1300,1300,-250,950];
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const k in b){const q=b[k];if(!q||q.x===undefined)continue;x0=Math.min(x0,q.x-e.x);x1=Math.max(x1,q.x-e.x);y0=Math.min(y0,q.y-e.y);y1=Math.max(y1,q.y-e.y)}
+  if(x0>x1)return [-1300,1300,-250,950];
+  return [Math.max(-1300,x0-260),Math.min(1300,x1+260),Math.max(-250,y0-200),Math.min(950,y1+260)];
+}
 function cesetYap(e){      // dusmanCiz'deki ölü çizimiyle aynı
   if(DEMO)return true;
   const c=Object.assign({},e);c.t=undefined;c.fl=0;
   return cesetEkle(cesetResim(()=>{
     if(c.olm){ctx.translate(0,-c.cy);ctx.rotate(c.olm.yn*(c.dusA||0)*Math.PI/2);ctx.translate(0,c.cy0)}
     if(c.dus){ctx.translate(0,-c.cy);ctx.rotate(c.dus.yn*(c.dusA||0)*Math.PI/2);ctx.translate(0,c.cy0)}
-    ciziKorsan(c)},e.x,e.y,-1300,1300,-250,950));
+    ciziKorsan(c)},e.x,e.y,...cesetKutu(e)));
 }
 function parcaYap(p){      // parcaCiz'deki yarı çizimiyle aynı
   if(DEMO)return;
