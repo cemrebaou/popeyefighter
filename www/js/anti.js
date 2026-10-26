@@ -33,7 +33,7 @@ function antiVurSonra(e,dmg,hf){
   if(YA('P')&&S.cs==='y'&&!S.pence&&Math.random()<0.25){if(!e.kanama)S.pops.push({x:e.x,y:e.y+e.cy+e.r+120,t:0,txt:dil('kanama'),f:0.4});e.kanama={son:S.t+4,tik:S.t+0.5}}      // %25 kanama
 }
 function antiOldu(e){
-  if(YA('O')&&S.hp>0){const c=Math.round(HPMAX*0.05);S.hp=Math.min(HPMAX,S.hp+c);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:dil('can_pop',c),f:0.4,mavi:1})}      // her öldürmede %5 can
+  if(YA('O')&&S.hp>0){const c=Math.round((e.max||100)*0.1);S.hp=Math.min(HPMAX,S.hp+c);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:dil('can_pop',c),f:0.4,mavi:1})}      // öldürünce düşmanın maks. canının %10'u kadar can (boss dahil)
   e.yan=null;e.kanama=null;
 }
 const antiDolumYok=()=>YA('O')||YA('X');      // can dolumu iptal
@@ -67,9 +67,10 @@ function antiGuncelle(dt){
     for(const e of DUS){
       if(e.olu||e.dus||e.tut||S.t<(e.omT||0))continue;
       const dx=(e.x-S.x)*sg;if(dx<0||dx>240||Math.abs(e.y-S.y)>300)continue;
-      e.omT=S.t+1;S.pSes='tekme';vur(e,12,sg,0.4,0.6,e.y+e.cy);S.pSes=false;
-      if(!e.olu&&!e.boss){e.cy0=e.cy0||e.cy;e.dus={t0:S.t,son:S.t+DUS_DUS+1.6+DUS_KALK,yn:sg};e.vx=sg*900;e.vy=400}
-      S.vx*=0.6;S.sars=Math.max(S.sars,10);
+      e.omT=S.t+1;if(Math.random()>=0.25)continue;      // her çarpışta değil: %25 şansla
+      S.pSes='tekme';vur(e,25,sg,0.5,1,e.y+e.cy);S.pSes=false;      // çok güçlü omuz
+      if(!e.olu&&!e.boss){e.cy0=e.cy0||e.cy;e.dus={t0:S.t,son:S.t+DUS_DUS+2.4+DUS_KALK,yn:sg};e.vx=sg*1900;e.vy=900}
+      S.vx*=0.5;S.sars=Math.max(S.sars,18);titre(80);
     }
   }
   if(YA('B')){      // varile tekme: top gibi uçar

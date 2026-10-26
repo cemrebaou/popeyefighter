@@ -79,12 +79,14 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Aktif yetenek açılınca kendi sesi çalar. Sesi olmayan aktifler: Süpermen Uçuşu, Alkış.
 - Aduket: dönen su girdabı (`fx/aduket_su`), dönerken iki yana su damlası (`fx/damla`) saçar. Oluşurken `ses/wateraduket.mp3` döngüde çalar, atınca kesilir; çarpınca `ses/aduket_carpma.mp3`.
 
+- Ağaçta yetenek açma: dokun = bilgi/önizleme, 2 sn basılı tut = açılır (simge dönerek renklenir, bırakınca dolum boşalır).
+
 ## Anti yetenekler (`js/anti.js`, `AG.anti`, `YA(k)`)
 - Hiç verilmiş yetenek yokken ölünce: maks. can -10 (en az 50), her vuruşa +1 düz hasar; her ölümde birikir (`AG.cip`, kayıtlı).
-- Ölünce verilmiş (Yumruk hariç, henüz çevrilmemiş) yetenek varsa 1.3 sn sonra ağaç zorunlu seçimle açılır, kapatılamaz; yeteneğe dokun = anti metni, tekrar dokun = çevrilir, oyun yeniden başlar. Çevrilen yetenek kapalı sayılır (YV false), ağaçta simgenin altında kan lekesi (`ui/kanleke.webp`). Kayıt `pf_agac2.anti`.
-- O: can dolumu yok, öldürmede %5 can · X: can dolumu yok, can %25 altında hasar +%50 · W: blokta dolum yok, blok %75 engeller · V: +100 can yerine +100 maks. enerji (ENMAX) · TOP: ıspanak 2 kat sık düşer · I: vuruş %15 sersemletir (1.3 sn)
+- Ölünce verilmiş (Yumruk hariç, henüz çevrilmemiş) yetenek varsa 1.3 sn sonra ağaç zorunlu seçimle açılır, kapatılamaz; yeteneğe dokun = anti metni (önce anti, yanında orijinal; yazı yana kaydırılır), 2 sn basılı tut = çevrilir, oyun yeniden başlar. Sağ üstteki kalpli kol (`ui/kalpkol.webp`): skill öldürmek yerine maks. can -10, +1 hasar (dokun = açıklama, 2 sn basılı = seçer). Çevrilen yetenek kapalı sayılır (YV false), ağaçta simgenin altında kan lekesi (`ui/kanleke.webp`). Kayıt `pf_agac2.anti`.
+- O: can dolumu yok, öldürünce düşmanın maks. canının %10'u kadar can (boss dahil) · X: can dolumu yok, can %25 altında hasar +%50 · W: blokta dolum yok, blok %75 engeller · V: +100 can yerine +100 maks. enerji (ENMAX) · TOP: ıspanak 2 kat sık düşer · I: vuruş %15 sersemletir (1.3 sn)
 - H: +%20 saldırı · M: her vuruş +2 enerji · Q: tekme itmesi +%30 · T: bıçak hasarı +%20 · R: yırtma enerjisi yarı
-- A: koşarken (max hızın %70'i) düşmana çarpınca omuz: 12 hasar, yere serer · B: tekme varili top gibi uçurur · G: fırlatılan düşman çarptığına 2x, %40 uzağa · F: canı %20 altındaki tek yumrukla ölür
+- A: koşarken (max hızın %70'i) düşmana çarpınca %25 şansla güçlü omuz: 25 hasar, uzağa fırlatıp yere serer · B: tekme varili top gibi uçurur · G: fırlatılan düşman çarptığına 2x, %40 uzağa · F: canı %20 altındaki tek yumrukla ölür
 - D: havada ileri hız 2x · K: +1 havada zıplama (D açıksa 3 zıplama) · E: koşu +%20 · U: yüksekten inişte (380 üstü) taş patlaması: hasar (yükseklik-300)/40, 3–25; alan 450–1100
 - N: çömelik yumruk 2x · S: havadaki vuruşlar +%50 · Y: yumruk menzili +80 birim, yumruk hasarı +%30 · L: her 3. tekme kritik (2x) · J: havaya fırlatılan düşman 3 sn yanar (0.5 sn'de 5) · AL: blok/parry yapınca 900 içindeki düşmanlar sersemler · YT: yerde yatana 2x · P: yumruk %25 kanatır (4 sn, 0.5 sn'de 3) · Z: bıçak modunda yana kaydırma = bumerang bıçak (25 enerji, 30 hasar, gidiş-dönüş)
 

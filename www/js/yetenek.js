@@ -78,38 +78,56 @@ const YSES={A:()=>GRS,B:()=>TCS,F:()=>PPAR,R:()=>PPAR,N:()=>YAR,D:()=>yRnd(JP),E
 function yetSes(k){const f=YSES[k],b=f&&f();if(!AC||!b)return;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.connect(g);g.connect(SFXC());src.start()}
 let agacAcik=false,antiMod=false;      // antiMod: ölünce açılan zorunlu anti seçimi (kapatılamaz)
 const antiAday=()=>[...AG.acik].filter(k=>k!==YKOK&&YET[k]&&!AG.anti.has(k));      // anti'ye çevrilebilecek (verilmiş) yetenekler
+const BASILI=2;      // yetenek açmak / anti seçmek için basılı tutma süresi (sn)
 (()=>{
   const el=document.getElementById('agac'),ic=document.getElementById('agac_ic'),bil=document.getElementById('agac_bil'),pb=document.getElementById('agac_pb');
-  const DG={},KN={};
-  for(const k in YET){      // kan lekesi: ağacın üstünde, simgenin altında (sadece anti'ye çevrilenlerde görünür)
-    const [x,y]=YET[k],d=document.createElement('div');d.className='ykan';if(YET[k][5])d.style.width=(10*YET[k][5])+'%';
-    d.style.left=((x-AGX)/AGW*100)+'%';d.style.top=((y-AGY)/AGH*100)+'%';ic.appendChild(d);KN[k]=d;
-  }
+  const DG={},KN={},OL={};
+  const yer=(d,k,w)=>{const [x,y]=YET[k];if(YET[k][5])d.style.width=(w*YET[k][5])+'%';d.style.left=((x-AGX)/AGW*100)+'%';d.style.top=((y-AGY)/AGH*100)+'%'};
+  for(const k in YET){const d=document.createElement('div');d.className='ykan';yer(d,k,10);ic.appendChild(d);KN[k]=d}      // kan lekesi: ağacın üstünde, simgenin altında (anti'ye çevrilenlerde)
   for(const k in YET){
-    const [x,y,i]=YET[k],d=document.createElement('div');
-    d.className='yd';if(YET[k][5])d.style.width=(6.8*YET[k][5])+'%';d.style.left=((x-AGX)/AGW*100)+'%';d.style.top=((y-AGY)/AGH*100)+'%';d.style.backgroundImage=`url(ui/yt${i}.webp${SURUM})`;
-    d.addEventListener('click',ev=>{ev.stopPropagation();sec(k)});ic.appendChild(d);DG[k]=d;
+    const d=document.createElement('div');d.className='yd';yer(d,k,6.8);d.style.backgroundImage=`url(ui/yt${YET[k][2]}.webp${SURUM})`;
+    d.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();bas(k)});d.addEventListener('click',ev=>ev.stopPropagation());ic.appendChild(d);DG[k]=d;
   }
-  let secili=null;
-  function antiCevir(k){      // seçilen yetenek anti haline döner, ağaç kapanır, oyun yeniden başlar
-    AG.anti.add(k);if(k==='V'){HPMAX-=100;ENMAX+=100}agKaydet();
-    antiMod=false;el.classList.remove('anti');agacAc(false);yeniOyun();
-  }
-  function sec(k){
-    if(antiMod){if(secili===k&&antiAday().includes(k)){antiCevir(k);return}secili=k;yenile();return}      // ölüm seçimi: önizleme yok, ikinci dokunuş çevirir
-    if(secili===k&&yAlinir(k)){AG.acik.add(k);agHesap();yetSes(k);if(k==='V'){HPMAX+=100;S.hp+=100;if(DEMO)DEMO.kayit.sb.S.hp+=100}agKaydet()}      // ikinci dokunuş: aç
-    if(secili!==k)demoBasla(k);      // arkadaki karakter yeteneği gösterir
+  for(const k in YET){const d=document.createElement('div');d.className='ydol';yer(d,k,6.8);d.style.setProperty('--im',`url(ui/yt${YET[k][2]}.webp${SURUM})`);ic.appendChild(d);OL[k]=d}      // basılı tutunca dönerek renklenen kopya (gri simgenin üstünde)
+  const kalp=document.createElement('div');kalp.id='agac_kalp';ic.appendChild(kalp);      // skill öldürmek yerine: maks. can -10, +1 hasar
+  const kalpOl=document.createElement('div');kalpOl.id='agac_kalpOl';kalpOl.className='ydol';ic.appendChild(kalpOl);OL.KALP=kalpOl;
+  kalp.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();bas('KALP')});kalp.addEventListener('click',ev=>ev.stopPropagation());
+  let secili=null,tut=null;      // tut: {k, p: 0-1 dolum, bas: parmak basılı mı}
+  const verilir=k=>k==='KALP'?antiMod:antiMod?antiAday().includes(k):yAlinir(k);
+  function bas(k){
+    if(!antiMod&&k!=='KALP'&&secili!==k)demoBasla(k);      // arkadaki karakter yeteneği gösterir
+    if(tut&&tut.k!==k){OL[tut.k].style.setProperty('--p',0);OL[tut.k].classList.remove('tut')}
     secili=k;yenile();
+    if(verilir(k)){tut={k,p:tut&&tut.k===k?tut.p:0,bas:true,t:performance.now()};OL[k].classList.add('tut');requestAnimationFrame(dolum)}
   }
+  function birak(){if(tut)tut.bas=false}
+  addEventListener('pointerup',birak);addEventListener('pointercancel',birak);
+  function dolum(ms){
+    if(!tut)return;const dt=Math.min(0.05,(ms-tut.t)/1000||0);tut.t=ms;
+    tut.p+=dt/BASILI*(tut.bas?1:-1.6);      // basılıyken 2 sn'de dolar, bırakınca boşalır
+    const d=OL[tut.k];d.style.setProperty('--p',Math.max(0,Math.min(1,tut.p)));
+    if(tut.p>=1){const k=tut.k;tut=null;d.style.setProperty('--p',0);d.classList.remove('tut');ver(k);return}
+    if(tut.p<=0){d.style.setProperty('--p',0);d.classList.remove('tut');tut=null;return}
+    requestAnimationFrame(dolum);
+  }
+  function antiBitir(){antiMod=false;el.classList.remove('anti');agacAc(false);yeniOyun()}
+  function ver(k){
+    if(k==='KALP'){if(!antiMod)return;AG.cip++;HPMAX=Math.max(50,HPMAX-10);agKaydet();antiBitir();S.pops.push({x:S.x,y:S.y+1200,t:0,txt:dil('cip_pop'),f:1});return}      // skill öldürmek yerine ceza/bonus
+    if(antiMod){if(!antiAday().includes(k))return;AG.anti.add(k);if(k==='V'){HPMAX-=100;ENMAX+=100}agKaydet();antiBitir();return}
+    if(!yAlinir(k))return;AG.acik.add(k);agHesap();yetSes(k);if(k==='V'){HPMAX+=100;S.hp+=100;if(DEMO)DEMO.kayit.sb.S.hp+=100}agKaydet();yenile();
+  }
+  function yaz(t){if(bil.textContent!==t){bil.textContent=t;bil.scrollLeft=0}}
   function yenile(){
     const ad=antiMod?antiAday():null;
     for(const k in DG){DG[k].className='yd'+(AG.acik.has(k)?' ac':yAcilir(k)?' hazir':'')+(AG.anti.has(k)?' anti':'')+(ad?(ad.includes(k)?' antiH':' antiK'):'')+(secili===k?' sec':'');KN[k].classList.toggle('on',AG.anti.has(k))}
+    kalp.classList.toggle('sec',secili==='KALP');
     pb.textContent=dil('ag_bil',AG.lv,AG.xp,xpGerek(AG.lv),AG.p);      // oyuncunun seviye/XP/puanı: ayrı, altta
     let t='';
-    if(antiMod)t=secili?dil('yet_'+secili)+' → '+dil('anti_etiket',dil('anti_'+secili))+(ad.includes(secili)?dil('anti_sec'):dil('anti_yok')):dil('anti_bas');
-    else if(secili&&AG.anti.has(secili))t=dil('anti_etiket',dil('anti_'+secili));      // anti'ye çevrilmiş yetenek: yeni etkisi
-    else if(secili){const ad=dil('yet_'+secili),c=YET[secili][4];t=ad+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_dokun'):dil('ag_yetmez')):(YGEREK[secili]&&!AG.acik.has(YGEREK[secili])?dil('ag_gerek',dil('yet_'+YGEREK[secili])):dil('ag_once'))))}      // seçili yetenek: sadece adı, maliyeti ve durumu
-    bil.textContent=t;agBtn();
+    if(secili==='KALP')t=dil('kalp_bil')+(antiMod?dil('ag_tut'):'');
+    else if(antiMod)t=secili?dil('anti_etiket',dil('anti_'+secili))+'  ·  '+dil('yet_'+secili)+(ad.includes(secili)?dil('ag_tut'):dil('anti_yok')):dil('anti_bas');      // önce anti, sonra orijinal
+    else if(secili&&AG.anti.has(secili))t=dil('anti_etiket',dil('anti_'+secili))+'  ·  '+dil('yet_'+secili);
+    else if(secili){const a=dil('yet_'+secili),c=YET[secili][4];t=a+(AG.acik.has(secili)?dil('ag_acik'):dil('ag_puan',c)+(yAcilir(secili)?(AG.p>=c?dil('ag_tut'):dil('ag_yetmez')):(YGEREK[secili]&&!AG.acik.has(YGEREK[secili])?dil('ag_gerek',dil('yet_'+YGEREK[secili])):dil('ag_once'))))}      // seçili yetenek: adı, maliyeti ve durumu
+    yaz(t);agBtn();
   }
   window.agacYenile=yenile;DIL_DIN.push(yenile);
   window.agacAc=a=>{if(!a&&antiMod)return;if(a&&listeAcik)listeAc(false);if(!a)demoBitir();agacAcik=a;el.hidden=!a;document.getElementById('agacB').classList.toggle('aktif',a);if(a){izler.clear();kizler.clear();KOL.N.ak=false;KOL.F.ak=false;key.sol=key.sag=key.asagi=key.zipla=false;secili=null;yenile()}};      // ölüm seçimi bitmeden kapanmaz
