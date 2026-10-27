@@ -45,8 +45,8 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Ölen (ve parçalanan) düşman siyah beyaz çizilir; yere düşüp yaşayan renkli kalır.
 - Cesetler kalıcı: ölen düşman yere yatınca (1.2 sn) ya da yırtılan yarı yere yatıp durunca bir kez siyah beyaz resme çevrilir (`CESET`, korsan.js `cesetYap`/`parcaYap`) ve düşman listesinden silinir. Sonra sadece ekrandayken tek resim çizilir: güncelleme/poz/filtre yok. En çok 150 ceset (eskisi silinir). Önizlemede ceset kalmaz.
 
-- Sersem (parry, Yere Düşürme ölümü %15, Alkış ölümü; `e.ser`): yıldızlı sersem yüzü (`parca/X_ser.webp`) ve olduğu yerde yalpalama (baş/gövde sallanır, kollar sarkık, dizler çöker).
-- Kaptan da sersemler: diğerlerinin yarı şansıyla, yarı süresiyle (parry %50 / 0.75 sn, Yere Düşürme ölümü %2.5 / 0.65 sn, Alkış ölümü %50 / 0.65 sn).
+- Sersem (parry, Yere Düşürme ölümü %15, Dağıtıcı ölümü; `e.ser`): yıldızlı sersem yüzü (`parca/X_ser.webp`) ve olduğu yerde yalpalama (baş/gövde sallanır, kollar sarkık, dizler çöker).
+- Kaptan da sersemler: diğerlerinin yarı şansıyla, yarı süresiyle (parry %50 / 0.75 sn, Yere Düşürme ölümü %2.5 / 0.65 sn, Dağıtıcı ölümü %50 / 0.65 sn).
 - Baygın (yerde) ya da sersemken vurulsa da baygın/sersem yüz kalır; vurulma yüzüne geçmez.
 ## Zıpkın (`js/zipkin.js`)
 - Kamera uzaklığı: `ZOOM` 1.0. Ekranın altında zeminin en fazla 285 birim altı görünür (ön tahtanın dibi görünmez); zoom değişince alt sabit kalır, üste açılır.
@@ -73,7 +73,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Yumruk kombo: ara vuruşlar 5, son vuruş 5×n+5. Serbest kol vuruşu 15. Bıçak modunda vuruşlar 2 kat (bıçak vuruşu 20, sersemletmez).
 - Tekmeler (kombo): 6–18. Kombo kayar tekmesi (yyt) havada bacaklar açık yapılır, iki ayak da vurur (arkadaki ayak arkadaki düşmana). Kayar tekme 15 (%50 yere serer). Döner tekme 50. Yere tekme (uçan tekme) her düşmana bir kullanımda bir kez 15 (iniş sarsıntısı aynı düşmana tekrar vurmaz). Kombo 30 (yyyyyt) bitişi: havada 6 tekme (2 orta, 2 daha yukarı-ileri, 2 en yukarı-ileri), 30 hasar 6×5 olarak bölünür; 1.33 sn sürer, karakter tekme başına 70 birim ilerler ve her isabet düşmanı aynı miktar iter (mesafe sabit kalır).
 - Ateşli aparkat 32. Süpermen uçuşu 50. Aduket 50. Yer yarma (yarık) 40. Süper kahraman inişi 50 (yer sarsıntısı).
-- Alkış şok dalgası 30: geri savurur, %50 yere düşürür (kaptan ve kancacı hariç).
+- Dağıtıcı (alkış, eski adı Alkış Şok Dalgası) 30: geri savurur, %50 yere düşürür (kaptan ve kancacı hariç).
 - Tutup fırlatma 4–40 (hıza göre); düşman varil gibi el hızıyla uçar, varilin yarı mesafesi (en yüksek hız ~2300). Varil fırlatma 15–50; varil en yüksek hız 3250. Fırlayan düşman başkasına çarparsa 10–35.
 - Yırtma: anında öldürür (enerji = düşmanın kalan canı).
 - Yere Düşürme yeteneği: 10 üstü vuruşlar %25 ihtimalle düşmanı yere düşürür.
@@ -84,9 +84,9 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - A İnsan Tutma (1) · B Varil Tutma (1) · G Sıkı Tutuş (1, pasif; tutulan kafa atamaz) · F Yırtma (2) · R Can Çalmalı Yırtma (3; Yırtma açılmadan açılmaz) · H Can Çalma %10 (1, pasif) · M Can Çalma %20 (1, pasif)
 - N Yer Yumruğu / yarık (2) · S Süpermen Uçuşu (2) · Y Aduket (2)
 - D Çift Zıplama (1) · K Çok Zıplama (1, pasif) · E Kayar Tekme (1) · L Döner Tekme (2) · U Süper Kahraman İnişi (2) · Q Tekmeyle Can Çalma (1, pasif)
-- J Ateşli Aparkat (1) · AL Alkış Şok Dalgası (2) · YT Yere Tekme (1)
+- J Ateşli Aparkat (1) · AL Dağıtıcı (2) · YT Yere Tekme (1)
 - P Bıçak Modu (2) · T Bıçakla Can Çalma (1, pasif) · Z Bıçak Atlama (3)
-- Aktif yetenek açılınca kendi sesi çalar. Sesi olmayan aktifler: Süpermen Uçuşu, Alkış.
+- Aktif yetenek açılınca kendi sesi çalar. Sesi olmayan aktifler: Süpermen Uçuşu, Dağıtıcı.
 - Aduket: dönen su girdabı (`fx/aduket_su`), dönerken iki yana su damlası (`fx/damla`) saçar. Oluşurken `ses/wateraduket.mp3` döngüde çalar, atınca kesilir; çarpınca `ses/aduket_carpma.mp3`.
 
 - Ağaçta yetenek açma: dokun = bilgi/önizleme, 1 sn basılı tut = açılır (simge dönerek renklenir, bırakınca dolum boşalır).
@@ -122,7 +122,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Eğimle yürüme: 3.5° altı durur, ~8°'ye kadar yavaş yürür, 20°'de tam koşu. Ekranı kendine yatırınca eğilir, bir daha yatırınca kalkar.
 - Butonlar: sol/sağ (solda), çömel/zıpla (sağda), ıspanak cebi, zıpkın (sol altta, sola gitme tuşunun üstü), yetenek ağacı, kombo listesi.
 - İki parmak birlikte aşağı (yerde) = yer yumruğu; blokta iki parmak aşağı = bıçak modu.
-- İki parmak aynı yöne yatay = süpermen. Zıt yöne (açılarak) = döner tekme. Ortaya doğru = alkış.
+- İki parmak aynı yöne yatay = süpermen. Zıt yöne (açılarak) = döner tekme. Ortaya doğru = alkış (Dağıtıcı).
 - Havada tek parmak hızlı aşağı = yere tekme (çekilen yöne); iki parmak aşağı = süper kahraman inişi.
 - Çok hızlı yukarı = ateşli aparkat. Kol 0.5 sn aşağıda = eğilip ıspanak alma.
 
