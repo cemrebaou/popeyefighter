@@ -51,13 +51,14 @@ function inisGuncelle(){          // havada aşağı sürükleme: tek parmak = �
   }
 }
 function zeminVur(g,sabit,dk){      // dk: yere tekmenin kimliği; o tekmede zaten vurulan düşmana iniş sarsıntısı tekrar vurmaz (her düşmana bir kez 15)
-  S.sars=Math.max(S.sars,18*g);titre(Math.round(90*g));
+  S.sars=Math.max(S.sars,18*g);titre(Math.round(90*g));S.yerV=true;      // yerV: yer vuruşu (kaptana kafa kritiği yok, vuruş başına maks. canın %5'i)
   for(const e of DUS){
     if(e.olu||(dk!==undefined&&e.dkT===dk))continue;
     if(dk!==undefined)e.dkT=dk;
     const dx=e.x-S.x,ey=e.y+e.cy-S.y;
     if(Math.abs(dx)<(800+e.r*0.5)*g&&ey>-e.r&&ey<600)vur(e,sabit||Math.round(30*g),(dx>=0?1:-1)*0.6,0.9,0.7*g+0.1,S.y+100);
   }
+  S.yerV=false;
 }
 function suplex(k){               // tutulan düşman + hızlı aşağı sürükleme = yere çakma
   const e=DUS.find(x=>x.tut===k||(x.iki&&x.tut));if(!e)return;
@@ -173,7 +174,7 @@ function catlakGuncelle1(c){      // true = yarık bitti
   for(const e of DUS){
     if(e.olu||e.catT===c.t0)continue;
     const dx=(e.x-c.x)*c.dir,ey=e.y+e.cy-S.y;
-    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100);bufCal(TVS,1)}      // yarık düşmana vurunca tahta sesi
+    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;S.yerV=true;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100);S.yerV=false;bufCal(TVS,1)}      // yarık düşmana vurunca tahta sesi
   }
   return false;
 }

@@ -101,7 +101,7 @@ function antiInis(zH){
   fxEkle(R.patla,S.x,R0*0.9,0.4,true,Math.random()<0.5);
   for(const e of DUS){
     if(e.olu||e.tut)continue;const dx=e.x-S.x;
-    if(Math.abs(dx)<R0+e.r*0.4&&e.y-zemin(e.x)<250)vur(e,dm,(dx>=0?1:-1)*0.6,0.8,0.4+0.3*g/1.7,S.y+100);
+    if(Math.abs(dx)<R0+e.r*0.4&&e.y-zemin(e.x)<250)S.yerV=true;vur(e,dm,(dx>=0?1:-1)*0.6,0.8,0.4+0.3*g/1.7,S.y+100);S.yerV=false;
   }
 }
 // ---- bumerang bıçak (Bıçak Atlama anti) ----

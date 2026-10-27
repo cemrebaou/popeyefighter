@@ -23,8 +23,9 @@ function yereDeg(e){const b=e._b;if(!b||S.t-b.t>0.25)return true;let lo=1e9;for(
 function vur(e,dmg,vx,vy,f,hy){
   let krit=false;e.sonV=S.t;e.vurT=S.t;if(e.kac)e.kac.v++;      // vurT: 0.6 sn acı yüzü
         // son vuruş zamanı (tutulu korsan 1 sn vurulmazsa kafa atar)
-  if(e.boss){f*=0.25;dmg*=0.5;if(hy!==undefined&&hy>e.y+900){dmg*=3;krit=true}}      // kaptan: kafasına vuruş 3 kat
-  dmg=antiHasar(e,dmg);if(S.antiKrit){S.antiKrit=false;krit=true}      // anti yetenek çarpanları
+  if(e.boss){f*=0.25;dmg*=0.5;if(hy!==undefined&&hy>e.y+900&&!S.yerV){dmg*=3;krit=true}}      // kaptan: kafasına vuruş 3 kat
+  dmg=antiHasar(e,dmg);if(S.antiKrit){S.antiKrit=false;krit=true}
+  if(e.boss&&S.yerV&&dmg<9999)dmg=Math.min(dmg,Math.round(e.max*0.05));      // kaptan: yer vuruşu başına maks. canın %5'i      // anti yetenek çarpanları
   dmg=Math.round(dmg);titre(12+Math.round(70*f));if(S.cs&&dmg<9999)canCal(Math.min(dmg,Math.max(0,e.hp)),S.cs==='t');
   const dS=dmg<9999?Math.max(0,dmg-AG.cip):dmg;      // eşikler (sersemletme/itme/düşürme) ölüm bonusu (AG.cip) hariç hasara bakar
   const hf=S.bNo;      // bıçak vuruşu: sersemletmez, itmez, düşürmez

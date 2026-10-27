@@ -32,6 +32,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 ## Düşmanlar
 - k yumruklu korsan: 150 can, oyuncuya 10 hasar. b bıçaklı: 100 can, 15 hasar. h kancacı: 200 can, yumruk 10 hasar, yürümez.
 - Kaptan (boss): 500 can, 15 hasar; vuruşların yarısını alır, kafaya vuruş 3 kat (KRİTİK). Bölüm sonunda x=42000'de.
+- Kaptan yer vuruşlarından (iniş sarsıntısı, yer yarma, taş patlaması) kafa kritiği (3x) almaz ve vuruş başına en çok maks. canının %5'ini yer (`S.yerV`, `vur`).
 - Zorluk: her yeniden başlamada tüm düşmanların canı ve saldırı gücü (yakın dövüş, kanca 15/çekerken 1, kaptan mermisi 30, kafa atma 10/5/3) ×1.1 birikerek artar (en çok 4 kat; `ZOR_N`, `ZK()` dusman_kur.js, localStorage `pf_zor`). Tam sıfırlamada sıfırlanır. XP canın 1/10'u olduğu için o da artar. Yukarıdaki can/hasar değerleri başlangıç (×1) değerleridir.
 - Yürüme hızı: yumruklu/bıçaklı 520, kaptan 340 birim/sn. Kaçarken yarı hız.
 - Vurma menzili: yumruklu 470, bıçaklı 425, kaptan ~537 birim.

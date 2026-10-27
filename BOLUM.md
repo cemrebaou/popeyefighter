@@ -38,3 +38,4 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 - Kancanın takılabileceği noktalar oyuncunun anlayacağı şekilde belli olsun: demir halkalar, kirişler, direk uçları, makaralar.
 - Kanca alındıktan sonra eski bölümlere dönülünce bu yukarı alanlardan yeni yollar, kısayollar ve gizli ödüller (sandık, ıspanak, XP) açılır.
 - Yeni yetenekler (yetenek ağacı) de benzer şekilde eski yerlerde yeni yollar açabilecek biçimde düşünülür.
+- Zemin dokusu (`zemin.webp`) üstte dağın alt çeyreğine kadar uzar (`kumDeniz`: ek dilimler, deniz yerinde kalır); dağ (`dagCiz`) zeminden SONRA çizilir, yani zemin dağın altına girer (v0.377).
