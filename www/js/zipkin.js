@@ -71,7 +71,7 @@ function zpkHedef(sx,sy){
     if(zpkDolu('lamba'+l.k,im,(wx-(l.x-w/2))/w,1-(wy-LAMBA_GERI)/h))return {tip:'c',p:1,X:wx,Y:wy,wx,wy}}
   {const T=CVR.tahta;if(T){const th=TAHTA_W*T.height/T.width;if(wy<=th*TAHTA_AYAK&&wy>=-th*(1-TAHTA_AYAK))return {tip:'c',p:1,X:wx,Y:wy,wx,wy}}}      // iskele tahtası
   r=zpkKazik(wx,wy,false);if(r)return r;
-  {const p=EV_P,s=SC*p,taban=Math.round(ZY()+S.camY*SC*p-TAHTA_ARKA*SC+6*s)+3;      // evler (cevreArka ile aynı yerleşim)
+  {const p=EV_P,s=SC*p,taban=Math.round(ZY()+S.camY*SC*p-(TAHTA_ARKA+EV_GERI)*SC+6*s)+3;      // evler (cevreArka ile aynı yerleşim)
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height,cx=W/2+(e.x+w/2-S.x*p)*s,hp=e.h*s,wp=hp*im.width/im.height;
       if(sx<cx-wp/2-6||sx>cx+wp/2+6)continue;
       if(zpkDolu(e.ad,im,(sx-(cx-wp/2))/wp,(sy-(taban-hp))/hp))return {tip:'c',p,X:(wx-S.x*(1-p*p))/p,Y:wy-S.camY*(1-p),wx,wy}}}

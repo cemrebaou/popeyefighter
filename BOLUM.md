@@ -39,3 +39,4 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 - Kanca alındıktan sonra eski bölümlere dönülünce bu yukarı alanlardan yeni yollar, kısayollar ve gizli ödüller (sandık, ıspanak, XP) açılır.
 - Yeni yetenekler (yetenek ağacı) de benzer şekilde eski yerlerde yeni yollar açabilecek biçimde düşünülür.
 - Zemin dokusu (`zemin.webp`) üstte dağın alt çeyreğine kadar uzar (`kumDeniz`: ek dilimler, deniz yerinde kalır); dağ (`dagCiz`) zeminden SONRA çizilir, yani zemin dağın altına girer (v0.377).
+- v0.379 derinlik: evler EV_P=0.75 (daha uzak/küçük), tabanı iskele arka kenarından EV_GERI=70 geride; dağ DAG_P=0.35, DAG_BOY=2300 (daha büyük ve uzak), tabanı DAG_GERI=260 geride (evlerin arkasında). Zemin üst dilimleri dağ hızında (DAG_P), ev tabanında EV_P, aşağı doğru iskeleye yaklaşır: zıplayınca zemin ile dağ kopmaz. Sokak lambaları LAMBA_GERI=100 (tahtadan taşmaz).
