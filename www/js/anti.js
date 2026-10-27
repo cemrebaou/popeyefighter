@@ -18,6 +18,7 @@ function tamSifirla(){      // her şey sıfırlanır: XP, seviye, skill'ler, ö
 function antiHasar(e,dmg){
   if(dmg>=9999||S.antiTik)return dmg;
   let k=1;const yum=S.cs==='y'&&!S.pence,tek=S.cs==='t';
+  if(YA('G')&&yum)k*=0.9;                              // Hızlı Eller: yumruk hasarı -%10 (vuruşlar %20 hızlı: kombo.js atkGuncelle)
   if(YA('H'))k*=1.2;                                   // can çalma yerine +%20 saldırı
   if(YA('X')&&S.hp<HPMAX*0.25)k*=1.5;                  // öfke: can %25 altında
   if(YA('T')&&S.pence)k*=1.2;                          // bıçak hasarı +%20
@@ -50,8 +51,6 @@ function antiBlok(e){      // blok / parry: çevredeki düşmanlar sersemler (Al
 }
 const antiBlokKat=()=>YA('W')?0.25:0.5;      // blokta geçen hasar
 const antiHiz=()=>(YA('E')&&S.yer?1.2:1)*(YA('D')&&!S.yer?2:1);      // koşu +%20 / havada ileri hız 2x
-const antiFirlat=()=>YA('G')?1.4:1;      // fırlatılan düşman daha uzağa
-const antiCarp=e=>e.atil&&YA('G')?2:1;    // fırlatılan düşman çarptığına 2x
 // ---- sürekli hasar (yanma, kanama) ----
 function dotVur(e,d){
   if(e.hp-d<=0){S.antiTik=true;vur(e,d,0,0.1,0.05,e.y+e.cy);S.antiTik=false;return}

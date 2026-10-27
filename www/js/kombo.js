@@ -26,7 +26,7 @@ function atkIstek(tur){
 }
 function atkGuncelle(dt){
   if(!S.atk)return;
-  S.atk.t+=dt;
+  S.atk.t+=dt*(YA('G')?1.25:1);      // Hızlı Eller: vuruşlar arası bekleme %20 kısa
   if(!S.atk.wh){const mv0=HAREKET[S.atk.ad];if(mv0&&S.atk.t>=mv0.dur*(mv0.win?mv0.win[0][0]*0.65:0.22)){S.atk.wh=true;savurCal(S.x)}}      // sallama sesi
   if(S.atk.no&&!S.atk.nG){const mv=HAREKET[S.atk.ad];if(S.atk.t/mv.dur>=(mv.win?mv.win[mv.win.length-1][0]:(mv.p?0.3:0.4))){S.atk.nG=true;S.kNo={no:S.atk.no,t:S.t}}}   // kombo numarası, tamamlayan vuruşun vurduğu anda görünür
   if(S.atk.t>=HAREKET[S.atk.ad].dur){

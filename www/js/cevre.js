@@ -5,7 +5,7 @@
 const CVR={};
 const EV_SET='yev';      // kullanılan ev seti: 'ev' = eski düz cepheler (ev0-7), 'yev' = yeni kulübeler (yev0-7); ikisi de repoda duruyor
 const GOK_AD='gok2';      // en arka plan: 'gok2' = sadece gökyüzü (3:1), 'gok' = eski gökyüzü + deniz
-const CV_OBJ_AD='dumen capa kasa sandik tabela top kurutma sepet kova odun varil testi simit matara sandal tabure cuval halat'.split(' ');
+const CV_OBJ_AD='ates ciftvaril capa kasalar halat yonlevha saksi varil sandik kutuk harita fener baliklevha kasa'.split(' ');
 const CV_ADLAR=[GOK_AD,'sahil','kum','zemin','dag_yakin','deniz',...CV_OBJ_AD.map(a=>'o_'+a),'tahta','kazik','lamba0','lamba1',...[0,1,2,3,4,5,6,7].map(i=>EV_SET+i)];
 for(const a of CV_ADLAR)yukle('cevre/'+a+'.webp',im=>CVR[a]=im);
 const TAHTA_W=2400,TAHTA_AYAK=0.346;      // bir tahta şeridinin dünya eni; ayakların bastığı çizgi görselin üstünden bu oranda (yüzeyin ortası)
@@ -19,27 +19,33 @@ const SAHIL_UST=70;      // sahilin üst kenarı ev tabanının bu kadar üstün
 const SAHIL_W=2900,SAHIL_DILIM=28,SAHIL_P1=1.18;      // sahil (kum→ıslak kum→köpük→sığ su): dünya eni, yatay dilim sayısı, en alt dilimin kayma hızı (üst dilim EV_P)
 const LAMBA_BOY=[1350,1330],LAMBA_GERI=110;      // sokak lambaları: dünya boyu; tabanı ayak çizgisinin bu kadar gerisinde (iskelenin arka yarısı, karakterlerin arkası)
 let CV_EV=[],CV_LMB=[],CV_OBJ=[];
-// Çevre objeleri (v0.372, cevre/o_*.webp): ev katmanında (kumla aynı, evlerin önünde, iskelenin arkasında). Boylar çizim oranında (görsel px × 1.31 = dünya birimi; varil = 380).
-// dümen ve çapa sadece bir eve yaslanır (ev cephesine değer), diğerleri evlerin yanına, önüne ve aralarına rastgele; dy: öne çıkma (biraz büyür, aşağı iner).
-const CV_OBJ_BOY={dumen:251,capa:344,kasa:296,sandik:241,tabela:452,top:367,kurutma:436,sepet:221,kova:231,odun:160,varil:289,testi:184,simit:613,matara:178,sandal:294,tabure:168,cuval:293,halat:208},CV_OBJ_K=1.31;
+// Çevre objeleri (v0.376, yeni set, cevre/o_*.webp): ev katmanında, sadece evler arasındaki boşluklarda (evlere değmez, birbirine değmez, evin üstünde durmaz). Boy = dünya birimi (varil 294), oran = en/boy.
+// dy: hafif öne çıkma (5–40: az perspektif; biraz büyür, aşağı iner).
+const CV_OBJ_BOY={ates:210,ciftvaril:437,capa:499,kasalar:439,halat:270,yonlevha:378,saksi:455,varil:294,sandik:350,kutuk:460,harita:338,fener:461,baliklevha:424,kasa:286},CV_OBJ_ORAN={ates:1.667,ciftvaril:0.858,capa:0.753,kasalar:0.798,halat:1.323,yonlevha:0.641,saksi:0.828,varil:0.824,sandik:1.079,kutuk:0.862,harita:1.048,fener:0.721,baliklevha:0.77,kasa:0.952},CV_OBJ_K=1;
 function cevreKur(t1,t2){      // tohumlu rastgele dizilim; ilk açılış sabit tohum, her yeniden başlamada (yeniOyun) yeni tohum
   CV_EV=[];CV_LMB=[];CV_OBJ=[];
   let tohum=t1;const r=()=>{tohum=(Math.imul(tohum,1103515245)+12345)>>>0;return (tohum>>>8)/16777216};
-  // evler: 2-3'lü sokak kümeleri, aralarda boşluk (arkadaki deniz görünür); evler birbirine binmez
-  let lx=-900,son=-1;const SON=(BOSS_X+3500)*EV_P;
+  // evler: 2-3'lü sokak kümeleri, aralarda boşluk (arkadaki deniz görünür); evler birbirine binmez. bosluk: kümeler arası evsiz aralıklar (objeler buraya)
+  let lx=-900,son=-1,sag=null;const SON=(BOSS_X+3500)*EV_P,bosluk=[];
   while(lx<SON){
+    if(sag!==null)bosluk.push([sag,lx]);
     const n=2+Math.floor(r()*2);
-    for(let i=0;i<n;i++){let k;do k=Math.floor(r()*8);while(k===son||EV_YOK.includes(k));son=k;CV_EV.push({ad:EV_SET+k,x:lx,h:EV_BOY[k]});lx+=EV_BOY[k]*EV_ORAN[k]+20+r()*60}      // evler arası dar sokak aralığı
-    lx+=500+r()*900;
+    for(let i=0;i<n;i++){let k;do k=Math.floor(r()*8);while(k===son||EV_YOK.includes(k));son=k;CV_EV.push({ad:EV_SET+k,x:lx,h:EV_BOY[k]});sag=lx+EV_BOY[k]*EV_ORAN[k];lx+=EV_BOY[k]*EV_ORAN[k]+20+r()*60}      // evler arası dar sokak aralığı
+    lx+=700+r()*900;
   }
   for(let x=-400;x<BOSS_X+2500;x+=1800+r()*2000){if(V_KONUM.some(v=>Math.abs(v-x)<450))x+=600;CV_LMB.push({k:r()<0.5?0:1,x})}      // lambalar rastgele aralıklarla, varillerin üstüne gelmez
-  {const q=()=>{t2=(Math.imul(t2,1103515245)+12345)>>>0;return (t2>>>8)/16777216};      // objeler: ayrı tohum (evler/lambalar değişmesin)
-    const gen=a=>{const im=CVR['o_'+a];return CV_OBJ_BOY[a]*CV_OBJ_K*(im&&im.width?im.width/im.height:1)};
-    for(const e of CV_EV){if(q()<0.35){const a=q()<0.5?'dumen':'capa',w=e.h*EV_ORAN[+e.ad.slice(-1)];CV_OBJ.push({ad:a,x:e.x+w*(0.2+q()*0.6),dy:0,ev:1})}}      // eve yaslanan dümen / çapa
-    const dig=CV_OBJ_AD.filter(a=>a!=='dumen'&&a!=='capa');let x=-700,son2='';
-    while(x<SON){let a;do a=dig[Math.floor(q()*dig.length)];while(a===son2);son2=a;
-      CV_OBJ.push({ad:a,x,dy:q()<0.5?0:10+q()*50});x+=CV_OBJ_BOY[a]*CV_OBJ_K*1.2+250+q()*1100}      // tek tek ya da küçük gruplar, aralarında boşluk
-    CV_OBJ.sort((a,b)=>(a.dy-b.dy)||(b.ev?1:0)-(a.ev?1:0))}      // arkadakiler önce
+  {let tt=t2;const q=()=>{tt=(Math.imul(tt,1103515245)+12345)>>>0;return (tt>>>8)/16777216};      // objeler: ayrı tohum
+    let son2='';
+    for(const [a0,b0] of bosluk){let c=a0+90;const bit=b0-90;      // evlere her iki yandan 90 pay: değmez
+      let ilk=true;
+      for(;;){
+        const dy=Math.round(5+q()*35),k=1+dy/300;
+        const sig=CV_OBJ_AD.filter(n=>n!==son2&&CV_OBJ_BOY[n]*k*CV_OBJ_ORAN[n]<=bit-c);
+        if(!sig.length||(!ilk&&q()<0.35))break;
+        const ad=sig[Math.floor(q()*sig.length)],w=CV_OBJ_BOY[ad]*k*CV_OBJ_ORAN[ad];
+        CV_OBJ.push({ad,x:c+w/2,dy});son2=ad;ilk=false;c+=w+120+q()*180}      // objeler birbirine değmez
+    }
+    CV_OBJ.sort((a,b)=>a.dy-b.dy)}      // arkadakiler önce
 }
 cevreKur(20261024,20261027);
 function cvCiz(im,sx,taban,h){      // taban: ekranda alt kenar (px), h: ekranda boy (px)
