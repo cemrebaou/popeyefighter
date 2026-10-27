@@ -59,8 +59,9 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
   const T=CVR.tahta;if(!T)return;
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
   {const gp=zeminY-(TAHTA_ARKA+EV_GERI)*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
-    if(CVR.kum&&CVR.deniz){kumDeniz(zeminY,s);dagCiz(zeminY)}      // kum (sabit, uç uca) + akan deniz; dağ zeminin üstüne biner (zemin dağın altına girer)
-    else{dagCiz(zeminY);const K=CVR.sahil;if(K){const r0=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s;ctx.fillStyle='#2893c2';ctx.fillRect(0,r0,W,H-r0)}}
+    dagCiz(zeminY);      // en arka katman: dağ (yavaş, dikeyde sabit); orta katman (zemin+evler+objeler) onu keser: dağın altı zeminin arkasında kalır
+    if(CVR.kum&&CVR.deniz)kumDeniz(zeminY,s);      // kum (tek parça, ev hızı) + akan deniz
+    else{const K=CVR.sahil;if(K){const r0=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s;ctx.fillStyle='#2893c2';ctx.fillRect(0,r0,W,H-r0)}}
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}
     for(const o of CV_OBJ){const im=CVR['o_'+o.ad];if(!im)continue;const k=1+o.dy/300;cvCiz(im,W/2+(o.x-S.x*EV_P)*s,Math.round(gp+(6+o.dy)*s)+3,CV_OBJ_BOY[o.ad]*CV_OBJ_K*k*s)}}      // çevre objeleri: evlerin önünde
   {const a=Math.round(y0+th*0.55),b=Math.round(y0+th*1.35),g=ctx.createLinearGradient(0,a,0,b);g.addColorStop(0,'rgba(20,40,60,0.38)');g.addColorStop(1,'rgba(20,40,60,0)');ctx.fillStyle=g;ctx.fillRect(0,a,W,b-a)}      // iskelenin altında gölge
@@ -85,7 +86,7 @@ function dagCiz(zeminY){      // yakın dağ: evlerle orantılı, biraz uzakta (
 function kumDeniz(zeminY,s){
   const KM=CVR.kum,DZ=CVR.deniz;
   const r00=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s,yh=Math.max(60,H-r00),N0=34,stp=yh/N0,nK0=Math.round(N0*KUM_ORAN);
-  const ust=dagTaban(zeminY,0)-DAG_BOY*SC*DAG_P*0.25,ek=Math.max(0,Math.round((r00-ust)/stp));      // zemin üst ucu: dağın alt çeyreği; ek dilim sayısı (deniz aynı yerde kalır)
+  const ust=dagTaban(zeminY,0)-DAG_BOY*SC*DAG_P*0.06,ek=Math.max(0,Math.round((r00-ust)/stp));      // zemin üst ucu: dağın alt çeyreği; ek dilim sayısı (deniz aynı yerde kalır)
   const N=N0+ek,nK=nK0+ek,r0=r00-ek*stp,yhZ=nK*stp,ekH=Math.max(1,ek-EV_GERI*SC/stp);      // ekH: ev tabanı satırı
   const pb=i=>i<ekH?DAG_P+(EV_P-DAG_P)*i/ekH:i<ek?EV_P:EV_P+(SAHIL_P1-EV_P)*(i-ek)/N0;      // derinlik: üst uç dağla aynı hızda (zıplayınca kopmaz), ev tabanında ev hızı, aşağı doğru iskeleye yaklaşır
   const yb=i=>r0+stp*i;      // dikeyde sabit
@@ -103,6 +104,7 @@ function kumDeniz(zeminY,s){
         ctx.globalAlpha=a;ctx.drawImage(im,0,sy,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh)}
       ctx.globalAlpha=1}
   }
+  {const ty=Math.floor(yb(0));ctx.fillStyle='rgba(38,26,12,0.85)';ctx.fillRect(0,ty,W,Math.max(2,Math.round(3*SC)))}      // zemin üst kenarı: çizgi (dağı keser)
   const alt=Math.floor(yb(N));if(alt<H){ctx.fillStyle='#2b9ac4';ctx.fillRect(0,alt,W,H-alt)}      // görselin altı: denizin en koyu rengi
 }
 // Su sıçraması: iskele tahtasının alt kenarına dalga vurur, damlacıklar saçılır (dünya koordinatı)
