@@ -35,7 +35,7 @@ function zpkTemizle(hemen){zizler.clear();for(const k of ['N','F']){if(!ZPK[k])c
 const zpkIzBul=k=>{for(const z of zizler.values())if(z.t===k)return z;return null};
 const zpkTutamak=()=>[S.x,S.y+(S.yer&&asagiMi()?540:720)];      // halatın oyuncuyu çektiği nokta (omuz hizası)
 function zpkAgiz(k){const z=EL[k].zr;return z?[S.x+z[0],S.y+z[1]]:[S.x+S.yon*60,S.y+700]}      // namlu ağzının dünya konumu (kol çizilirken gövdeye göre kaydedilir)
-const zpkCapa=c=>c.p===1?[c.X,c.Y]:[c.X*c.p+S.x*(1-c.p*c.p),S.camY*(1-c.p)+c.Y];      // çapa: derinlik katmanındaki (p) nokta, şu anki dünya konumu (ev katmanı yavaş kayar)
+const zpkCapa=c=>c.p===1?[c.X,c.Y]:[c.X*c.p+S.x*(1-c.p*c.p),S.camY+c.Y]      // ev katmanı dikeyde sabit;      // çapa: derinlik katmanındaki (p) nokta, şu anki dünya konumu (ev katmanı yavaş kayar)
 function zpkHedefNok(h){const t=h.hd;
   if(t.tip==='d')return [t.e.x+h.ox*(t.e.yon||1),t.e.y+h.oy];
   if(t.tip==='v')return [t.v.x,t.v.y];
@@ -71,10 +71,10 @@ function zpkHedef(sx,sy){
     if(zpkDolu('lamba'+l.k,im,(wx-(l.x-w/2))/w,1-(wy-LAMBA_GERI)/h))return {tip:'c',p:1,X:wx,Y:wy,wx,wy}}
   {const T=CVR.tahta;if(T){const th=TAHTA_W*T.height/T.width;if(wy<=th*TAHTA_AYAK&&wy>=-th*(1-TAHTA_AYAK))return {tip:'c',p:1,X:wx,Y:wy,wx,wy}}}      // iskele tahtası
   r=zpkKazik(wx,wy,false);if(r)return r;
-  {const p=EV_P,s=SC*p,taban=Math.round(ZY()+S.camY*SC*p-(TAHTA_ARKA+EV_GERI)*SC+6*s)+3;      // evler (cevreArka ile aynı yerleşim)
+  {const p=EV_P,s=SC*p,taban=Math.round(ZY()-(TAHTA_ARKA+EV_GERI)*SC+6*s)+3;      // evler (cevreArka ile aynı yerleşim)
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height,cx=W/2+(e.x+w/2-S.x*p)*s,hp=e.h*s,wp=hp*im.width/im.height;
       if(sx<cx-wp/2-6||sx>cx+wp/2+6)continue;
-      if(zpkDolu(e.ad,im,(sx-(cx-wp/2))/wp,(sy-(taban-hp))/hp))return {tip:'c',p,X:(wx-S.x*(1-p*p))/p,Y:wy-S.camY*(1-p),wx,wy}}}
+      if(zpkDolu(e.ad,im,(sx-(cx-wp/2))/wp,(sy-(taban-hp))/hp))return {tip:'c',p,X:(wx-S.x*(1-p*p))/p,Y:wy-S.camY,wx,wy}}}
   if(wy>zemin(wx)+250)return {tip:'c',p:1,X:wx,Y:wy,wx,wy};      // gökyüzü: havada takılır
   return {tip:'yok',wx,wy};
 }

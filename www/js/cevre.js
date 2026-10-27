@@ -58,7 +58,7 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
   const gy=zeminY+S.camY*SC;      // dünya y=0 (ayak çizgisi) ekranda
   const T=CVR.tahta;if(!T)return;
   const tw=TAHTA_W*SC,th=tw*T.height/T.width,y0=gy-th*TAHTA_AYAK;
-  {const gp=zeminY+S.camY*SC*EV_P-(TAHTA_ARKA+EV_GERI)*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
+  {const gp=zeminY-(TAHTA_ARKA+EV_GERI)*SC,s=SC*EV_P;      // ev katmanı: daha uzakta, yavaş kayar
     if(CVR.kum&&CVR.deniz){kumDeniz(zeminY,s);dagCiz(zeminY)}      // kum (sabit, uç uca) + akan deniz; dağ zeminin üstüne biner (zemin dağın altına girer)
     else{dagCiz(zeminY);const K=CVR.sahil;if(K){const r0=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s;ctx.fillStyle='#2893c2';ctx.fillRect(0,r0,W,H-r0)}}
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}
@@ -79,7 +79,7 @@ let DZ_X=0,DZ_T=-1;
 const dagTaban=(zeminY,cy)=>zeminY-(TAHTA_ARKA+DAG_GERI)*SC+cy*SC*DAG_P;      // dağın alt kenarı (ekranda)
 function dagCiz(zeminY){      // yakın dağ: evlerle orantılı, biraz uzakta (DAG_P); zeminin ÖNÜNDE çizilir (zemin dağın altına girer)
   const D=CVR.dag_yakin;if(!D)return;const s=SC*DAG_P,h=DAG_BOY*s,w=h*D.width/D.height;
-  const taban=dagTaban(zeminY,S.camY);      // zemin bandının biraz altı: alt kenarı (taşlar) zeminle örtülür
+  const taban=dagTaban(zeminY,0);      // arka plan dikeyde sabit (zıplayınca oynamaz)      // zemin bandının biraz altı: alt kenarı (taşlar) zeminle örtülür
   for(let x=((W/2-S.x*DAG_P*s)%w+w)%w-w;x<W;x+=w-1)ctx.drawImage(D,Math.floor(x),Math.round(taban-h),Math.ceil(w)+1,Math.round(h));
 }
 function kumDeniz(zeminY,s){
@@ -88,7 +88,7 @@ function kumDeniz(zeminY,s){
   const ust=dagTaban(zeminY,0)-DAG_BOY*SC*DAG_P*0.25,ek=Math.max(0,Math.round((r00-ust)/stp));      // zemin üst ucu: dağın alt çeyreği; ek dilim sayısı (deniz aynı yerde kalır)
   const N=N0+ek,nK=nK0+ek,r0=r00-ek*stp,yhZ=nK*stp,ekH=Math.max(1,ek-EV_GERI*SC/stp);      // ekH: ev tabanı satırı
   const pb=i=>i<ekH?DAG_P+(EV_P-DAG_P)*i/ekH:i<ek?EV_P:EV_P+(SAHIL_P1-EV_P)*(i-ek)/N0;      // derinlik: üst uç dağla aynı hızda (zıplayınca kopmaz), ev tabanında ev hızı, aşağı doğru iskeleye yaklaşır
-  const yb=i=>r0+stp*i+S.camY*SC*pb(i);
+  const yb=i=>r0+stp*i;      // dikeyde sabit
   if(DZ_T>=0)DZ_X+=Math.max(0,Math.min(0.1,S.t-DZ_T))*DZ_AKIS;DZ_T=S.t;      // dere gibi sürekli sola akış
   for(let i=0;i<N;i++){
     const kum=i<nK,im=kum?(CVR.zemin||KM):DZ,j=kum?i:i-nK,n=kum?nK:N-nK,p=pb(i+0.5);

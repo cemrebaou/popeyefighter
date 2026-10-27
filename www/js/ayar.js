@@ -1,7 +1,7 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.381';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.382';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
 const SURUM='?v=97';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
@@ -64,7 +64,7 @@ const kafaY=()=>S.y+((S.yer&&asagiMi())?620:790);      // oyuncunun kafa yüksek
 
 // ---------- Durum ----------
 const cv=document.getElementById('c');let ctx=cv.getContext('2d');      // ctx: ceset resmi çizilirken geçici olarak başka tuvale döner (korsan.js cesetResim)
-let W=0,H=0,DPR=1,SC=1,SC0=1,ZM=1.0,ZGAP=300,GOK=null;const ZOOM=1.0,ZOOM_ZPK=0.625,KAZIK_DIP=450;      // ZM: anlık zoom (zıpkın modunda ZOOM_ZPK'ya yumuşak geçer); ZGAP: zeminin altında görünen dünya payı; KAZIK_DIP: kameranın ayak çizgisinin altında gösterdiği en çok pay (uzun kazığın dibi 820'de, görünmez)
+let W=0,H=0,DPR=1,SC=1,SC0=1,ZM=0.85,ZGAP=300,GOK=null;const ZOOM=0.85,ZOOM_ZPK=0.625,KAZIK_DIP=450;      // ZM: anlık zoom (zıpkın modunda ZOOM_ZPK'ya yumuşak geçer); ZGAP: zeminin altında görünen dünya payı; KAZIK_DIP: kameranın ayak çizgisinin altında gösterdiği en çok pay (uzun kazığın dibi 820'de, görünmez)
 function boyut(){
   DPR=Math.min(window.devicePixelRatio||1,2);GOK=null;   // 3x çözünürlük telefonda çok pahalı: en fazla 2x
   W=window.innerWidth;H=window.innerHeight;
