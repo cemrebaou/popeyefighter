@@ -93,9 +93,9 @@ function kumDeniz(zeminY,s){
   for(let i=0;i<N;i++){
     const kum=i<nK,im=kum?(CVR.zemin||KM):DZ,j=kum?i:i-nK,n=kum?nK:N-nK,p=pb(i+0.5);
     const dy=Math.floor(yb(i)),dh=Math.ceil(yb(i+1))-dy+1;if(dy>H||dy+dh<0)continue;
-    const pm=(EV_P+SAHIL_P1)/2,zd=kum&&im===CVR.zemin,ku=zd?Math.min(1,(yhZ/(SC*pm))/(ZEMIN_W*im.height/im.width)):1;      // zemin dokusu: gerçek ölçeğinde, bandın boyu kadar satırı kullanılır
-    const sh=im.height*ku/n,sy0=sh*j,sw=zd?ZEMIN_W*SC*p:yh*(kum?KUM_ORAN:1-KUM_ORAN)*im.width/im.height*p/pm;      // dilim: görselin yatay şeridi; döşeme eni görselin oranından (perspektifle)
-    const ox=((W/2-(S.x+(kum?0:DZ_X))*p*SC*p)%sw+sw)%sw-sw;      // kum dünyada sabit, deniz ayrıca akar
+    const pm=(EV_P+SAHIL_P1)/2;
+    const sh=im.height/n,sy0=sh*j,sw=kum?yhZ*im.width/im.height:yh*(1-KUM_ORAN)*im.width/im.height*p/pm;      // zemin: TEK görsel bandın boyuna büyütülür (dikeyde tekrar yok), yana uç uca; deniz: dilimli perspektif
+    const ox=kum?((W/2-S.x*EV_P*SC*EV_P)%sw+sw)%sw-sw:((W/2-(S.x+DZ_X)*p*SC*p)%sw+sw)%sw-sw;      // zemin tüm dilimlerde aynı yatay kayma (ev hızı; basamak/kayma yok), deniz ayrıca akar
     const akar=!kum&&sy0>im.height*DZ_KIYI,fz=(S.t*DZ_HIZ)%1;      // açık su ayrıca ekrana doğru akar (kıyı köpüğü sabit)
     for(let x=ox;x<W;x+=sw-1){
       ctx.drawImage(im,0,sy0,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh);
