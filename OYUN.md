@@ -33,7 +33,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - k yumruklu korsan: 150 can, oyuncuya 10 hasar. b bıçaklı: 100 can, 15 hasar. h kancacı: 200 can, yumruk 10 hasar, yürümez.
 - Kaptan (boss): 500 can, 15 hasar; vuruşların yarısını alır, kafaya vuruş 3 kat (KRİTİK). Bölüm sonunda x=42000'de.
 - Kaptan yer vuruşlarından (iniş sarsıntısı, yer yarma, taş patlaması) kafa kritiği (3x) almaz ve vuruş başına en çok maks. canının %5'ini yer (`S.yerV`, `vur`).
-- Zorluk: sadece boss öldürülüp bölüm bitince (ölünce değil, v0.387) tüm düşmanların canı ve saldırı gücü (yakın dövüş, kanca 15/çekerken 1, kaptan mermisi 30, kafa atma 10/5/3) ×1.1 birikerek artar (en çok 4 kat; `ZOR_N`, `ZK()` dusman_kur.js, localStorage `pf_zor`). Tam sıfırlamada sıfırlanır. XP canın 1/10'u olduğu için o da artar. Yukarıdaki can/hasar değerleri başlangıç (×1) değerleridir.
+- Zorluk: her yeniden başlamada tüm düşmanların canı ve saldırı gücü (yakın dövüş, kanca 15/çekerken 1, kaptan mermisi 30, kafa atma 10/5/3) ×1.1 birikerek artar (en çok 4 kat; `ZOR_N`, `ZK()` dusman_kur.js, localStorage `pf_zor`). Tam sıfırlamada sıfırlanır. XP canın 1/10'u olduğu için o da artar. Yukarıdaki can/hasar değerleri başlangıç (×1) değerleridir.
 - Yürüme hızı: yumruklu/bıçaklı 520, kaptan 340 birim/sn. Kaçarken yarı hız.
 - Vurma menzili: yumruklu 470, bıçaklı 425, kaptan ~537 birim.
 - Saldırı: yumruklu 1–3 vuruşluk kombo, bıçaklı/kaptan 1–2. Kombo sonrası 0.6–1.4 sn bekler. Vuruş süreleri: uzak kol 0.5 sn, yakın kol 0.62 sn, bıçak/dipçik 0.66 sn.
@@ -101,9 +101,9 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 
 ## Skill öldürme (kodda anti; `js/anti.js`, `AG.anti`, `YA(k)`)
 - Arayüzde "Öldür" denir. Öldürünce `ses/skill_oldur.mp3` çalar, değişiklik 2 sn görünür, sonra oyun başlar. Öldürme ekranında simgeler renkli, çeper griden kırmızıya yavaş geçer; yazıda önce öldürülmüş hali, sonra eski ad üstü çizili. Normal ağaçta skill yazısının sonunda ölüm hali üstü çizili.
-- Kalpli kol ağaçta hep görünür: dokununca güncel maks. can ve toplam ceza/bonus yazar; sadece ölüm seçiminde 2 sn basılı tutunca seçilir (maks. can 100 ise seçilemez; 110'dayken "son" uyarısı yazar, verince "VERECEK BAŞKA CANIN KALMADI!" çıkar; maks. can 100'e inince kalpli kolun arkasında kan lekesi görünür).
-- Öldürülecek skill yok ve maks. can 100 iken ölüm: OYUN BİTTİ, her şey sıfırlanır (XP, seviye, skill'ler, öldürülenler, cezalar).
-- Hiç verilmiş yetenek yokken ölünce: maks. can -10 (en az 100), her vuruşa +1 düz hasar; her ölümde birikir (`AG.cip`, kayıtlı).
+- Kalpli kol ağaçta hep görünür: dokununca güncel maks. can ve toplam ceza/bonus yazar; sadece ölüm seçiminde 2 sn basılı tutunca seçilir (maks. can 50 ise seçilemez).
+- Öldürülecek skill yok ve maks. can 50 iken ölüm: OYUN BİTTİ, her şey sıfırlanır (XP, seviye, skill'ler, öldürülenler, cezalar).
+- Hiç verilmiş yetenek yokken ölünce: maks. can -10 (en az 50), her vuruşa +1 düz hasar; her ölümde birikir (`AG.cip`, kayıtlı).
 - Ölünce verilmiş (Yumruk hariç, henüz çevrilmemiş) yetenek varsa 1.3 sn sonra ağaç zorunlu seçimle açılır, kapatılamaz; yeteneğe dokun = anti metni (önce anti, yanında orijinal; yazı yana kaydırılır), 1 sn basılı tut = çevrilir, oyun yeniden başlar. Sağ üstteki kalpli kol (`ui/kalpkol.webp`): skill öldürmek yerine maks. can -10, +1 hasar (dokun = açıklama, 1 sn basılı = seçer). Çevrilen yetenek kapalı sayılır (YV false), ağaçta simgenin altında kan lekesi (`ui/kanleke.webp`). Kayıt `pf_agac2.anti`.
 - O: can dolumu bonusu yok (pasif %1 dolum kalır), öldürünce düşmanın maks. canının %10'u kadar can (boss dahil) · X: can dolumu bonusu yok (pasif dolum kalır), can %25 altında hasar +%50 · W: blokta dolum yok, blok %75 engeller · V: +100 can yerine +100 maks. enerji (ENMAX) · TOP: ıspanak 2 kat sık düşer · I: vuruş %5 sersemletir (1.3 sn)
 - H: +%20 saldırı · M: her vuruş +2 enerji · Q: tekme itmesi +%30 · T: bıçak hasarı +%20 · R: yırtma enerjisi yarı

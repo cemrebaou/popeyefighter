@@ -6,8 +6,8 @@ let ATES=[];       // ateş parçacıkları (dünya koordinatı)
 // ---- ölüm: seçim ekranı kısa süre sonra açılır ----
 function antiOlum(){
   if(antiAday().length){S.antiBek=S.t+1.3;return}
-  if(HPMAX<=100){tamSifirla();return}      // öldürülecek skill yok, maks. can 100: oyun tamamen biter
-  AG.cip++;HPMAX=Math.max(100,HPMAX-10);agKaydet();if(HPMAX<=100)S.pops.push({x:S.x,y:S.y+1400,t:0,txt:dil('cip_son'),f:1.6});      // hiç verilmiş yetenek yokken ölüm: maks. can -10, her vuruşa +1 hasar (birikir)
+  if(HPMAX<=50){tamSifirla();return}      // öldürülecek skill yok, maks. can 50: oyun tamamen biter
+  AG.cip++;HPMAX=Math.max(50,HPMAX-10);agKaydet();      // hiç verilmiş yetenek yokken ölüm: maks. can -10, her vuruşa +1 hasar (birikir)
   S.pops.push({x:S.x,y:S.y+1200,t:0,txt:dil('cip_pop'),f:1});
 }
 function tamSifirla(){      // her şey sıfırlanır: XP, seviye, skill'ler, öldürülenler, can/hasar cezaları
