@@ -120,7 +120,7 @@ function kumDeniz(zeminY,s){
         ctx.globalAlpha=a;ctx.drawImage(im,0,sy,im.width,sh,Math.floor(x),dy,Math.ceil(sw)+1,dh)}
       ctx.globalAlpha=1}
   }
-  {const ty=Math.floor(yb(0));ctx.fillStyle='rgba(38,26,12,0.85)';ctx.fillRect(0,ty,W,Math.max(2,Math.round(3*SC)))}      // zemin üst kenarı: çizgi (dağı keser)
+  // zemin üst kenarı çizgisi kaldırıldı (v0.394): zemin.webp üstü saydam, çizgi gereksiz ve görünür kalıyordu
   const alt=Math.floor(yb(N));if(alt<H){ctx.fillStyle='#2b9ac4';ctx.fillRect(0,alt,W,H-alt)}      // görselin altı: denizin en koyu rengi
 }
 // Su sıçraması: iskele tahtasının alt kenarına dalga vurur, damlacıklar saçılır (dünya koordinatı)
