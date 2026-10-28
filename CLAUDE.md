@@ -44,4 +44,5 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Aynı karakterin parçaları aynı ölçekte. Kenar boşlukları script ile kesilir, ofset tabloya yazılır.
 
 ## Yapılacaklar
-- (boş)
+- Kadın (f) elleri ters bağlı: sağ el solda, sol el sağda; ella, kolun ön katmanında.
+- Kadın sol eli boş bekleme durumunda kolla paralel düz (şu an yukarı bükülü).
