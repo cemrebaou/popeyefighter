@@ -54,3 +54,4 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 - Kamera: son basılan yüzeyin yüksekliğini takip eder (`S.camZ`), kafa ekranın üst %20'sine girince yukarı izler.
 - Bölüm 1 düzeni `BOLUM1`: zemin parçaları [..4200] [4900–8200] [10800–14000] [17600–21500] [25500–28500] [30600..]; boss x=34000. Düşmanlar ve variller sadece zeminde.
 
+- v0.387: çevre objelerinden kamp ateşi, saksı ve baltalı kütük kaldırıldı.
