@@ -51,3 +51,6 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 
 ## v0.389
 - Dağ %25 daha küçük (`DAG_BOY` 3450). Zemin görseli kumlu toprak ile değiştirildi.
+
+## v0.390
+- Zemin görseli düzeltildi (beyaz gökyüzü kırpıldı), dağ eteğine taşma payı artırıldı: arkada boşluk görünmüyor.

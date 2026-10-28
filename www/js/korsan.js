@@ -4,7 +4,7 @@ function kancaGuncelle(e,dt){      // kanca: hazırlık → atıldığı anki oy
   const h=e.kh,dur=S.t<(e.st||0)||e.tut||e.olu,u=e._u||[];
   if(h.ph==='haz'){if(dur){e.kh=null;return}
     if(S.t-h.t0>=0.5){const m=u[2]||u[0];if(!m){e.kh=null;return}
-      h.ph='uc';h.x=m.x;h.y=m.y;const dx=S.x-h.x,dy=S.y+((S.yer&&asagiMi())?330:480)-h.y,L=Math.hypot(dx,dy)||1;h.vx=dx/L*1700;h.vy=dy/L*1700;savurCal(e.x)}      // atıldığı anki yere nişan alır
+      h.ph='uc';h.x=m.x;h.y=m.y;const dx=S.x-h.x,dy=kafaY()-h.y,L=Math.hypot(dx,dy)||1;h.vx=dx/L*1700;h.vy=dy/L*1700;savurCal(e.x)}      // atıldığı anki oyuncu kafasına (aynı zeminde düz çizgi) nişan alır
     return}
   if(h.ph==='uc'){
     if(dur){h.ph='don';return}
@@ -145,10 +145,10 @@ const KSK={      // her korsan kendi görsel setinden, tüm parçalar aynı öl�
   h:{p:'h_',sc:0.9315,us:1.375,A:{ust:[65.4,43.8],on:[107.1,37.5],elN:[105.8,47.3],elB:[78.9,36.2],elF:[100.3,36.8],uy:[90.5,40.4],bacak:[75.6,36.1],bot:[68.2,25.7],govde:[176.8,326.0],alt:[182.8,47.4],kalca:[116.5,35.6],kafa:[69.1,128.1],vur:[67.1,127.1],ahh:[67.1,128.1],ser:[76.1,132.1],kanca:[15.8,49.6]},
   ust:145.0,on:134.6,uy:184.1,ak:[0.0,151.2],bh:145.3,bel:662.0,tek:1,kN:[0.0,77.8],kF:[-40.0,77.8],omN:[-112.1,-219.9],omF:[24.7,-253.7],boyun:[-8.6,-286.1],goz:[-69.6,62.2],zt:[39.3,95.0],sp:[-104.7,-289.3],zl:[61,28],ud:115.5,kd:27.3,ks:1.05}      // ud: belden üstü aşağı kayma, kd: kafa aşağı kayma, ks: kafa ek ölçeği      // kancacı: yürümez, kanca fırlatır (goz: kancanın zincir halkası, zt: zincirli elin zincir çıkışı, sp: sırttaki makara)
 };
-KSK.m={p:'m_',sc:1,bl:[[160,142],[320,162]],A:{ust:[51.7,24.6],on:[38.2,21.2],elN:[132.6,7.2],elF:[20.7,26.7],uy:[58.9,32.4],bacak:[42.2,20.9],bot:[50,22.3],govde:[114.4,278.9],kalca:[83.1,17.6],kafa:[152.4,184.3]},
+KSK.m={p:'m_',sc:1,bl:[[160,142],[320,162]],A:{ust:[51.7,24.6],on:[38.2,21.2],elN:[132.6,7.2],elF:[20.7,26.7],uy:[58.9,32.4],bacak:[42.2,20.9],bot:[50,22.3],govde:[114.4,278.9],kalca:[83.1,17.6],kafa:[144.2,194.3],vur:[140.0,187.9],ser:[140.0,187.2],ahh:[143.0,190.7],aci:[147.7,192.2]},
   ust:116.7,on:134.6,uy:102.2,ak:[0,92.1],bh:133.7,bs:1.2,bel:468.3,kN:[5.7,120.3],kF:[-16.4,120.3],omN:[-68.7,-194],omF:[26.3,-208],boyun:[6.6,-244.8]};      // erkek boss (kılıç ustası): parçalar 0.55 ölçekli kesim, bl: kılıç gövdesi noktaları (bilek çerçevesi); bs: bacaklar %20 büyük, bel +20 yukarı
-KSK.f={p:'f_',sc:1,gun:true,gunNear:true,eo:true,kon:1,A:{ust:[46.4,25.9],on:[33.3,22.5],elN:[28.6,5],elF:[21.5,27.1],uy:[48.7,27.1],bacak:[33.1,20.5],bot:[47.4,24.4],govde:[110,238.7],kalca:[89.1,14.9],kafa:[159.5,174.9],ates:[3,45.9]},
-  ust:118.9,on:134,uy:113.5,ak:[0,93.5],bh:144.6,bel:391.6,kN:[0,40],kF:[-20,40],omN:[-69,-155.3],omF:[-7,-167.3],boyun:[-7.7,-209],mz:[59,158],gb:[28,74],mb:20.5};      // kadın korsan (tabancalı): kon: etek bacakların üstüne çizilir, mz: namlu ucu, gb: namlu dibi, mb: namlunun kol eksenine açısı
+KSK.f={p:'f_',sc:1,gun:true,gunNear:true,eo:true,kon:1,A:{ust:[46.4,25.9],on:[33.3,22.5],elN:[28.6,5],elF:[21.5,27.1],uy:[48.7,27.1],bacak:[33.1,20.5],bot:[47.4,24.4],govde:[110,238.7],kalca:[89.1,14.9],kafa:[151.6,183.8],vur:[152.9,180.5],ser:[164.1,183.0],ahh:[148.9,187.0],aci:[152.2,188.6],ates:[3,45.9]},
+  ust:118.9,on:134,uy:113.5,ak:[0,93.5],bh:144.6,bel:391.6,kN:[0,20],kF:[-20,20],omN:[-69,-155.3],omF:[-7,-167.3],boyun:[-7.7,-209],mz:[59,158],gb:[28,74],mb:20.5};      // kN/kF: etek+bacaklar 20 birim yukarı      // kadın korsan (tabancalı): kon: etek bacakların üstüne çizilir, mz: namlu ucu, gb: namlu dibi, mb: namlunun kol eksenine açısı
 const KDUR={F:0.5,N:0.62,B:0.66},KBDUR=0.7;      // vuruş süreleri: F = uzak kol yumruğu, N = yakın kol yumruğu, B = yakın elle bıçak / dipçik savurma; KBDUR: tutulurken kafa atma
 const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:3,kN:6,lF:-14,kF:12}};
 KPZ.hazF=Object.assign({},KPZ.dur,{uF:-28,rF:-128,torso:2,hx:-15});

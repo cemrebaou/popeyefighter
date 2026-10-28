@@ -19,7 +19,7 @@ function ates(dx,dy,ch,bx,by){    // aduket: topun ele göre yönüne (yukarı/a
 }
 function pAtesle(e){      // namludan oyuncunun kafasına doğru tek mermi; sonra düz devam eder (eğilirsen ıskalar)
   const m=e._u&&e._u[2];if(!m)return;
-  const el=e._u[1],V=2475;      // tabancayı tutan el (arkadaki kol)
+  const K=KSK[e.sk||'p'],el=e._u[(K.gun&&K.gunNear)?0:1],V=2475;      // tabancayı tutan el (gunNear: tabanca öndeki kolda, 0; yoksa arkadaki kolda, 1)
   let dx=el?m.x-el.x:S.x-m.x,dy=el?m.y-el.y:kafaY()-m.y;      // namlunun gösterdiği yön (el → namlu ucu)
   if(Math.abs(dx)<1&&Math.abs(dy)<1){dx=S.x-m.x;dy=kafaY()-m.y}
   const L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);

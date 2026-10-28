@@ -144,3 +144,10 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Tabancalı kadın (f): el ataması düzeltildi (tabanca öndeki kolda, `gunNear`), eller kolun ön katmanında çizilir (`eo`).
 - Kılıç ustası boss (m): bacaklar %20 büyük, gövde 20 birim yukarı alındı (`bs:1.2`, `bel:468.3`); kollar düz duruşa alındı (bıçaklı gard açısı artık uygulanmıyor).
 - Zemin görseli değişti (kumlu toprak), dağ %25 daha küçültüldü (`DAG_BOY` 4600→3450).
+
+## v0.390
+- Kadın (f) ve kılıç ustası (m) için yeni kafa görselleri: normal, darbe yiyince (vur), sersemleme (ser, yıldızlı), ölü/bayılmış (ahh), acı çekip kaçış (aci). Kendi ölüm sesleri eklendi (`olum_f`, `olum_m`).
+- Kadının etek+bacakları (govdeden altı) 20 birim yukarı alındı.
+- Tabanca nişan hattı düzeltildi: kadının eli öndeki kolda olduğu için mermi artık doğru elden namluya doğru düz çizgide gider (önceki hata: mermi hep arkadaki elden hesaplanıyordu).
+- Kancacının (h) kanca atışı artık oyuncunun kafa hizasına (kafaY(), eski sabit göğüs yüksekliği yerine) düz çizgide atılır: aynı zeminde yere paralel gider, oyuncu zıplarsa/eğilirse ona göre yukarı/aşağı nişan alır.
+- Zemin görseli (kumlu toprak) yeniden işlendi: üstteki beyaz gökyüzü kırpıldı, artık tamamen toprak dokusu; zeminin dağın eteğine taşma payı artırıldı (340 birim), arkada boşluk/beyaz ekran görünmez.

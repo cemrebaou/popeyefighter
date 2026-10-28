@@ -43,7 +43,7 @@ function sesYukle(){
   for(let i=1;i<=3;i++)y('kilic_'+i,b=>KLC.push(b));
   for(let i=1;i<=5;i++)y('whoosh_'+i,b=>WH.push(b));
   for(let i=1;i<=3;i++)y('jump_'+i,b=>JP.push(b));      // sallama (boşta da dolu da): yumruk, tekme, bıçak
-  for(const n of ['blade','blade_1','blade_2'])y(n,b=>BLD.push(b));for(const i of [1,2])y('inis_'+i,b=>INS.push(bosKes(b)));for(const k of ['k','b','p','h'])y('olum_'+k,b=>OLS[k]=b);
+  for(const n of ['blade','blade_1','blade_2'])y(n,b=>BLD.push(b));for(const i of [1,2])y('inis_'+i,b=>INS.push(bosKes(b)));for(const k of ['k','b','p','h','f','m'])y('olum_'+k,b=>OLS[k]=b);
   y('ust_atla',b=>USTS=b);y('grap',b=>GRS=b);y('bladeopen',b=>BOPEN=b);y('dusme',b=>DSS=b);y('devrilses',b=>DEVS=b);y('deniz',b=>{ARK=b;arkaCal()});      // arka plan: deniz sesi
   y('tahta_carpma',b=>TCS=b);for(let i=1;i<=4;i++)y('tahta_dus_'+i,b=>TD.push(b));
   y('spinach-drop',b=>ISPS=b);y('levelup',b=>LVS=b);y('skill_oldur',b=>OLDS=b);y('tahtavurma',b=>TVS=b);y('wooddusme',b=>WDS=bosKes(b));      // havadan tahtaya düşmey('wateraduket',b=>ADKS=b);y('aduket_carpma',b=>ADKC=b);y('kalpsesi',b=>KALPS=b);y('yemeses',b=>YEMS=b);

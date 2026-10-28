@@ -1,9 +1,9 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.389';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.390';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=102';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=103';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['el_isp_n','el_isp_f','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir','z_dolu','z_bos','z_mizrak','z_ip']      // z_: zıpkın (tabanca dolu/boş, mızrak, halat)
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_','m_','f_'].map(q=>KP.map(n=>q+n)));
@@ -26,8 +26,8 @@ ADLAR.forEach(a=>yukle('parca/'+a+'.webp',im=>R[a]=im));
 yukle('parca/h_alt.webp',im=>R.h_alt=im);
 ['v_varil',...[...Array(14).keys()].map(i=>'v_c'+i),'v_h0','v_h1','v_h2'].forEach(a=>yukle('parca/'+a+'.webp',im=>R[a]=im));      // varil ve kırılınca saçılan parçaları (tahtalar, demir halkalar)
 yukle('parca/spinach.png',im=>R.isp=im);yukle('parca/spinach-empty.png',im=>R.ispB=im);      // ıspanak kutusu (dolu / boş)      // kancacının tek parça belden aşağısı
-['k_','b_','p_','h_'].forEach(q=>['vur','ahh','ser'].forEach(n=>yukle('parca/'+q+n+'.webp',im=>R[q+n]=im)));
-['k_','b_'].forEach(q=>yukle('parca/'+q+'aci.webp',im=>R[q+'aci']=im));      // canı azalıp kaçarken acı yüzü      // korsanların vurulunca acı yüzü (vur), yerde bayılmış yüzü (ahh)
+['k_','b_','p_','h_','m_','f_'].forEach(q=>['vur','ahh','ser'].forEach(n=>yukle('parca/'+q+n+'.webp',im=>R[q+n]=im)));
+['k_','b_','m_','f_'].forEach(q=>yukle('parca/'+q+'aci.webp',im=>R[q+'aci']=im));      // canı azalıp kaçarken acı yüzü      // korsanların vurulunca acı yüzü (vur), yerde bayılmış yüzü (ahh)
 for(let i=0;i<11;i++)yukle('yuz/yuz'+i+'.webp',im=>YUZ[i]=im);
 for(let i=0;i<10;i++)yukle('yuz/yuzA'+i+'.webp',im=>YUZA[i]=im);
 for(let i=0;i<11;i++)yukle('yuz/yuzY'+i+'.webp',im=>YUZY[i]=im);      // ıspanak yerken ağzı açık yüzler (can kademesine göre)

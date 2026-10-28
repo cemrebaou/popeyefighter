@@ -44,4 +44,4 @@ Mobil yan kaydırmalı dövüş oyunu. Canvas 2D; kod `www/js/*.js` dosyalarına
 - Aynı karakterin parçaları aynı ölçekte. Kenar boşlukları script ile kesilir, ofset tabloya yazılır.
 
 ## Yapılacaklar
-- Kadın (f) sol eli boş bekleme durumunda hâlâ kolla paralel düz görünmeyebilir (yumruk eli bilekten katlanmış gibi): görsel/koddan emin değiliz, kullanıcı test edip söylerse düzeltilecek.
+- (boş)

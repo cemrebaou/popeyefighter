@@ -102,7 +102,7 @@ function dagCiz(zeminY){      // yakın dağ: evlerle orantılı, biraz uzakta (
 function kumDeniz(zeminY,s){
   const KM=CVR.kum,DZ=CVR.deniz;
   const r00=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s,yh=Math.max(60,H-r00),N0=34,stp=yh/N0,nK0=Math.round(N0*KUM_ORAN);
-  const ust=dagTaban(zeminY,0)-138*SC*DAG_P,ek=Math.max(0,Math.round((r00-ust)/stp));      // zemin üst ucu: dağın alt çeyreği; ek dilim sayısı (deniz aynı yerde kalır)
+  const ust=dagTaban(zeminY,0)-340*SC*DAG_P,ek=Math.max(0,Math.round((r00-ust)/stp));      // v0.390: zemin dağın eteğinden biraz içeri taşsın (340, eskisi 138), arkada boşluk görünmesin; ek dilim sayısı (deniz aynı yerde kalır)
   const N=N0+ek,nK=nK0+ek,r0=r00-ek*stp,yhZ=nK*stp,ekH=Math.max(1,ek-EV_GERI*SC/stp);      // ekH: ev tabanı satırı
   const pb=i=>i<ekH?DAG_P+(EV_P-DAG_P)*i/ekH:i<ek?EV_P:EV_P+(SAHIL_P1-EV_P)*(i-ek)/N0;      // derinlik: üst uç dağla aynı hızda (zıplayınca kopmaz), ev tabanında ev hızı, aşağı doğru iskeleye yaklaşır
   const yb=i=>r0+stp*i;      // dikeyde sabit
