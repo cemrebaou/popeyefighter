@@ -4,7 +4,7 @@ let VAR=[],VPAR=[],VSES_T=-9;      // VAR: variller (x,y = merkez), VPAR: saçı
 const VDW={N:0,F:0};
 const V_OL=0.378,V_PX=0.756,V_W=323,V_MRK=190,V_YUK=70;      // V_YUK: yerdeki varil ayak çizgisinin bu kadar üstünde (iskelenin biraz arkasında durur, ayağa çarpmaz)
 // V_OL: orijinal çizim px → birim, V_PX: kayıtlı görsel px → birim, V_W: varil eni, V_MRK: tabandan merkeze
-const V_KONUM=[2600,6300,12400,18000,24200,28600,34000];
+const V_KONUM=[2600,6300,12400,18000,26500,32000];
 const V_MAXV=3250;      // (+%25)
 const V_CARP=2.0;      // parmak hızı çarpanı: az parmak hızıyla en yüksek hıza ulaşır (en yüksek hız ~1625 parmak hızında)      // fırlatılan varilin en yüksek hızı (hasar fırlatma gücünden hesaplanır, bu sınırdan etkilenmez)
 const V_HALKA=[-201,241,432];      // halkaların varil merkezine göre yüksekliği (orijinal px, aşağı +)

@@ -80,11 +80,13 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
     else{const K=CVR.sahil;if(K){const r0=zeminY-TAHTA_ARKA*SC+6*s-SAHIL_UST*s;ctx.fillStyle='#2893c2';ctx.fillRect(0,r0,W,H-r0)}}
     for(const e of CV_EV){const im=CVR[e.ad];if(!im)continue;const w=e.h*im.width/im.height;cvCiz(im,W/2+(e.x+w/2-S.x*EV_P)*s,Math.round(gp+6*s)+3,e.h*s)}
     for(let i=0;i<CV_OBJ.length;i++){const o=CV_OBJ[i],im=CVR['o_'+o.ad];if(!im)continue;const k=1+o.dy/300,ox=W/2+(o.x-S.x*EV_P)*s,ty=Math.round(gp+(6+o.dy)*s)+3,oh=CV_OBJ_BOY[o.ad]*CV_OBJ_K*k*s;cvCiz(im,ox,ty,oh);if(o.ad==='ates')atesCiz(ox,ty,oh,oh*im.width/im.height,i)}}      // çevre objeleri: evlerin önünde
+  ctx.save();zeminKlip();      // çukurlarda iskele yok (platform.js)
   {const a=Math.round(y0+th*0.55),b=Math.round(y0+th*1.35),g=ctx.createLinearGradient(0,a,0,b);g.addColorStop(0,'rgba(20,40,60,0.38)');g.addColorStop(1,'rgba(20,40,60,0)');ctx.fillStyle=g;ctx.fillRect(0,a,W,b-a)}      // iskelenin altında gölge
   kazikCiz(zeminY,false);      // arka kazıklar: alt yarısı iskele tahtasının arkasında kalır
   for(let x=((W/2-S.x*SC)%tw+tw)%tw-tw;x<W;x+=tw-1)ctx.drawImage(T,Math.floor(x),y0,Math.ceil(tw)+1,th);
+  ctx.restore();
   sicramaCiz(y0+th*0.97);      // tahtanın alt kenarına vuran su
-  const ly=gy-LAMBA_GERI*SC;for(const l of CV_LMB)cvCiz(CVR['lamba'+l.k],W/2+(l.x-S.x)*SC,ly,LAMBA_BOY[l.k]*SC);      // sokak lambaları iskelenin üstünde
+  const ly=gy-LAMBA_GERI*SC;for(const l of CV_LMB)if(zeminVar(l.x))cvCiz(CVR['lamba'+l.k],W/2+(l.x-S.x)*SC,ly,LAMBA_BOY[l.k]*SC);      // sokak lambaları iskelenin üstünde
 }
 // Kum + deniz (v0.368): evlerin altından ekranın altına. Üstte kum (dünyada sabit, uç uca döşenir), altında deniz (en üstü kıyı köpüğü).
 // İkisi de yatay dilimlerle perspektifli: üst dilim ev katmanı hızında (EV_P), alt dilimler giderek SAHIL_P1 hızına çıkar. Deniz kendi kendine akar:
@@ -147,6 +149,6 @@ function kazikCiz(zeminY,on){      // on: karakterlerin önündeki sıra (iskele
   const K=CVR.kazik;if(!K)return;
   const k=on?1:KAZIK_KUC,h=KAZIK_BOY*k*SC,w=h*K.width/K.height,orta=zeminY+S.camY*SC+(on?KAZIK_ON:-KAZIK_ARK)*SC;
   const ara=KAZIK_ARA*SC,ofs=W/2-S.x*SC;
-  for(let x=((ofs%ara)+ara)%ara-ara;x<W+ara;x+=ara){if(x+w/2<0||x-w/2>W)continue;ctx.drawImage(K,Math.round(x-w/2),Math.round(orta-h/2),Math.round(w),Math.round(h))}
+  for(let x=((ofs%ara)+ara)%ara-ara;x<W+ara;x+=ara){if(x+w/2<0||x-w/2>W||!zeminVar(S.x+(x-W/2)/SC))continue;ctx.drawImage(K,Math.round(x-w/2),Math.round(orta-h/2),Math.round(w),Math.round(h))}
 }
 function cevreOn(zeminY){kazikCiz(zeminY,true)}      // karakterlerin önünde: ön kazık sırası

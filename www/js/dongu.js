@@ -7,7 +7,7 @@ function arkaPlan(camX,zeminY){
   {const G=CVR[GOK_AD];if(G){const th=H,tw=th*G.width/G.height,ofs=S.x*SC*0.06,i0=Math.floor(ofs/tw);
     for(let i=i0;(i-i0)*tw-((ofs%tw)+tw)%tw<W;i++){const x=Math.floor((i-i0)*tw-((ofs%tw)+tw)%tw);
       if(i&1){ctx.save();ctx.translate(x+Math.ceil(tw),0);ctx.scale(-1,1);ctx.drawImage(G,0,0,Math.ceil(tw)+1,th);ctx.restore()}else ctx.drawImage(G,x,0,Math.ceil(tw)+1,th)}}}
-  cevreArka(zeminY);      // evler, tahta iskele, iskele nesneleri (cevre.js)
+  cevreArka(zeminY);pltCiz();      // evler, tahta iskele, iskele nesneleri (cevre.js)
 }
 function ciz(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
@@ -80,11 +80,11 @@ function dongu(ms){
   if(S.ust)ustGuncelle();
   if(S.dag)dagGuncelle(dt);
   if(S.sup&&S.t<S.sup.t0+S.sup.T)S.vx=0;      // kayarak yumruk: kısa süre öne atılır
-  ispGuncelle(dt);varilGuncelle(dt);
+  ispGuncelle(dt);varilGuncelle(dt);pltGuncelle(dt);
   {const nx=S.x+S.vx*dt;                                        // yüksek basamak/kutu duvar gibidir: üstüne zıplamak gerekir
     if(zemin(nx)>S.y+(S.yer?75:30)){S.vx=0;S.lungeT=-1}else S.x=nx}
   atkGuncelle(dt);
-  const zH=zemin(S.x);
+  const zH=pltDestek(S.x,S.y);      // zemin + tek yönlü platformlar (platform.js)
   if(S.yer){
     if(zH<S.y-70){S.yer=false;S.vy=0}                      // yüksek basamaktan düşme
     else{S.y+=(zH-S.y)*(1-Math.exp(-dt*(zH>S.y?28:22)));if(Math.abs(S.y-zH)<0.4)S.y=zH}
@@ -97,12 +97,13 @@ function dongu(ms){
       if(S.slam){S.slam=false;zeminVur(1.15,50*PK());S.sup={t0:S.t,T:0.6};karBas(S.x,300,KMIN-6,false);S.karYer=true}      // iki ayak yere: iki patlama
       if(S.dkick){const t0=S.dkick.t0;S.dkick=null;zeminVur(0.5,0,t0);karBas(S.x,230,KMIN-4,false);S.karYer=true}}      // tek ayak: bir patlama
   }
-  const z0=zemin(S.x),zJ=1-0.2*kisit((S.y-z0-500)/1100,0,1);      // yükseğe çıkınca (500 üstü) kamera geri çekilir: en çok %20 daha uzak (1600'de)
+  pltSonra();if(S.yer)S.camZ=S.y;if(S.camZ===undefined)S.camZ=0;
+  const z0=S.camZ,zJ=1-0.2*kisit((S.y-z0-500)/1100,0,1);      // yükseğe çıkınca (500 üstü) kamera geri çekilir: en çok %20 daha uzak (1600'de)
   {const hz=(ZPK.ac&&!DEMO?ZOOM_ZPK:ZOOM)*zJ;if(Math.abs(hz-ZM)>1e-4){ZM+=(hz-ZM)*(1-Math.exp(-dt*4));if(Math.abs(hz-ZM)<1e-3)ZM=hz;SC=SC0*ZM;GOK=null}}      // zıpkın modunda %50 uzak (alttan açmaz, üste açar)
   zpkGuncelle(dt);      // zıpkın: uçuş, saplanma, halat kısıtı
-  {const hd=Math.max(Math.min(S.y,z0),S.y+KARAKTER_BOY-(ZY()-H*0.1)/SC);S.camY+=(hd-S.camY)*(1-Math.exp(-dt*5))}      // ölü bölge: kamera yerde kalır, sadece kafa ekranın üst %10'una girince yukarı takip eder
+  {const hd=Math.max(Math.min(S.y,z0),S.y+KARAKTER_BOY-(ZY()-H*0.2)/SC);S.camY+=(hd-S.camY)*(1-Math.exp(-dt*5))}      // ölü bölge: kamera yerde kalır, sadece kafa ekranın üst %10'una girince yukarı takip eder
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
-  {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,false)}S.adk=k}      // her adım karda iz bırakır
+  {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);if(S.y<5)karBas(S.x+S.yon*(k%2?70:10),85,KMIN,false)}S.adk=k}      // her adım karda iz bırakır
   pozGuncelle(dt);
   ciz();
   elHiz(dt);vurusKontrol();grabKontrol(dt);ikiElKontrol(dt);elDurum(dt);mermiGuncelle(dt);emerGuncelle(dt);dusmanGuncelle(dt);carpisma();blokGuncelle(dt);zitKontrol();ciftKontrol();yereKontrol();alkisKontrol();inisGuncelle();oyuncuHasar();

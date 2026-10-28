@@ -8,10 +8,10 @@ function korsanYap(x,kc){const e={t:'korsan',kc,x,y:zemin(x),vx:0,vy:0,hp:100,ma
 function dusmanKur(){      // yol boyunca yerleşik korsanlar: k = yumruklu, b = bıçaklı; yolun sonunda kaptan (boss) gelir
   DUS=[];ENPOS=[BOSS_X];varilKur();
   const ekle=(x,kc)=>(ENPOS.push(x),DUS.push(korsanYap(x,kc)));
-  [3800,5200,9600,11200,14800,16000,19200,21000,23000,25800,27000,31600,33400,35200].forEach(x=>{ekle(x,'k');DUS[DUS.length-1].hp=DUS[DUS.length-1].max=150});
-  [4500,7400,10400,13600,16800,20200,22000,24600,29000,32200,34400].forEach(x=>ekle(x,'b'));
-  [8600,15800,23600,30400,37200].forEach(x=>{ekle(x,'h');const e=DUS[DUS.length-1];e.hp=e.max=200;e.cy=558;e.r=259});      // kancacılar
+  [6600,7600,13000,20200,27800,33000].forEach(x=>{ekle(x,'k');DUS[DUS.length-1].hp=DUS[DUS.length-1].max=150});
+  [11500,26600,31800].forEach(x=>ekle(x,'b'));
+  [19000].forEach(x=>{ekle(x,'h');const e=DUS[DUS.length-1];e.hp=e.max=200;e.cy=558;e.r=259});      // kancacılar
   for(const e of DUS)e.hp=e.max=Math.round(e.max*ZK());      // zorluk çarpanı
 }
-function yeniOyun(){ZOR_N=S.tamSif?0:ZOR_N+1;zorKaydet();cevreKur(Math.random()*4294967296>>>0,Math.random()*4294967296>>>0);YARA.ok=false;ISP=[];ISP_Y=[];ADKD=[];S.yeme=null;S.ust=null;S.dag=null;S.ispEnT=0;S.uzan=null;S.pence=null;MERMI=[];EMER=[];EFL=[];S.hitR=null;S.sarjP=null;S.en=ENMAX;S.antiBek=0;S.omuz=null;S.ispCan=null;S.tamSif=false;S.tepe=0;BCK.length=0;S.noEn=-9;S.yy=null;S.alk=null;if(S.catlak)for(const c of S.catlak)yarikSesDur(c,0.1);S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.hp=HPMAX;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;S.parcalar=[];S.kan=[];S.karP=[];S.leke=[];KAR.fill(KD);CESET.length=0;ZPK.cd=0;zpkTemizle(true);dusmanKur()}
+function yeniOyun(){ZOR_N=S.tamSif?0:ZOR_N+1;zorKaydet();cevreKur(Math.random()*4294967296>>>0,Math.random()*4294967296>>>0);YARA.ok=false;ISP=[];ISP_Y=[];ADKD=[];S.yeme=null;S.ust=null;S.dag=null;S.ispEnT=0;S.uzan=null;S.pence=null;MERMI=[];EMER=[];EFL=[];S.hitR=null;S.sarjP=null;S.en=ENMAX;S.antiBek=0;S.omuz=null;S.ispCan=null;S.tamSif=false;S.tepe=0;BCK.length=0;S.noEn=-9;S.yy=null;S.alk=null;if(S.catlak)for(const c of S.catlak)yarikSesDur(c,0.1);S.catlak=null;S.sman=null;S.dkick=null;S.sup=null;S.pend=null;S.sarj=0;S.shoryu=0;S.slam=false;S.tats=0;S.blok=false;S.bossGeldi=false;S.hp=HPMAX;S.inv=0;S.x=0;S.y=0;S.vx=0;S.vy=0;S.durum='oyun';S.pops.length=0;S.parcalar=[];S.kan=[];S.karP=[];S.leke=[];KAR.fill(KD);CESET.length=0;ZPK.cd=0;zpkTemizle(true);pltKur();S.camZ=0;S.guvX=0;S.guvY=0;dusmanKur()}
 // ---- sesler: kayıtlı ses dosyaları (WebAudio) ----

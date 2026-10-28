@@ -44,3 +44,13 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 - v0.382 kamera: genel zoom ZOOM=0.85. Ölü bölge: kamera yerde kalır, sadece kafa ekranın üst %10'una girince yukarı takip eder; 500 birim üstü yükseklikte kamera geri çekilir (1600'de en çok %20, `zJ` dongu.js). Arka plan (dağ, zemin, deniz, evler, objeler) dikeyde sabit: zıplayınca oynamaz, sadece yatayda parallaks (zıpkın ev çapası da buna göre).
 - v0.383 katmanlar: arka katman dağ (DAG_P 0.35), orta katman zemin+evler+objeler (EV_P 0.75, birlikte kayar); hepsi dikeyde sabit. Sıra: dağ ÖNCE, zemin SONRA çizilir: zemin üst kenarı (koyu çizgi) dağı keser, dağın altı (%6) zeminin arkasında kalır, böylece kopma ve "yol dağın altından kayıyor" görüntüsü olmaz.
 - v0.385: yeni dağ görseli (yeşil üstlü kayalık uçurum), DAG_BOY=4600 (2x); evler EV_GERI=160 (daha geride); zemin üst ucu dağ boyundan bağımsız (138). Kamp ateşi (o_ates) üstünde kodla çizilen sürekli harlı alev (`atesCiz`): üst odunları örter, alt odunlar az görünür, normal boy.
+
+## Deneme dalı: platform bölümü (v0.386)
+- `js/platform.js`, görseller `www/plt/*.webp` (kullanıcının yer parçası sayfasından kesildi; yarı saydam kaya/taş/mantar katmanları kullanılamadı). Ölçek `PLT_K`=5.5 (piksel → dünya), `PAR` ayak çizgisi oranı.
+- Parçalar: b0–b4 köprü, s0–s3 sehpa, l0–l1 kütük, k0 küçük kütük, r0 demirli kiriş, t0–t2 kesik ağaç, a0–a3 tekerlekli araba, y0–y3 yay (y3 kırmızı süper yay).
+- Platformlar tek yönlü: alttan geçilir, üstüne basılır (`pltDestek`). Tipler: sabit, yay (k: zıplatma katı), yat (sağa-sola araba, oyuncuyu taşır), dik (aşağı-yukarı), dus (basınca 0.45 sn titrer, düşer, 2.5 sn sonra geri gelir).
+- Zemin çukurları `ZEMIN` (ayar.js) -6000; çukurda tahta iskele/kazık/lamba çizilmez (`zeminKlip`). Çukura düşen oyuncu -40 can, son güvenli noktaya döner; düşman kaybolur.
+- Yükseltilmiş yollar `YOL`: eski tahta zemin uç uca, kazıksız.
+- Kamera: son basılan yüzeyin yüksekliğini takip eder (`S.camZ`), kafa ekranın üst %20'sine girince yukarı izler.
+- Bölüm 1 düzeni `BOLUM1`: zemin parçaları [..4200] [4900–8200] [10800–14000] [17600–21500] [25500–28500] [30600..]; boss x=34000. Düşmanlar ve variller sadece zeminde.
+

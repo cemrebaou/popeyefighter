@@ -1,9 +1,9 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.385';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.386';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=98';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=99';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['el_isp_n','el_isp_f','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir','z_dolu','z_bos','z_mizrak','z_ip']      // z_: zıpkın (tabanca dolu/boş, mızrak, halat)
   .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
@@ -58,8 +58,8 @@ const KARAKTER_BOY=1020;
 const HIZ=1100, G=5600, ZIP1=2700, ZIP2=1700, KAY_YOL=650;      // KAY_YOL: kaymadan sonra yeni kayma için koşulması gereken yol      // zıplama hızları: yükseklik eskisinin yarısı (yükseklik hızın karesiyle orantılı)
 const D=Math.PI/180;
 // [başlangıç x, yükseklik]; sol baştaki ve sağ sondaki yüksek duvar bölümün sınırı
-const ZEMIN=[[-1e9,0]];      // şimdilik düz zemin
-const BOSS_X=42000;
+const ZEMIN=[[-1e9,0],[4200,-6000],[4900,0],[8200,-6000],[10800,0],[14000,-6000],[17600,0],[21500,-6000],[25500,0],[28500,-6000],[30600,0]];      // Deneme: platform bölümü, -6000 = çukur (platform.js)
+const BOSS_X=34000;
 const kafaY=()=>S.y+((S.yer&&asagiMi())?620:790);      // oyuncunun kafa yüksekliği (eğilince alçalır): kaptan buraya nişan alır
 
 // ---------- Durum ----------
