@@ -104,6 +104,11 @@ function dongu(ms){
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
   {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,false)}S.adk=k}      // her adım karda iz bırakır
   pozGuncelle(dt);
+  if(S.dag&&R.blade){      // blade: bıçak atlama uçuşu sırasında oyuncunun önünde iki bıçak görseli
+    const bsx=W/2+(S.x-S.x)*SC,bsy=ZY()-(S.y+200-S.camY)*SC;      // oyuncunun ön-alt tarafında
+    const bw=R.blade.width*SC*0.6,bh=R.blade.height*SC*0.6;
+    ctx.save();ctx.translate(bsx,bsy);ctx.scale(S.dag.dir,1);ctx.globalAlpha=0.85;ctx.drawImage(R.blade,-bw/2,-bh/2,bw,bh);ctx.restore();
+  }
   ciz();
   elHiz(dt);vurusKontrol();grabKontrol(dt);ikiElKontrol(dt);elDurum(dt);mermiGuncelle(dt);emerGuncelle(dt);dusmanGuncelle(dt);carpisma();blokGuncelle(dt);zitKontrol();ciftKontrol();yereKontrol();alkisKontrol();inisGuncelle();oyuncuHasar();
 }
