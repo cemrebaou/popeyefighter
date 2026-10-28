@@ -48,3 +48,6 @@ Haritada, yolda veya bölüm düzeninde çalışmadan önce bu dosyayı oku. De�
 
 ## Bossler
 - Bölüm 1 boss: kaptan. Bölüm 2 ve sonrası: kılıç ustası (erkek). Bölüm 2'den tabancalı kadın düşman da yerleşir (`dusmanKur`).
+
+## v0.389
+- Dağ %25 daha küçük (`DAG_BOY` 3450). Zemin görseli kumlu toprak ile değiştirildi.

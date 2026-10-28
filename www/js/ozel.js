@@ -171,10 +171,11 @@ function catlakGuncelle1(c){      // true = yarık bitti
       for(let i=0;i<3;i++)karAt(tx+(Math.random()-0.5)*60,ty,c.dir*(80+Math.random()*520)+(Math.random()-0.5)*400,900+Math.random()*1200,true);      // yarıktan çeşitli kıymıklar
       karAt(tx,ty,(Math.random()-0.5)*600,700+Math.random()*900)}}
   if(!c.sonu&&u>c.T-0.8){c.sonu=true;yarikSesDur(c,0.8)}
+  const vuruldu=c.vur||(c.vur=new Set());      // bu yarık her düşmana en çok bir kez vurur (kesin kilit)
   for(const e of DUS){
-    if(e.olu||e.catT===c.t0)continue;
+    if(e.olu||vuruldu.has(e))continue;
     const dx=(e.x-c.x)*c.dir,ey=e.y+e.cy-S.y;
-    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){e.catT=c.t0;S.yerV=true;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100);S.yerV=false;bufCal(TVS,1)}      // yarık düşmana vurunca tahta sesi
+    if(dx>-80&&dx<d&&ey>-e.r&&ey<350+e.r){vuruldu.add(e);S.yerV=true;vur(e,40*PK(),c.dir*0.25,1,0.85,S.y+100);S.yerV=false;bufCal(TVS,1)}      // yarık düşmana vurunca tahta sesi
   }
   return false;
 }

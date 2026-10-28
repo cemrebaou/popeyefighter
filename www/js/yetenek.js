@@ -43,7 +43,7 @@ try{const n=parseInt(new URLSearchParams(location.search).get('seviye'));      /
 function agKaydet(){try{localStorage.setItem('pf_agac2',JSON.stringify({acik:[...AG.acik],anti:[...AG.anti],cip:AG.cip,top:AG.top}))}catch(_){}}
 agKaydet();
 const YV=k=>(AG.acik.has(k)&&!(AG.anti.has(k)&&!DEMO))||!!(DEMO&&DEMO.yv.includes(k));      // anti'ye çevrilen yetenek kapalı sayılır (önizlemede asıl hali gösterilir)
-const TUTMA=()=>['A','B','G'].some(k=>YV(k)||(!DEMO&&AG.acik.has(k)))||['H','M','F','R'].some(YV);      // insan tutma: tutma yazan yeteneklerden (İnsan Tutma, Varil Tutma, Sıkı Tutuş) biri verilmişse (öldürülmüş olsa da) ya da Can Çalma / Yırtma / Can Çalmalı Yırtma açıksa çalışır; yetenekler birbirinin önkoşulu değil
+const TUTMA=()=>['A','B','G','F','R'].some(YV);      // İnsan Tutma/Varil Tutma/Sıkı Tutuş/Yırtma/Can Çalmalı Yırtma'dan biri verilip anti'ye çevrilmemişse tutma çalışır; bu 5 yeteneğin şu anki anti etkilerinin hiçbirinde tutma geçmiyor (A: omuz atma, B: varile tekme, G: hızlı eller, F: düşük canlıyı tek yumrukla öldürme, R: yarı enerji) o yüzden ölülerinde çalışmaz; ileride bir anti metni tutmadan bahsederse burası da güncellenmeli; yetenekler birbirinin önkoşulu değil
 const YA=k=>AG.anti.has(k)&&!DEMO;      // yetenek anti haline çevrilmiş mi      // önizlemede gösterilen yetenek geçici açık
 const YGEREK={R:'F'};      // bu yetenek, komşusu açık olsa da önce şunun açılmasını ister (Can Çalmalı Yırtma ← Yırtma)
 const yAcilir=k=>!AG.acik.has(k)&&YKOM[k].some(n=>AG.acik.has(n))&&(!YGEREK[k]||AG.acik.has(YGEREK[k]));

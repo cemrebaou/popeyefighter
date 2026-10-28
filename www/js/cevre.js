@@ -89,7 +89,7 @@ function cevreArka(zeminY){      // arkaPlan'ın sonunda: kum, evler, arka kazı
 // Kum + deniz (v0.368): evlerin altından ekranın altına. Üstte kum (dünyada sabit, uç uca döşenir), altında deniz (en üstü kıyı köpüğü).
 // İkisi de yatay dilimlerle perspektifli: üst dilim ev katmanı hızında (EV_P), alt dilimler giderek SAHIL_P1 hızına çıkar. Deniz kendi kendine akar:
 // deniz kumdan bağımsız, dere gibi sürekli yavaşça sola akar (DZ_X); koşunca parallaksla daha hızlı kayar.
-const ZEMIN_W=1700,DAG_P=0.35,DAG_BOY=4600,DAG_GERI=260;      // v0.379: dağ daha uzak (0.5→0.35) ve büyük (1500→2300); tabanı iskele arka kenarından DAG_GERI geride (evlerin arkasında)
+const ZEMIN_W=1700,DAG_P=0.35,DAG_BOY=3450,DAG_GERI=260;      // v0.389: dağ %25 daha küçük (4600→3450); tabanı iskele arka kenarından DAG_GERI geride (evlerin arkasında)
       // zemin dokusu dünya eni; yakın dağ: derinlik (evlerden uzak, yavaş kayar) ve dünya boyu
 const KUM_ORAN=0.36,DZ_AKIS=70,DZ_KIYI=0.12,DZ_PER=60,DZ_HIZ=0.22;      // + ekrana doğru akış: kıyı payı, kayma (görsel px), devir (1/sn)      // bandın kum payı; deniz kendi kendine sola akar (dünya birimi/sn), koşunca parallaksla daha hızlı kayar
 let DZ_X=0,DZ_T=-1;

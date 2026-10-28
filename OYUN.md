@@ -135,6 +135,12 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 ## Bölüm 2+ düşmanları (v0.388)
 - 1. bölüm boss: eski kaptan (can 500, XP 200). 2. bölümden itibaren boss: kılıç ustası (erkek, `sk:'m'`, `agil`): can 750, yakın dövüş 22 (kaptanın 1.5 katı), yürüyüş ×1.35, saldırı süreleri ×0.75. Vurulunca %38 şansla geri takla/geri sıçrama, sonra öne atılıp vurur; saldırıdan sonra havaya sıçrar; eğilir, bazı saldırılardan kaçar ("KAÇTI!"). `usta.js`.
 - Tabancalı kadın (`sk:'f'`, 2. bölümden): can 100, atak 20, orta hız; kaptan mermisi/ateşi küçültülmüş (0.55/0.5), namlu ucundan çıkar.
-- Tutma kuralı: `TUTMA()` (yetenek.js) — İnsan Tutma/Varil Tutma/Sıkı Tutuş verilmişse (öldürülmüş olsa da) ya da Can Çalma/Yırtma/Can Çalmalı Yırtma açıksa insan tutma çalışır; yetenekler birbirinin önkoşulu değil.
+- Tutma kuralı: `TUTMA()` (yetenek.js) — A İnsan Tutma, B Varil Tutma, G Sıkı Tutuş, F Yırtma, R Can Çalmalı Yırtma'dan biri VERİLİP anti'ye çevrilmemişse (aktifken) tutma çalışır; bu 5 yeteneğin şu anki anti (ölü) etkilerinin hiçbirinde tutma geçmiyor, o yüzden ölüyken tutma çalışmaz (ileride bir anti metni tutmadan bahsederse koda eklenmeli); yetenekler birbirinin önkoşulu değil.
 - TEST: O tuşu 1 yetenek puanı verir (sonra silinecek).
 - Yere iniş seslerinin (wooddusme, inis_*) başındaki sessizlik `bosKes()` ile kesilir.
+
+## v0.389 düzeltmeler
+- Yarık (Yer Yumruğu, N): her kullanım artık aynı düşmana kesin bir kez vurur (`ozel.js` çatlak başına `Set`).
+- Tabancalı kadın (f): el ataması düzeltildi (tabanca öndeki kolda, `gunNear`), eller kolun ön katmanında çizilir (`eo`).
+- Kılıç ustası boss (m): bacaklar %20 büyük, gövde 20 birim yukarı alındı (`bs:1.2`, `bel:468.3`); kollar düz duruşa alındı (bıçaklı gard açısı artık uygulanmıyor).
+- Zemin görseli değişti (kumlu toprak), dağ %25 daha küçültüldü (`DAG_BOY` 4600→3450).
