@@ -267,7 +267,7 @@ function zpkCiz(k){      // halat ve mızrak (F karakterin arkasında, N önünd
 }
 function zpkKorsanPoz(e,p){      // zıpkınlanan düşman: iki eli mızrağın sapında (ters kinematik), çırpınır
   const z=e.zpk,h=z&&ZPK[z.k];if(!h||h.ph!=='tak'||h.hd.e!==e||e.boss)return p;
-  const K=KSK[e.kc||'k'],t=S.t,yn=e.yon||1,u=e._u;
+  const K=KSK[e.sk||e.kc||'k'],t=S.t,yn=e.yon||1,u=e._u;
   Object.assign(p,{torso:-10+Math.sin(t*15)*6,bas:-14+Math.sin(t*11)*10,hx:-20,lN:-14+Math.sin(t*9)*10,kN:20+Math.max(0,Math.sin(t*9))*20,lF:8-Math.sin(t*9)*10,kF:24});
   if(!u)return p;
   const [tx,ty,a]=zpkUcVis(h),ca=Math.cos(a),sa=Math.sin(a),gx=tx-ca*ZP_GOM.d,gy=ty-sa*ZP_GOM.d,hed={N:20,F:62};      // ellerin sapta tuttuğu yer: giriş noktasından geride

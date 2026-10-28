@@ -21,9 +21,10 @@ function elDeg(e,k,pad){const h=EL[k];if(dusDeg(e,h.wx,h.wy,pad))return true;ret
 function ayakDeg(e,L,pad){const a=AY[L];return !!(a&&a.d&&(dusDeg(e,a.d[0],a.d[1],pad)||dusDeg(e,a.a[0],a.a[1],pad)||dusDeg(e,a.u[0],a.u[1],pad)))}      // diz ya da bot
 function yereDeg(e){const b=e._b;if(!b||S.t-b.t>0.25)return true;let lo=1e9;for(const n of ['kafa','boy','kal'])if(b[n])lo=Math.min(lo,b[n].y);return lo-zemin(e.x)<e.r*0.75}      // ölünün kafası/gövdesi yerde mi
 function vur(e,dmg,vx,vy,f,hy){
+  if(e.agil&&ustaKacti(e))return;      // kılıç ustası kaçtı
   let krit=false;e.sonV=S.t;e.vurT=S.t;if(e.kac)e.kac.v++;      // vurT: 0.6 sn acı yüzü
         // son vuruş zamanı (tutulu korsan 1 sn vurulmazsa kafa atar)
-  if(e.boss){f*=0.25;dmg*=0.5;if(hy!==undefined&&hy>e.y+900&&!S.yerV){dmg*=3;krit=true}}      // kaptan: kafasına vuruş 3 kat
+  if(e.boss){f*=0.25;dmg*=0.5;if(hy!==undefined&&hy>e.y+(e.hy||900)&&!S.yerV){dmg*=3;krit=true}}      // kaptan: kafasına vuruş 3 kat
   dmg=antiHasar(e,dmg);if(S.antiKrit){S.antiKrit=false;krit=true}
   if(e.boss&&S.yerV&&dmg<9999)dmg=Math.min(dmg,Math.round(e.max*0.05));      // kaptan: yer vuruşu başına maks. canın %5'i      // anti yetenek çarpanları
   dmg=Math.round(dmg);titre(12+Math.round(70*f));if(S.cs&&dmg<9999)canCal(Math.min(dmg,Math.max(0,e.hp)),S.cs==='t');
@@ -46,10 +47,11 @@ function vur(e,dmg,vx,vy,f,hy){
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
   if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;if(e.dus){e.yerOl=true;e.dus.son=S.t+999;e.vx=e.vy=0}else if(dmg<9999){const uc=dmg>=25||e.y>zemin(e.x)+5||Math.abs(e.vx)>1100;e.cy0=e.cy0||e.cy;e.dusA=0;      // ölüm: sert darbe = uçarak kıç üstü düşüp geri yatar, değilse dizler üstüne çöküp yüzüstü düşer
     if(uc){const yn=Math.sign(e.vx)||(e.x>=S.x?1:-1);e.vx=yn*Math.max(900,Math.abs(e.vx)*1.2);e.vy=Math.max(e.vy,0)+900;e.olm={tip:'uc',f:'hava',t0:S.t,yn,ters:(S.x-e.x)*(e.yon||1)<0}}
-    else{e.vx*=0.3;e.vy=0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1}}}else{e.vx*=1.4;e.vy+=700}if(!olu0){antiOldu(e);xpKazan(Math.round(e.max/10*(dmg>=9999?1.5:1)));ispDus(e.x,e.y+e.cy);bufCal(OLS[e.kc||'k'],1)}}      // yerdeyken ölürse olduğu yerde ölür (dönmez); ölüm sesi      // %25 ıspanak düşer
+    else{e.vx*=0.3;e.vy=0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1}}}else{e.vx*=1.4;e.vy+=700}if(!olu0){antiOldu(e);xpKazan(Math.round((e.xp||e.max/10)*(dmg>=9999?1.5:1)));ispDus(e.x,e.y+e.cy);bufCal(OLS[e.kc||'k'],1)}}      // yerdeyken ölürse olduğu yerde ölür (dönmez); ölüm sesi      // %25 ıspanak düşer
   if(S.pSes){if(S.pence&&S.pSes===true)torbaCal(BLD,BLDBAG,1);else ses(S.pSes==='tekme'?'tekme':'yumruk')}      // bıçak modunda bıçak sesleri
   S.dur=Math.max(S.dur,0.04+0.08*f);S.sars=Math.max(S.sars,4+14*f);
   S.pops.push({x:e.x,y:e.y+e.cy+e.r,t:0,txt:krit?dil('krit',dmg):'-'+dmg,f:krit?1:f});
+  if(e.agil)ustaVurdu(e);
 }
 function vurusKontrol(){
   const dugme=S.atk&&!S.atk.tv&&HAREKET[S.atk.ad].p;
@@ -130,7 +132,7 @@ function vurusKontrol(){
 // ---- tutma: ekrana basılı tut, eli yavaş götür, düşmanı yakala; bırakınca fırlat ----
 function yirt(e,hiz){             // iki elle tutulan korsanı belden ikiye ayır: üst gövde N elinde, alt gövde F elinde; hızlı çekişte yarılar fırlar
   ses('parca');{const mx=(EL.N.wx+EL.F.wx)/2,my=(EL.N.wy+EL.F.wy)/2;kanFiskir(mx,my,1,1.2);kanFiskir(mx,my,-1,1.2)}
-  const hizli=hiz>1000,v=kisit(hiz*0.9,1200,4200),z={yon:e.yon,anim:e.anim,fl:0,moving:false,kc:e.kc};      // çekişin gücü = yarıların fırlama hızı
+  const hizli=hiz>1000,v=kisit(hiz*0.9,1200,4200),z={yon:e.yon,anim:e.anim,fl:0,moving:false,kc:e.kc,sk:e.sk,bs:e.bs};      // çekişin gücü = yarıların fırlama hızı
   for(const el of ['N','F']){const yan=EL[el].wx<=EL[el==='N'?'F':'N'].wx?-1:1;S.parcalar.push({el,yan,kind:el==='N'?'ust':'alt',z,phi:e.phi||0,t0:S.t,at:hizli,tT:hizli?S.t:0,x:EL[el].wx,y:EL[el].wy,vx:yan*v,vy:hizli?900:0,rot:0})}
   if(YV('R')&&S.hp>0){const c=Math.max(50,Math.ceil(e.hp));S.hp=Math.min(HPMAX,S.hp+c);S.pops.push({x:S.x,y:S.y+1050,t:0,txt:dil('can_pop',c),f:0.5,mavi:1})}      // can çalmalı yırtma: düşmanın canı kadar (en az 50)
   S.yirtT=S.t;e.iki=false;vur(e,99999,0,0,0.3,e.y);S.pops.pop();e.yerOl=false;e.olm=null;e.dus=null;e.ol=0.95;      // yerdeyken yırtılsa da gövde hemen silinir (ekranda sadece iki yarı kalır)
@@ -166,7 +168,7 @@ function ikiElKontrol(dt){
 }
 function grabKontrol(dt){
   if(S.sarj>0||S.pence)return;
-  if(!YV('A'))return;      // İnsan Tutma açık değil
+  if(!TUTMA())return;      // tutma yeteneği yok
   if(KOL.N.ak&&KOL.F.ak&&!DUS.some(e=>e.tut)){      // iki el basılı: iki taraftan birden tut
     const hz=EL.N.v<=1100&&EL.F.v<=1100&&KOL.N.e>=0.25&&KOL.F.e>=0.25;
     let en=null;
@@ -269,9 +271,11 @@ function dusmanGuncelle(dt){
         e.dusA=(e.dusA||0)+(hd-(e.dusA||0))*Math.min(1,dt*20);e.cy=e.cy0+(110-e.cy0)*e.dusA;e.st=Math.max(e.st,d.son);kolYere(e,dt)}}
     if(e.itK){const k=e.itK,u=Math.min(1,(S.t-k.t0)/k.T);e.x=k.x0+k.dx*u*(2-u);if(u>=1||e.tut||e.olu)e.itK=null}      // altılı tekme itişi: yumuşak kayar
     const stun=S.t<e.st,dx=S.x-e.x,zH=zemin(e.x),yer=e.y<=zH+1;
-    if(!e.akt&&(Math.abs(dx)<1500||stun))e.akt=true;               // oyuncu yaklaşınca uyanır (dalga gibi gelmez)
+    if(!e.akt&&(Math.abs(dx)<1500||stun))e.akt=true;
+    if(e.agil)ustaKontrol(e,dt,dx,stun,yer);               // oyuncu yaklaşınca uyanır (dalga gibi gelmez)
     if(stun||!yer||e.vy>0){                                         // savrulma / havada
-      e.moving=false;if(stun){if(e.ka){e[(e.kc==='p'||e.kc==='h')?'mcd':'acd']=e.ka.t0+0.6+Math.random()*0.8}e.ka=null;e.ks=null}      // yarıda kalan vuruşun sayacı vuruş başından işler: durakladığı sürede dolar, süre dolmuşsa hemen vurur
+      e.moving=false;if(e.agil&&e.ka&&!stun)korsanAI(e,dt,dx);      // kılıç ustası havada da savurur
+      if(stun){if(e.ka){e[(e.kc==='p'||e.kc==='h')?'mcd':'acd']=e.ka.t0+0.6+Math.random()*0.8}e.ka=null;e.ks=null}      // yarıda kalan vuruşun sayacı vuruş başından işler: durakladığı sürede dolar, süre dolmuşsa hemen vurur
       e.vy-=G*dt;let nx=e.x+e.vx*dt;
       if(zemin(nx)>e.y+30){e.vx*=-0.2;nx=e.x}
       e.x=nx;e.y+=e.vy*dt;e.vx*=Math.pow(yer?0.02:0.5,dt);
@@ -279,6 +283,6 @@ function dusmanGuncelle(dt){
       continue;
     }
     e.vx=e.vy=0;e.y=zH;
-    if(e.akt)korsanAI(e,dt,dx);
+    if(e.akt&&!(e.agil&&e.ag&&e.ag.tip==='egil'))korsanAI(e,dt,dx);
   }
 }

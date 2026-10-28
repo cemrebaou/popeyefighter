@@ -10,6 +10,7 @@ function tus(e,d){
   else if((k==='j'||k==='J')&&d&&!e.repeat){S.jEl=S.jEl==='N'?'F':'N';komboTap('y',S.jEl)}      // dokunmatikteki gibi yumruk (eller sırayla), kombo zinciri çalışır
   else if((k==='k'||k==='K')&&d&&!e.repeat){S.kEl=S.kEl==='N'?'F':'N';tekmeAt(S.kEl)}            // tekme
   else if('gGhHbBnNmM'.includes(k)&&k.length===1&&d&&!e.repeat)ozelTus(k.toLowerCase());
+  else if((k==='o'||k==='O')&&d&&!e.repeat)xpKazan(xpGerek(AG.lv)-AG.xp);      // TEST: 1 yetenek puanı (sonra silinecek)
   else if((k==='x'||k==='X')&&d&&!e.repeat)zpkMod(!ZPK.ac);      // zıpkın aç/kapa
   else return;
   e.preventDefault();

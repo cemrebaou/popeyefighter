@@ -1,9 +1,12 @@
 'use strict';
 // Boss, aduket topu, kaptan mermisi, top/efekt çizimi
 function bossKur(){
-  S.bossGeldi=true;S.mesaj='boss_geldi';S.mesajT=S.t;
-  const x=BOSS_X;
-  DUS.push({t:'korsan',kc:'p',boss:true,bs:1.25,x,y:zemin(x),vx:0,vy:0,hp:Math.round(500*ZK()),max:Math.round(500*ZK()),cy:560,r:265,yon:-1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:S.t+1.5,ka:null});      // boss: tabancalı korsan, %25 büyük
+  S.bossGeldi=true;const x=BOSS_X;
+  if(ZOR_N>=1){      // 2. bölümden itibaren boss: kılıç ustası (kaptanın 1.5 katı can/saldırı, çevik)
+    S.mesaj='boss_geldi2';S.mesajT=S.t;const hp=Math.round(750*ZK());
+    DUS.push({t:'korsan',kc:'b',sk:'m',boss:true,agil:true,bs:1.15,hy:820,vk:1.35,hz:0.75,dm:22,xp:Math.round(200*XPK()),x,y:zemin(x),vx:0,vy:0,hp,max:hp,cy:540,r:255,yon:-1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:S.t+1.5,ka:null});return}
+  S.mesaj='boss_geldi';S.mesajT=S.t;
+  DUS.push({t:'korsan',kc:'p',boss:true,bs:1.25,x,y:zemin(x),vx:0,vy:0,hp:Math.round(500*ZK()),max:Math.round(500*ZK()),cy:560,r:265,yon:-1,anim:0,fl:0,st:S.t+1.2,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:S.t+1.5,ka:null,xp:200});      // boss: tabancalı korsan, %25 büyük
 }
 function ates(dx,dy,ch,bx,by){    // aduket: topun ele göre yönüne (yukarı/aşağı dahil) gider
   if(!enerji(50)){S.sarj=0;return}
@@ -20,7 +23,7 @@ function pAtesle(e){      // namludan oyuncunun kafasına doğru tek mermi; sonr
   let dx=el?m.x-el.x:S.x-m.x,dy=el?m.y-el.y:kafaY()-m.y;      // namlunun gösterdiği yön (el → namlu ucu)
   if(Math.abs(dx)<1&&Math.abs(dy)<1){dx=S.x-m.x;dy=kafaY()-m.y}
   const L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
-  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:Math.round(30*ZK())});EFL.push({x:m.x+Math.cos(ang)*14,y:m.y+Math.sin(ang)*14,ang,t:S.t});
+  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:Math.round((e.bdm||30)*ZK()),k:e.sk==='f'?0.55:1});EFL.push({x:m.x+Math.cos(ang)*14,y:m.y+Math.sin(ang)*14,ang,t:S.t,k:e.sk==='f'?0.5:1});
   bufCal(PAT,0.9);S.sars=Math.max(S.sars,3);
 }
 function emerGuncelle(dt){
@@ -41,12 +44,12 @@ function emerGuncelle(dt){
 }
 function emerCiz(){
   const im=R.p_mermi,fm=R.p_ates;
-  if(im)for(const p of EMER){const sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC,w=im.width*SC*1.35,h=im.height*SC*1.35;
+  if(im)for(const p of EMER){const sx=W/2+(p.x-S.x)*SC,sy=ZY()-(p.y-S.camY)*SC,w=im.width*SC*1.35*(p.k||1),h=im.height*SC*1.35*(p.k||1);
     ctx.save();ctx.translate(sx,sy);ctx.rotate(Math.atan2(-p.vy,p.vx));
     for(let k=3;k>=1;k--){ctx.globalAlpha=0.3/k*1.6;ctx.drawImage(im,-w/2-k*w*0.55,-h/2,w*1.4,h*0.8)}      // arkada hız izi
     ctx.globalAlpha=1;ctx.drawImage(im,-w/2,-h/2,w*1.2,h);ctx.restore()}
   if(fm)for(const f of EFL){const sx=W/2+(f.x-S.x)*SC,sy=ZY()-(f.y-S.camY)*SC,u=(S.t-f.t)/0.2;
-    ctx.save();ctx.translate(sx,sy);ctx.rotate(-f.ang);ctx.globalAlpha=1-u*u;ctx.globalCompositeOperation='lighter';const k=SC*2.9*(0.8+0.5*u);ctx.scale(k,k);ctx.drawImage(fm,-KSK.p.A.ates[0],-KSK.p.A.ates[1]);ctx.restore()}
+    ctx.save();ctx.translate(sx,sy);ctx.rotate(-f.ang);ctx.globalAlpha=1-u*u;ctx.globalCompositeOperation='lighter';const k=SC*2.9*(f.k||1)*(0.8+0.5*u);ctx.scale(k,k);ctx.drawImage(fm,-KSK.p.A.ates[0],-KSK.p.A.ates[1]);ctx.restore()}
   ctx.globalAlpha=1;
 }
 function mermiGuncelle(dt){

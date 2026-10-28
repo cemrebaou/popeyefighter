@@ -1,12 +1,12 @@
 'use strict';
 // Ayarlar, sürüm, görsel yükleyici, ekran boyutu, oyuncu durumu (S)
 // ---------- Görseller: hepsi tek yükleyiciyle; tamamı inince oyun başlar ----------
-const OYUN_SURUM='v0.387';      // ekrandaki sürüm (her değişiklikte artar)
+const OYUN_SURUM='v0.388';      // ekrandaki sürüm (her değişiklikte artar)
 document.getElementById('surum').textContent=OYUN_SURUM;
-const SURUM='?v=100';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
+const SURUM='?v=101';                 // görsel değişince artır: tarayıcı eski önbelleği kullanmasın
 const KP=['kafa','govde','kalca','ust','on','elN','elF','uy','bacak','bot'];      // korsan parça seti (k: yumruklu, b: bıçaklı, p: tabancalı kaptan)
 const ADLAR=['el_isp_n','el_isp_f','kalca','ustkol','onkol','onkol2','uyluk','altpan','bacak_bot','el_yum','el_yum_f','el_ac_n','el_ac_f','el_pN','el_pF','p_mermi','p_ates','h_elB','h_kanca','h_zincir','z_dolu','z_bos','z_mizrak','z_ip']      // z_: zıpkın (tabanca dolu/boş, mızrak, halat)
-  .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_'].map(q=>KP.map(n=>q+n)));
+  .concat([...Array(11).keys()].map(i=>'govde'+i),...['k_','b_','p_','h_','m_','f_'].map(q=>KP.map(n=>q+n)));
 const RES=2;                       // oyuncu parçaları oyun biriminin 2 katı çözünürlükte
 const R={},YUZY=[],YUZ=[],YUZA=[],KARI=[],KANI=[],AGAC=[],TASI=[],KIYI=[];      // YUZ: can kademesi yüzleri (0 tam can … 10 ölü), YUZA: darbe tepkisi yüzleri, KARI: kar taneleri, KANI: kan efektleri
 function koyult(img,al=.28){            // arka taraftaki uzuvlar için hafif koyu kopya
@@ -40,9 +40,9 @@ function gorselHazir(){
   if(gorselHazir.ok)return;gorselHazir.ok=true;      // tek sefer: sonradan yüklenen görseller (cevre.js) ikinci döngü başlatmasın (oyun 2 kat hızlı akıyordu)
   ['uyluk','altpan','bacak_bot'].forEach(n=>R[n+'_k']=koyult(R[n]));                 // oyuncunun arka bacağı
   ['ustkol','onkol2','el_yum_f','el_ac_n','el_pF'].forEach(n=>R[n+'_a']=koyult(R[n],.13));    // oyuncunun arka kolu ve eli
-  for(const q of ['k_','b_','p_','h_']){for(const n of ['ust','on','elF'])R[q+n+'_k']=koyult(R[q+n],.13);for(const n of ['uy','bacak','bot'])R[q+n+'_k']=koyult(R[q+n],.3)}      // korsanın arkadaki kolu/bacağı
+  for(const q of ['k_','b_','p_','h_','m_','f_']){for(const n of ['ust','on','elF'])R[q+n+'_k']=koyult(R[q+n],.13);for(const n of ['uy','bacak','bot'])R[q+n+'_k']=koyult(R[q+n],.3)}      // korsanın arkadaki kolu/bacağı
   R.z_dolu_a=koyult(R.z_dolu,.13);R.el_isp_f_a=koyult(R.el_isp_f,.13);R.z_bos_a=koyult(R.z_bos,.13);      // arkadaki koldaki zıpkın
-  R.p_elN_k=koyult(R.p_elN,.13);R.h_elN_k=koyult(R.h_elN,.13);R.h_elB_k=koyult(R.h_elB,.13);      // kancacının arkadaki kolunda kancalı / boş el
+  R.p_elN_k=koyult(R.p_elN,.13);R.f_elN_k=koyult(R.f_elN,.13);R.h_elN_k=koyult(R.h_elN,.13);R.h_elB_k=koyult(R.h_elB,.13);      // kancacının arkadaki kolunda kancalı / boş el
   document.getElementById('yuk').hidden=true;
   (function bas(){if(typeof dongu==='function')requestAnimationFrame(dongu);else setTimeout(bas,20)})();      // önbellekten görseller dongu.js yüklenmeden hazır olabilir: döngü tanımlanınca başlar
 }

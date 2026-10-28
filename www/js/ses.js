@@ -1,4 +1,9 @@
 'use strict';
+function bosKes(b){      // sesin başındaki sessizliği kes (~4 ms pay bırak)
+  const d=b.getChannelData(0);let i=0;while(i<d.length&&Math.abs(d[i])<0.004)i++;
+  i=Math.max(0,i-Math.round(b.sampleRate*0.004));if(i<=0)return b;
+  const o=AC.createBuffer(b.numberOfChannels,b.length-i,b.sampleRate);
+  for(let c=0;c<b.numberOfChannels;c++)o.getChannelData(c).set(b.getChannelData(c).subarray(i));return o}
 // Sesler (WebAudio), titreşim
 let AC=null,SFXG=null,MUZG=null;
 const AYAR={ses:true,muz:true};try{Object.assign(AYAR,JSON.parse(localStorage.getItem('pf_ayar')||'{}'))}catch(_){}      // menü ayarları: ses efektleri, müzik
@@ -38,10 +43,10 @@ function sesYukle(){
   for(let i=1;i<=3;i++)y('kilic_'+i,b=>KLC.push(b));
   for(let i=1;i<=5;i++)y('whoosh_'+i,b=>WH.push(b));
   for(let i=1;i<=3;i++)y('jump_'+i,b=>JP.push(b));      // sallama (boşta da dolu da): yumruk, tekme, bıçak
-  for(const n of ['blade','blade_1','blade_2'])y(n,b=>BLD.push(b));for(const i of [1,2])y('inis_'+i,b=>INS.push(b));for(const k of ['k','b','p','h'])y('olum_'+k,b=>OLS[k]=b);
+  for(const n of ['blade','blade_1','blade_2'])y(n,b=>BLD.push(b));for(const i of [1,2])y('inis_'+i,b=>INS.push(bosKes(b)));for(const k of ['k','b','p','h'])y('olum_'+k,b=>OLS[k]=b);
   y('ust_atla',b=>USTS=b);y('grap',b=>GRS=b);y('bladeopen',b=>BOPEN=b);y('dusme',b=>DSS=b);y('devrilses',b=>DEVS=b);y('deniz',b=>{ARK=b;arkaCal()});      // arka plan: deniz sesi
   y('tahta_carpma',b=>TCS=b);for(let i=1;i<=4;i++)y('tahta_dus_'+i,b=>TD.push(b));
-  y('spinach-drop',b=>ISPS=b);y('levelup',b=>LVS=b);y('skill_oldur',b=>OLDS=b);y('tahtavurma',b=>TVS=b);y('wooddusme',b=>WDS=b);      // havadan tahtaya düşmey('wateraduket',b=>ADKS=b);y('aduket_carpma',b=>ADKC=b);y('kalpsesi',b=>KALPS=b);y('yemeses',b=>YEMS=b);
+  y('spinach-drop',b=>ISPS=b);y('levelup',b=>LVS=b);y('skill_oldur',b=>OLDS=b);y('tahtavurma',b=>TVS=b);y('wooddusme',b=>WDS=bosKes(b));      // havadan tahtaya düşmey('wateraduket',b=>ADKS=b);y('aduket_carpma',b=>ADKC=b);y('kalpsesi',b=>KALPS=b);y('yemeses',b=>YEMS=b);
   y('parcalanma',b=>PPAR=b);y('yarildi',b=>YAR=b);y('sapla',b=>SAPLA=b);y('mermi_haz',b=>HAZ=b);y('mermi_patla',b=>PAT=b);
 }
 function ziplaCal(){            // zıplama sesi: torba sırası, peş peşe iki zıplama (ilk ve ikinci) asla aynı ses olmaz

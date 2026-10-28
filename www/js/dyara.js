@@ -11,7 +11,7 @@ function dyMaske(ad){
 }
 function dyUygun(m,px,py){if(px<0||py<0||px>=m.w||py>=m.h)return false;const gx=px/3|0,gy=py/3|0;return gx<m.gw&&gy<m.gh&&!!m.u[gy*m.gw+gx]}
 function dyKur(e){      // bu düşmana özel rastgele yerleşim (ilk vuruşta bir kez)
-  const q=e.kc||'k',L=[],ad=[],alan={};let top=0;
+  const q=e.sk||e.kc||'k',L=[],ad=[],alan={};let top=0;
   for(const s in DY_PAR){const m=dyMaske(q+'_'+DY_PAR[s]);if(!m||m.n<20)continue;ad.push(s);alan[s]=m.n;top+=m.n}
   if(top>0){let hata=0;
     while(hata<600&&L.length<36){
@@ -37,7 +37,7 @@ function dyGuncelle(e){      // görünen yara sayısı can kaybıyla orantılı
   const N=yr.L.length,k=kisit(Math.floor((e.max-Math.max(0,e.hp))/e.max*N+1e-6),0,N);
   if(k===yr.k)return yr;yr.k=k;
   for(const s in DY_PAR){
-    const im=R[(e.kc||'k')+'_'+DY_PAR[s]];if(!im||!im.width)continue;
+    const im=R[(e.sk||e.kc||'k')+'_'+DY_PAR[s]];if(!im||!im.width)continue;
     let c=yr.c[s];let var_=false;
     for(let i=0;i<k;i++)if(yr.L[i].s===s){var_=true;break}
     yr.v[s]=var_;if(!var_)continue;
