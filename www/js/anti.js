@@ -33,7 +33,7 @@ function antiHasar(e,dmg){
   return dmg;
 }
 function antiVurSonra(e,dmg,hf){
-  if(YA('Y')&&!S.antiTik&&S.cs==='y'&&!S.pence&&S.vEl){const h=EL[S.vEl];adkDamla(h.wx,h.wy,45,S.vx,0,S.yon,16)}      // Aduket öldürülünce: yumruk değince sular fışkırır
+  if(YA('Y')&&!S.antiTik&&S.cs==='y'&&!S.pence&&S.vEl){const h=EL[S.vEl];adkDamla(h.wx,h.wy,45,S.vx,0,S.yon,16);e.yavas=S.t+2}      // + 2 sn yavaşlar (yürüme %50)      // Aduket öldürülünce: yumruk değince sular fışkırır
   if(dmg>=9999||S.antiTik||e.olu)return;
   if(YA('Q')&&S.cs==='t'&&!e.tut){e.vx*=1.3;e.vy*=1.3}      // tekmeler %30 daha uzağa
   if(YA('J')&&Math.random()<0.05){e.yan={son:S.t+4,tik:(e.yan&&e.yan.tik)||S.t+0.5};if(S.cs==='y'&&S.vEl)S.atesEl={k:S.vEl,son:S.t+0.6}}      // yakan yumruk alev alır      // Ateşli Aparkat öldürülünce: her vuruş %5 yakar, 4 sn

@@ -65,7 +65,7 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
     if(ad<2100&&S.durum==='oyun'&&S.t>=(e.acd||0))e.kh={ph:'haz',t0:S.t};
     return;
   }
-  const MZ=e.kc==='b'?425:e.kc==='p'?430*bs:470,V=(e.boss?170:e.kc==='p'?210:260)*2*(e.vk||1);      // vurma menzili, yürüme hızı (eskinin 2 katı)
+  const MZ=e.kc==='b'?425:e.kc==='p'?430*bs:470,V=(e.boss?170:e.kc==='p'?210:260)*2*(e.vk||1)*(S.t<(e.yavas||0)?0.5:1);      // vurma menzili, yürüme hızı (eskinin 2 katı)
   if(!e.boss&&!e.kacti&&e.hp>0&&e.hp<e.max*0.25){e.kacti=true;e.kac={t0:S.t,hp0:e.hp,v:0};e.geri=false}      // canı ilk kez %25 altına düşünce bir kez kaçar
   if(e.kac){const k=e.kac;
     if(S.t-k.t0>=10||k.v>=4)e.kac=null;      // 10 sn dolunca ya da 4 kez vurulunca savaşa döner
@@ -235,7 +235,8 @@ function korsanPoz(e){
     const u=S.t-ks.t0,ri=ez(kisit(u/0.45,0,1)),rec=ks.fired?Math.max(0,1-(S.t-ks.tf)/0.3):0,lo=ks.fired?ez(kisit((S.t-ks.tf-0.12)/0.25,0,1)):0;
     const ag=gn?{uN:th-14*rec,rN:0,wN:(K.mb||0),torso:7-9*rec,bas:2,hx:-12*rec,uF:-14,rF:-18,wF:0}      // tabanca öndeki kolda (kadın): kol omuzdan hedefe dümdüz, bilek namluyu kol hizasına getirir; tabancasız kol aşağı, hafif açılı
                 :{uF:th+4+(K.mb||0)-14*rec,rF:-4,wF:0,torso:7-9*rec,bas:2,hx:-12*rec,uN:-45,rN:-95,wN:0};
-    p=kKar(p,Object.assign({},KPZ.dur,ag),ri*(1-lo));
+    const bl=ri*(1-lo);p=kKar(p,Object.assign({},KPZ.dur,ag),bl);
+    if(gn){const o=e._u&&e._u[5];if(o&&S.t-o.t<0.1){const yn=e.yon||1,a=Math.atan2(-(S.x-o.x)*yn,-(kafaY()-o.y))/D;p.uN+=bl*((a-14*rec-p.torso)-p.uN)}}      // kadın: omuzun gerçek konumundan oyuncunun kafasına dümdüz (gövde eğimi düşülür)
   }
   if(e.tut){
     p=kKar(KPZ.sars,KPZ.hava,0.5+0.5*Math.sin(t*14));      // tutulunca çırpınır

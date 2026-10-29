@@ -85,7 +85,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - C Yumruk (kök, 0) · I Yere Düşürme (1, pasif) · O Can Dolumu %2 (1, pasif) · X Can Dolumu %3 (1, pasif) · W Kalkanlı Savunma (2, pasif) · V Maks. Can +100 (1, pasif) · TOP Ispanak Cebi (2; 30 sn'de bir ıspanak butonu, ıspanak gücü x2)
 - A İnsan Tutma (1) · B Varil Tutma (1) · G Sıkı Tutuş (1, pasif; tutulan kafa atamaz) · F Yırtma (2) · R Can Çalmalı Yırtma (3; Yırtma açılmadan açılmaz) · H Can Çalma %10 (1, pasif) · M Can Çalma %20 (1, pasif)
 - N Yer Yumruğu / yarık (2) · S Süpermen Uçuşu (2) · Y Aduket (2)
-- Aduket öldürülünce (anti Y): yumruk hasarı +%30; yumruk değince ve yumruk savrulurken (el hızı >1500) elden su damlaları fışkırır (`adkDamla`, anti.js).
+- Aduket öldürülünce (anti Y): yumruk hasarı +%30; yumruk değince ve yumruk savrulurken (el hızı >1500) elden su damlaları fışkırır (`adkDamla`, anti.js); sulu yumruk değen düşman 2 sn yavaşlar (yürüme %50, `e.yavas`).
 - D Çift Zıplama (1) · K Çok Zıplama (1, pasif) · E Kayar Tekme (1) · L Döner Tekme (2) · U Süper Kahraman İnişi (2) · Q Tekmeyle Can Çalma (1, pasif)
 - J Ateşli Aparkat (1) · AL Dağıtıcı (2) · YT Yere Tekme (1)
 - P Bıçak Modu (2) · T Bıçakla Can Çalma (1, pasif) · Z Bıçak Atlama (3)
@@ -135,8 +135,8 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 
 ## Bölüm 2+ düşmanları (v0.388)
 - 1. bölüm boss: eski kaptan (can 500, XP 200). 2. bölümden itibaren boss: kılıç ustası (erkek, `sk:'m'`, `agil`): can 750, yakın dövüş 22 (kaptanın 1.5 katı), yürüyüş ×1.35, saldırı süreleri ×0.75. Vurulunca %38 şansla geri takla/geri sıçrama, sonra öne atılıp vurur; saldırıdan sonra havaya sıçrar; eğilir, bazı saldırılardan kaçar ("KAÇTI!"). `usta.js`.
-- Tabancalı kadın (`sk:'f'`, 2. bölümden): can 100, atak 20, orta hız; boy ölçeği 1.2075 (v0.395: %5 büyütüldü). Mermi kaptanınkinin 0.55'i. Nişanda tabancalı kol omuzdan hedefe dümdüz, bilek namluyu (`mb`=7°, namlu dibi `gb`) kol hizasına getirir; mermi namlu ekseninde gider. Namlu ateşi kendi görseli `parca/f_ates.webp` (anker sol kenar [4,59], 0.45 ölçek), tam namlu ucundan çıkar; ateş sesi `ses/f_ates.mp3`. Tabancasız (arka) kol hep aşağı, hafif öne açılı.
-- Tutma kuralı: `TUTMA()` (yetenek.js) — A İnsan Tutma, B Varil Tutma, G Sıkı Tutuş, F Yırtma, R Can Çalmalı Yırtma'dan biri VERİLİP anti'ye çevrilmemişse (aktifken) tutma çalışır; bu 5 yeteneğin şu anki anti (ölü) etkilerinin hiçbirinde tutma geçmiyor, o yüzden ölüyken tutma çalışmaz (ileride bir anti metni tutmadan bahsederse koda eklenmeli); yetenekler birbirinin önkoşulu değil.
+- Tabancalı kadın (`sk:'f'`, 2. bölümden): can 100, atak 20, orta hız; boy ölçeği 1.2075 (v0.395: %5 büyütüldü). Mermi kaptanınkinin 0.55'i. Nişanda tabancalı kol omuzun gerçek konumundan oyuncunun kafasına dümdüz (gövde eğimi düşülür), bilek namluyu (`mb`=7°, namlu dibi `gb`) kol hizasına getirir; mermi namlu ekseninde gider. Namlu ateşi kendi görseli `parca/f_ates.webp` (anker sol kenar [4,59], 0.45 ölçek), tam namlu ucundan çıkar ve namluya yapışık kalır (geri tepmede namluyla döner); ateş sesi `ses/f_ates.mp3`. Tabancasız (arka) kol hep aşağı, hafif öne açılı.
+- Tutma kuralı (v0.396): `TUTMA()` (yetenek.js) — İnsan Tutma (A), Sıkı Tutuş (G), Yırtma (F) dirisi ya da Can Çalmalı Yırtma (R) dirisi VEYA ölüsü varsa düşman tutulur. Yırtma kuralı `YIRT()`: Yırtma (F) dirisi ya da Can Çalmalı Yırtma (R) dirisi veya ölüsü varsa yırtılır. Varil Tutma (B) sadece varil içindir.
 - TEST: O tuşu 1 yetenek puanı verir (sonra silinecek).
 - Yere iniş seslerinin (wooddusme, inis_*) başındaki sessizlik `bosKes()` ile kesilir.
 
