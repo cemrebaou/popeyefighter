@@ -147,8 +147,8 @@ const KSK={      // her korsan kendi görsel setinden, tüm parçalar aynı öl�
 };
 KSK.m={p:'m_',sc:1,bl:[[160,142],[320,162]],A:{ust:[51.7,24.6],on:[38.2,21.2],elN:[132.6,7.2],elF:[20.7,26.7],uy:[58.9,32.4],bacak:[42.2,20.9],bot:[50,22.3],govde:[114.4,278.9],kalca:[83.1,17.6],kafa:[144.2,194.3],vur:[140.0,187.9],ser:[140.0,187.2],ahh:[143.0,190.7],aci:[147.7,192.2]},
   ust:116.7,on:134.6,uy:102.2,ak:[0,92.1],bh:133.7,bs:1.2,bel:468.3,kN:[5.7,120.3],kF:[-16.4,120.3],omN:[-68.7,-194],omF:[26.3,-208],boyun:[6.6,-244.8]};      // erkek boss (kılıç ustası): parçalar 0.55 ölçekli kesim, bl: kılıç gövdesi noktaları (bilek çerçevesi); bs: bacaklar %20 büyük, bel +20 yukarı
-KSK.f={p:'f_',sc:1,gun:true,gunNear:true,eo:true,kon:1,A:{ust:[46.4,25.9],on:[33.3,22.5],elN:[28.6,5],elF:[21.5,27.1],uy:[48.7,27.1],bacak:[33.1,20.5],bot:[47.4,24.4],govde:[110,238.7],kalca:[89.1,14.9],kafa:[151.6,183.8],vur:[152.9,180.5],ser:[164.1,183.0],ahh:[148.9,187.0],aci:[152.2,188.6],ates:[3,45.9]},
-  ust:118.9,on:134,uy:113.5,ak:[0,93.5],bh:144.6,bel:391.6,kN:[0,20],kF:[-20,20],omN:[-69,-155.3],omF:[-7,-167.3],boyun:[-7.7,-209],mz:[59,158],gb:[28,74],mb:20.5};      // kN/kF: etek+bacaklar 20 birim yukarı      // kadın korsan (tabancalı): kon: etek bacakların üstüne çizilir, mz: namlu ucu, gb: namlu dibi, mb: namlunun kol eksenine açısı
+KSK.f={p:'f_',sc:1,gun:true,gunNear:true,eo:true,kon:1,A:{ust:[46.4,25.9],on:[33.3,22.5],elN:[28.6,5],elF:[21.5,27.1],uy:[48.7,27.1],bacak:[33.1,20.5],bot:[47.4,24.4],govde:[110,238.7],kalca:[89.1,14.9],kafa:[151.6,183.8],vur:[152.9,180.5],ser:[164.1,183.0],ahh:[148.9,187.0],aci:[152.2,188.6],ates:[4,59]},
+  ust:118.9,on:134,uy:113.5,ak:[0,93.5],bh:144.6,bel:391.6,kN:[0,20],kF:[-20,20],omN:[-69,-155.3],omF:[-7,-167.3],boyun:[-7.7,-209],mz:[59,158],gb:[49,79],mb:7};      // kN/kF: etek+bacaklar 20 birim yukarı      // kadın korsan (tabancalı): kon: etek bacakların üstüne çizilir, mz: namlu ucu, gb: namlu dibi, mb: namlunun kol eksenine açısı
 const KDUR={F:0.5,N:0.62,B:0.66},KBDUR=0.7;      // vuruş süreleri: F = uzak kol yumruğu, N = yakın kol yumruğu, B = yakın elle bıçak / dipçik savurma; KBDUR: tutulurken kafa atma
 const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:3,kN:6,lF:-14,kF:12}};
 KPZ.hazF=Object.assign({},KPZ.dur,{uF:-28,rF:-128,torso:2,hx:-15});
@@ -213,6 +213,7 @@ function korsanPoz(e){
   if(e.kc==='b'&&e.sk!=='m')p.wN+=60;      // bıçak gardda öne-yukarı bakar (kılıç ustası kendi düz duruşunu kullanır)
   if(e.agil&&!e.olu&&!e.moving&&!e.ka&&!e.ag){const b=Math.sin(t*9);p.kN+=14+10*b;p.kF+=14+10*Math.sin(t*9+1.4);p.lN-=6*b;p.lF+=6*b;p.torso+=2*b}      // kıpır kıpır: dizler hafif yaylanır
   if(e.kc==='p'){p.uF=-6+Math.sin(t*2.2)*2;p.rF=-2;p.wF=0}
+  if(e.sk==='f'){p.uF=-14+Math.sin(t*2.2)*2;p.rF=-18;p.wF=0}      // kadın: tabancasız (arka) kol aşağı, hafif öne açılı
   if(e.kc==='h'){p.uF=-18+Math.sin(t*2.2)*3;p.rF=-58;p.wF=8;p.uN=-26;p.rN=-62;p.wN=0}      // kancacı: kancalı el arkadaki kolda, zincirli el önde      // kaptan: tabancalı kol düz aşağı sarkar, namlu kolla paralel
   if(e.moving){const ph=e.wf||0,s=Math.sin(ph),c=Math.cos(ph);      // yürüyüş: bacaklar sırayla, öne giden bacağın dizi bükülür; kollar ters salınır
     p.lN=-4-24*s;p.kN=6+38*Math.max(0,c);p.lF=-4+24*s;p.kF=6+38*Math.max(0,-c);p.uN+=9*s;p.uF-=9*s;p.torso+=3}
@@ -232,7 +233,7 @@ function korsanPoz(e){
   if(e.kc==='p'&&ks&&!e.tut){      // nişan: tabanca oyuncunun kafasına doğrulur, ateşten sonra geri tepme ve indirme
     const K=KSK[e.sk||'p'],gn=K.gun&&K.gunNear,om=gn?K.omN:K.omF,dxl=Math.max((S.x-e.x)*(e.yon||1),60),ys=e.y+(K.bel-om[1])*K.sc*(e.bs||1),th=Math.atan2(-dxl,ys-kafaY())/D;
     const u=S.t-ks.t0,ri=ez(kisit(u/0.45,0,1)),rec=ks.fired?Math.max(0,1-(S.t-ks.tf)/0.3):0,lo=ks.fired?ez(kisit((S.t-ks.tf-0.12)/0.25,0,1)):0;
-    const ag=gn?{uN:th+4+(K.mb||0)-14*rec,rN:-4,wN:0,torso:7-9*rec,bas:2,hx:-12*rec,uF:-45,rF:-95,wF:0}      // tabanca öndeki kolda: nişan açısı öndeki kola uygulanır
+    const ag=gn?{uN:th-14*rec,rN:0,wN:(K.mb||0),torso:7-9*rec,bas:2,hx:-12*rec,uF:-14,rF:-18,wF:0}      // tabanca öndeki kolda (kadın): kol omuzdan hedefe dümdüz, bilek namluyu kol hizasına getirir; tabancasız kol aşağı, hafif açılı
                 :{uF:th+4+(K.mb||0)-14*rec,rF:-4,wF:0,torso:7-9*rec,bas:2,hx:-12*rec,uN:-45,rN:-95,wN:0};
     p=kKar(p,Object.assign({},KPZ.dur,ag),ri*(1-lo));
   }
@@ -270,7 +271,7 @@ function kKol(K,om,u,r,w,far,fl,e,ix){
   if(K.gun&&!K.gunNear){hn=far?'elN_k':'elF';ha=far?A.elN:A.elF}      // kaptan: tabancalı el arkadaki kolda, yumruk öndeki kolda (gunNear: tabancalı kadında tabanca öndeki kolda, el ataması ters çevrilmez)
   if(P==='h_'){const bos=far&&e&&e.kh&&e.kh.ph!=='haz';hn=far?(bos?'elB_k':'elN_k'):'elF';ha=far?(bos?A.elB:A.elN):A.elF}      // kancacı: kancalı el arkadaki kolda (atınca boş yumruk), zincirli el öndeki kolda
   const elCiz=()=>{ctx.save();ctx.translate(0,K.on);ctx.rotate(w*D);krp(R[P+hn],ha,fl);
-    if(e){uc(e,ix,(far&&K.gb)?K.gb[0]:0,(far&&K.gb)?K.gb[1]:75);if(!far&&K.bl){uc(e,2,K.bl[0][0],K.bl[0][1]);uc(e,3,K.bl[1][0],K.bl[1][1])}if(K.gun&&(far!==!!K.gunNear))uc(e,2,K.mz[0],K.mz[1]);if(P==='h_'){if(far)uc(e,2,K.goz[0],K.goz[1]);else uc(e,4,K.zt[0],K.zt[1])}}      // yumruğun / bıçağın dünya konumu: vuruş = gerçekten değince
+    if(e){const gh=K.gun&&K.gb&&(far!==!!K.gunNear);uc(e,ix,gh?K.gb[0]:0,gh?K.gb[1]:75);if(!far&&K.bl){uc(e,2,K.bl[0][0],K.bl[0][1]);uc(e,3,K.bl[1][0],K.bl[1][1])}if(K.gun&&(far!==!!K.gunNear))uc(e,2,K.mz[0],K.mz[1]);if(P==='h_'){if(far)uc(e,2,K.goz[0],K.goz[1]);else uc(e,4,K.zt[0],K.zt[1])}}      // yumruğun / bıçağın dünya konumu: vuruş = gerçekten değince
     ctx.restore()};
   if(e&&P==='h_'){const i=far?9:7;uc(e,i,0,K.on*0.35);uc(e,i+1,0,K.on*0.75)}      // kancacının ön kolu da vurur
   const onCiz=()=>{krp(R[P+(far?'on_k':'on')],A.on,fl);dyCiz(DY_E,far?'onF':'onN',A.on)};      // ön kol halkası (normalde dirseği örtmek için elden sonra çizilir)

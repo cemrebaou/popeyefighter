@@ -16,10 +16,10 @@ function ciz(){
   ctx.translate(S.shx,S.shy);
   arkaPlan(S.x,zeminY);
   catlakCiz();
+  varilCiz(false);      // yerdeki variller düşmanların arkasında
   dusmanCiz();
   antiCiz();      // yanan düşman ateşi, bumerang bıçak
   ispCiz();
-  varilCiz(false);
   kanCiz();
   fxCiz(false);
   zpkCiz('F');      // arka koldaki zıpkının halatı karakterin arkasında

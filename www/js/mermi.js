@@ -23,8 +23,8 @@ function pAtesle(e){      // namludan oyuncunun kafasına doğru tek mermi; sonr
   let dx=el?m.x-el.x:S.x-m.x,dy=el?m.y-el.y:kafaY()-m.y;      // namlunun gösterdiği yön (el → namlu ucu)
   if(Math.abs(dx)<1&&Math.abs(dy)<1){dx=S.x-m.x;dy=kafaY()-m.y}
   const L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
-  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:Math.round((e.bdm||30)*ZK()),k:e.sk==='f'?0.55:1});EFL.push({x:m.x+Math.cos(ang)*14,y:m.y+Math.sin(ang)*14,ang,t:S.t,k:e.sk==='f'?0.5:1});
-  bufCal(PAT,0.9);S.sars=Math.max(S.sars,3);
+  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:Math.round((e.bdm||30)*ZK()),k:e.sk==='f'?0.55:1});const fk=e.sk==='f',fo=fk?0:14;EFL.push({x:m.x+Math.cos(ang)*fo,y:m.y+Math.sin(ang)*fo,ang,t:S.t,k:fk?0.45:1,f:fk});      // kadın: patlama tam namlu ucundan, kendi görseli (parca/f_ates)
+  bufCal(fk&&FPAT?FPAT:PAT,0.9);S.sars=Math.max(S.sars,3);
 }
 function emerGuncelle(dt){
   for(let i=EMER.length-1;i>=0;i--){
@@ -48,8 +48,8 @@ function emerCiz(){
     ctx.save();ctx.translate(sx,sy);ctx.rotate(Math.atan2(-p.vy,p.vx));
     for(let k=3;k>=1;k--){ctx.globalAlpha=0.3/k*1.6;ctx.drawImage(im,-w/2-k*w*0.55,-h/2,w*1.4,h*0.8)}      // arkada hız izi
     ctx.globalAlpha=1;ctx.drawImage(im,-w/2,-h/2,w*1.2,h);ctx.restore()}
-  if(fm)for(const f of EFL){const sx=W/2+(f.x-S.x)*SC,sy=ZY()-(f.y-S.camY)*SC,u=(S.t-f.t)/0.2;
-    ctx.save();ctx.translate(sx,sy);ctx.rotate(-f.ang);ctx.globalAlpha=1-u*u;ctx.globalCompositeOperation='lighter';const k=SC*2.9*(f.k||1)*(0.8+0.5*u);ctx.scale(k,k);ctx.drawImage(fm,-KSK.p.A.ates[0],-KSK.p.A.ates[1]);ctx.restore()}
+  for(const f of EFL){const fi=f.f?(R.f_ates||fm):fm;if(!fi)continue;const fa=f.f&&R.f_ates?KSK.f.A.ates:KSK.p.A.ates;const sx=W/2+(f.x-S.x)*SC,sy=ZY()-(f.y-S.camY)*SC,u=(S.t-f.t)/0.2;
+    ctx.save();ctx.translate(sx,sy);ctx.rotate(-f.ang);ctx.globalAlpha=1-u*u;ctx.globalCompositeOperation='lighter';const k=SC*2.9*(f.k||1)*(0.8+0.5*u);ctx.scale(k,k);ctx.drawImage(fi,-fa[0],-fa[1]);ctx.restore()}
   ctx.globalAlpha=1;
 }
 function mermiGuncelle(dt){

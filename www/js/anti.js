@@ -33,6 +33,7 @@ function antiHasar(e,dmg){
   return dmg;
 }
 function antiVurSonra(e,dmg,hf){
+  if(YA('Y')&&!S.antiTik&&S.cs==='y'&&!S.pence&&S.vEl){const h=EL[S.vEl];adkDamla(h.wx,h.wy,45,S.vx,0,S.yon,16)}      // Aduket öldürülünce: yumruk değince sular fışkırır
   if(dmg>=9999||S.antiTik||e.olu)return;
   if(YA('Q')&&S.cs==='t'&&!e.tut){e.vx*=1.3;e.vy*=1.3}      // tekmeler %30 daha uzağa
   if(YA('J')&&Math.random()<0.05){e.yan={son:S.t+4,tik:(e.yan&&e.yan.tik)||S.t+0.5};if(S.cs==='y'&&S.vEl)S.atesEl={k:S.vEl,son:S.t+0.6}}      // yakan yumruk alev alır      // Ateşli Aparkat öldürülünce: her vuruş %5 yakar, 4 sn
@@ -66,6 +67,7 @@ function antiGuncelle(dt){
     if(e.kanama&&!e.olu){if(S.t>=e.kanama.son)e.kanama=null;else if(S.t>=e.kanama.tik){e.kanama.tik+=0.5;kanVurus(e.x,e.y+e.cy*(0.8+Math.random()*0.6),0.15,Math.random()<0.5?-1:1,false);dotVur(e,3)}}
   }
   if(S.durum!=='oyun')return;
+  if(YA('Y')&&!S.pence&&!DEMO)for(const k of ['N','F']){const h=EL[k];if(h.v>1500&&Math.random()<dt*40)adkDamla(h.wx,h.wy,35,S.vx+h.vx*0.25,h.vy*0.25,S.yon,1)}      // yumruk savururken elden su fışkırır
   if(YA('A')&&S.yer&&Math.abs(S.vx)>HIZ*0.7){      // omuz atma: koşarak çarpınca yere serer
     const sg=Math.sign(S.vx);
     for(const e of DUS){
