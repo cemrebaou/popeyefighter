@@ -146,6 +146,6 @@ function adkDamlaCiz(){
 function efektCiz(){
   if(S.sarj>0){const rh=(EL.N.wx*S.yon>=EL.F.wx*S.yon)?EL.N:EL.F;adkTop(rh.wx,rh.wy,40+170*S.sarj,S.t,1)}      // top, bakılan yöndeki elde büyür
   for(const p of MERMI)adkMermi(p);
-  adkDamlaCiz();
+  adkDamlaCiz();sulCiz();
   emerCiz();
 }

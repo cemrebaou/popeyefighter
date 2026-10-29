@@ -123,7 +123,7 @@ function kolHesap(iz,x,y){
   if(L<SINIR){k.e=0;return}
   k.th=Math.atan2(dy,dx)/D;
   k.e=Math.min(1,(L-SINIR)/(TAM-SINIR));
-  if(S.durum!=='oyun'||S.sarj>0||S.t-(S.yirtT||-9)<1)return;      // yırtmadan hemen sonra parmak hareketleri başka hareket tetiklemez
+  if(S.durum!=='oyun'||S.sarj>0||S.cg||S.rk||S.t-(S.yirtT||-9)<1)return;      // yırtmadan hemen sonra parmak hareketleri başka hareket tetiklemez
   const hz=izHiz(iz,0.12), asagiG=dy>0&&Math.abs(dx)<1.6*dy, asagi=dy>0&&Math.abs(dx)<0.8*dy, yukari=dy<0&&Math.abs(dx)<0.8*(-dy), ileri=dx>0&&Math.abs(dy)<0.7*dx;
   if(tutan(iz.t)){                                   // düşman tutuyorsak: hızlı aşağı = yere çak
     if(!iz.sup&&asagi&&k.e>=0.6&&hz>1400){iz.sup=true;suplex(iz.t)}
@@ -222,10 +222,11 @@ const kolBit=e=>{
   {const z=zizler.get(e.pointerId);if(z){zizler.delete(e.pointerId);zpkBirak(z.t);return}}      // zıpkın parmağı kalktı: halat bırakılır
   const kz=kizler.get(e.pointerId);if(kz){kizler.delete(e.pointerId);if(e.type==='pointerup'&&kz.maxd<30&&performance.now()-kz.t0<400)tekmeAt(kz.t);return}
   const iz=izler.get(e.pointerId);if(!iz)return;izler.delete(e.pointerId);
-  const tap=!iz.tm&&e.type==='pointerup'&&!DUS.some(z=>z.tut===iz.t)&&S.sarj<=0&&!iz.joined&&iz.maxd<22&&performance.now()-iz.t0<320&&!iz.sho&&!iz.atil&&!iz.sla&&!iz.sup&&!iz.blk&&HS[iz.t]!=='ac';   // kısa dokunuş = kombo vuruşu (açık el vurmaz)
+  const tap=!iz.tm&&e.type==='pointerup'&&!DUS.some(z=>z.tut===iz.t)&&S.sarj<=0&&!iz.joined&&iz.maxd<22&&performance.now()-iz.t0<320&&!iz.sho&&!iz.atil&&!iz.sla&&!iz.sup&&!iz.blk&&!iz.cg&&HS[iz.t]!=='ac';   // kısa dokunuş = kombo vuruşu (açık el vurmaz)
   if(iz.tm&&!iz.joined&&e.type==='pointerup'&&performance.now()-iz.t0<350)tutKombo(iz.t);      // bir elle tutmuşken diğer tarafa kısa bas/çek: parmak kalkınca boştaki kol tutulana vurur (basılı kalırsa ikinci el tutuşa katılır)
   tutBirak(iz.t);
   const k=KOL[iz.t];k.ak=false;k.bit=S.t;S.sonAtk=S.t;
+  if(iz.cg&&S.cg&&S.cg.k===iz.t){if(e.type==='pointerup')rkAt(iz.t);else rkIptal()}      // Aduket anti: basılı tutma bitti = roket yumruk
   if(tap)komboTap('y',iz.t);
   if(S.sarj>0){const m=S.sarjP;S.sarjP=null;if(m)ates(m.dx,m.dy,1,m.bx,m.by);else S.sarj=0;for(const z of izler.values())z.turn=0}   // parmak kalkınca aduket kol yönüne gider
 };

@@ -123,6 +123,7 @@ function hedefPoz(){
   zpkPoz(o);      // zıpkınlı kol hedefe uzanır
   ispPoz(o);
   if(S.t<S.firT){const el=S.firEl||0;o.aNu=-90-el;o.aNr=90;o.aFu=-90-el;o.aFr=90;o.torso+=10}       // ateş: iki kol öne
+  if(S.cg)cgPoz(o);if(S.rk)rkPoz(o);
   if(S.ol)olumPoz(o);
   return o;
 }
@@ -133,7 +134,7 @@ function olumPoz(o){      // ölüm pozu: dizlerinde çöker, elleri karnında; 
 }
 const ANAH=['lN','bN','lF','bF','torso','bas','aNu','aNr','aFu','aFr','ofs','lift','kN','kF','pelv','hx','hy','hb','cr','cw'];
 function pozGuncelle(dt){
-  const h=hedefPoz(), k=1-Math.exp(-dt*(S.ol?7:(S.atk||kolVar()||S.yy||S.alk||S.yeme||ZPK.N||ZPK.F)?45:(S.yer?22:16)));      // zıpkın: kol hedefe hızlı döner
+  const h=hedefPoz(), k=1-Math.exp(-dt*(S.ol?7:(S.atk||kolVar()||S.yy||S.alk||S.yeme||ZPK.N||ZPK.F||S.cg||S.rk)?45:(S.yer?22:16)));      // zıpkın: kol hedefe hızlı döner
   ANAH.forEach(a=>{P[a]=(P[a]===undefined)?h[a]:P[a]+(h[a]-P[a])*k});
 }
 
@@ -177,6 +178,7 @@ const HS={N:'yum',F:'yum'}, ACT={N:0,F:0};     // el durumu: yum = yumruk, ac = 
 function elDurum(dt){
   if(S.pence||(!TUTMA()&&!YV('B'))){HS.N=HS.F='yum';ACT.N=ACT.F=0;return}      // pençede ya da tutma yeteneği yokken eller açılmaz
   for(const k of ['N','F']){
+    if(S.cg&&S.cg.k===k){HS[k]='yum';ACT[k]=0;continue}      // şarjda yumruk kapalı kalır
     if(S.yeme&&S.yeme.k===k&&!S.yeme.atildi){HS[k]='tut';ACT[k]=0;continue}      // ıspanak tutuyor
     if(tutan(k)||S.parcalar.some(p=>!p.at&&p.el===k)){HS[k]='tut';ACT[k]=0;continue}
     if(HS[k]==='ac'&&KOL[k].ak&&S.sarj<=0)continue;      // açılan el parmak kalkana kadar açık kalır
@@ -194,7 +196,7 @@ function kol(omuzX,omuzY,u,r,ad,far,sc){
   resim(R['ustkol'+sf],43.8,30.65);yrCiz('ustkol_'+ad,43.8,30.65);
   const bitis=S.atk&&S.atk.fl==='*'&&S.atk.ad[1]===ad&&/^[jchuobwszk][NF]$/.test(S.atk.ad), bI=bitis?efSiddet():0;      // kombo bitiş vuruşu: kolun tamamı parlar
   if(bI>0)ekParla(R['ustkol'+sf],43.8,30.65,bI);
-  ctx.translate(-11.35,123.6);ctx.rotate(r*D);            // dirsek: üst kol halkası ile ön kol halkası üst üste
+  ctx.translate(-11.35,123.6);ctx.rotate(r*D);{const q=armSc(ad);if(q!==1)ctx.scale(q,q)}            // dirsek: üst kol halkası ile ön kol halkası üst üste; ön kol + yumruk şişer (Aduket anti)
   elKaydet(ad);if(S.pence){EL[ad].b1=dunyaNok(330,0);EL[ad].b2=dunyaNok(420,0)}else EL[ad].b1=EL[ad].b2=null;      // bıçak ağzı / ucu
   {const d=S.pence?PENCE_EL[ad]:KOL_EL[ad][(ZPK.ac&&!DEMO)?'ac':(HS[ad]||'yum')];      // zıpkın açıkken el açık
    ctx.save();ctx.translate(140.4,0);if(!ispElCiz(ad)){resim(R[d[0]],d[1],d[2]);if(bI>0)ekParla(R[d[0]],d[1],d[2],bI)}ctx.restore();}      // ıspanak alınca el, kutuyu tutan ele dönüşür   // el bilekte

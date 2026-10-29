@@ -6,7 +6,7 @@ let ATES=[];       // ateş parçacıkları (dünya koordinatı)
 // ---- Oyuncu ölüm animasyonu: dizlerine düşer (yere çarpınca sekme + düşme sesi), elleriyle karnını tutar, karnından kan fışkırır, sonra yüz üstü yere yığılır ----
 const OL_YIGIL=2.0;      // yığılma başlangıcı (sn); 0.7 sn sürer, sonra yerde yatar
 function olumBasla(){
-  S.ol={t0:S.t,dn:0,dy:0,diz:false,yat:false,gos:false,kT:0};
+  S.ol={t0:S.t,dn:0,dy:0,diz:false,yat:false,gos:false,kT:0};S.rk=null;rkIptal();
   if(S.pence)penceKapa();
   S.atk=null;S.sarj=0;S.blok=false;S.sman=null;S.yy=null;S.alk=null;S.dkick=null;S.slam=false;S.shoryu=0;S.tats=0;S.donuyor=false;S.dag=null;S.ust=null;S.kay=null;S.sup=null;S.omuz=null;S.yeme=null;S.uzan=null;S.pend=null;
   zpkTemizle(true);bufCal(PDS,1);
@@ -21,6 +21,75 @@ function olumGuncelle(dt){
   o.dn=ez(kisit((u-OL_YIGIL)/0.7,0,1));S.spin=o.dn*Math.PI/2*0.97;
   if(!o.yat&&u>=OL_YIGIL+0.68){o.yat=true;bufCal(DSS,1);karBas(S.x,300,KMIN-6,false);tasSac(S.x,3,0.9);S.sars=Math.max(S.sars,8);titre(60)}      // yüz üstü yere çarpınca düşmanların yere düşme sesi
   if(!o.gos&&u>=3.0){o.gos=true;bufCal(GOS,1)}      // YENİLDİN yazısıyla birlikte
+}
+// ---- Aduket anti (Y): basılı tutmalı roket yumruk ----
+// Yumruk tarafına basılı tut (0.26 sn): yumruk geri çekilip titrer, ön kol+yumruk 1 sn'de %25 büyür (suyu elinde toplar). 1 sn = tam güç. Bırakınca öne roket gibi atılır:
+// güç 1x–3x (15–45), menzil 450–1350 birim; enerji/bekleme yok. Giderken yumruktan geriye roket ateşi gibi su fışkırır, yumruk eski boyuna döner.
+const RK_SURE=1;let SUL_SRC=null,SUC=[];
+function sulSes(ac){      // şarj sesi: basılı tutarken döngüde çalar, bırakınca kesilir
+  if(ac&&!SUL_SRC&&AC&&SULS&&!DEMO){const src=AC.createBufferSource(),g=AC.createGain();src.buffer=SULS;src.loop=true;g.gain.value=0.9;src.connect(g);g.connect(SFXC());src.start();SUL_SRC=src}
+  else if(!ac&&SUL_SRC){try{SUL_SRC.stop()}catch(_){}SUL_SRC=null}
+}
+function armSc(ad){      // ön kol + yumruk ölçeği (şişmiş yumruk)
+  if(S.cg&&S.cg.k===ad)return 1+0.25*S.cg.lv;
+  if(S.rk&&S.rk.k===ad)return 1+(S.rk.sc0-1)*(1-kisit((S.t-S.rk.t0)/S.rk.T,0,1));
+  return 1;
+}
+function rkIptal(){S.cg=null;SUC.length=0;sulSes(false)}
+function rkAt(k){      // parmak kalktı: roket yumruk
+  const c=S.cg;if(!c||c.k!==k)return;
+  const lv=c.lv,kl=KOL[k],ang=kl.e>0.35?kisit(kl.th,-70,70):0,dist=450*(1+2*lv),T=0.32+0.18*lv;
+  S.rk={k,t0:S.t,T,lv,ang,sc0:1+0.25*lv,hit:new Set()};
+  S.lungeS=S.t;S.lungeT=S.t+T;S.lungeV=S.yon*1.5*dist/T;S.sonAtk=S.t;      // öne atılım (hız zamanla düşer: toplam yol = dist)
+  rkIptal();S.sars=Math.max(S.sars,6+8*lv);titre(30+40*lv);
+}
+function rkGuncelle(dt){
+  const ok=YA('Y')&&!S.pence&&S.durum==='oyun'&&!DEMO;
+  if(S.cg){
+    const c=S.cg,iz=izBul(c.k);
+    if(!ok||!iz||S.blok||KOL[c.k==='N'?'F':'N'].ak||tutan(c.k)||S.sman||S.yy||S.alk||S.tats>0||S.dkick||S.shoryu>0||S.donuyor||S.slam||!S.yer){rkIptal()}
+    else{
+      c.lv=kisit((S.t-c.t0)/RK_SURE,0,1);sulSes(true);
+      if(S.t-c.t0<RK_SURE){const n=Math.round(70*dt+Math.random());for(let i=0;i<n;i++)SUC.push({a:Math.random()*6.283,r:150+Math.random()*220,t:0,T:0.28+Math.random()*0.15})}      // 1 sn boyunca su yumruğa doğru çekilir
+    }
+  }else if(ok&&!S.rk&&S.yer&&!S.atk&&S.sarj<=0&&!S.sman&&!S.yy&&!S.alk&&!(S.tats>0)&&!S.dkick&&!(S.shoryu>0)&&!S.donuyor&&!S.slam&&!S.blok&&!S.ust&&!S.pend&&!S.yeme&&!ZPK.ac&&!tutmaVar()&&S.t-(S.yirtT||-9)>=1){
+    for(const k of ['N','F']){
+      const iz=izBul(k);
+      if(!iz||iz.cg||iz.maxd>=22||performance.now()-iz.t0<260||KOL[k==='N'?'F':'N'].ak||tutan(k)||HS[k]==='tut')continue;
+      S.cg={k,t0:S.t,lv:0};iz.cg=true;break;
+    }
+  }
+  for(let i=SUC.length-1;i>=0;i--){const p=SUC[i];p.t+=dt;if(p.t>=p.T)SUC.splice(i,1)}
+  const r=S.rk;
+  if(r){
+    if(S.t-r.t0>=r.T||S.durum!=='oyun'){S.rk=null;return}
+    const h=EL[r.k],sc=armSc(r.k),n=Math.round((3+5*r.lv)*dt*60);
+    for(let i=0;i<n&&ADKD.length<240;i++)ADKD.push({x:h.wx-S.yon*30*sc,y:h.wy+(Math.random()-0.5)*40,vx:-S.yon*(700+Math.random()*900)+S.vx*0.2,vy:(Math.random()-0.5)*600,t:0,T:0.3+Math.random()*0.3,k:(0.6+Math.random()*0.7)*0.8});      // roket ateşi gibi geriye su
+    for(const e of DUS){
+      if(e.olu||e.tut||r.hit.has(e)||!elDeg(e,r.k,60*sc))continue;
+      r.hit.add(e);
+      S.pSes=true;S.pHx=h.wx;S.cs='y';S.vEl=r.k;vur(e,15*(1+2*r.lv),S.yon*3000,0,0.5+0.5*r.lv,h.wy);S.pSes=false;S.cs=null;S.vEl=null;S.pHx=undefined;e.hitT[r.k]=S.t+0.5;
+    }
+  }
+}
+function cgPoz(o){      // şarj: yumruk geri çekilip titrer (Paul gibi)
+  const k=S.cg.k,u=k==='N'?'aNu':'aFu',r=k==='N'?'aNr':'aFr',lv=S.cg.lv;
+  o[u]=60+Math.sin(S.t*70)*(1.5+3*lv);o[r]=-70;o.torso-=6;o.lN=-12;o.bN=22;o.lF=16;o.bF=24;
+}
+function rkPoz(o){      // atılış: kol dümdüz uzanır, gövde ileri yatar
+  const k=S.rk.k,u=k==='N'?'aNu':'aFu',r=k==='N'?'aNr':'aFr';
+  o[u]=S.rk.ang-90;o[r]=90;o.torso+=14;o.bas-=4;o.lN=-45;o.bN=45;o.lF=35;o.bF=60;
+}
+function sulCiz(){      // yumruğa çekilen su damlaları + yumruk çevresinde mavi ışık
+  if(!S.cg)return;
+  const h=EL[S.cg.k],hx=W/2+(h.wx-S.x)*SC,hy=ZY()-(h.wy-S.camY)*SC;
+  adkIsik(hx,hy,(90+90*S.cg.lv)*SC,0.35+0.35*S.cg.lv);
+  const im=R.damla;if(!im)return;
+  for(const p of SUC){
+    const u=p.t/p.T,rr=p.r*Math.pow(1-u,1.4),sx=W/2+(h.wx+Math.cos(p.a)*rr-S.x)*SC,sy=ZY()-(h.wy+Math.sin(p.a)*rr-S.camY)*SC,w=95*0.75*SC,hh=w*im.height/im.width;
+    donCiz(im,sx,sy,Math.atan2(Math.sin(p.a),-Math.cos(p.a)),Math.min(1,u*4)*Math.min(1,(1-u)*4+0.3),-w*0.75,-hh/2,w,hh);      // kalın ucu yumruğa doğru
+  }
+  tabanDon();
 }
 // ---- ölüm: seçim ekranı kısa süre sonra açılır ----
 function antiOlum(){
@@ -52,7 +121,6 @@ function antiHasar(e,dmg){
   return dmg;
 }
 function antiVurSonra(e,dmg,hf){
-  if(YA('Y')&&!S.antiTik&&S.cs==='y'&&!S.pence&&S.vEl){const h=EL[S.vEl];adkSic(h.wx,h.wy,S.yon,18);e.yavas=S.t+2}      // + 2 sn yavaşlar (yürüme %50)      // Aduket öldürülünce: yumruk değince sular fışkırır
   if(dmg>=9999||S.antiTik||e.olu)return;
   if(YA('Q')&&S.cs==='t'&&!e.tut){e.vx*=1.3;e.vy*=1.3}      // tekmeler %30 daha uzağa
   if(YA('J')&&Math.random()<0.05){e.yan={son:S.t+4,tik:(e.yan&&e.yan.tik)||S.t+0.5};if(S.cs==='y'&&S.vEl)S.atesEl={k:S.vEl,son:S.t+0.6}}      // yakan yumruk alev alır      // Ateşli Aparkat öldürülünce: her vuruş %5 yakar, 4 sn
@@ -86,7 +154,6 @@ function antiGuncelle(dt){
     if(e.kanama&&!e.olu){if(S.t>=e.kanama.son)e.kanama=null;else if(S.t>=e.kanama.tik){e.kanama.tik+=0.5;kanVurus(e.x,e.y+e.cy*(0.8+Math.random()*0.6),0.15,Math.random()<0.5?-1:1,false);dotVur(e,3)}}
   }
   if(S.durum!=='oyun')return;
-  if(YA('Y')&&!S.pence&&!DEMO)for(const k of ['N','F']){const h=EL[k];if(h.v>1500&&h.vx*S.yon>h.v*0.6&&Math.random()<dt*40)adkDamla(h.wx,h.wy,35,S.vx+h.vx*0.25,h.vy*0.25,S.yon,1,0.5)}      // sadece yumruk ileri savrulurken yol üstünde ufak su fışkırır (sağa-sola her harekette değil)
   if(YA('A')&&S.yer&&Math.abs(S.vx)>HIZ*0.7){      // omuz atma: koşarak çarpınca yere serer
     const sg=Math.sign(S.vx);
     for(const e of DUS){

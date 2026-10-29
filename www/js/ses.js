@@ -19,7 +19,7 @@ function arkaPlanSes(){if(!AC)return;if(document.hidden){if(AC.state==='running'
 document.addEventListener('visibilitychange',arkaPlanSes);addEventListener('pagehide',()=>{if(AC&&AC.state==='running')AC.suspend()});addEventListener('pageshow',arkaPlanSes);
 ['pointerdown','keydown','touchstart','click'].forEach(ev=>addEventListener(ev,sesAc,{passive:true}));
 const SES_SON={};
-let VKS=null,PDS=null,SARJ=null,FPAT=null,ENPOS=[],SWD=null,YAR=null,HAZ=null,PAT=null,PPAR=null,SAPLA=null,SYUK=false,AD_SON=0,EMER=[],EFL=[];      // HAZ/PAT: kaptanın nişan ve ateş sesi, PPAR: yırtma, SAPLA: bıçak saplanma; EMER: düşman mermileri, EFL: namlu ateşi
+let SULS=null,VKS=null,PDS=null,SARJ=null,FPAT=null,ENPOS=[],SWD=null,YAR=null,HAZ=null,PAT=null,PPAR=null,SAPLA=null,SYUK=false,AD_SON=0,EMER=[],EFL=[];      // HAZ/PAT: kaptanın nişan ve ateş sesi, PPAR: yırtma, SAPLA: bıçak saplanma; EMER: düşman mermileri, EFL: namlu ateşi
 const PB=[],PBAG=[],AD=[],ADBAG=[],TK=[],TKBAG=[],KLC=[],WH=[],WHBAG=[],JP=[];let JPBAG=[],JPSON=-1;      // yumruk, adım, tekme, bıçak sesleri (torba: hepsi bir kez çalınmadan aynısı tekrar gelmez)
 const TD=[],TDBAG=[],DMR=[],DMRBAG=[];let TCS=null,GOS=null,GOH=null,ZPS_O=null,ZPS_I=null;      // ZPS_O / ZPS_I: zıpkın nesneye / insana saplanma      // GOS: kaybedince (game over), GOH: kanca bize takılınca      // varil: tahta parçası yere düşme, demir halka, ilk kırılma sesi
 const BLD=[],BLDBAG=[],INS=[],INSBAG=[],OLS={};let WDS=null,TVS=null,OLDS=null,ADKS=null,ADKC=null,LVS=null,KALPS=null,BOPEN=null,USTS=null,GRS=null,DSS=null,DEVS=null,ARK=null,ARKSRC=null;      // bıçak vuruşu, yere iniş, ölüm (k/b/p/h), üstüne atlama, tutma, düşman düşmesi, arka plan müziği
@@ -48,7 +48,7 @@ function sesYukle(){
   y('tahta_carpma',b=>TCS=b);for(let i=1;i<=4;i++)y('tahta_dus_'+i,b=>TD.push(b));
   y('spinach-drop',b=>ISPS=b);y('levelup',b=>LVS=b);y('skill_oldur',b=>OLDS=b);y('tahtavurma',b=>TVS=b);y('wooddusme',b=>WDS=bosKes(b));      // havadan tahtaya düşme
   y('wateraduket',b=>ADKS=b);y('aduket_carpma',b=>ADKC=b);y('kalpsesi',b=>KALPS=b);y('yemeses',b=>YEMS=b);
-  y('parcalanma',b=>PPAR=b);y('yarildi',b=>YAR=b);y('sapla',b=>SAPLA=b);y('mermi_haz',b=>HAZ=b);y('mermi_patla',b=>PAT=b);y('f_ates',b=>FPAT=b);y('varil_kafa',b=>VKS=b);y('popeye_die',b=>PDS=b);y('kiz_sarjor',b=>SARJ=b);
+  y('parcalanma',b=>PPAR=b);y('yarildi',b=>YAR=b);y('sapla',b=>SAPLA=b);y('mermi_haz',b=>HAZ=b);y('mermi_patla',b=>PAT=b);y('f_ates',b=>FPAT=b);y('varil_kafa',b=>VKS=b);y('su_sarj',b=>SULS=b);y('popeye_die',b=>PDS=b);y('kiz_sarjor',b=>SARJ=b);
 }
 function ziplaCal(){            // zıplama sesi: torba sırası, peş peşe iki zıplama (ilk ve ikinci) asla aynı ses olmaz
   if(!AC||AC.state!=='running'||!JP.length)return;

@@ -57,7 +57,7 @@ function vurusKontrol(){
   const dugme=S.atk&&!S.atk.tv&&HAREKET[S.atk.ad].p;
   for(const k of ['N','F']){
     const h=EL[k];
-    if(S.sarj>0||!(dugme||kolAktif(KOL[k]))||h.v<1500||HS[k]==='ac')continue;      // açık el vurmaz, sadece tutar
+    if(S.sarj>0||(S.cg&&S.cg.k===k)||(S.rk&&S.rk.k===k)||!(dugme||kolAktif(KOL[k]))||h.v<1500||HS[k]==='ac')continue;      // açık el vurmaz, sadece tutar
     for(const e of DUS){
       if(e.olu||e.hitT[k]>S.t||e.tut===k||e.iki)continue;      // kendi tuttuğuna vurmaz, diğer elle vurabilir
       if(!elDeg(e,k,45+(YA('Y')&&!S.pence?80:0)))continue;      // Aduket anti: yumruk menzili uzar
