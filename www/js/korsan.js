@@ -147,7 +147,7 @@ const KSK={      // her korsan kendi görsel setinden, tüm parçalar aynı öl�
 };
 KSK.m={p:'m_',sc:1,bl:[[160,142],[320,162]],A:{ust:[51.7,24.6],on:[38.2,21.2],elN:[132.6,7.2],elF:[20.7,26.7],uy:[58.9,32.4],bacak:[42.2,20.9],bot:[50,22.3],govde:[114.4,278.9],kalca:[83.1,17.6],kafa:[144.2,194.3],vur:[140.0,187.9],ser:[140.0,187.2],ahh:[143.0,190.7],aci:[147.7,192.2]},
   ust:116.7,on:134.6,uy:102.2,ak:[0,92.1],bh:133.7,bs:1.2,bel:468.3,kN:[5.7,120.3],kF:[-16.4,120.3],omN:[-68.7,-194],omF:[26.3,-208],boyun:[6.6,-244.8]};      // erkek boss (kılıç ustası): parçalar 0.55 ölçekli kesim, bl: kılıç gövdesi noktaları (bilek çerçevesi); bs: bacaklar %20 büyük, bel +20 yukarı
-KSK.f={p:'f_',sc:1,gun:true,gunNear:true,eo:true,kon:1,A:{ust:[46.4,25.9],on:[33.3,22.5],elN:[28.6,5],elF:[21.5,27.1],uy:[48.7,27.1],bacak:[33.1,20.5],bot:[47.4,24.4],govde:[110,238.7],kalca:[89.1,14.9],kafa:[151.6,183.8],vur:[152.9,180.5],ser:[164.1,183.0],ahh:[148.9,187.0],aci:[152.2,188.6],ates:[4,59]},
+KSK.f={p:'f_',sc:1,gun:true,gunNear:true,eo:true,kon:1,A:{ust:[46.4,25.9],on:[33.3,22.5],elN:[28.6,5],elF:[21.5,27.1],uy:[48.7,27.1],bacak:[33.1,20.5],bot:[49.8,25.5],govde:[110,238.7],kalca:[89.1,14.9],kafa:[151.6,183.8],vur:[152.9,180.5],ser:[164.1,183.0],ahh:[148.9,187.0],aci:[152.2,188.6],ates:[4,59]},
   ust:118.9,on:134,uy:113.5,ak:[0,93.5],bh:144.6,bel:391.6,kN:[0,20],kF:[-20,20],omN:[-69,-155.3],omF:[-7,-167.3],boyun:[-7.7,-209],mz:[59,158],gb:[49,79],mb:7};      // kN/kF: etek+bacaklar 20 birim yukarı      // kadın korsan (tabancalı): kon: etek bacakların üstüne çizilir, mz: namlu ucu, gb: namlu dibi, mb: namlunun kol eksenine açısı
 const KDUR={F:0.5,N:0.62,B:0.66},KBDUR=0.7;      // vuruş süreleri: F = uzak kol yumruğu, N = yakın kol yumruğu, B = yakın elle bıçak / dipçik savurma; KBDUR: tutulurken kafa atma
 const KPZ={dur:{hx:0,torso:6,bas:-3,uN:-35,rN:-105,wN:0,uF:-55,rF:-100,wF:0,lN:3,kN:6,lF:-14,kF:12}};
@@ -312,7 +312,7 @@ function ciziKorsan(e,mask){
   if(lo&&K.tek){ctx.save();if(K.us)ctx.scale(K.us,K.us);krp(R[K.p+'alt'],K.A.alt,fl);ctx.restore();if(mask==='alt')yaraCiz(e,0,-10,170)}      // kancacı: belden aşağısı tek parça (yürümez)
   else if(lo){
     kBacak(K,[K.kF[0],kfy],p.lF,p.kF,true,fl,mask?null:ek);
-    if(K.kon){kBacak(K,K.kN,p.lN,p.kN,false,fl,mask?null:ek);krp(R[K.p+'kalca'],K.A.kalca,fl)}      // etekli: etek bacakların önünde
+    if(K.kon){kBacak(K,K.kN,p.lN,p.kN,false,fl,mask?null:ek)}      // etekli (v0.398): kalça parçası yok, üst bacak yuvarlağı gövdenin eteğinin altında kalır
     else{krp(R[K.p+'kalca'],K.A.kalca,fl);kBacak(K,K.kN,p.lN,p.kN,false,fl,mask?null:ek)}
     if(mask==='alt')yaraCiz(e,0,-10,170);
   }

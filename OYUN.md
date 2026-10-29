@@ -158,3 +158,6 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 ## v0.397
 - Oyuncu ölüm animasyonu (`olumBasla/olumGuncelle`, anti.js; poz `olumPoz`, oyuncu.js): ölünce kontrol kilitlenir, `ses/popeye_die.mp3` çalar; iki dizine çöker (0.4 sn'de dizler yere çarpar: hafif sekme + yere iniş sesi), elleri karnında, karnından kan fışkırır (orta güç), 2.0 sn'de kollar öne uzanıp yüz üstü yığılır (2.68 sn'de yere çarpınca düşmanların yere düşme sesi `dusme.mp3`). 3.0 sn'de YENİLDİN yazısı + game over sesi, 3.5 sn'de yetenek (skill) seçimi açılır / dokununca yeniden başlar.
 - Kadın (f): şarjör sesi (`ses/kiz_sarjor.mp3`, 0.55 sn) nişan başlarken çalar (kaptanda eski `mermi_haz`); arkadaki (tabancasız) kolun eli 45° aşağı bükülü (`wF:45`); geri tepme 14°→4° (namlu kalkıp mermi "altından çıkıyor" görünüyordu), mermi ilk 0.05 sn canlı namlu ucuna yapışık.
+
+## v0.398
+- Kadın (f): kalça/etek parçası (`f_kalca`) çizilmiyor; bacaklar doğrudan gövdenin (eteğin) altına bağlı, üst bacak yuvarlağı eteğin altında kalır. Bot görseli yenilendi: tek bot (`parca/f_bot.webp`, 150x175, bilek yuvarlağı [49.8,25.5]) iki ayakta da kullanılır (arkadaki koyulaştırılır).
