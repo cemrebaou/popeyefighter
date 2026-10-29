@@ -115,7 +115,7 @@ function hud(dt){
     ctx.globalAlpha=1-p.t/0.8;ctx.font=(22+14*p.f)+'px Bangers,Impact,sans-serif';ctx.textAlign='center';
     ctx.lineWidth=5;ctx.strokeStyle='#fff';ctx.strokeText(p.txt,x,y);ctx.fillStyle=p.mavi?'#2f7fe0':'#e8453c';ctx.fillText(p.txt,x,y);ctx.globalAlpha=1;
   }
-  if(S.durum!=='oyun'){
+  if(S.durum!=='oyun'&&(S.durum!=='yenildi'||S.t-S.durumT>3.0)){      // yenilince önce ölüm animasyonu oynar, yazı sonra gelir
     ctx.fillStyle='rgba(31,42,51,.55)';ctx.fillRect(0,0,W,H);
     ctx.textAlign='center';ctx.font='64px Bangers,Impact,sans-serif';ctx.lineWidth=8;ctx.strokeStyle='#1f2a33';
     const t=dil(S.durum==='tamam'?'tamam':S.tamSif?'tam_son':'yenildin');      // tam sıfırlama: OYUN BİTTİ

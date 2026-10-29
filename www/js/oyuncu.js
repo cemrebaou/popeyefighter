@@ -123,11 +123,17 @@ function hedefPoz(){
   zpkPoz(o);      // zıpkınlı kol hedefe uzanır
   ispPoz(o);
   if(S.t<S.firT){const el=S.firEl||0;o.aNu=-90-el;o.aNr=90;o.aFu=-90-el;o.aFr=90;o.torso+=10}       // ateş: iki kol öne
+  if(S.ol)olumPoz(o);
   return o;
+}
+function olumPoz(o){      // ölüm pozu: dizlerinde çöker, elleri karnında; sonra kollar öne uzanıp yüz üstü yatar
+  const u=S.t-S.ol.t0;
+  Object.assign(o,{lN:-4,bN:96,lF:6,bF:92,kN:1,kF:1,pelv:0,hx:0,hy:0,hb:0,cr:0,lift:0,ofs:0,torso:22+3*Math.sin(u*14),bas:6,aNu:-12,aNr:15,aFu:-6,aFr:30});      // iki diz ve alt bacaklar yerde, gövde öne eğik, iki el karında
+  if(u>=OL_YIGIL)Object.assign(o,{lN:6,bN:8,lF:-4,bF:12,kN:0,kF:0,torso:0,bas:-4,aNu:-160,aNr:85,aFu:-150,aFr:80});      // yığılma: bacaklar uzar, kollar öne düşer
 }
 const ANAH=['lN','bN','lF','bF','torso','bas','aNu','aNr','aFu','aFr','ofs','lift','kN','kF','pelv','hx','hy','hb','cr','cw'];
 function pozGuncelle(dt){
-  const h=hedefPoz(), k=1-Math.exp(-dt*((S.atk||kolVar()||S.yy||S.alk||S.yeme||ZPK.N||ZPK.F)?45:(S.yer?22:16)));      // zıpkın: kol hedefe hızlı döner
+  const h=hedefPoz(), k=1-Math.exp(-dt*(S.ol?7:(S.atk||kolVar()||S.yy||S.alk||S.yeme||ZPK.N||ZPK.F)?45:(S.yer?22:16)));      // zıpkın: kol hedefe hızlı döner
   ANAH.forEach(a=>{P[a]=(P[a]===undefined)?h[a]:P[a]+(h[a]-P[a])*k});
 }
 
@@ -222,7 +228,7 @@ function karakter(){
   const yukN=S.yer&&!(S.atk&&/^kickSl/.test(S.atk.ad))?Math.max(nN.cy,nF.cy):BACAK_BOY;      // kayar kombo tekmesi: bacaklar havada açılır (yere çökmez)
   const yuk=S.yer?yukN+(CR_H-yukN)*P.cr:BACAK_BOY;      // çömelmede kalça alçalır; her iki ayak da yere basar (aşağıda ters kinematik)
   const celme=S.kay&&S.t<S.kay.t0+S.kay.T;
-  const ikAcik=S.yer&&!celme&&!(S.ust&&S.ust.f==='diz')&&!S.sman&&!(S.hitR&&S.hitR.z==='bacak'&&S.t<S.hitR.t0+0.5)&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
+  const ikAcik=S.yer&&!S.ol&&!celme&&!(S.ust&&S.ust.f==='diz')&&!S.sman&&!(S.hitR&&S.hitR.z==='bacak'&&S.t<S.hitR.t0+0.5)&&!(S.atk&&(S.atk.ad.indexOf('kick')===0||S.atk.ad.indexOf('diz')===0));
   if(ikAcik){
     [[N,nN,P.cw],[F,nF,1-P.cw]].forEach(([B,n,wf])=>{
       const dunyaX=S.x+S.yon*(P.ofs+BON+n.cx), gH=zemin(dunyaX);
@@ -236,15 +242,15 @@ function karakter(){
     });
   }
   ctx.save();
-  ctx.translate(P.ofs-P.hb,-yuk-P.lift);   // kalça ve üstü geriye (sola) kayar
-  if(S.donuyor||S.tats>0||S.sman){ctx.translate(0,-170);ctx.rotate(S.spin);ctx.translate(0,170);}   // yuvarlanma: gövde ortasından ileri doğru döner
+  ctx.translate(P.ofs-P.hb,-yuk-P.lift-(S.ol?S.ol.dy-S.ol.dn*(yuk+90):0));      // ölüm: dizlerde sekme, yüz üstü düşünce gövde yere iner   // kalça ve üstü geriye (sola) kayar
+  if(S.donuyor||S.tats>0||S.sman||S.ol){ctx.translate(0,-170);ctx.rotate(S.spin);ctx.translate(0,170);}   // yuvarlanma: gövde ortasından ileri doğru döner
   BONg=BON;
   govdeUzayi(()=>{ kol(28,-158,P.aFu,P.aFr,'F',true,1.0); });varilElCiz('F');   // uzak kol en arka katmanda: biraz küçük, omza oturur
   ctx.save();ctx.translate(BON,0);
   bacak(F.l,F.k,F.a,true);
   ctx.restore();
   ctx.save();ctx.translate(P.hx+BON,-P.hy);ctx.rotate(P.pelv*D);OGV.kal=dunyaNok(0,-20);resim(R.kalca,73.5,118.8);ctx.restore();   // kalça (şort) bacakların önünde, gövdenin arkasında
-  govdeUzayi(()=>{ ctx.scale(1.1,1.1);resim(R.govde0,97.7,246.4);yrCiz('govde',97.7,246.4); });      // gövde: temiz gövde + can azaldıkça yaralar (yara.js)      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
+  govdeUzayi(()=>{ ctx.scale(1.1,1.1);OGV.karin=dunyaNok(40,0);resim(R.govde0,97.7,246.4);yrCiz('govde',97.7,246.4); });      // gövde: temiz gövde + can azaldıkça yaralar (yara.js)      // gövde (%10 büyük) karnıyla kalçanın üstüne biner; canla yüzle aynı anda, yumuşak geçişle değişir
   ctx.save();ctx.translate(BON,0);bacak(N.l,N.k,N.a,false);ctx.restore();   // yakın bacak gövdenin önünde
   govdeUzayi(()=>{
     ctx.save();ctx.translate(9,-262);ctx.rotate(P.bas*D);ctx.translate(5/(SC0*ZOOM),0);OGV.boyun=dunyaNok(0,60);OGV.kafa=dunyaNok(7.5,-85.5);OGV.agiz=dunyaNok(17.6,-2.4);OGV.t=S.t;{if(S._lh!=null&&S.hp<S._lh){S.agT0=S.t;S.agLv=Math.min(9,Math.floor((HPMAX-Math.max(S._lh,1))/(HPMAX/10)))}S._lh=S.hp;const ph=S.t-(S.agT0==null?-9:S.agT0);if(ph>=0&&ph<0.6)ctx.drawImage(YUZA[S.agLv],-112.5,-226.6,240.1,269.4);else{const [i,f]=hasarKat(S.hp),ye=(S.yeme&&S.t-S.yeme.t0>ISP_D0*ISP_YAVAS&&S.t-S.yeme.t0<(ISP_D1+0.1)*ISP_YAVAS)||ISP_Y.length>0;hasarCiz(n=>ye?ctx.drawImage(YUZY[n],-95.4,-192.4,205.8,298.2):ctx.drawImage(YUZ[n],-106.8,-213.8,228.7,256.6),i,f)}}      // ıspanak yerken ağzı açık yüz      // vurulunca 0.6 sn acı yüzü

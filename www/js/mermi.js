@@ -23,12 +23,13 @@ function pAtesle(e){      // namludan oyuncunun kafasına doğru tek mermi; sonr
   let dx=el?m.x-el.x:S.x-m.x,dy=el?m.y-el.y:kafaY()-m.y;      // namlunun gösterdiği yön (el → namlu ucu)
   if(Math.abs(dx)<1&&Math.abs(dy)<1){dx=S.x-m.x;dy=kafaY()-m.y}
   const L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
-  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:Math.round((e.bdm||30)*ZK()),k:e.sk==='f'?0.55:1});const fk=e.sk==='f',fo=fk?0:14;EFL.push({x:m.x+Math.cos(ang)*fo,y:m.y+Math.sin(ang)*fo,ang,t:S.t,k:fk?0.45:1,f:fk,e:fk?e:null});      // kadın: patlama tam namlu ucundan, kendi görseli (parca/f_ates)
+  EMER.push({x:m.x,y:m.y,vx:dx/L*V,vy:dy/L*V,t:0,ang,dm:Math.round((e.bdm||30)*ZK()),k:e.sk==='f'?0.55:1,e:e.sk==='f'?e:null});const fk=e.sk==='f',fo=fk?0:14;EFL.push({x:m.x+Math.cos(ang)*fo,y:m.y+Math.sin(ang)*fo,ang,t:S.t,k:fk?0.45:1,f:fk,e:fk?e:null});      // kadın: patlama tam namlu ucundan, kendi görseli (parca/f_ates)
   bufCal(fk&&FPAT?FPAT:PAT,0.9);S.sars=Math.max(S.sars,3);
 }
 function emerGuncelle(dt){
   for(let i=EMER.length-1;i>=0;i--){
-    const p=EMER[i];p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+    const p=EMER[i];p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;{const u=p.e&&p.t<0.05&&p.e._u&&p.e._u[2];if(u&&S.t-u.t<0.1){p.x=u.x;p.y=u.y}}      // kadın: mermi ilk anda canlı namlu ucundan çıkar (geri tepmede namlu kalksa da altından çıkmaz)
+    
     if(p.y<zemin(p.x)||p.t>4||Math.abs(p.x-S.x)>4500){EMER.splice(i,1);continue}
     if(S.durum!=='oyun')continue;
     const ust=(S.yer&&asagiMi())?690:900;      // eğilince kafa hizası mermiden aşağıda kalır
@@ -88,11 +89,18 @@ const ADK_ISIK=(()=>{const c=document.createElement('canvas');c.width=c.height=1
 function adkIsik(sx,sy,G,a){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=a;ctx.drawImage(ADK_ISIK,sx-G,sy-G,G*2,G*2);ctx.restore()}
 const ADK_O=0.7;      // aduket görsel boyutu
 let ADKD=[];      // saçılan su damlaları (dünya)
-function adkDamla(x,y,r,vx,vy,yn,n){      // girdabın kenarından teğet yönde (dönüş yönüne) damla fırlar; iki yana da gider
+function adkDamla(x,y,r,vx,vy,yn,n,kk=1){      // girdabın kenarından teğet yönde (dönüş yönüne) damla fırlar; iki yana da gider
   for(let i=0;i<n;i++){
     if(ADKD.length>140)return;
     const a=Math.random()*Math.PI*2,c=Math.cos(a),s=Math.sin(a),V=700+Math.random()*700,rr=r*(0.75+Math.random()*0.25);
-    ADKD.push({x:x+c*rr,y:y+s*rr,vx:vx*0.5+yn*s*V+c*250,vy:vy*0.5-yn*c*V+s*250,t:0,T:0.45+Math.random()*0.35,k:0.6+Math.random()*0.7});
+    ADKD.push({x:x+c*rr,y:y+s*rr,vx:vx*0.5+yn*s*V+c*250,vy:vy*0.5-yn*c*V+s*250,t:0,T:0.45+Math.random()*0.35,k:(0.6+Math.random()*0.7)*kk});
+  }
+}
+function adkSic(x,y,yn,n){      // vurulan yerden dalga gibi su fışkırır: yukarı-ileri yelpaze, iki yana da damla (damlalar yarı boyda)
+  for(let i=0;i<n;i++){
+    if(ADKD.length>140)return;
+    const a=Math.PI*(0.1+0.8*Math.random()),V=700+Math.random()*900,sg=Math.random()<0.7?yn:-yn;
+    ADKD.push({x:x+(Math.random()-0.5)*30,y:y,vx:Math.cos(a)*V*sg*0.9+yn*200,vy:Math.sin(a)*V+200,t:0,T:0.45+Math.random()*0.35,k:(0.6+Math.random()*0.7)*0.5});
   }
 }
 let ADK_SRC=null,ADK_DT=0;

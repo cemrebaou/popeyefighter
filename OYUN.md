@@ -63,7 +63,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Düşmana saplanınca zıpkın 10 sn düşmana saplanamaz (etrafa takılır); buton ıspanak gibi dolar, kalan saniyeyi yazar, aç/kapa çalışır.
 - Düşmana saplanma 20 hasar (kaptana 10, kafasına 3 kat). Düşman iki eliyle mızrağı tutar, çırpınır, saldıramaz. Parmağı kendine çek = düşmanı çek (400 birime kadar; oyuncu uzaklaşınca da sürüklenir), hızlı geri fiske = kendine savurur (yanına yüzüstü kapaklanır), düşmana doğru hızlı fiske = mızrağı kopar. Kaptan tutmaz, mızrak 0.45 sn sonra çıkar. Aynı düşmana ikinci zıpkın: hasar verir, hemen çıkar.
 - Yerde yatan düşmana saplanma 20 hasar; hızlı çekince çekilen yöne havaya fırlar, düşünce yine yatar.
-- Varil: geri çek = sürükle, hızlı geri fiske = kendine fırlatır (yoldaki düşmana çarpar).
+- Varil: geri çek = sürükle, hızlı geri fiske = kendine fırlatır (yoldaki düşmana çarpar). v0.397: fırlatılan varil düşmanın KAFASINA (düşman boyunun üst %30'u) çarparsa KRİTİK: hasar 2 kat, `ses/varil_kafa.mp3` çalar, "KRİTİK!" yazısı çıkar (varil.js).
 - Sesler: `ses/zipkin_obje.mp3` (nesneye), `ses/zipkin_insan.mp3` (insana). Görseller: `parca/z_dolu` (mızraklı tabanca), `z_bos`, `z_mizrak`, `z_ip` (halat, uç uca), `ui/btn_zipkin`.
 
 ## XP ve seviye
@@ -85,7 +85,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - C Yumruk (kök, 0) · I Yere Düşürme (1, pasif) · O Can Dolumu %2 (1, pasif) · X Can Dolumu %3 (1, pasif) · W Kalkanlı Savunma (2, pasif) · V Maks. Can +100 (1, pasif) · TOP Ispanak Cebi (2; 30 sn'de bir ıspanak butonu, ıspanak gücü x2)
 - A İnsan Tutma (1) · B Varil Tutma (1) · G Sıkı Tutuş (1, pasif; tutulan kafa atamaz) · F Yırtma (2) · R Can Çalmalı Yırtma (3; Yırtma açılmadan açılmaz) · H Can Çalma %10 (1, pasif) · M Can Çalma %20 (1, pasif)
 - N Yer Yumruğu / yarık (2) · S Süpermen Uçuşu (2) · Y Aduket (2)
-- Aduket öldürülünce (anti Y): yumruk hasarı +%30; yumruk değince ve yumruk savrulurken (el hızı >1500) elden su damlaları fışkırır (`adkDamla`, anti.js); sulu yumruk değen düşman 2 sn yavaşlar (yürüme %50, `e.yavas`).
+- Aduket öldürülünce (anti Y): yumruk hasarı +%30; yumruk değince vurulan yerden dalga gibi su fışkırır (`adkSic`, mermi.js), yumruk İLERİ savrulurken (el hızı >1500 ve gidiş yönünde; sağa-sola her harekette değil) yol üstünde ufak su fışkırır (`adkDamla`, anti.js); bu su damlaları normal Aduket damlalarının yarı boyunda (v0.397); sulu yumruk değen düşman 2 sn yavaşlar (yürüme %50, `e.yavas`).
 - D Çift Zıplama (1) · K Çok Zıplama (1, pasif) · E Kayar Tekme (1) · L Döner Tekme (2) · U Süper Kahraman İnişi (2) · Q Tekmeyle Can Çalma (1, pasif)
 - J Ateşli Aparkat (1) · AL Dağıtıcı (2) · YT Yere Tekme (1)
 - P Bıçak Modu (2) · T Bıçakla Can Çalma (1, pasif) · Z Bıçak Atlama (3)
@@ -154,3 +154,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - Zemin görseli (kumlu toprak) yeniden işlendi: üstteki beyaz gökyüzü kırpıldı, artık tamamen toprak dokusu; zeminin dağın eteğine taşma payı artırıldı (340 birim), arkada boşluk/beyaz ekran görünmez.
 
 - Çizim sırası (v0.395): yerdeki variller düşmanların arkasında (`varilCiz(false)` → `dusmanCiz`).
+
+## v0.397
+- Oyuncu ölüm animasyonu (`olumBasla/olumGuncelle`, anti.js; poz `olumPoz`, oyuncu.js): ölünce kontrol kilitlenir, `ses/popeye_die.mp3` çalar; iki dizine çöker (0.4 sn'de dizler yere çarpar: hafif sekme + yere iniş sesi), elleri karnında, karnından kan fışkırır (orta güç), 2.0 sn'de kollar öne uzanıp yüz üstü yığılır (2.68 sn'de yere çarpınca düşmanların yere düşme sesi `dusme.mp3`). 3.0 sn'de YENİLDİN yazısı + game over sesi, 3.5 sn'de yetenek (skill) seçimi açılır / dokununca yeniden başlar.
+- Kadın (f): şarjör sesi (`ses/kiz_sarjor.mp3`, 0.55 sn) nişan başlarken çalar (kaptanda eski `mermi_haz`); arkadaki (tabancasız) kolun eli 45° aşağı bükülü (`wF:45`); geri tepme 14°→4° (namlu kalkıp mermi "altından çıkıyor" görünüyordu), mermi ilk 0.05 sn canlı namlu ucuna yapışık.

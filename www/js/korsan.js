@@ -82,7 +82,7 @@ function korsanAI(e,dt,dx){      // insan gibi yürür; menzilde 1-3 vuruşluk k
       if(ks.fired&&S.t-ks.tf>=0.45){e.ks=null;e.acd=ks.tf+(e.fa?e.fa[0]+Math.random()*e.fa[1]:3+Math.random()*2)}      // ateşler arası 3-5 sn
       return;
     }
-    if(S.durum==='oyun'&&S.t>=(e.acd||0)){e.ks={t0:S.t,fired:false};bufCal(HAZ,0.9);return}
+    if(S.durum==='oyun'&&S.t>=(e.acd||0)){e.ks={t0:S.t,fired:false};bufCal(e.sk==='f'&&SARJ?SARJ:HAZ,0.9);return}
   }
   else if(ad<(e.kc==='b'?425:e.kc==='p'?430*bs:470)){
     vurBasla();
@@ -116,7 +116,7 @@ function oyuncuHasar(){
     }
   }      // korunma süresi yok: her düşmanın her vuruşu ayrı sayılır (aynı vuruş bir kez)
   if(DEMO)S.hp=Math.max(S.hp,1);      // önizlemede ölünmez, bölüm bitmez
-  else if(S.hp<=0){S.hp=0;S.durum='yenildi';S.durumT=S.t;bufCal(GOS,1);antiOlum()}      // kaybedince game over sesi
+  else if(S.hp<=0){S.hp=0;S.durum='yenildi';S.durumT=S.t;olumBasla();antiOlum()}      // ölüm animasyonu + ölüm sesi (game over sesi animasyondan sonra)
   else if(!S.bossGeldi){if(S.x>BOSS_X-2400)bossKur()}            // boss ancak yolun sonuna gelince
   else if(!DUS.some(e=>e.boss&&!(e.olm&&e.olm.yat&&S.t-e.olm.yat>1))){S.durum='tamam';S.durumT=S.t}
 }
@@ -213,7 +213,7 @@ function korsanPoz(e){
   if(e.kc==='b'&&e.sk!=='m')p.wN+=60;      // bıçak gardda öne-yukarı bakar (kılıç ustası kendi düz duruşunu kullanır)
   if(e.agil&&!e.olu&&!e.moving&&!e.ka&&!e.ag){const b=Math.sin(t*9);p.kN+=14+10*b;p.kF+=14+10*Math.sin(t*9+1.4);p.lN-=6*b;p.lF+=6*b;p.torso+=2*b}      // kıpır kıpır: dizler hafif yaylanır
   if(e.kc==='p'){p.uF=-6+Math.sin(t*2.2)*2;p.rF=-2;p.wF=0}
-  if(e.sk==='f'){p.uF=-14+Math.sin(t*2.2)*2;p.rF=-18;p.wF=0}      // kadın: tabancasız (arka) kol aşağı, hafif öne açılı
+  if(e.sk==='f'){p.uF=-14+Math.sin(t*2.2)*2;p.rF=-18;p.wF=45}      // kadın: tabancasız (arka) kol aşağı, hafif öne açılı
   if(e.kc==='h'){p.uF=-18+Math.sin(t*2.2)*3;p.rF=-58;p.wF=8;p.uN=-26;p.rN=-62;p.wN=0}      // kancacı: kancalı el arkadaki kolda, zincirli el önde      // kaptan: tabancalı kol düz aşağı sarkar, namlu kolla paralel
   if(e.moving){const ph=e.wf||0,s=Math.sin(ph),c=Math.cos(ph);      // yürüyüş: bacaklar sırayla, öne giden bacağın dizi bükülür; kollar ters salınır
     p.lN=-4-24*s;p.kN=6+38*Math.max(0,c);p.lF=-4+24*s;p.kF=6+38*Math.max(0,-c);p.uN+=9*s;p.uF-=9*s;p.torso+=3}
@@ -233,10 +233,10 @@ function korsanPoz(e){
   if(e.kc==='p'&&ks&&!e.tut){      // nişan: tabanca oyuncunun kafasına doğrulur, ateşten sonra geri tepme ve indirme
     const K=KSK[e.sk||'p'],gn=K.gun&&K.gunNear,om=gn?K.omN:K.omF,dxl=Math.max((S.x-e.x)*(e.yon||1),60),ys=e.y+(K.bel-om[1])*K.sc*(e.bs||1),th=Math.atan2(-dxl,ys-kafaY())/D;
     const u=S.t-ks.t0,ri=ez(kisit(u/0.45,0,1)),rec=ks.fired?Math.max(0,1-(S.t-ks.tf)/0.3):0,lo=ks.fired?ez(kisit((S.t-ks.tf-0.12)/0.25,0,1)):0;
-    const ag=gn?{uN:th-14*rec,rN:0,wN:(K.mb||0),torso:7-9*rec,bas:2,hx:-12*rec,uF:-14,rF:-18,wF:0}      // tabanca öndeki kolda (kadın): kol omuzdan hedefe dümdüz, bilek namluyu kol hizasına getirir; tabancasız kol aşağı, hafif açılı
+    const ag=gn?{uN:th-4*rec,rN:0,wN:(K.mb||0),torso:7-3*rec,bas:2,hx:-12*rec,uF:-14,rF:-18,wF:45}      // tabanca öndeki kolda (kadın): kol omuzdan hedefe dümdüz, bilek namluyu kol hizasına getirir; tabancasız kol aşağı, hafif açılı
                 :{uF:th+4+(K.mb||0)-14*rec,rF:-4,wF:0,torso:7-9*rec,bas:2,hx:-12*rec,uN:-45,rN:-95,wN:0};
     const bl=ri*(1-lo);p=kKar(p,Object.assign({},KPZ.dur,ag),bl);
-    if(gn){const o=e._u&&e._u[5];if(o&&S.t-o.t<0.1){const yn=e.yon||1,a=Math.atan2(-(S.x-o.x)*yn,-(kafaY()-o.y))/D;p.uN+=bl*((a-14*rec-p.torso)-p.uN)}}      // kadın: omuzun gerçek konumundan oyuncunun kafasına dümdüz (gövde eğimi düşülür)
+    if(gn){const o=e._u&&e._u[5];if(o&&S.t-o.t<0.1){const yn=e.yon||1,a=Math.atan2(-(S.x-o.x)*yn,-(kafaY()-o.y))/D;p.uN+=bl*((a-4*rec-p.torso)-p.uN)}}      // kadın: omuzun gerçek konumundan oyuncunun kafasına dümdüz (gövde eğimi düşülür)
   }
   if(e.tut){
     p=kKar(KPZ.sars,KPZ.hava,0.5+0.5*Math.sin(t*14));      // tutulunca çırpınır

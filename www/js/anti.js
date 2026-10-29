@@ -3,9 +3,28 @@
 // Etkiler: hasar çarpanları (antiHasar), vuruş sonrası (antiVurSonra), öldürme (antiOldu), blok (antiBlok), her kare (antiGuncelle), iniş (antiInis), çizim (antiCiz).
 const BCK=[];      // bumerang bıçaklar (Bıçak Atlama anti)
 let ATES=[];       // ateş parçacıkları (dünya koordinatı)
+// ---- Oyuncu ölüm animasyonu: dizlerine düşer (yere çarpınca sekme + düşme sesi), elleriyle karnını tutar, karnından kan fışkırır, sonra yüz üstü yere yığılır ----
+const OL_YIGIL=2.0;      // yığılma başlangıcı (sn); 0.7 sn sürer, sonra yerde yatar
+function olumBasla(){
+  S.ol={t0:S.t,dn:0,dy:0,diz:false,yat:false,gos:false,kT:0};
+  if(S.pence)penceKapa();
+  S.atk=null;S.sarj=0;S.blok=false;S.sman=null;S.yy=null;S.alk=null;S.dkick=null;S.slam=false;S.shoryu=0;S.tats=0;S.donuyor=false;S.dag=null;S.ust=null;S.kay=null;S.sup=null;S.omuz=null;S.yeme=null;S.uzan=null;S.pend=null;
+  zpkTemizle(true);bufCal(PDS,1);
+  if(OGV.karin&&S.t-OGV.t<0.2)kanFiskir(OGV.karin[0],OGV.karin[1],S.yon,0.5);
+}
+function olumGuncelle(dt){
+  const o=S.ol;if(!o)return;
+  const u=S.t-o.t0,ez=x=>x*x*(3-2*x);
+  if(!o.diz&&u>=0.4){o.diz=true;if(WDS)bufCal(WDS,1);else torbaCal(INS,INSBAG,1);karBas(S.x+S.yon*20,260,KMIN-4,false);tasSac(S.x,2,0.8);S.sars=Math.max(S.sars,5);titre(40)}      // dizler yere çarpar: zıplayıp düşme sesi
+  o.dy=o.diz&&u<0.64?22*Math.sin(Math.PI*kisit((u-0.4)/0.24,0,1)):0;      // dizde hafif sekme
+  if(u>0.1&&u<OL_YIGIL+0.3&&OGV.karin){o.kT-=dt;if(o.kT<=0){o.kT=0.12;kanFiskir(OGV.karin[0],OGV.karin[1],S.yon,0.18+0.15*Math.random())}}      // karından kan fışkırır
+  o.dn=ez(kisit((u-OL_YIGIL)/0.7,0,1));S.spin=o.dn*Math.PI/2*0.97;
+  if(!o.yat&&u>=OL_YIGIL+0.68){o.yat=true;bufCal(DSS,1);karBas(S.x,300,KMIN-6,false);tasSac(S.x,3,0.9);S.sars=Math.max(S.sars,8);titre(60)}      // yüz üstü yere çarpınca düşmanların yere düşme sesi
+  if(!o.gos&&u>=3.0){o.gos=true;bufCal(GOS,1)}      // YENİLDİN yazısıyla birlikte
+}
 // ---- ölüm: seçim ekranı kısa süre sonra açılır ----
 function antiOlum(){
-  if(antiAday().length){S.antiBek=S.t+1.3;return}
+  if(antiAday().length){S.antiBek=S.t+3.5;return}      // ölüm animasyonu bitince seçim ekranı açılır
   if(HPMAX<=100){tamSifirla();return}      // öldürülecek skill yok, maks. can 100: oyun tamamen biter
   AG.cip++;HPMAX=Math.max(100,HPMAX-10);agKaydet();if(HPMAX<=100)S.pops.push({x:S.x,y:S.y+1400,t:0,txt:dil('cip_son'),f:1.6});      // hiç verilmiş yetenek yokken ölüm: maks. can -10, her vuruşa +1 hasar (birikir)
   S.pops.push({x:S.x,y:S.y+1200,t:0,txt:dil('cip_pop'),f:1});
@@ -33,7 +52,7 @@ function antiHasar(e,dmg){
   return dmg;
 }
 function antiVurSonra(e,dmg,hf){
-  if(YA('Y')&&!S.antiTik&&S.cs==='y'&&!S.pence&&S.vEl){const h=EL[S.vEl];adkDamla(h.wx,h.wy,45,S.vx,0,S.yon,16);e.yavas=S.t+2}      // + 2 sn yavaşlar (yürüme %50)      // Aduket öldürülünce: yumruk değince sular fışkırır
+  if(YA('Y')&&!S.antiTik&&S.cs==='y'&&!S.pence&&S.vEl){const h=EL[S.vEl];adkSic(h.wx,h.wy,S.yon,18);e.yavas=S.t+2}      // + 2 sn yavaşlar (yürüme %50)      // Aduket öldürülünce: yumruk değince sular fışkırır
   if(dmg>=9999||S.antiTik||e.olu)return;
   if(YA('Q')&&S.cs==='t'&&!e.tut){e.vx*=1.3;e.vy*=1.3}      // tekmeler %30 daha uzağa
   if(YA('J')&&Math.random()<0.05){e.yan={son:S.t+4,tik:(e.yan&&e.yan.tik)||S.t+0.5};if(S.cs==='y'&&S.vEl)S.atesEl={k:S.vEl,son:S.t+0.6}}      // yakan yumruk alev alır      // Ateşli Aparkat öldürülünce: her vuruş %5 yakar, 4 sn
@@ -67,7 +86,7 @@ function antiGuncelle(dt){
     if(e.kanama&&!e.olu){if(S.t>=e.kanama.son)e.kanama=null;else if(S.t>=e.kanama.tik){e.kanama.tik+=0.5;kanVurus(e.x,e.y+e.cy*(0.8+Math.random()*0.6),0.15,Math.random()<0.5?-1:1,false);dotVur(e,3)}}
   }
   if(S.durum!=='oyun')return;
-  if(YA('Y')&&!S.pence&&!DEMO)for(const k of ['N','F']){const h=EL[k];if(h.v>1500&&Math.random()<dt*40)adkDamla(h.wx,h.wy,35,S.vx+h.vx*0.25,h.vy*0.25,S.yon,1)}      // yumruk savururken elden su fışkırır
+  if(YA('Y')&&!S.pence&&!DEMO)for(const k of ['N','F']){const h=EL[k];if(h.v>1500&&h.vx*S.yon>h.v*0.6&&Math.random()<dt*40)adkDamla(h.wx,h.wy,35,S.vx+h.vx*0.25,h.vy*0.25,S.yon,1,0.5)}      // sadece yumruk ileri savrulurken yol üstünde ufak su fışkırır (sağa-sola her harekette değil)
   if(YA('A')&&S.yer&&Math.abs(S.vx)>HIZ*0.7){      // omuz atma: koşarak çarpınca yere serer
     const sg=Math.sign(S.vx);
     for(const e of DUS){

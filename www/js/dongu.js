@@ -50,7 +50,7 @@ function dongu(ms){
   son=ms;S.dtG=dt;
   if(S.dur>0){S.dur-=dt;dt*=0.08}
   S.sars*=Math.pow(0.002,dt);S.t+=dt;
-  const gA=DEMO?0:gyroAx(),ax=Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gA)), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
+  const gA=DEMO?0:gyroAx(),ax=S.ol?0:Math.max(-1,Math.min(1,(key.sag?1:0)-(key.sol?1:0)+gA)), yon=Math.abs(ax)>0.01?Math.sign(ax):0;
   const hed=ax*HIZ*(S.atk&&S.yer?0.35:1)*(S.yer&&asagiMi()?0.45:1)*antiHiz();
   const ivme=S.yer?((gA===0&&S.vx*hed>=0&&Math.abs(hed)>Math.abs(S.vx))?2800:9000):6000;      // tuşla koşu yavaş hızlanır (telefon eğimi aynı kalır)
   const asili=zpkAsili(),ucus=!S.yer&&S.t<(S.zpUcT||0);      // zıpkın: halata asılıyken eğim/tuşlar sallar; halatı bırakınca savrulma hızı korunur
@@ -103,7 +103,7 @@ function dongu(ms){
   {const hd=Math.max(Math.min(S.y,z0),S.y+KARAKTER_BOY-(ZY()-H*0.1)/SC);S.camY+=(hd-S.camY)*(1-Math.exp(-dt*5))}      // ölü bölge: kamera yerde kalır, sadece kafa ekranın üst %10'una girince yukarı takip eder
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
   {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,false)}S.adk=k}      // her adım karda iz bırakır
-  pozGuncelle(dt);
+  olumGuncelle(dt);pozGuncelle(dt);
   if(S.dag&&R.blade){      // blade: bıçak atlama uçuşu sırasında oyuncunun önünde iki bıçak görseli
     const bsx=W/2+(S.x-S.x)*SC,bsy=ZY()-(S.y+200-S.camY)*SC;      // oyuncunun ön-alt tarafında
     const bw=R.blade.width*SC*0.6,bh=R.blade.height*SC*0.6;
