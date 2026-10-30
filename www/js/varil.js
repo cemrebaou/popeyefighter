@@ -58,7 +58,7 @@ function varilGuncelle(dt){
         const f=v.f!==undefined?v.f:kisit((Math.hypot(v.vx,v.vy)-700)/4000,0,1);
         const e=DUS.find(e=>{if(e.olu||e.tut)return false;const ust=e.y+(e.dus?e.cy*0.9:e.cy*2);      // düşmanın tüm boyu (kutu): değince çarpar
           return Math.abs(v.x-e.x)<V_W/2+e.r*0.55&&v.y-V_MRK*0.85<ust&&v.y+V_MRK*0.85>e.y});
-        if(e){const kf=v.y>e.y+e.cy*1.4,dm=Math.round((15+35*f)*(kf?2:1));vur(e,dm,v.vx,v.vy,f);if(kf){bufCal(VKS,1);S.pops.push({x:e.x,y:e.y+e.cy*2,t:0,txt:dil('kritik'),f:1.3})}varilKir(v);break}      // düşmana çarpınca kırılır
+        if(e){const kf=v.y>e.y+e.cy*1.4,dm=Math.round((25+35*f)*(kf?2:1));vur(e,dm,v.vx,v.vy,f);if(kf){bufCal(VKS,1);S.pops.push({x:e.x,y:e.y+e.cy*2,t:0,txt:dil('kritik'),f:1.3})}varilKir(v);break}      // düşmana çarpınca kırılır
         const zz=zemin(v.x)+V_MRK+V_YUK;
         if(v.y<=zz&&v.tek){v.y=zz;      // tekmelenen varil kırılmaz: seker, yuvarlanır, yavaşlayıp yerde durur (tekrar tekme bekler)
           if(v.vy<-350){v.vy=-v.vy*0.35;v.vx*=0.75;vSes(null,TD,TDBAG,v.x,0.6)}

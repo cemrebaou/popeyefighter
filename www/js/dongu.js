@@ -102,7 +102,7 @@ function dongu(ms){
   zpkGuncelle(dt);      // zıpkın: uçuş, saplanma, halat kısıtı
   {const hd=Math.max(Math.min(S.y,z0),S.y+KARAKTER_BOY-(ZY()-H*0.1)/SC);S.camY+=(hd-S.camY)*(1-Math.exp(-dt*5))}      // ölü bölge: kamera yerde kalır, sadece kafa ekranın üst %10'una girince yukarı takip eder
   if(S.yer&&Math.abs(S.vx)>40)S.faz+=dt*Math.abs(S.vx)/HIZ*2*Math.PI*1.05*(1+0.45*kisit((Math.abs(S.vx)/HIZ-0.55)/0.35,0,1));
-  {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,false)}S.adk=k}      // her adım karda iz bırakır
+  {const k=Math.floor(S.faz/Math.PI);if(S.adk!==undefined&&k!==S.adk&&S.yer){adimCal(S.x,asagiMi()?0.5:1);karBas(S.x+S.yon*(k%2?70:10),85,KMIN,false)}S.adk=k}      // her adım karda iz bırakır
   olumGuncelle(dt);rkGuncelle(dt);pozGuncelle(dt);
   if(S.dag&&R.blade){      // blade: bıçak atlama uçuşu sırasında oyuncunun önünde iki bıçak görseli
     const bsx=W/2+(S.x-S.x)*SC,bsy=ZY()-(S.y+200-S.camY)*SC;      // oyuncunun ön-alt tarafında

@@ -45,7 +45,7 @@ function vur(e,dmg,vx,vy,f,hy){
     if(e.dus)e.dus.son=Math.max(e.dus.son,S.t+sr+DUS_KALK);else e.dus={t0:S.t,son:S.t+DUS_DUS+sr+DUS_KALK,yn};
     e.vx=yn*Math.max(500,Math.min(Math.abs(e.vx),1000));e.vy=Math.min(e.vy,550)}      // biraz daha uzağa düşer
   else if(e.dus&&!e.tut){e.vx*=0.3;e.vy=Math.min(e.vy,120)}      // yerdeyken hafif vuruş onu fazla oynatmaz
-  if(e.hp<=0){e.tut=null;e.olu=true;e.ol=0;if(e.dus){e.yerOl=true;e.dus.son=S.t+999;e.vx=e.vy=0}else if(dmg<9999){const uc=dmg>=25||e.y>zemin(e.x)+5||Math.abs(e.vx)>1100;e.cy0=e.cy0||e.cy;e.dusA=0;      // ölüm: sert darbe = uçarak kıç üstü düşüp geri yatar, değilse dizler üstüne çöküp yüzüstü düşer
+  if(e.hp<=0){sesYay();e.tut=null;e.olu=true;e.ol=0;if(e.dus){e.yerOl=true;e.dus.son=S.t+999;e.vx=e.vy=0}else if(dmg<9999){const uc=dmg>=25||e.y>zemin(e.x)+5||Math.abs(e.vx)>1100;e.cy0=e.cy0||e.cy;e.dusA=0;      // ölüm: sert darbe = uçarak kıç üstü düşüp geri yatar, değilse dizler üstüne çöküp yüzüstü düşer
     if(uc){const yn=Math.sign(e.vx)||(e.x>=S.x?1:-1);e.vx=yn*Math.max(900,Math.abs(e.vx)*1.2);e.vy=Math.max(e.vy,0)+900;e.olm={tip:'uc',f:'hava',t0:S.t,yn,ters:(S.x-e.x)*(e.yon||1)<0}}
     else{e.vx*=0.3;e.vy=0;e.olm={tip:'diz',t0:S.t,yn:e.yon||1}}}else{e.vx*=1.4;e.vy+=700}if(!olu0){antiOldu(e);xpKazan(Math.round((e.xp||e.max/10)*(dmg>=9999?1.5:1)));ispDus(e.x,e.y+e.cy);bufCal(OLS[e.sk||e.kc||'k'],1)}}      // yerdeyken ölürse olduğu yerde ölür (dönmez); ölüm sesi (sk varsa önce o: kadın/kılıç ustası kendi sesi)      // %25 ıspanak düşer
   if(S.pSes){if(S.pence&&S.pSes===true)torbaCal(BLD,BLDBAG,1);else ses(S.pSes==='tekme'?'tekme':'yumruk')}      // bıçak modunda bıçak sesleri
@@ -271,7 +271,7 @@ function dusmanGuncelle(dt){
         e.dusA=(e.dusA||0)+(hd-(e.dusA||0))*Math.min(1,dt*20);e.cy=e.cy0+(110-e.cy0)*e.dusA;e.st=Math.max(e.st,d.son);kolYere(e,dt)}}
     if(e.itK){const k=e.itK,u=Math.min(1,(S.t-k.t0)/k.T);e.x=k.x0+k.dx*u*(2-u);if(u>=1||e.tut||e.olu)e.itK=null}      // altılı tekme itişi: yumuşak kayar
     const stun=S.t<e.st,dx=S.x-e.x,zH=zemin(e.x),yer=e.y<=zH+1;
-    if(!e.akt&&(Math.abs(dx)<1500||stun))e.akt=true;
+    if(!e.akt&&(Math.abs(dx)<1500||stun)&&(stun||!gizliKal(e,dx)))e.akt=true;      // Süpermen anti: arkasından eğilerek gelirsek fark etmez
     if(e.agil)ustaKontrol(e,dt,dx,stun,yer);               // oyuncu yaklaşınca uyanır (dalga gibi gelmez)
     if(stun||!yer||e.vy>0){                                         // savrulma / havada
       e.moving=false;if(e.agil&&e.ka&&!stun)korsanAI(e,dt,dx);      // kılıç ustası havada da savurur

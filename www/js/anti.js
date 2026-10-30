@@ -22,6 +22,15 @@ function olumGuncelle(dt){
   if(!o.yat&&u>=OL_YIGIL+0.68){o.yat=true;bufCal(DSS,1);karBas(S.x,300,KMIN-6,false);tasSac(S.x,3,0.9);S.sars=Math.max(S.sars,8);titre(60)}      // yüz üstü yere çarpınca düşmanların yere düşme sesi
   if(!o.gos&&u>=3.0){o.gos=true;bufCal(GOS,1)}      // YENİLDİN yazısıyla birlikte
 }
+// ---- Süpermen anti (S): gizlilik ----
+// Düşman oyuncuyu fark etmeden (e.akt yok) arkasındaysak: eğilerek yürürsek hiç dönmez (ayakta 900 birimden yakında duyar). Arkadan yumruk = 10x hasar (gizli vuruş).
+// Biri ölünce ya da oyuncu zıplayınca ekranda (kenarında azıcık görünen dahil) fark etmemiş herkes döner ve gelir.
+const gizliArka=e=>!e.akt&&!e.boss&&!e.agil&&Math.sign(S.x-e.x||1)!==(e.yon||1);
+const gizliKal=(e,dx)=>YA('S')&&!DEMO&&!e.boss&&!e.agil&&Math.sign(dx||1)!==(e.yon||1)&&(asagiMi()||Math.abs(dx)>900);
+function sesYay(){      // gürültü: ekrandaki tüm fark etmemiş düşmanlar uyanır
+  if(DEMO||typeof DUS==='undefined')return;const yw=W/2/SC;
+  for(const e of DUS)if(!e.olu&&!e.akt&&Math.abs(e.x-S.x)<yw+(e.r||200))e.akt=true;
+}
 // ---- Aduket anti (Y): basılı tutmalı roket yumruk ----
 // Yumruk tarafına basılı tut (0.26 sn): yumruk geri çekilip titrer, ön kol+yumruk 1 sn'de %25 büyür (suyu elinde toplar). 1 sn = tam güç. Bırakınca öne roket gibi atılır:
 // güç 1x–3x (15–45), menzil 450–1350 birim; enerji/bekleme yok. Giderken yumruktan geriye roket ateşi gibi su fışkırır, yumruk eski boyuna döner.
@@ -35,12 +44,15 @@ function armSc(ad){      // ön kol + yumruk ölçeği (şişmiş yumruk)
   if(S.rk&&S.rk.k===ad)return 1+(S.rk.sc0-1)*(1-kisit((S.t-S.rk.t0)/S.rk.T,0,1));
   return 1;
 }
+const cgAci=k=>{const kl=KOL[k];return kl.e>0.35?kisit(kl.th,-70,70):0};      // yumruğun gideceği yön: parmağın basıldığı yerden sürüklendiği yön
 function rkIptal(){S.cg=null;SUC.length=0;sulSes(false)}
 function rkAt(k){      // parmak kalktı: roket yumruk
   const c=S.cg;if(!c||c.k!==k)return;
-  const lv=c.lv,kl=KOL[k],ang=kl.e>0.35?kisit(kl.th,-70,70):0,dist=450*(1+2*lv),T=0.32+0.18*lv;
+  const lv=c.lv,ang=cgAci(k),dist=450*(1+2*lv),T=0.32+0.18*lv,ar=ang*D;
   S.rk={k,t0:S.t,T,lv,ang,sc0:1+0.25*lv,hit:new Set()};
-  S.lungeS=S.t;S.lungeT=S.t+T;S.lungeV=S.yon*1.5*dist/T;S.sonAtk=S.t;      // öne atılım (hız zamanla düşer: toplam yol = dist)
+  S.lungeS=S.t;S.lungeT=S.t+T;S.lungeV=S.yon*1.5*dist/T*Math.cos(ar);S.sonAtk=S.t;      // parmak yönüne atılım (hız zamanla düşer: toplam yol = dist)
+  if(ang<-12){S.yer=false;S.vy=Math.max(-4200,1.25*dist/T*Math.sin(ar))}      // yukarı-ileri (saat 2 gibi): havaya doğru uçarak gider
+  if(WWS)bufCal(WWS,1);
   rkIptal();S.sars=Math.max(S.sars,6+8*lv);titre(30+40*lv);
 }
 function rkGuncelle(dt){
@@ -72,9 +84,9 @@ function rkGuncelle(dt){
     }
   }
 }
-function cgPoz(o){      // şarj: yumruk geri çekilip titrer (Paul gibi)
+function cgPoz(o){      // şarj: kol geri gitmez; yumruk parmağın o an tutulduğu yöne (gideceği yöne) dönük bekler, hafif titrer, dirsekten öne doğru şişer
   const k=S.cg.k,u=k==='N'?'aNu':'aFu',r=k==='N'?'aNr':'aFr',lv=S.cg.lv;
-  o[u]=60+Math.sin(S.t*70)*(1.5+3*lv);o[r]=-70;o.torso-=6;o.lN=-12;o.bN=22;o.lF=16;o.bF=24;
+  o[u]=cgAci(k)-90+Math.sin(S.t*70)*(1+2*lv);o[r]=80;o.lN=-12;o.bN=22;o.lF=16;o.bF=24;
 }
 function rkPoz(o){      // atılış: kol dümdüz uzanır, gövde ileri yatar
   const k=S.rk.k,u=k==='N'?'aNu':'aFu',r=k==='N'?'aNr':'aFr';
@@ -111,7 +123,7 @@ function antiHasar(e,dmg){
   if(YA('X')&&S.hp<HPMAX*0.25)k*=1.5;                  // öfke: can %25 altında
   if(YA('T')&&S.pence)k*=1.2;                          // bıçak hasarı +%20
   if(YA('Y')&&yum)k*=1.3;                              // yumruk hasarı +%30
-  if(YA('S')&&!S.yer)k*=1.5;                           // havadaki vuruşlar +%50
+  if(YA('S')&&yum&&gizliArka(e)){k*=10;S.antiKrit=true}      // gizli vuruş: fark etmemiş düşmana arkadan yumruk 10x
   if(YA('N')&&yum&&S.yer&&asagiMi())k*=2;              // çömelik yumruk 2x
   if(YA('YT')&&e.dus)k*=2;                             // yerde yatana 2x
   if(YA('L')&&tek){S.antiTek=(S.antiTek||0)+1;if(S.antiTek%3===0){k*=2;S.antiKrit=true}}      // her 3. tekme kritik

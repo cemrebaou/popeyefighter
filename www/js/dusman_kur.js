@@ -5,7 +5,7 @@ let ZOR_N=0;try{ZOR_N=Math.max(0,+localStorage.getItem('pf_zor')||0)}catch(_){}
 const ZK=()=>Math.min(4,Math.pow(1.1,ZOR_N));
 function zorKaydet(){try{localStorage.setItem('pf_zor',String(ZOR_N))}catch(_){}}
 const XPK=()=>Math.pow(1.5,ZOR_N);      // her bölümde düşman XP'si %50 artar (sabit XP, can/atak artışından bağımsız)
-function korsanYap(x,kc){const e={t:'korsan',kc,x,y:zemin(x),vx:0,vy:0,hp:100,max:100,cy:450,r:211,yon:1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:0,ka:null};if(kc==='h'){e.cy=558;e.r=259}return e}
+function korsanYap(x,kc){const e={t:'korsan',kc,x,y:zemin(x),vx:0,vy:0,hp:100,max:100,cy:450,r:211,yon:Math.random()<0.5?1:-1,anim:Math.random()*9,fl:0,st:0,olu:false,ol:0,rot:0,hitT:{N:0,F:0},wf:0,acd:0,ka:null};if(kc==='h'){e.cy=558;e.r=259}return e}
 function dusmanKur(){      // yol boyunca yerleşik korsanlar: k = yumruklu, b = bıçaklı; yolun sonunda kaptan (boss) gelir
   DUS=[];ENPOS=[BOSS_X];varilKur();
   const ekle=(x,kc)=>(ENPOS.push(x),DUS.push(korsanYap(x,kc)));

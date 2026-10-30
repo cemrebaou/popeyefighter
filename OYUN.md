@@ -76,7 +76,7 @@ Kullanıcı oyunla ilgili bir şey sorunca önce buraya bak (koda girme). Oyunda
 - Tekmeler (kombo): 6–18. Kombo kayar tekmesi (yyt) havada bacaklar açık yapılır, iki ayak da vurur (arkadaki ayak arkadaki düşmana). Kayar tekme 15 (%50 yere serer). Döner tekme 50. Yere tekme (uçan tekme) her düşmana bir kullanımda bir kez 15 (iniş sarsıntısı aynı düşmana tekrar vurmaz). Kombo 30 (yyyyyt) bitişi: havada 6 tekme (2 orta, 2 daha yukarı-ileri, 2 en yukarı-ileri), 30 hasar 6×5 olarak bölünür; 1.33 sn sürer, karakter tekme başına 70 birim ilerler ve her isabet düşmanı aynı miktar iter (mesafe sabit kalır).
 - Ateşli aparkat 32. Süpermen uçuşu 50. Aduket 50. Yer yarma (yarık) 40. Süper kahraman inişi 50 (yer sarsıntısı).
 - Dağıtıcı (alkış, eski adı Alkış Şok Dalgası) 30: geri savurur, %50 yere düşürür (kaptan ve kancacı hariç).
-- Tutup fırlatma 4–40 (hıza göre); düşman varil gibi el hızıyla uçar, varilin yarı mesafesi (en yüksek hız ~2300). Varil fırlatma 15–50; varil en yüksek hız 3250. Fırlayan düşman başkasına çarparsa 10–35.
+- Tutup fırlatma 4–40 (hıza göre); düşman varil gibi el hızıyla uçar, varilin yarı mesafesi (en yüksek hız ~2300). Varil fırlatma 25–60 (v0.400 taban 25; kafaya 2x kritik kalır); varil en yüksek hız 3250. Fırlayan düşman başkasına çarparsa 10–35.
 - Yırtma: anında öldürür (enerji = düşmanın kalan canı).
 - Yere Düşürme yeteneği: 10 üstü vuruşlar %25 ihtimalle düşmanı yere düşürür.
 
@@ -86,6 +86,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - A İnsan Tutma (1) · B Varil Tutma (1) · G Sıkı Tutuş (1, pasif; tutulan kafa atamaz) · F Yırtma (2) · R Can Çalmalı Yırtma (3; Yırtma açılmadan açılmaz) · H Can Çalma %10 (1, pasif) · M Can Çalma %20 (1, pasif)
 - N Yer Yumruğu / yarık (2) · S Süpermen Uçuşu (2) · Y Aduket (2)
 - Aduket öldürülünce (anti Y): yumruk hasarı +%30, yumruk menzili +80 (sulu yumruk v0.399'da kaldırıldı). YENİ (v0.399) basılı tutmalı ROKET YUMRUK (`rkGuncelle/rkAt`, anti.js): yumruk tarafına parmağı oynatmadan 0.26 sn basılı tut → şarj başlar (`S.cg`): yumruk geri çekilip titrer, ön kol+yumruk 1 sn'de %25 büyür, su 1 sn boyunca yumruğa çekilir, `ses/su_sarj.mp3` basılı tutulurken döngüde çalar; 1 sn = tam güç. Parmak kalkınca (`S.rk`) roket gibi öne atılır: hasar 15→45 (1x–3x, ayrıca +%30), menzil 450→1350 birim, süre 0.32–0.5 sn, enerji/bekleme yok; giderken yumruktan geriye roket ateşi gibi su fışkırır, yumruk boyu eski haline döner, yoldaki herkese bir kez vurur. Şarjda yürünmez; iki parmak/blok, zıplama vb. şarjı iptal eder. Parmak sürüklenmişse (>22 px) şarj başlamaz.
+- v0.400 roket yumruk: şarjda kol geri gitmez, yumruk parmağın o an sürüklendiği yöne dönük bekler (dirsekten öne şişer); bırakınca o yöne atılır, yukarı-ileri ise (saat 2 gibi) karakter havaya uçarak gider; atılırken `ses/waterwhoosh.mp3`.
 - D Çift Zıplama (1) · K Çok Zıplama (1, pasif) · E Kayar Tekme (1) · L Döner Tekme (2) · U Süper Kahraman İnişi (2) · Q Tekmeyle Can Çalma (1, pasif)
 - J Ateşli Aparkat (1) · AL Dağıtıcı (2) · YT Yere Tekme (1)
 - P Bıçak Modu (2) · T Bıçakla Can Çalma (1, pasif) · Z Bıçak Atlama (3)
@@ -110,7 +111,7 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 - H: +%20 saldırı · M: her vuruş +2 enerji · Q: tekme itmesi +%30 · T: bıçak hasarı +%20 · R: yırtma enerjisi yarı
 - A: koşarken (max hızın %70'i) düşmana yaklaşınca %25 şansla omuz atma: önce omuz hamlesi (öne çapraz eğilme, arka bacak kalkar), 0.14 sn sonra 25 hasar, uzağa fırlatıp yere serer · B: tekme varili top gibi uçurur; tekmelenen varil kırılmaz (seker, yuvarlanır, hacıyatmaz gibi hep dik durur, tekrar tekmelenebilir), sadece düşmana çarpınca kırılır · G: vuruşlar %20 daha hızlı (vuruşlar arası bekleme kısalır), yumruk hasarı -%10 · F: canı %20 altındaki tek yumrukla ölür
 - D: havada ileri hız 2x · K: +1 havada zıplama (D açıksa 3 zıplama) · E: koşu +%20 · U: yüksekten inişte (380 üstü) taş patlaması: hasar (yükseklik-300)/40, 3–25; alan 450–1100
-- N: çömelik yumruk 2x · S: havadaki vuruşlar +%50 · Y: yumruk menzili +80 birim, yumruk hasarı +%30 · L: her 3. tekme kritik (2x) · J: her vuruş %5 şansla yakar (yumrukla olduysa yumruk alev alır, alev hareketin gerisine savrulur): 4 sn, 0.5 sn'de bir düz vuruşun (5 + ölüm bonusu) yarısı; ateş efekti hafif/saydam · AL: blok/parry yapınca 900 içindeki düşmanlar sersemler · YT: yerde yatana 2x · P: yumruk %25 kanatır (4 sn, 0.5 sn'de 3) · Z: bıçak modunda yana kaydırma = bumerang bıçak (25 enerji, 30 hasar, gidiş-dönüş)
+- N: çömelik yumruk 2x · S (v0.400): gizlilik — fark etmemiş (`e.akt` yok) düşmanın arkasındaysak eğilerek yürürsek hiç dönmez (ayaktaysak 900 birimden yakında duyar); arkadan yumruk 10x hasar (KRİTİK), anında öldürmez; biri ölünce ya da oyuncu zıplayınca ekrandaki (kenarda azıcık görünen dahil) fark etmemiş herkes döner ve gelir (`sesYay`); düşmanlar başta rastgele yöne bakar · Y: yumruk menzili +80 birim, yumruk hasarı +%30 · L: her 3. tekme kritik (2x) · J: her vuruş %5 şansla yakar (yumrukla olduysa yumruk alev alır, alev hareketin gerisine savrulur): 4 sn, 0.5 sn'de bir düz vuruşun (5 + ölüm bonusu) yarısı; ateş efekti hafif/saydam · AL: blok/parry yapınca 900 içindeki düşmanlar sersemler · YT: yerde yatana 2x · P: yumruk %25 kanatır (4 sn, 0.5 sn'de 3) · Z: bıçak modunda yana kaydırma = bumerang bıçak (25 enerji, 30 hasar, gidiş-dönüş)
 
 ## Bölüm
 - Düz zemin, karlı. Yürüme, zıplama, iniş, kayma, çift ayak/tek ayak yere inişte kar-taş sıçraması yok (sadece yere yumruk/yarık sıçratır). 7 varil (x: 2600, 6300, 12400, 18000, 24200, 28600, 34000). Boss x=42000.
@@ -161,3 +162,5 @@ Her zaman açık: yumruk kombo, tekme, blok. Diğerleri ağaçtan puanla (1–3)
 
 ## v0.398
 - Kadın (f): kalça/etek parçası (`f_kalca`) çizilmiyor; bacaklar doğrudan gövdenin (eteğin) altına bağlı, üst bacak yuvarlağı eteğin altında kalır. Bot görseli yenilendi: tek bot (`parca/f_bot.webp`, 150x175, bilek yuvarlağı [49.8,25.5]) iki ayakta da kullanılır (arkadaki koyulaştırılır).
+
+- Eğilip yürürken ayak sesi %50 (v0.400).
